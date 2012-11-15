@@ -9,16 +9,9 @@ from KMCLib.KMCLocalConfiguration import KMCLocalConfiguration
 class KMCLocalConfigurationTest(unittest.TestCase):
     """ Class for testing the KMCLocalConfiguration class """
 
-    def setup(self):
-        pass
-
-    def tearDown(self):
-        pass
-
     def testConstruction(self):
         """ Test that the KMCLocalConfiguration class can be constructed. """
         local_config = KMCLocalConfiguration()
-
         # NEEDS IMPLEMENTATION
 
     def testDummy(self):
