@@ -9,18 +9,14 @@
 
 import unittest
 
-
-from KMCLocalConfigurationTest import KMCLocalConfigurationTest
-from Utilities import UtilitiesTests
-from Exceptions import ExceptionsTests
+from ErrorTest import ErrorTest
 
 
 def suite():
     suite = unittest.TestSuite(
-        [unittest.TestLoader().loadTestsFromTestCase(KMCLocalConfigurationTest),
-         UtilitiesTests.suite(),
-         ExceptionsTests.suite()])
+        [unittest.TestLoader().loadTestsFromTestCase(ErrorTest)])
     return suite
+
 
 if __name__ == '__main__':
     unittest.TextTestRunner(verbosity=2).run(suite())

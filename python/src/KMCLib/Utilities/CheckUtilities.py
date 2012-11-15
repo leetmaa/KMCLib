@@ -8,6 +8,9 @@
 #
 
 
+from KMCLib.Exceptions.Error import Error
+
+
 def checkIndexWithinBounds(index, list):
     """ Check that the given index is within the bounds of the list. """
     # NEEDS IMPLEMENTATION
