@@ -9,6 +9,9 @@
 
 
 import unittest
+import numpy
+
+from KMCLib.Exceptions.Error import Error
 
 # Import from the module we test.
 from KMCLib.Utilities.CheckUtilities import checkCoordinateList
@@ -21,13 +24,47 @@ class CheckUtilitiesTest(unittest.TestCase):
 
     def testCheckCoordinateList(self):
         """ Test the coordinate list checking function. """
-        # NEEDS IMPLEMENTATION
-        pass
+        # Setup some valid coordinates.
+        valid_coordinates = [[1.0,2.0,3.4],[3.0,3.0,3.5]]
+
+        # Make sure they pass the check.
+        checked_coords = checkCoordinateList(valid_coordinates)
+        self.assertAlmostEqual(valid_coordinates, checked_coords, 10)
+
+        # Again, with numpy.
+        valid_coordinates = numpy.array(valid_coordinates)
+        checked_coords = checkCoordinateList(valid_coordinates)
+        self.assertAlmostEqual((valid_coordinates-checked_coords).sum(), 0.0, 10)
+
+        # Test some things that fails.
+
+        # Wrong type.
+        invalid_coordinates = [[1.0,1.0,1.0],[1.0,1.0,1]]
+        self.assertRaises(Error, lambda: checkCoordinateList(invalid_coordinates))
+
+        # Wrong type.
+        invalid_coordinates = "[[1.0,1.0,1.0],[1.0,1.0,1]]"
+        self.assertRaises(Error, lambda: checkCoordinateList(invalid_coordinates))
+
+        # Wrong size.
+        invalid_coordinates = [[1.0,2.0,3.4],[3.0,3.0],[3.0,3.0,3.5]]
+        self.assertRaises(Error, lambda: checkCoordinateList(invalid_coordinates))
+
+        invalid_coordinates = [[1.0,2.0,3.4],[3.0,3.0,1.2],[3.0,3.0,3.5,32.3]]
+        self.assertRaises(Error, lambda: checkCoordinateList(invalid_coordinates))
+
 
     def testCheckIndexWithinBounds(self):
         """ Test the index within bounds checking function. """
         # NEEDS IMPLEMENTATION
         pass
+
+
+    def testCheckSequence(self):
+        """ Test that the sequence checking works. """
+        # NEEDS IMPLEMENTATION
+        pass
+
 
 
 if __name__ == '__main__':

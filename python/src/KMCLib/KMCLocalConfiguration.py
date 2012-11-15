@@ -55,8 +55,4 @@ class KMCLocalConfiguration:
         # Sort the coordinates with respect to distance from the center and store on the class.
         (self.__cartesain_coordinates, self.__types) = sortCoordinates(cartesian_coordinates, center, types)
 
-    def dummy(self):
-        """ A dummy that will be removed. """
-        print "dummy called"
-        return 13.7
 

@@ -19,13 +19,9 @@ class KMCLocalConfigurationTest(unittest.TestCase):
 
     def testConstruction(self):
         """ Test that the KMCLocalConfiguration class can be constructed. """
-        local_config = KMCLocalConfiguration()
+        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
+        local_config = KMCLocalConfiguration(cartesian_coordinates=coords)
         # NEEDS IMPLEMENTATION
-
-    def testDummy(self):
-        """ Test the dummy function. """
-        local_config = KMCLocalConfiguration()
-        self.assertAlmostEqual(local_config.dummy(), 13.7, 10)
 
 
 if __name__ == '__main__':
