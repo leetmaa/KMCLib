@@ -7,10 +7,12 @@
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 #
 
+
 from KMCLib.Utilities.CheckUtilities import checkCoordinateList
 from KMCLib.Utilities.CheckUtilities import checkIndexWithinBounds
 from KMCLib.Utilities.CoordinateUtilities import centerCoordinates
 from KMCLib.Utilities.CoordinateUtilities import sortCoordinates
+
 
 class KMCLocalConfiguration:
     """
