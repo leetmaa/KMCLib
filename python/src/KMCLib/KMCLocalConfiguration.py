@@ -8,6 +8,8 @@
 #
 
 
+import sys
+
 from KMCLib.Utilities.CheckUtilities import checkCoordinateList
 from KMCLib.Utilities.CheckUtilities import checkIndexWithinBounds
 from KMCLib.Utilities.CheckUtilities import checkTypes
@@ -49,7 +51,7 @@ class KMCLocalConfiguration:
             center = 0
 
         # Check the bounds of the center coordinate.
-        center = checkIndexWithinBounds(center, cartesian_coordinates)
+        center = checkIndexWithinBounds(center, cartesian_coordinates, msg="The 'center' index paramter must be one in the coordinate list.")
 
         # Center the coordinates.
         cartesian_coordinates = centerCoordinates(cartesian_coordinates, center)
@@ -58,6 +60,49 @@ class KMCLocalConfiguration:
         types = checkTypes(types, len(cartesian_coordinates))
 
         # Sort the coordinates with respect to distance from the center and store on the class.
-        (self.__cartesain_coordinates, self.__distances, self.__types) = sortCoordinates(cartesian_coordinates, center, types)
+        (self.__cartesian_coordinates, self.__distances, self.__types) = sortCoordinates(cartesian_coordinates, center, types)
 
+    def _script(self, variable_name="local_configuration"):
+        """ Return a script that can generate this local configuration. """
+        # Define the float format string.
+        ff = "%15.6e"
+
+        # Add the coordinates.
+        varname = "coordinates"
+        indent = " "*len(varname) + "    "
+
+        coords_string = varname + " = ["
+
+        # Loop through all coordinates but the last.
+        coord_template = "[" + ff + "," + ff + "," + ff + "],\n"
+
+        # For the first coordinate, if there are more than one coordinate.
+        if len(self.__cartesian_coordinates) > 1:
+            c = self.__cartesian_coordinates[0]
+            coords_string += coord_template%(c[0],c[1],c[2])
+
+            # And the middle coordinates.
+            coord_template = indent + "[" + ff + "," + ff + "," + ff + "],\n"
+            for c in self.__cartesian_coordinates[1:-1]:
+                coords_string += coord_template%(c[0],c[1],c[2])
+
+        # Add the last coordinate (which is also the first if there is only one coordinate).
+        c = self.__cartesian_coordinates[-1]
+        if len(self.__cartesian_coordinates) == 1:
+            coord_template = "[" + ff + "," + ff + "," + ff + "]]\n"
+        else:
+            coord_template = indent + "[" + ff + "," + ff + "," + ff + "]]\n"
+        coords_string += coord_template%(c[0],c[1],c[2])
+
+        # Types
+        types_string  = "types = " + str(self.__types) + "\n"
+
+        # Add the configuration.
+        config_string = variable_name + """ = KMCLocalConfiguration(
+    cartesian_coordinates=coordinates,
+    types=types)
+"""
+
+        # Return the script.
+        return "\n" + coords_string + "\n" + types_string + "\n" + config_string
 

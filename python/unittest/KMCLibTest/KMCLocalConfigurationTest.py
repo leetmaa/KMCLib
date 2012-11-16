@@ -54,7 +54,7 @@ class KMCLocalConfigurationTest(unittest.TestCase):
                          numpy.linalg.norm(ref_coords[2])]
 
         # Check the coordinates.
-        self.assertAlmostEqual(numpy.linalg.norm(local_config._KMCLocalConfiguration__cartesain_coordinates - ref_coords), 0.0, 10)
+        self.assertAlmostEqual(numpy.linalg.norm(local_config._KMCLocalConfiguration__cartesian_coordinates - ref_coords), 0.0, 10)
 
         # Check the types.
         self.assertEqual(local_config._KMCLocalConfiguration__types, ref_types)
@@ -83,6 +83,42 @@ class KMCLocalConfigurationTest(unittest.TestCase):
         # Wrong type of center.
         self.assertRaises(Error, lambda: KMCLocalConfiguration(coords, types, center="A"))
 
+    def testScript(self):
+        """ Test the scripting functionality. """
+        # Setup the configuration.
+        coords = [[1.0,2.0,3.0]]
+        types = ["C"]
+        local_config = KMCLocalConfiguration(cartesian_coordinates=coords, types=types, center=0)
+
+        ref_script = """
+coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+
+types = ['C']
+
+local_configuration = KMCLocalConfiguration(
+    cartesian_coordinates=coordinates,
+    types=types)
+"""
+        # Check the script.
+        self.assertEqual(local_config._script(), ref_script)
+
+        # Get another script.
+        coords = [[1.0,2.0,3.0],[1.0,1.0,3.0],[3.0,8.0,9.0]]
+        types = ["C","B","A"]
+        local_config = KMCLocalConfiguration(cartesian_coordinates=coords, types=types, center=0)
+        ref_script2 = """
+coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
+               [   0.000000e+00,  -1.000000e+00,   0.000000e+00],
+               [   2.000000e+00,   6.000000e+00,   6.000000e+00]]
+
+types = ['C', 'B', 'A']
+
+local_config2 = KMCLocalConfiguration(
+    cartesian_coordinates=coordinates,
+    types=types)
+"""
+        # Check.
+        self.assertEqual(local_config._script(variable_name="local_config2"), ref_script2)
 
 
 if __name__ == '__main__':
