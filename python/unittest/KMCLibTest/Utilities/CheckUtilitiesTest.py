@@ -16,6 +16,7 @@ from KMCLib.Exceptions.Error import Error
 # Import from the module we test.
 from KMCLib.Utilities.CheckUtilities import checkCoordinateList
 from KMCLib.Utilities.CheckUtilities import checkIndexWithinBounds
+from KMCLib.Utilities.CheckUtilities import checkSequence
 
 
 # Implement the test.
@@ -56,15 +57,63 @@ class CheckUtilitiesTest(unittest.TestCase):
 
     def testCheckIndexWithinBounds(self):
         """ Test the index within bounds checking function. """
-        # NEEDS IMPLEMENTATION
-        pass
+        # Shoud pass.
+        index = 0
+        list = [0,12,'a',21.2]
+        checked_index = checkIndexWithinBounds(index, list)
+        self.assertEqual(checked_index, index)
+
+        # This should also pass.
+        index = 4
+        list = "ABCDE"
+        checked_index = checkIndexWithinBounds(index, list)
+        self.assertEqual(checked_index, index)
+
+        # And this.
+        index = 1
+        list = numpy.array([[12.0,1.3],[1.,4.3]])
+        checked_index = checkIndexWithinBounds(index, list)
+        self.assertEqual(checked_index, index)
+
+        # Should fail - index not within bounds.
+        index = -1
+        self.assertRaises(Error, lambda: checkIndexWithinBounds(index, list))
+        index = 2
+        self.assertRaises(Error, lambda: checkIndexWithinBounds(index, list))
+
+        # Catch and check the error.
+        msg = "Custom Error msg."
+        try:
+            checkIndexWithinBounds(index, list, msg)
+        except Error as e:
+            error_msg = str(e)
+            self.assertEqual(error_msg, msg)
 
 
     def testCheckSequence(self):
         """ Test that the sequence checking works. """
-        # NEEDS IMPLEMENTATION
-        pass
+        # This is a sequence.
+        sequence = [1,2,3,'a',12.3, "ABC"]
+        checked_sequence = checkSequence(sequence)
+        self.assertEqual(checked_sequence, sequence)
 
+        # This also.
+        sequence = numpy.array([[12.0,1.3],[1.,4.3]])
+        checked_sequence = checkSequence(sequence)
+        self.assertAlmostEqual((checked_sequence-sequence).sum(), 0.0, 10)
+
+        # And these.
+        sequence = "A"
+        checked_sequence = checkSequence(sequence)
+        self.assertEqual(checked_sequence, sequence)
+
+        sequence = []
+        checked_sequence = checkSequence(sequence)
+        self.assertEqual(checked_sequence, sequence)
+
+        # But this is not.
+        sequence = 1
+        self.assertRaises(Error, lambda: checkSequence(sequence))
 
 
 if __name__ == '__main__':
