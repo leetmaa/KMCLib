@@ -20,7 +20,8 @@ class KMCLocalConfigurationTest(unittest.TestCase):
     def testConstruction(self):
         """ Test that the KMCLocalConfiguration class can be constructed. """
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        local_config = KMCLocalConfiguration(cartesian_coordinates=coords)
+        types = ["A","B"]
+        local_config = KMCLocalConfiguration(cartesian_coordinates=coords, types=types)
         # NEEDS IMPLEMENTATION
 
 

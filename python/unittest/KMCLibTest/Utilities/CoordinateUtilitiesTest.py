@@ -9,7 +9,7 @@
 
 
 import unittest
-
+import numpy
 
 # Import from the module we test.
 from KMCLib.Utilities.CoordinateUtilities import centerCoordinates
@@ -22,13 +22,37 @@ class CoordinateUtilitiesTest(unittest.TestCase):
 
     def testSortCoordinates(self):
         """ Test the coordinate sorting function. """
-        # NEEDS IMPLEMENTATION
-        pass
+        # Lets, use these coordinates.
+        coords = numpy.array([[2.0,1.0,0.0],[1.0,2.0,0.0],[0.0,0.0,0.0],[-8.9,12.0,4.0]])
+        types  = ["B","A","C","A"]
+        center = 2
+
+        # Sort - wrt distance,type,x,y,z
+        (sorted_coords, sorted_distances, sorted_types) = sortCoordinates(coords, center, types)
+
+        # Setup references.
+        ref_coords = numpy.array([[0.0,0.0,0.0],[1.0,2.0,0.0],[2.0,1.0,0.0],[-8.9,12.0,4.0]])
+        ref_types = ["C","A","B","A"]
+        ref_distances=numpy.array([numpy.linalg.norm(c) for c in ref_coords])
+
+        # Check.
+        self.assertAlmostEqual(numpy.linalg.norm(sorted_distances-ref_distances), 0.0, 10)
+        self.assertAlmostEqual(numpy.linalg.norm(sorted_coords-ref_coords), 0.0, 10)
+        self.assertEqual(sorted_types, ref_types)
 
     def testCenterCoordinates(self):
         """ Test the coordinate centering function. """
-        # NEEDS IMPLEMENTATION
-        pass
+        # Setup some coordinates.
+        coords = numpy.array([[1.0,2.0,3.0],[2.0,3.0,-1.1],[-8.9,12.0,4.0]])
+
+        # Center around an index.
+        centered_coords = centerCoordinates(coords, 1)
+
+        # This should get us these coordinates.
+        ref_coords = numpy.array([[-1.0,-1.0,4.1],[0.0,0.0,0.0],[-10.9,9.0,5.1]])
+
+        # Check.
+        self.assertAlmostEqual(((centered_coords-ref_coords)**2).sum(), 0.0, 10)
 
 
 if __name__ == '__main__':

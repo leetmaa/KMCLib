@@ -10,6 +10,8 @@
 
 from KMCLib.Utilities.CheckUtilities import checkCoordinateList
 from KMCLib.Utilities.CheckUtilities import checkIndexWithinBounds
+from KMCLib.Utilities.CheckUtilities import checkTypes
+
 from KMCLib.Utilities.CoordinateUtilities import centerCoordinates
 from KMCLib.Utilities.CoordinateUtilities import sortCoordinates
 
@@ -40,7 +42,7 @@ class KMCLocalConfiguration:
         @default                    : 0
         """
         # Check the cartesian coordinates.
-        self.__cartesian_coordinates = checkCoordinateList(cartesian_coordinates)
+        cartesian_coordinates = checkCoordinateList(cartesian_coordinates)
 
         # Set the center coordinate if not given.
         if center is None:
@@ -52,7 +54,10 @@ class KMCLocalConfiguration:
         # Center the coordinates.
         cartesian_coordinates = centerCoordinates(cartesian_coordinates, center)
 
+        # Check the tyeps.
+        types = checkTypes(types, len(cartesian_coordinates))
+
         # Sort the coordinates with respect to distance from the center and store on the class.
-        (self.__cartesain_coordinates, self.__types) = sortCoordinates(cartesian_coordinates, center, types)
+        (self.__cartesain_coordinates, self.__distances, self.__types) = sortCoordinates(cartesian_coordinates, center, types)
 
 

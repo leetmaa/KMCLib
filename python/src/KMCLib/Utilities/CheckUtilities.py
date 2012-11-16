@@ -8,6 +8,8 @@
 #
 
 
+import numpy
+
 from KMCLib.Exceptions.Error import Error
 
 
@@ -60,7 +62,7 @@ def checkCoordinateList(coordinates):
     # Check each coordinate.
     for coord in coordinates:
 
-        # Check it is a sequence.
+        # Check that it is a sequence.
         coord = checkSequence(coord)
 
         # Make sure the length of the coordinate is 3.
@@ -71,8 +73,8 @@ def checkCoordinateList(coordinates):
         if not all([isinstance(c,float) for c in coord]):
             raise Error("All coordinates must be given as floating point numbers.")
 
-    # Done.
-    return coordinates
+    # Convert to a numpy array and return.
+    return numpy.array(coordinates)
 
 
 def checkSequence(sequence):
@@ -89,6 +91,34 @@ def checkSequence(sequence):
 
     # Done.
     return sequence
+
+
+def checkTypes(types, length):
+    """
+    Check that the types list is given as a list of strings with the correct
+    length.
+
+    @param types : The object to check.
+    @param length: The size the list should have.
+    @type        : Integer
+
+    @returns     : The checked list.
+    """
+    # Check that it is a list.
+    if not isinstance(types, list):
+        raise Error("The 'types' parameter must be given as a list of strings.")
+
+    # Check eachg element.
+    for t in types:
+        if not isinstance(t,str):
+            raise Error("The 'types' parameter must be given as a list of strings.")
+
+    # Check the length.
+    if len(types) != length:
+        raise Error("The length of the 'types' parameter must match the coordinates.")
+
+    # Done.
+    return types
 
 
 

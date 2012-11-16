@@ -17,7 +17,7 @@ from KMCLib.Exceptions.Error import Error
 from KMCLib.Utilities.CheckUtilities import checkCoordinateList
 from KMCLib.Utilities.CheckUtilities import checkIndexWithinBounds
 from KMCLib.Utilities.CheckUtilities import checkSequence
-
+from KMCLib.Utilities.CheckUtilities import checkTypes
 
 # Implement the test.
 class CheckUtilitiesTest(unittest.TestCase):
@@ -30,12 +30,12 @@ class CheckUtilitiesTest(unittest.TestCase):
 
         # Make sure they pass the check.
         checked_coords = checkCoordinateList(valid_coordinates)
-        self.assertAlmostEqual(valid_coordinates, checked_coords, 10)
+        self.assertAlmostEqual(((valid_coordinates-checked_coords)**2).sum(), 0.0, 10)
 
         # Again, with numpy.
         valid_coordinates = numpy.array(valid_coordinates)
         checked_coords = checkCoordinateList(valid_coordinates)
-        self.assertAlmostEqual((valid_coordinates-checked_coords).sum(), 0.0, 10)
+        self.assertAlmostEqual(((valid_coordinates-checked_coords)**2).sum(), 0.0, 10)
 
         # Test some things that fails.
 
@@ -100,7 +100,7 @@ class CheckUtilitiesTest(unittest.TestCase):
         # This also.
         sequence = numpy.array([[12.0,1.3],[1.,4.3]])
         checked_sequence = checkSequence(sequence)
-        self.assertAlmostEqual((checked_sequence-sequence).sum(), 0.0, 10)
+        self.assertAlmostEqual(((checked_sequence-sequence)**2).sum(), 0.0, 10)
 
         # And these.
         sequence = "A"
@@ -114,6 +114,26 @@ class CheckUtilitiesTest(unittest.TestCase):
         # But this is not.
         sequence = 1
         self.assertRaises(Error, lambda: checkSequence(sequence))
+
+    def testCheckTypes(self):
+        """ Test that the types checking works. """
+        # This is a valid types list.
+        types = ['A','a', """A""", "ABC"]
+        size = 4
+        checked_types = checkTypes(types, size)
+        self.assertEqual(checked_types, types)
+
+        # Wrong size.
+        size = 3
+        self.assertRaises(Error, lambda: checkTypes(types,size))
+
+        # Mixed types.
+        types = ['A','a', """A""", 2]
+        self.assertRaises(Error, lambda: checkTypes(types,size))
+
+        # Not a list.
+        types = "ABCDEfgH"
+        self.assertRaises(Error, lambda: checkTypes(types,8))
 
 
 if __name__ == '__main__':
