@@ -1,0 +1,26 @@
+Non-API code
+==================
+This code is documented here for development purpouses. These modules, classes and functions are not part of the API and may change more frequently.
+
+
+CoordinateUtilities
+-------------------
+
+.. automodule:: KMCLib.Utilities.CoordinateUtilities
+   :members:
+
+
+CheckUtilities
+--------------
+
+.. automodule:: KMCLib.Utilities.CheckUtilities
+   :members:
+
+
+Error
+--------------
+
+.. autoclass:: KMCLib.Exceptions.Error.Error
+   :members:
+   :special-members:
+

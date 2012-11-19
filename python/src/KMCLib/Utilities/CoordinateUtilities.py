@@ -12,7 +12,16 @@ import numpy
 
 
 def centerCoordinates(coordinates, index):
-    """ Center the coordinates around the given index. """
+    """
+    Center the coordinates around the given index.
+
+    :param coordinates: The coordinates of the system.
+
+    :param index: The index of the center to use as origin.
+    :type index: int
+
+    :returns: The coordinates centered at the specified index.
+    """
     # Extract the centeral coordinate.
     center = coordinates[index]
     # Subtract.
@@ -23,7 +32,19 @@ def centerCoordinates(coordinates, index):
 
 
 def sortCoordinates(coordinates, center, types):
-    """ Sort the coordinates with respect to distance form the provided center index and type."""
+    """
+    Sort the coordinates with respect to distance form the provided center index and type.
+
+    :param coordinates: The coordinates to sort.
+
+    :param center: The index of the center to calculate distances from.
+    :type center: int
+
+    :param types: The list of site types to co-sort with the coordinates.
+    :type types:  a list of strings
+
+    :returns: The sorted coordinates and sorted types.
+    """
     # Get the types.
     dt = coordinates.dtype
     dtype = [('x',dt),('y',dt),('z',dt),('d',dt),('type', numpy.array(types).dtype)]

@@ -29,17 +29,14 @@ class KMCLocalConfiguration:
         """
         Constructor for the KMCLocalConfiguration.
 
-        @param cartesian_coordinates: The cartesian coordinates of the configuration.
-        @type                       : A 3xN sequence of floating point numbers.
-        @default                    : None
+        :param cartesian_coordinates: The cartesian coordinates of the configuration.
+        :type cartesian_coordinates:  A 3xN sequence of floating point numbers, where N is the number of sites.
 
-        @param types                : The lattice site types at the specified coordinates.
-        @type                       : A sequence of strings of length N.
-        @default                    : None
+        :param types: The lattice site types at the specified coordinates.
+        :type types:  A sequence of strings of length N.
 
-        @param center               : The coordinate in the list to treat as the central site.
-        @type                       : Integer
-        @default                    : 0
+        :param center: The coordinate in the list to treat as the central site. If not given it will default to the first coordinate.
+        :type center:  int
         """
         # Check the cartesian coordinates.
         cartesian_coordinates = checkCoordinateList(cartesian_coordinates)
@@ -61,7 +58,14 @@ class KMCLocalConfiguration:
         (self.__cartesian_coordinates, self.__distances, self.__types) = sortCoordinates(cartesian_coordinates, center, types)
 
     def _script(self, variable_name="local_configuration"):
-        """ Return a script that can generate this local configuration. """
+        """
+        Generate a script reperesentation of an isntance.
+
+        :param variable_name: A name to use as variable name for KMCLocalConfiguration in the generated script.
+        :type variable_name: string
+
+        :returns: A script that can generate this local configuration.
+        """
         # Define the float format string.
         ff = "%15.6e"
 

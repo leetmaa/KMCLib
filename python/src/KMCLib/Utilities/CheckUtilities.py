@@ -17,19 +17,16 @@ def checkIndexWithinBounds(index, list, msg=None):
     """
     Check that the given index is within the bounds of the list.
 
-    @param index : The index to check.
-    @type        : Integer
-    @default     : None
+    :param index: The index to check.
+    :type index:  int
 
-    @param list  : The list to check against.
-    @type        : Any sequence object with __len__ defined.
-    @default     : None
+    :param list:  The list to check against.
+    :type list:   Any sequence object with __len__ defined.
 
-    @param msg   : The error message to print.
-    @type        : String
-    @default     : "Index out of range."
+    :param msg: The error message to print. If none is given the string default to "Index out of range."
+    :type msg: string
 
-    @returns     : The valid index.
+    :returns:     The valid index.
     """
     # Set the default.
     if msg is None:
@@ -47,10 +44,10 @@ def checkCoordinateList(coordinates):
     """
     Check that the given coordinates is a valid 3xN sequence of numbers.
 
-    @param coordinates : The object to test. To pass the test this must be
-                         a 3xN array of floating point numbers.
+    :param coordinates: The object to test. To pass the test this must be
+                        a 3xN array of floating point numbers.
 
-    @returns           : A valid 3xN array of numbers.
+    :returns:           A valid 3xN array of numbers.
     """
     # Check that it is a sequence.
     coordinates = checkSequence(coordinates)
@@ -81,9 +78,9 @@ def checkSequence(sequence):
     """
     Check that the given object is sequence.
 
-    @param sequence : The object to test.
+    :param sequence: The object to test.
 
-    @returns        : The valid sequence object.
+    :returns:        The valid sequence object.
     """
     # Check that this is a sequence.
     if not ('__len__' in dir(sequence)):
@@ -98,11 +95,12 @@ def checkTypes(types, length):
     Check that the types list is given as a list of strings with the correct
     length.
 
-    @param types : The object to check.
-    @param length: The size the list should have.
-    @type        : Integer
+    :param types:  The object to check.
 
-    @returns     : The checked list.
+    :param length: The size the list should have.
+    :type length:  int
+
+    :returns: The checked list.
     """
     # Check that it is a list.
     if not isinstance(types, list):
