@@ -74,17 +74,20 @@ def checkCoordinateList(coordinates):
     return numpy.array(coordinates)
 
 
-def checkSequence(sequence):
+def checkSequence(sequence, msg="The tested object is not a sequence."):
     """
     Check that the given object is sequence.
 
     :param sequence: The object to test.
 
+    :param msg: Non-default error message to print,
+    :type msg: string
+
     :returns:        The valid sequence object.
     """
     # Check that this is a sequence.
     if not ('__len__' in dir(sequence)):
-        raise Error("The tested object is not a sequence.")
+        raise Error(msg)
 
     # Done.
     return sequence

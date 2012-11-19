@@ -57,6 +57,22 @@ class KMCLocalConfiguration:
         # Sort the coordinates with respect to distance from the center and store on the class.
         (self.__cartesian_coordinates, self.__distances, self.__types) = sortCoordinates(cartesian_coordinates, center, types)
 
+    def coordinates(self):
+        """
+        Query function for the coordinates stored on the class.
+
+        :returns: The stored coordinates.
+        """
+        return self.__cartesian_coordinates
+
+    def types(self):
+        """
+        Query function for the types stored on the class.
+
+        :returns: The stored types.
+        """
+        return self.__types
+
     def _script(self, variable_name="local_configuration"):
         """
         Generate a script reperesentation of an isntance.
