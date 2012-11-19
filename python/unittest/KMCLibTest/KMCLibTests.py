@@ -11,6 +11,7 @@ import unittest
 
 
 from KMCLocalConfigurationTest import KMCLocalConfigurationTest
+from KMCInteractionsTest import KMCInteractionsTest
 from Utilities import UtilitiesTests
 from Exceptions import ExceptionsTests
 
@@ -18,6 +19,7 @@ from Exceptions import ExceptionsTests
 def suite():
     suite = unittest.TestSuite(
         [unittest.TestLoader().loadTestsFromTestCase(KMCLocalConfigurationTest),
+         unittest.TestLoader().loadTestsFromTestCase(KMCInteractionsTest),
          UtilitiesTests.suite(),
          ExceptionsTests.suite()])
     return suite
