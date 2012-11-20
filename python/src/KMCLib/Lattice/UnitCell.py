@@ -1,4 +1,4 @@
-""" Module containing error handling. """
+""" Module containing the UnitCell class. """
 
 
 # Copyright (c)  2012  Mikael Leetmaa

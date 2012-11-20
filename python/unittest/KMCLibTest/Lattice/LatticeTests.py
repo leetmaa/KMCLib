@@ -10,11 +10,12 @@
 import unittest
 
 from UnitCellTest import UnitCellTest
-
+from LatticeTest import LatticeTest
 
 def suite():
     suite = unittest.TestSuite(
-        [unittest.TestLoader().loadTestsFromTestCase(UnitCellTest)])
+        [unittest.TestLoader().loadTestsFromTestCase(UnitCellTest),
+         unittest.TestLoader().loadTestsFromTestCase(LatticeTest)])
     return suite
 
 

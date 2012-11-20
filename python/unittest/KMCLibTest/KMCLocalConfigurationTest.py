@@ -55,12 +55,19 @@ class KMCLocalConfigurationTest(unittest.TestCase):
 
         # Check the coordinates.
         self.assertAlmostEqual(numpy.linalg.norm(local_config._KMCLocalConfiguration__coordinates - ref_coords), 0.0, 10)
+        #
+        self.assertAlmostEqual(numpy.linalg.norm(local_config.coordinates() - ref_coords), 0.0, 10)
 
         # Check the types.
         self.assertEqual(local_config._KMCLocalConfiguration__types, ref_types)
+        #
+        self.assertEqual(local_config.types(), ref_types)
 
         # Check the distances.
         self.assertAlmostEqual(numpy.linalg.norm(local_config._KMCLocalConfiguration__distances - ref_distances), 0.0, 10)
+        #
+        self.assertAlmostEqual(numpy.linalg.norm(local_config.distances() - ref_distances), 0.0, 10)
+
 
     def testConstructionFails(self):
         """ Make sure the construction fails in the correct way with wrong arguments. """
