@@ -40,35 +40,77 @@ def checkIndexWithinBounds(index, list, msg=None):
     return index
 
 
-def checkCoordinateList(coordinates):
+def checkCellVectors(cell_vectors):
     """
-    Check that the given coordinates is a valid 3xN sequence of numbers.
+    Check that the cell vectors are of the correct dimensions and not fully linearly dependent.
+
+    :param cell_vectors: The cell vectors to test.
+
+    :returns: The valid cell vectors as a 3x3 numpy array.
+    """
+    # If this is not a numpy array, check the list and convert.
+    if not isinstance(cell_vectors, numpy.ndarray):
+
+        # If it is a list, check that it is a list of list, length 3x3
+        cell_vectors = checkSequence(cell_vectors, "The 'cell_vectors' must be given as a 3x3 list or array of numbers.")
+
+        # Check as if this was a coordinate list.
+        cell_vectors = checkCoordinateList(cell_vectors, "cell_vecctors")
+
+        # Transform to a numpy array.
+        cell_vectors = numpy.array(cell_vectors)
+
+    # Now with the cell vectors as a numpy array, check the dimension.
+    if numpy.shape(cell_vectors) != (3,3):
+        raise Error("The 'cell_vectors' parametes must have the shape 3x3.")
+
+    # Check the type.
+    dummy_array = numpy.array([[1.0,0.0,0.0],[0.0,1.0,0.0],[0.0,0.0,1.0]])
+    if cell_vectors.dtype != dummy_array.dtype:
+        raise Error("The cell_vectors elements must be floating point numbers.")
+
+    # Check for linear dependencies.
+    cell_T = numpy.transpose(cell_vectors)
+    cell_determinant = numpy.linalg.det(cell_T)
+    if cell_determinant < 0.1:
+        raise Error("The unit cell vectors are linearly dependent with determinant = %f."%(cell_determinant))
+
+    # Done checking.
+    return cell_vectors
+
+
+def checkCoordinateList(coordinates, varname="coordinates"):
+    """
+    Check that the given coordinates is a valid Nx3 sequence of numbers.
 
     :param coordinates: The object to test. To pass the test this must be
-                        a 3xN array of floating point numbers.
+                        an Nx3 array of floating point numbers.
 
-    :returns:           A valid 3xN array of numbers.
+    :param varname: The name of the variable. Defaults to "coordinates"
+    :type varname: string
+
+   :returns:           A valid Nx3 numpy array of numbers.
     """
     # Check that it is a sequence.
-    coordinates = checkSequence(coordinates)
+    coordinates = checkSequence(coordinates, "The %s must be given as a list of lists with dimensions Nx3"%(varname))
 
     # Check that its length is not zero.
     if (len(coordinates) < 1):
-        raise Error("The coordinates may not be empty.")
+        raise Error("The '%s' parameter may not be an empty list."%(varname))
 
     # Check each coordinate.
     for coord in coordinates:
 
         # Check that it is a sequence.
-        coord = checkSequence(coord)
+        coord = checkSequence(coord, "The %s must be given as a list of lists with dimensions Nx3"%(varname))
 
         # Make sure the length of the coordinate is 3.
         if len(coord) != 3:
-            raise Error("Each coordinate must have exactly three elements.")
+            raise Error("Each entry in the '%s' list must have exactly three elements."%(varname))
 
         # Check that each element is a floating point number.
         if not all([isinstance(c,float) for c in coord]):
-            raise Error("All coordinates must be given as floating point numbers.")
+            raise Error("All '%s' entries must be given as floating point numbers."%(varname))
 
     # Convert to a numpy array and return.
     return numpy.array(coordinates)

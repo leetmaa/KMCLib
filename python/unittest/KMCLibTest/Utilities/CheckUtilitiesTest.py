@@ -18,6 +18,8 @@ from KMCLib.Utilities.CheckUtilities import checkCoordinateList
 from KMCLib.Utilities.CheckUtilities import checkIndexWithinBounds
 from KMCLib.Utilities.CheckUtilities import checkSequence
 from KMCLib.Utilities.CheckUtilities import checkTypes
+from KMCLib.Utilities.CheckUtilities import checkCellVectors
+
 
 # Implement the test.
 class CheckUtilitiesTest(unittest.TestCase):
@@ -53,6 +55,43 @@ class CheckUtilitiesTest(unittest.TestCase):
 
         invalid_coordinates = [[1.0,2.0,3.4],[3.0,3.0,1.2],[3.0,3.0,3.5,32.3]]
         self.assertRaises(Error, lambda: checkCoordinateList(invalid_coordinates))
+
+    def testCheckCellVectors(self):
+        """ Test the cell vector checking function. """
+        # The simplest possible vectors.
+        trial_vectors = [[1.0,0.0,0.0],[0.0,1.0,0.0],[0.0,0.0,1.0]]
+        numpy_vectors = numpy.array(trial_vectors)
+
+        # This must pass.
+        checked_vectors = checkCellVectors(trial_vectors)
+        self.assertAlmostEqual(numpy.linalg.norm(checked_vectors - numpy_vectors), 0.0, 10)
+
+        # This should also pass.
+        checked_vectors = checkCellVectors(numpy_vectors)
+        self.assertAlmostEqual(numpy.linalg.norm(checked_vectors - numpy_vectors), 0.0, 10)
+
+        # This should fail because of wrong format / shape.
+        trial_vectors = [[1.0,0.0,0.0],[0.0,1.0,0.0,0.0],[0.0,1.0]]
+        self.assertRaises(Error, lambda: checkCellVectors(trial_vectors))
+
+        # As well as this.
+        trial_vectors = [1.0,0.0,0.0,0.0,1.0]
+        self.assertRaises(Error, lambda: checkCellVectors(trial_vectors))
+
+        # This should also fail, because of wrong shape.
+        trial_vectors = numpy.array([[1.0,0.0,0.0],[0.0,1.0,0.0,0.0],[0.0,1.0]])
+        self.assertRaises(Error, lambda: checkCellVectors(trial_vectors))
+
+        # This should fail because of wrong type.
+        trial_vectors = "ABC"
+        self.assertRaises(Error, lambda: checkCellVectors(trial_vectors))
+
+        # These should fail because of linear dependencies.
+        trial_vectors = [[1.0,0.0,0.0],[0.0,1.0,2.0],[0.5,0.5,1.01]]
+        self.assertRaises(Error, lambda: checkCellVectors(trial_vectors))
+
+        trial_vectors = [[1.0,0.0,0.0],[0.5,0.5,1.0],[0.0,1.0,2.0]]
+        self.assertRaises(Error, lambda: checkCellVectors(trial_vectors))
 
 
     def testCheckIndexWithinBounds(self):
