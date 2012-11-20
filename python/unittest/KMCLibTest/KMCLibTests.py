@@ -12,6 +12,7 @@ import unittest
 
 from KMCLocalConfigurationTest import KMCLocalConfigurationTest
 from KMCInteractionsTest import KMCInteractionsTest
+from KMCConfigurationTest import KMCConfigurationTest
 from KMCUnitCellTest import KMCUnitCellTest
 from KMCLatticeTest import KMCLatticeTest
 
@@ -22,6 +23,7 @@ def suite():
     suite = unittest.TestSuite(
         [unittest.TestLoader().loadTestsFromTestCase(KMCLocalConfigurationTest),
          unittest.TestLoader().loadTestsFromTestCase(KMCInteractionsTest),
+         unittest.TestLoader().loadTestsFromTestCase(KMCConfigurationTest),
          unittest.TestLoader().loadTestsFromTestCase(KMCUnitCellTest),
          unittest.TestLoader().loadTestsFromTestCase(KMCLatticeTest),
          UtilitiesTests.suite(),
