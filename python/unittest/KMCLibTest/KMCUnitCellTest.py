@@ -15,12 +15,12 @@ import numpy
 from KMCLib.Exceptions.Error import Error
 
 # Import from the module we test.
-from KMCLib.Lattice.UnitCell import UnitCell
+from KMCLib.KMCUnitCell import KMCUnitCell
 
 
 # Implement the test.
-class UnitCellTest(unittest.TestCase):
-    """ Class for testing the UnitCell class. """
+class KMCUnitCellTest(unittest.TestCase):
+    """ Class for testing the KMCUnitCell class. """
 
     def testConstruction(self):
         """ Test the construction of the unitcell """
@@ -36,17 +36,17 @@ class UnitCellTest(unittest.TestCase):
                         vector_b,
                         vector_c]
 
-        cell = UnitCell(cell_vectors=cell_vectors,
-                        basis_points=basis_points)
+        cell = KMCUnitCell(cell_vectors=cell_vectors,
+                           basis_points=basis_points)
 
         # Check the vectors stored on the class.
         ref_vectors = numpy.array(cell_vectors)
-        check_vectors = cell._UnitCell__cell_vectors
+        check_vectors = cell._KMCUnitCell__cell_vectors
         self.assertAlmostEqual( numpy.linalg.norm(ref_vectors - check_vectors), 0.0, 10)
 
         # Check the basis points stored on the class.
         ref_basis = numpy.array(basis_points)
-        check_basis = cell._UnitCell__basis_points
+        check_basis = cell._KMCUnitCell__basis_points
         self.assertAlmostEqual( numpy.linalg.norm(ref_basis - check_basis), 0.0, 10)
 
     def testConstructionFailVectors(self):
@@ -59,7 +59,7 @@ class UnitCellTest(unittest.TestCase):
         cell_vectors = [vector_a,
                         vector_b,
                         vector_c]
-        self.assertRaises(Error, lambda: UnitCell(cell_vectors=cell_vectors, basis_points=basis_points))
+        self.assertRaises(Error, lambda: KMCUnitCell(cell_vectors=cell_vectors, basis_points=basis_points))
 
     def testConstructionFailBasis(self):
         """ Make sure construction fails if there is a problem with the basis points. s"""
@@ -71,7 +71,7 @@ class UnitCellTest(unittest.TestCase):
         cell_vectors = [vector_a,
                         vector_b,
                         vector_c]
-        self.assertRaises(Error, lambda: UnitCell(cell_vectors=cell_vectors, basis_points=basis_points))
+        self.assertRaises(Error, lambda: KMCUnitCell(cell_vectors=cell_vectors, basis_points=basis_points))
 
 
 if __name__ == '__main__':

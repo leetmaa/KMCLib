@@ -1,4 +1,4 @@
-""" Module for testing the Lattice class. """
+""" Module for testing the KMCLattice class. """
 
 
 # Copyright (c)  2012  Mikael Leetmaa
@@ -11,16 +11,16 @@
 import unittest
 
 
-from KMCLib.Lattice.UnitCell import UnitCell
+from KMCLib.KMCUnitCell import KMCUnitCell
 from KMCLib.Exceptions.Error import Error
 
 # Import from the module we test.
-from KMCLib.Lattice.Lattice import Lattice
+from KMCLib.KMCLattice import KMCLattice
 
 
 # Implement the test.
-class LatticeTest(unittest.TestCase):
-    """ Class for testing the Lattice class. """
+class KMCLatticeTest(unittest.TestCase):
+    """ Class for testing the KMCLattice class. """
 
     def testConstruction(self):
         """ Test the construction of the lattice """
@@ -32,35 +32,35 @@ class LatticeTest(unittest.TestCase):
         basis_points = [[0.0, 0.0, 0.0],
                         [0.5, 0.5, 0.0]]
 
-        unit_cell = UnitCell(cell_vectors=cell_vectors,
-                             basis_points=basis_points)
+        unit_cell = KMCUnitCell(cell_vectors=cell_vectors,
+                                basis_points=basis_points)
 
         # Setup the other input.
         repetitions = (10,12,45)
         periodic = (True,True,False)
 
-        # Construct the Lattice object.
-        lattice = Lattice(unit_cell=unit_cell,
-                          repetitions=repetitions,
-                          periodic=periodic)
+        # Construct the KMCLattice object.
+        lattice = KMCLattice(unit_cell=unit_cell,
+                             repetitions=repetitions,
+                             periodic=periodic)
 
         # Check that the unitcell object stored on the class
         # is the same one as constructed here (checked by reference)
-        self.assertTrue( unit_cell == lattice._Lattice__unit_cell)
+        self.assertTrue( unit_cell == lattice._KMCLattice__unit_cell)
 
     def testConstructionFailUnitcell(self):
         """ Test that construction of the lattice fails if the unitcell parameter has the wrong type."""
         # Setup a wrong unitcell.
-        unit_cell = "UnitCell"
+        unit_cell = "KMCUnitCell"
 
         # Setup the other input.
         repetitions = (10,12,45)
         periodic = (True,True,False)
 
-        # Construct the Lattice object.
-        self.assertRaises(Error, lambda: Lattice(unit_cell=unit_cell,
-                                                 repetitions=repetitions,
-                                                 periodic=periodic))
+        # Construct the KMCLattice object.
+        self.assertRaises(Error, lambda: KMCLattice(unit_cell=unit_cell,
+                                                    repetitions=repetitions,
+                                                    periodic=periodic))
 
     def testConstructionFailRepetitions(self):
         """ Test that construction of the lattice fails if the periodic parameter is incorrect."""
@@ -72,28 +72,28 @@ class LatticeTest(unittest.TestCase):
         basis_points = [[0.0, 0.0, 0.0],
                         [0.5, 0.5, 0.0]]
 
-        unit_cell = UnitCell(cell_vectors=cell_vectors,
-                             basis_points=basis_points)
+        unit_cell = KMCUnitCell(cell_vectors=cell_vectors,
+                                basis_points=basis_points)
 
         periodic = (False,True,True)
 
         # Fail because of not being a sequence.
         repetitions = 1
-        self.assertRaises(Error, lambda: Lattice(unit_cell=unit_cell,
-                                                 repetitions=repetitions,
-                                                 periodic=periodic))
+        self.assertRaises(Error, lambda: KMCLattice(unit_cell=unit_cell,
+                                                    repetitions=repetitions,
+                                                    periodic=periodic))
 
         # Fail because of wrong length.
         repetitions = (1,2,3,4,5)
-        self.assertRaises(Error, lambda: Lattice(unit_cell=unit_cell,
-                                                 repetitions=repetitions,
-                                                 periodic=periodic))
+        self.assertRaises(Error, lambda: KMCLattice(unit_cell=unit_cell,
+                                                    repetitions=repetitions,
+                                                    periodic=periodic))
 
         # Fail because of wrong type.
         repetitions = (1,3.0,1)
-        self.assertRaises(Error, lambda: Lattice(unit_cell=unit_cell,
-                                                 repetitions=repetitions,
-                                                 periodic=periodic))
+        self.assertRaises(Error, lambda: KMCLattice(unit_cell=unit_cell,
+                                                    repetitions=repetitions,
+                                                    periodic=periodic))
 
     def testConstructionFailPeriodic(self):
         """ Test that construction of the lattice fails if the periodic parameter is incorrect."""
@@ -105,28 +105,28 @@ class LatticeTest(unittest.TestCase):
         basis_points = [[0.0, 0.0, 0.0],
                         [0.5, 0.5, 0.0]]
 
-        unit_cell = UnitCell(cell_vectors=cell_vectors,
-                             basis_points=basis_points)
+        unit_cell = KMCUnitCell(cell_vectors=cell_vectors,
+                                basis_points=basis_points)
 
         repetitions = (10,12,45)
 
         # Fail because of not being a sequence.
         periodic = True
-        self.assertRaises(Error, lambda: Lattice(unit_cell=unit_cell,
-                                                 repetitions=repetitions,
-                                                 periodic=periodic))
+        self.assertRaises(Error, lambda: KMCLattice(unit_cell=unit_cell,
+                                                    repetitions=repetitions,
+                                                    periodic=periodic))
 
         # Fail because of wrong length.
         periodic = (True,True,True,True)
-        self.assertRaises(Error, lambda: Lattice(unit_cell=unit_cell,
-                                                 repetitions=repetitions,
-                                                 periodic=periodic))
+        self.assertRaises(Error, lambda: KMCLattice(unit_cell=unit_cell,
+                                                    repetitions=repetitions,
+                                                    periodic=periodic))
 
         # Fail because of wrong type.
         periodic = (True,True,1)
-        self.assertRaises(Error, lambda: Lattice(unit_cell=unit_cell,
-                                                 repetitions=repetitions,
-                                                 periodic=periodic))
+        self.assertRaises(Error, lambda: KMCLattice(unit_cell=unit_cell,
+                                                    repetitions=repetitions,
+                                                    periodic=periodic))
 
 
 if __name__ == '__main__':

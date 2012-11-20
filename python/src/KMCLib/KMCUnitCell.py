@@ -1,4 +1,4 @@
-""" Module containing the UnitCell class. """
+""" Module containing the KMCUnitCell class. """
 
 
 # Copyright (c)  2012  Mikael Leetmaa
@@ -14,14 +14,14 @@ import numpy
 from KMCLib.Utilities.CheckUtilities import checkCellVectors
 from KMCLib.Utilities.CheckUtilities import checkCoordinateList
 
-class UnitCell:
+class KMCUnitCell:
     """ Class for describing a unitcell. """
 
     def __init__(self,
                  cell_vectors=None,
                  basis_points=None):
         """
-        Constructor for the UnitCell class.
+        Constructor for the KMCUnitCell class.
 
         :param cell_vectors: A 3x3 matrix, nested lists or numpy array with
                              rows corresponding to the a, b and c vectors in

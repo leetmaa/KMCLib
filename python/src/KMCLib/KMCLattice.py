@@ -1,4 +1,4 @@
-""" Module containing the Lattice class. """
+""" Module containing the KMCLattice class. """
 
 
 # Copyright (c)  2012  Mikael Leetmaa
@@ -8,11 +8,11 @@
 #
 
 
-from KMCLib.Lattice.UnitCell import UnitCell
+from KMCLib.KMCUnitCell import KMCUnitCell
 from KMCLib.Utilities.CheckUtilities import checkSequence
 from KMCLib.Exceptions.Error import Error
 
-class Lattice:
+class KMCLattice:
     """ Class for describing the lattice used in a KMC simulation. """
 
     def __init__(self,
@@ -33,8 +33,8 @@ class Lattice:
         :type periodic: (bool,bool,bool)
         """
         # Check and store the unit cell.
-        if not isinstance(unit_cell, UnitCell):
-            raise Error("The 'unit_cell parameter to the Lattice constructor must be of type UnitCell.")
+        if not isinstance(unit_cell, KMCUnitCell):
+            raise Error("The 'unit_cell parameter to the KMCLattice constructor must be of type KMCUnitCell.")
         self.__unit_cell = unit_cell
 
         # Passed the tests, store.
