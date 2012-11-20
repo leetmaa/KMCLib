@@ -26,11 +26,11 @@ class KMCInteractionsTest(unittest.TestCase):
         # A first interaction.
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
         types = ["A","B"]
-        local_config_0 = KMCLocalConfiguration(cartesian_coordinates=coords,
+        local_config_0 = KMCLocalConfiguration(coordinates=coords,
                                                types=types,
                                                center=0)
         types = ["B","A"]
-        local_config_1 = KMCLocalConfiguration(cartesian_coordinates=coords,
+        local_config_1 = KMCLocalConfiguration(coordinates=coords,
                                                types=types,
                                                center=0)
         rate_0_1 = 3.5
@@ -39,11 +39,11 @@ class KMCInteractionsTest(unittest.TestCase):
         # A second interaction.
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
         types = ["A","C"]
-        local_config_0 = KMCLocalConfiguration(cartesian_coordinates=coords,
+        local_config_0 = KMCLocalConfiguration(coordinates=coords,
                                                types=types,
                                                center=0)
         types = ["C","A"]
-        local_config_1 = KMCLocalConfiguration(cartesian_coordinates=coords,
+        local_config_1 = KMCLocalConfiguration(coordinates=coords,
                                                types=types,
                                                center=0)
         rate_0_1 = 1.5
@@ -69,11 +69,11 @@ class KMCInteractionsTest(unittest.TestCase):
         # A first interaction.
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
         types = ["A","B"]
-        local_config_0 = KMCLocalConfiguration(cartesian_coordinates=coords,
+        local_config_0 = KMCLocalConfiguration(coordinates=coords,
                                                types=types,
                                                center=0)
         types = ["B","A"]
-        local_config_1 = KMCLocalConfiguration(cartesian_coordinates=coords,
+        local_config_1 = KMCLocalConfiguration(coordinates=coords,
                                                types=types,
                                                center=0)
         rate_0_1 = 3.5
@@ -82,11 +82,11 @@ class KMCInteractionsTest(unittest.TestCase):
         # A second interaction.
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
         types = ["A","C"]
-        local_config_0 = KMCLocalConfiguration(cartesian_coordinates=coords,
+        local_config_0 = KMCLocalConfiguration(coordinates=coords,
                                                types=types,
                                                center=0)
         types = ["C","A"]
-        local_config_1 = KMCLocalConfiguration(cartesian_coordinates=coords,
+        local_config_1 = KMCLocalConfiguration(coordinates=coords,
                                                types=types,
                                                center=0)
         rate_0_1 = 1.5
@@ -117,11 +117,11 @@ class KMCInteractionsTest(unittest.TestCase):
         # A first interaction.
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
         types = ["A","B"]
-        local_config_0 = KMCLocalConfiguration(cartesian_coordinates=coords,
+        local_config_0 = KMCLocalConfiguration(coordinates=coords,
                                                types=types,
                                                center=0)
         types = ["B","A"]
-        local_config_1 = KMCLocalConfiguration(cartesian_coordinates=coords,
+        local_config_1 = KMCLocalConfiguration(coordinates=coords,
                                                types=types,
                                                center=0)
         rate_0_1 = 3.5
@@ -130,11 +130,11 @@ class KMCInteractionsTest(unittest.TestCase):
         # A second interaction.
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
         types = ["A","C"]
-        local_config_0 = KMCLocalConfiguration(cartesian_coordinates=coords,
+        local_config_0 = KMCLocalConfiguration(coordinates=coords,
                                                types=types,
                                                center=0)
         types = ["C","A"]
-        local_config_1 = KMCLocalConfiguration(cartesian_coordinates=coords,
+        local_config_1 = KMCLocalConfiguration(coordinates=coords,
                                                types=types,
                                                center=0)
         # Integer rate to fail.
@@ -151,11 +151,11 @@ class KMCInteractionsTest(unittest.TestCase):
         # A first interaction.
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
         types = ["A","B"]
-        local_config_0 = KMCLocalConfiguration(cartesian_coordinates=coords,
+        local_config_0 = KMCLocalConfiguration(coordinates=coords,
                                                types=types,
                                                center=0)
         types = ["B","A"]
-        local_config_1 = KMCLocalConfiguration(cartesian_coordinates=coords,
+        local_config_1 = KMCLocalConfiguration(coordinates=coords,
                                                types=types,
                                                center=0)
         rate_0_1 = 3.5
@@ -164,12 +164,12 @@ class KMCInteractionsTest(unittest.TestCase):
         # A second interaction - not the same coords, to fail.
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.2]]
         types = ["A","C"]
-        local_config_0 = KMCLocalConfiguration(cartesian_coordinates=coords,
+        local_config_0 = KMCLocalConfiguration(coordinates=coords,
                                                types=types,
                                                center=0)
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
         types = ["C","A"]
-        local_config_1 = KMCLocalConfiguration(cartesian_coordinates=coords,
+        local_config_1 = KMCLocalConfiguration(coordinates=coords,
                                                types=types,
                                                center=0)
         rate_0_1 = 1.3
@@ -185,11 +185,11 @@ class KMCInteractionsTest(unittest.TestCase):
         # A first interaction.
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
         types = ["A","B"]
-        local_config_0 = KMCLocalConfiguration(cartesian_coordinates=coords,
+        local_config_0 = KMCLocalConfiguration(coordinates=coords,
                                                types=types,
                                                center=0)
         types = ["B","A"]
-        local_config_1 = KMCLocalConfiguration(cartesian_coordinates=coords,
+        local_config_1 = KMCLocalConfiguration(coordinates=coords,
                                                types=types,
                                                center=0)
         rate_0_1 = 3.5
@@ -198,11 +198,11 @@ class KMCInteractionsTest(unittest.TestCase):
         # A second interaction.
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
         types = ["A","C"]
-        local_config_0 = KMCLocalConfiguration(cartesian_coordinates=coords,
+        local_config_0 = KMCLocalConfiguration(coordinates=coords,
                                                types=types,
                                                center=0)
         types = ["A","C"]
-        local_config_1 = KMCLocalConfiguration(cartesian_coordinates=coords,
+        local_config_1 = KMCLocalConfiguration(coordinates=coords,
                                                types=types,
                                                center=0)
         rate_0_1 = 1.5

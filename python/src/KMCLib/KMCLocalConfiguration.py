@@ -23,14 +23,14 @@ class KMCLocalConfiguration:
     """
 
     def __init__(self,
-                 cartesian_coordinates=None,
+                 coordinates=None,
                  types=None,
                  center=None):
         """
         Constructor for the KMCLocalConfiguration.
 
-        :param cartesian_coordinates: The cartesian coordinates of the configuration.
-        :type cartesian_coordinates:  A 3xN sequence of floating point numbers, where N is the number of sites.
+        :param coordinates: The coordinates of the configuration.
+        :type coordinates:  A 3xN sequence of floating point numbers, where N is the number of sites.
 
         :param types: The lattice site types at the specified coordinates.
         :type types:  A sequence of strings of length N.
@@ -38,24 +38,24 @@ class KMCLocalConfiguration:
         :param center: The coordinate in the list to treat as the central site. If not given it will default to the first coordinate.
         :type center:  int
         """
-        # Check the cartesian coordinates.
-        cartesian_coordinates = checkCoordinateList(cartesian_coordinates)
+        # Check the coordinates.
+        coordinates = checkCoordinateList(coordinates)
 
         # Set the center coordinate if not given.
         if center is None:
             center = 0
 
         # Check the bounds of the center coordinate.
-        center = checkIndexWithinBounds(center, cartesian_coordinates, msg="The 'center' index paramter must be one in the coordinate list.")
+        center = checkIndexWithinBounds(center, coordinates, msg="The 'center' index paramter must be one in the coordinate list.")
 
         # Center the coordinates.
-        cartesian_coordinates = centerCoordinates(cartesian_coordinates, center)
+        coordinates = centerCoordinates(coordinates, center)
 
         # Check the tyeps.
-        types = checkTypes(types, len(cartesian_coordinates))
+        types = checkTypes(types, len(coordinates))
 
         # Sort the coordinates with respect to distance from the center and store on the class.
-        (self.__cartesian_coordinates, self.__distances, self.__types) = sortCoordinates(cartesian_coordinates, center, types)
+        (self.__coordinates, self.__distances, self.__types) = sortCoordinates(coordinates, center, types)
 
     def coordinates(self):
         """
@@ -63,7 +63,7 @@ class KMCLocalConfiguration:
 
         :returns: The stored coordinates.
         """
-        return self.__cartesian_coordinates
+        return self.__coordinates
 
     def types(self):
         """
@@ -72,6 +72,12 @@ class KMCLocalConfiguration:
         :returns: The stored types.
         """
         return self.__types
+
+    def distances(self):
+        """
+        Query function for the distances from the center.
+        """
+        return self.__distances
 
     def _script(self, variable_name="local_configuration"):
         """
@@ -95,18 +101,18 @@ class KMCLocalConfiguration:
         coord_template = "[" + ff + "," + ff + "," + ff + "],\n"
 
         # For the first coordinate, if there are more than one coordinate.
-        if len(self.__cartesian_coordinates) > 1:
-            c = self.__cartesian_coordinates[0]
+        if len(self.__coordinates) > 1:
+            c = self.__coordinates[0]
             coords_string += coord_template%(c[0],c[1],c[2])
 
             # And the middle coordinates.
             coord_template = indent + "[" + ff + "," + ff + "," + ff + "],\n"
-            for c in self.__cartesian_coordinates[1:-1]:
+            for c in self.__coordinates[1:-1]:
                 coords_string += coord_template%(c[0],c[1],c[2])
 
         # Add the last coordinate (which is also the first if there is only one coordinate).
-        c = self.__cartesian_coordinates[-1]
-        if len(self.__cartesian_coordinates) == 1:
+        c = self.__coordinates[-1]
+        if len(self.__coordinates) == 1:
             coord_template = "[" + ff + "," + ff + "," + ff + "]]\n"
         else:
             coord_template = indent + "[" + ff + "," + ff + "," + ff + "]]\n"
@@ -117,7 +123,7 @@ class KMCLocalConfiguration:
 
         # Add the configuration.
         config_string = variable_name + """ = KMCLocalConfiguration(
-    cartesian_coordinates=coordinates,
+    coordinates=coordinates,
     types=types)
 """
 

@@ -14,14 +14,15 @@ from KMCLocalConfigurationTest import KMCLocalConfigurationTest
 from KMCInteractionsTest import KMCInteractionsTest
 from Utilities import UtilitiesTests
 from Exceptions import ExceptionsTests
-
+from Lattice import LatticeTests
 
 def suite():
     suite = unittest.TestSuite(
         [unittest.TestLoader().loadTestsFromTestCase(KMCLocalConfigurationTest),
          unittest.TestLoader().loadTestsFromTestCase(KMCInteractionsTest),
          UtilitiesTests.suite(),
-         ExceptionsTests.suite()])
+         ExceptionsTests.suite(),
+         LatticeTests.suite()])
     return suite
 
 if __name__ == '__main__':

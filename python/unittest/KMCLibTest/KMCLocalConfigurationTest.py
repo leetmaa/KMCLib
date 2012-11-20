@@ -27,14 +27,14 @@ class KMCLocalConfigurationTest(unittest.TestCase):
         # Construct with coordinate list.
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
         types = ["A","B"]
-        local_config = KMCLocalConfiguration(cartesian_coordinates=coords, types=types, center=1)
+        local_config = KMCLocalConfiguration(coordinates=coords, types=types, center=1)
 
         # Test.
         self.assertTrue(isinstance(local_config, KMCLocalConfiguration))
 
         # Construct with numpy coordinates.
         coords = numpy.array([[1.0,2.0,3.4],[1.1,1.2,1.3]])
-        local_config = KMCLocalConfiguration(cartesian_coordinates=coords, types=types, center=0)
+        local_config = KMCLocalConfiguration(coordinates=coords, types=types, center=0)
 
         # Test.
         self.assertTrue(isinstance(local_config, KMCLocalConfiguration))
@@ -44,7 +44,7 @@ class KMCLocalConfigurationTest(unittest.TestCase):
         # Setup the configuration.
         coords = [[1.0,2.0,3.0],[1.0,1.0,3.0],[3.0,8.0,9.0]]
         types = ["C","B","A"]
-        local_config = KMCLocalConfiguration(cartesian_coordinates=coords, types=types, center=1)
+        local_config = KMCLocalConfiguration(coordinates=coords, types=types, center=1)
 
         # Define the reference data.
         ref_coords    = numpy.array([[0.0,0.0,0.0],[0.0,1.0,0.0],[2.0,7.0,6.0]])
@@ -54,7 +54,7 @@ class KMCLocalConfigurationTest(unittest.TestCase):
                          numpy.linalg.norm(ref_coords[2])]
 
         # Check the coordinates.
-        self.assertAlmostEqual(numpy.linalg.norm(local_config._KMCLocalConfiguration__cartesian_coordinates - ref_coords), 0.0, 10)
+        self.assertAlmostEqual(numpy.linalg.norm(local_config._KMCLocalConfiguration__coordinates - ref_coords), 0.0, 10)
 
         # Check the types.
         self.assertEqual(local_config._KMCLocalConfiguration__types, ref_types)
@@ -73,7 +73,7 @@ class KMCLocalConfigurationTest(unittest.TestCase):
         # Center out of bounds.
         self.assertRaises(Error, lambda: KMCLocalConfiguration(coords, types, center))
         # Missing types information.
-        self.assertRaises(Error, lambda: KMCLocalConfiguration(cartesian_coordinates=coords, center=center))
+        self.assertRaises(Error, lambda: KMCLocalConfiguration(coordinates=coords, center=center))
         # Missing coordinate information.
         self.assertRaises(Error, lambda: KMCLocalConfiguration(types=types, center=center))
         # Wrong type of types.
@@ -88,7 +88,7 @@ class KMCLocalConfigurationTest(unittest.TestCase):
         # Setup the configuration.
         coords = [[1.0,2.0,3.0]]
         types = ["C"]
-        local_config = KMCLocalConfiguration(cartesian_coordinates=coords, types=types, center=0)
+        local_config = KMCLocalConfiguration(coordinates=coords, types=types, center=0)
 
         ref_script = """
 coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
@@ -96,7 +96,7 @@ coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
 types = ['C']
 
 local_configuration = KMCLocalConfiguration(
-    cartesian_coordinates=coordinates,
+    coordinates=coordinates,
     types=types)
 """
         # Check the script.
@@ -105,7 +105,7 @@ local_configuration = KMCLocalConfiguration(
         # Get another script.
         coords = [[1.0,2.0,3.0],[1.0,1.0,3.0],[3.0,8.0,9.0]]
         types = ["C","B","A"]
-        local_config = KMCLocalConfiguration(cartesian_coordinates=coords, types=types, center=0)
+        local_config = KMCLocalConfiguration(coordinates=coords, types=types, center=0)
         ref_script2 = """
 coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
                [   0.000000e+00,  -1.000000e+00,   0.000000e+00],
@@ -114,7 +114,7 @@ coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
 types = ['C', 'B', 'A']
 
 local_config2 = KMCLocalConfiguration(
-    cartesian_coordinates=coordinates,
+    coordinates=coordinates,
     types=types)
 """
         # Check.
