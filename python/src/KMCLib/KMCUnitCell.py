@@ -10,7 +10,7 @@
 
 import numpy
 
-
+from KMCLib.Exceptions.Error import Error
 from KMCLib.Utilities.CheckUtilities import checkCellVectors
 from KMCLib.Utilities.CheckUtilities import checkCoordinateList
 
@@ -34,6 +34,21 @@ class KMCUnitCell:
         # Check the cell vectors.
         self.__cell_vectors = checkCellVectors(cell_vectors)
 
-        # Check the basis points.
-        self.__basis_points = checkCoordinateList(basis_points, varname="basis_points")
+        # Check the basis points are of correct format.
+        basis_points = checkCoordinateList(basis_points, varname="basis_points")
+
+        # Check that the basis points are given in fractional coordinates.
+        for point in basis_points:
+            if not all([b < 1.0 and b >= 0.0 for b in point]):
+                raise Error("All basis points must be given in fractional coordinates in the range 0.0 <= basis_point < 1.0.")
+
+        self.__basis_points = basis_points
+
+    def basis(self):
+        """
+        Qury for the bais points.
+
+        :returns: The basis points stored on the class.
+        """
+        return self.__basis_points
 

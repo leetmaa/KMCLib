@@ -8,9 +8,12 @@
 #
 
 
+import numpy
+
 from KMCLib.KMCUnitCell import KMCUnitCell
 from KMCLib.Utilities.CheckUtilities import checkSequence
 from KMCLib.Exceptions.Error import Error
+
 
 class KMCLattice:
     """ Class for describing the lattice used in a KMC simulation. """
@@ -43,6 +46,8 @@ class KMCLattice:
         # Check the periodic input.
         self.__periodic = self.__checkPeriodic(periodic)
 
+        # Generate the lattice sites.
+        self.__sites = self.__generateLatticeSites()
 
     def __checkRepetitions(self, repetitions):
         """ """
@@ -65,9 +70,13 @@ class KMCLattice:
             if not isinstance(val, int):
                 raise Error("The 'repetitions' input paramter must be given as a list or tuple of three integers, e.g. (5,5,6)")
 
+        # Check for the occurance of too small values.
+        for val in repetitions:
+            if val < 1:
+                raise Error("The all elements in the 'repetitions' parameter must be larger than zero.")
+
         # Done.
         return repetitions
-
 
     def __checkPeriodic(self, periodic):
         """ """
@@ -92,3 +101,77 @@ class KMCLattice:
 
         # Done.
         return periodic
+
+    def __generateLatticeSites(self):
+        """ """
+        """
+        Private helper function to generate the sites data based on the basis and repetitions
+        stored on the class.
+        """
+        # Get the basis out of the unit cell.
+        basis = self.__unit_cell.basis()
+
+        # Loop through all repetitions and insert the sites.
+        sites = []
+        for i in range(self.__repetitions[0]):
+            for j in range(self.__repetitions[1]):
+                for k in range(self.__repetitions[2]):
+                    # For each point in the basis, add the translation.
+                    translation = numpy.array([i,j,k])
+                    for b in basis:
+                        site = b+translation
+                        sites.append(site)
+
+        # Return the data.
+        return numpy.array(sites)
+
+    def sites(self):
+        """
+        Query function for the sites data.
+
+        :returns: The sites data in fractional units of the original unit cell.
+        """
+        return self.__sites
+
+    def repetitions(self):
+        """
+        Query function for the repetitions.
+
+        :returns: The repetitions used to construct the full lattice from the unit cell.
+        """
+        return self.__repetitions
+
+    def basis(self):
+        """
+        Query function for the basis.
+
+        :returns: The basis of the unit cell.
+        """
+        return self.__unit_cell.basis()
+
+    def _globalIndex(self, i, j, k, b):
+        """
+        Utility function to calculate the index position in the full arrays (sites, types) given the cell indices.
+
+        :param i: The cell number in the 'a' direction.
+        :type i: int
+
+        :param j: The cell number in the 'b' direction.
+        :type j: int
+
+        :param k: The cell number in the 'c' direction.
+        :type k: int
+
+        :param b: The index number of the basis point in the cell.
+        :type b: int
+
+        :returns: The global index.
+        """
+        nI = self.__repetitions[0]
+        nJ = self.__repetitions[1]
+        nK = self.__repetitions[2]
+        nB = len(self.__unit_cell.basis())
+
+        # Calculate the index and return.
+        return i*nJ*nK*nB + j*nK*nB + k*nB + b
+

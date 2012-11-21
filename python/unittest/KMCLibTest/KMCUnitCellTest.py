@@ -62,12 +62,46 @@ class KMCUnitCellTest(unittest.TestCase):
         self.assertRaises(Error, lambda: KMCUnitCell(cell_vectors=cell_vectors, basis_points=basis_points))
 
     def testConstructionFailBasis(self):
-        """ Make sure construction fails if there is a problem with the basis points. s"""
+        """ Make sure construction fails if there is a problem with the basis points. """
         vector_a = [2.3, 0.0, 0.0]
         vector_b = [2.4, 3.0, 0.0]
         vector_c = [0.0, 0.0, 11.8]
         basis_points = [[0.0, 0.0],       # <- wrong shape
                         [0.5, 0.5, 0.5]]
+        cell_vectors = [vector_a,
+                        vector_b,
+                        vector_c]
+        self.assertRaises(Error, lambda: KMCUnitCell(cell_vectors=cell_vectors, basis_points=basis_points))
+
+
+    def testConstructionFailBasis2(self):
+        """ Make sure construction fails if there is a problem with the basis points. """
+        vector_a = [2.3, 0.0, 0.0]
+        vector_b = [2.4, 3.0, 0.0]
+        vector_c = [0.0, 0.0, 11.8]
+        basis_points = [[0.0, 0.0, 1.1],       # <- too large value
+                        [0.5, 0.5, 0.5]]
+        cell_vectors = [vector_a,
+                        vector_b,
+                        vector_c]
+        self.assertRaises(Error, lambda: KMCUnitCell(cell_vectors=cell_vectors, basis_points=basis_points))
+
+        vector_a = [2.3, 0.0, 0.0]
+        vector_b = [2.4, 3.0, 0.0]
+        vector_c = [0.0, 0.0, 11.8]
+        basis_points = [[0.0, 0.0, 1.0],       # <- too large value
+                        [0.5, 0.5, 0.5]]
+        cell_vectors = [vector_a,
+                        vector_b,
+                        vector_c]
+        self.assertRaises(Error, lambda: KMCUnitCell(cell_vectors=cell_vectors, basis_points=basis_points))
+
+
+        vector_a = [2.3, 0.0, 0.0]
+        vector_b = [2.4, 3.0, 0.0]
+        vector_c = [0.0, 0.0, 11.8]
+        basis_points = [[0.0, 0.0, 0.999999],
+                        [0.5, 0.5, -0.01]]       # <- too small value
         cell_vectors = [vector_a,
                         vector_b,
                         vector_c]
