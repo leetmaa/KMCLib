@@ -16,3 +16,36 @@ KMCLocalConfiguration
    :special-members:
 
 
+KMCConfiguration
+---------------------
+
+.. autoclass:: KMCLib.KMCConfiguration
+   :members:
+   :special-members:
+
+
+KMCInteractions
+---------------------
+
+.. autoclass:: KMCLib.KMCInteractions
+   :members:
+   :special-members:
+
+
+KMCUnitCell
+---------------------
+
+.. autoclass:: KMCLib.KMCUnitCell
+   :members:
+   :special-members:
+
+
+KMCLattice
+---------------------
+
+.. autoclass:: KMCLib.KMCLattice
+   :members:
+   :special-members:
+
+
+
