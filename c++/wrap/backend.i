@@ -9,7 +9,17 @@
 %module(directors="1") Backend
 %{
 #include "../src/latticemodel.h"
+#include "../src/configuration.h"
 %}
 
+%include "std_string.i"
+%include "std_vector.i"
+
+%template(StdVectorString) std::vector<std::string>;
+%template(StdVectorDouble) std::vector<double>;
+%template(StdVectorStdVectorDouble) std::vector<std::vector<double> >;
+
 %include "../src/latticemodel.h"
+%include "../src/configuration.h"
+
 

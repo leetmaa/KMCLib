@@ -11,12 +11,13 @@ import unittest
 
 from CheckUtilitiesTest import CheckUtilitiesTest
 from CoordinateUtilitiesTest import CoordinateUtilitiesTest
-
+from ConversionUtilitiesTest import ConversionUtilitiesTest
 
 def suite():
     suite = unittest.TestSuite(
         [unittest.TestLoader().loadTestsFromTestCase(CheckUtilitiesTest),
-         unittest.TestLoader().loadTestsFromTestCase(CoordinateUtilitiesTest)])
+         unittest.TestLoader().loadTestsFromTestCase(CoordinateUtilitiesTest),
+         unittest.TestLoader().loadTestsFromTestCase(ConversionUtilitiesTest)])
     return suite
 
 

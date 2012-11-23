@@ -9,8 +9,10 @@
 // -------------------------------------------------------------------------- //
 // Include the tests.
 #include "test_latticemodel.h"
+#include "test_configuration.h"
 
 // -------------------------------------------------------------------------- //
 // Add tests.
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_LatticeModel );
+CPPUNIT_TEST_SUITE_REGISTRATION( Test_Configuration );
 

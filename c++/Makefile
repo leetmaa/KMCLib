@@ -9,7 +9,7 @@
 # A simplest possible makefile will do for the moment.
 
 CC = g++
-CCFLAGS   = -fPIC -O3 -c
+CCFLAGS   = -fPIC -g -O3 -c
 SOFLAGS   = -fPIC -Wall -Wextra -shared -flat_namespace
 TEST_LINK = -lcppunit
 

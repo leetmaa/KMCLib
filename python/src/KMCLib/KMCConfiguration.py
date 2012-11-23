@@ -10,7 +10,10 @@
 
 from KMCLib.KMCLattice import KMCLattice
 from KMCLib.Utilities.CheckUtilities import checkTypes
+from KMCLib.Utilities.ConversionUtilities import stringListToStdVectorString
+from KMCLib.Utilities.ConversionUtilities import numpy2DArrayToStdVectorStdVectorDouble
 from KMCLib.Exceptions.Error import Error
+from KMCLib.Backend import Backend
 
 class KMCConfiguration:
     """
@@ -52,10 +55,13 @@ class KMCConfiguration:
         self.__lattice = lattice
 
         # Extract the number of lattice sites.
-        self.__n_lattice_sites = len(lattice.sites())
+        self.__n_lattice_sites = len(self.__lattice.sites())
 
         # Check and set the types.
         self.__checkAndSetTypes(types, default_type, possible_types)
+
+        # Wait with setting up the backend until we need it.
+        self.__backend = None
 
     def __checkAndSetTypes(self, types, default_type, possible_types):
         """ """
@@ -144,5 +150,25 @@ class KMCConfiguration:
 
         :returns: The stored types list.
         """
+        # Update the types with what ever has been changed in the backend.
+        self.__types = list(self._backend().elements())
+
+        # Return the types.
         return self.__types
+
+    def _backend(self):
+        """
+        Query function for the c++ backend object.
+        """
+        if self.__backend is None:
+            # Construct the c++ backend object.
+            cpp_types  = stringListToStdVectorString(self.__types)
+            cpp_coords = numpy2DArrayToStdVectorStdVectorDouble(self.__lattice.sites())
+
+            # Send in the coordinates and types to construct the backend configuration.
+            self.__cpp_backend = Backend.Configuration(cpp_coords,
+                                                       cpp_types)
+
+        # Return the backend.
+        return self.__cpp_backend
 
