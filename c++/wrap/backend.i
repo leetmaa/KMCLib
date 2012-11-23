@@ -9,6 +9,7 @@
 %module(directors="1") Backend
 %{
 #include "../src/latticemodel.h"
+#include "../src/latticemap.h"
 #include "../src/configuration.h"
 %}
 
@@ -20,6 +21,7 @@
 %template(StdVectorStdVectorDouble) std::vector<std::vector<double> >;
 
 %include "../src/latticemodel.h"
+%include "../src/latticemap.h"
 %include "../src/configuration.h"
 
 
