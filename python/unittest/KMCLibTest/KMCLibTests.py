@@ -15,6 +15,7 @@ from KMCInteractionsTest import KMCInteractionsTest
 from KMCConfigurationTest import KMCConfigurationTest
 from KMCUnitCellTest import KMCUnitCellTest
 from KMCLatticeTest import KMCLatticeTest
+from KMCLatticeModelTest import KMCLatticeModelTest
 
 from Utilities import UtilitiesTests
 from Exceptions import ExceptionsTests
@@ -26,6 +27,7 @@ def suite():
          unittest.TestLoader().loadTestsFromTestCase(KMCConfigurationTest),
          unittest.TestLoader().loadTestsFromTestCase(KMCUnitCellTest),
          unittest.TestLoader().loadTestsFromTestCase(KMCLatticeTest),
+         unittest.TestLoader().loadTestsFromTestCase(KMCLatticeModelTest),
          UtilitiesTests.suite(),
          ExceptionsTests.suite()])
     return suite

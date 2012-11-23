@@ -8,6 +8,11 @@
 #
 
 
+from KMCLib.Backend import Backend
+
+from KMCLib.KMCConfiguration import KMCConfiguration
+from KMCLib.KMCInteractions import KMCInteractions
+
 class KMCLatticeModel:
     """
     Class for representing a lattice KMC model.
@@ -15,8 +20,7 @@ class KMCLatticeModel:
 
     def __init__(self,
                  configuration=None,
-                 interactions=None,
-                 control_parameters=None):
+                 interactions=None):
         """
         The KMCLatticeModel class is the central object in the KMCLib framework
         for running a KMC simulation. Once a configuration with lattice is
@@ -58,7 +62,7 @@ class KMCLatticeModel:
         #        cpp_interactions = self.__interactions._backend()
         #
         #        return KMCBackend.LatticeModel(cpp_config, cpp_lattice_map, cpp_interactions)
-        pass
+        return Backend.LatticeModel()
 
     def run(control_parameters=None,
             trajectory_filename=None):
