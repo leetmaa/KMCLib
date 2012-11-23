@@ -12,13 +12,28 @@
 // Include the files to test.
 #include "../src/latticemodel.h"
 
+// Other inclusions.
+#include "../src/configuration.h"
 
 // -------------------------------------------------------------------------- //
 //
 void Test_LatticeModel::testConstruction()
 {
     // Construct.
-    LatticeModel model;
+    std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
+    coords[0][0] = 1.4;
+    coords[0][1] = 2.5;
+    coords[0][2] = 4.6;
+    coords[1][0] = 5.7;
+    coords[1][1] = 3.5;
+    coords[1][2] = 2.1;
+
+    std::vector<std::string> elements(2);
+    elements[0] = "A";
+    elements[1] = "V";
+
+    Configuration config(coords,elements);
+    LatticeModel model(config);
 
     // Call the single step function.
     model.singleStep();

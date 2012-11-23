@@ -12,12 +12,14 @@
 
 
 #include "latticemodel.h"
+#include "configuration.h"
 
 #include <cstdio>
 
 // -----------------------------------------------------------------------------
 //
-LatticeModel::LatticeModel()
+LatticeModel::LatticeModel(Configuration & configuration) :
+    configuration_(configuration)
 {
     // NOTHING HERE YET
 }

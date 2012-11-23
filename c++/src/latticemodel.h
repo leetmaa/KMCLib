@@ -17,6 +17,9 @@
 #define __LATTICEMODEL__
 
 
+// Forward declarations.
+class Configuration;
+
 /// Class for defining and running a lattice KMC model.
 class LatticeModel {
 
@@ -24,7 +27,7 @@ public:
 
     /*! \brief Constructor for setting up the model.
      */
-    LatticeModel();
+    LatticeModel(Configuration & configuration);
 
     /*! \brief Function for taking one time step in the KMC lattice model.
      */
@@ -33,6 +36,9 @@ public:
 protected:
 
 private:
+
+    // A reference to the configuration given at construction.
+    Configuration & configuration_;
 
 };
 
