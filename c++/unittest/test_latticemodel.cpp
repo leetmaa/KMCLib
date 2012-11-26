@@ -14,12 +14,13 @@
 
 // Other inclusions.
 #include "../src/configuration.h"
+#include "../src/latticemap.h"
 
 // -------------------------------------------------------------------------- //
 //
 void Test_LatticeModel::testConstruction()
 {
-    // Construct.
+    // Construct a configuration.
     std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
     coords[0][0] = 1.4;
     coords[0][1] = 2.5;
@@ -33,7 +34,12 @@ void Test_LatticeModel::testConstruction()
     elements[1] = "V";
 
     Configuration config(coords,elements);
-    LatticeModel model(config);
+
+    // And a corresponding lattice map.
+    LatticeMap lattice_map(1,2,1,1,true,true,true);
+
+    // construct.
+    LatticeModel model(config, lattice_map);
 
     // Call the single step function.
     model.singleStep();

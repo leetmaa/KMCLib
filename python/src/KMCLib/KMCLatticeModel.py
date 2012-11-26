@@ -57,12 +57,12 @@ class KMCLatticeModel:
         # NEEDS IMPLEMENTATION
 
         # Setup the C++ objects we need.
-        cpp_config = self.__configuration._backend()
-        #        cpp_lattice_map  = self.__configuration._latticeMap()
+        cpp_config       = self.__configuration._backend()
+        cpp_lattice_map  = self.__configuration._latticeMap()
         #        cpp_interactions = self.__interactions._backend()
         #
         #        return KMCBackend.LatticeModel(cpp_config, cpp_lattice_map, cpp_interactions)
-        return Backend.LatticeModel(cpp_config)
+        return Backend.LatticeModel(cpp_config, cpp_lattice_map)
 
     def run(control_parameters=None,
             trajectory_filename=None):

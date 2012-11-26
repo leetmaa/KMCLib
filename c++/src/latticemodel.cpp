@@ -18,8 +18,10 @@
 
 // -----------------------------------------------------------------------------
 //
-LatticeModel::LatticeModel(Configuration & configuration) :
-    configuration_(configuration)
+LatticeModel::LatticeModel(Configuration & configuration,
+                           const LatticeMap & lattice_map) :
+    configuration_(configuration),
+    lattice_map_(lattice_map)
 {
     // NOTHING HERE YET
 }

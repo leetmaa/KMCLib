@@ -172,3 +172,12 @@ class KMCConfiguration:
         # Return the backend.
         return self.__cpp_backend
 
+
+    def _latticeMap(self):
+        """
+        Get a c++ lattice map describing the lattice.
+        """
+        return self.__lattice._map()
+
+
+

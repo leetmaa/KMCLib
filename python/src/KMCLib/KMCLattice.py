@@ -10,6 +10,7 @@
 
 import numpy
 
+from KMCLib.Backend import Backend
 from KMCLib.KMCUnitCell import KMCUnitCell
 from KMCLib.Utilities.CheckUtilities import checkSequence
 from KMCLib.Exceptions.Error import Error
@@ -48,6 +49,9 @@ class KMCLattice:
 
         # Generate the lattice sites.
         self.__sites = self.__generateLatticeSites()
+
+        # Set the lattice map to be generated at first query.
+        self.__lattice_map = None
 
     def __checkRepetitions(self, repetitions):
         """ """
@@ -174,4 +178,20 @@ class KMCLattice:
 
         # Calculate the index and return.
         return i*nJ*nK*nB + j*nK*nB + k*nB + b
+
+    def _map(self):
+        """
+        Query for the lattice map.
+        """
+        # Generate the lattice map if not done allready.
+        if self.__lattice_map is None:
+            self.__lattice_map = Backend.LatticeMap(len(self.__unit_cell.basis()),
+                                                    self.__repetitions[0],
+                                                    self.__repetitions[1],
+                                                    self.__repetitions[2],
+                                                    self.__periodic[0],
+                                                    self.__periodic[1],
+                                                    self.__periodic[2])
+        # Return the lattice map.
+        return self.__lattice_map
 
