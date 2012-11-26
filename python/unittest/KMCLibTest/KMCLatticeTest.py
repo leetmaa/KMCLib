@@ -13,6 +13,7 @@ import numpy
 
 from KMCLib.KMCUnitCell import KMCUnitCell
 from KMCLib.Exceptions.Error import Error
+from KMCLib.Backend import Backend
 
 # Import from the module we test.
 from KMCLib.KMCLattice import KMCLattice
@@ -303,6 +304,44 @@ class KMCLatticeTest(unittest.TestCase):
         self.assertRaises(Error, lambda: KMCLattice(unit_cell=unit_cell,
                                                     repetitions=repetitions,
                                                     periodic=periodic))
+
+
+    def testLatticeMap(self):
+        """ Check that we can get a valid lattice map out. """
+        cell_vectors = [[2.3, 0.0, 0.0],
+                        [2.4, 3.0, 0.0],
+                        [0.0, 0.0, 11.8]]
+
+        basis_points = [[0.0, 0.0, 0.0],
+                        [0.5, 0.5, 0.0]]
+
+        unit_cell = KMCUnitCell(cell_vectors=cell_vectors,
+                                basis_points=basis_points)
+
+        # Setup the repetitions.
+        nI = 2
+        nJ = 12
+        nK = 3
+        nB = 2
+        repetitions = (nI,nJ,nK)
+        periodic = (True,True,False)
+
+        # Construct the KMCLattice object.
+        lattice = KMCLattice(unit_cell=unit_cell,
+                             repetitions=repetitions,
+                             periodic=periodic)
+
+        # Get the lattice map.
+        cpp_lattice_map = lattice._map()
+
+        # Check the type.
+        self.assertTrue(isinstance(cpp_lattice_map, Backend.LatticeMap))
+
+        # Get it again and check that we get the same instance.
+        cpp_lattice_map2 = lattice._map()
+
+        # Check the instance.
+        self.assertTrue(cpp_lattice_map == cpp_lattice_map2)
 
 
 if __name__ == '__main__':
