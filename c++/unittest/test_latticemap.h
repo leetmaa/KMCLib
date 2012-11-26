@@ -25,10 +25,13 @@ public:
 
     CPPUNIT_TEST_SUITE( Test_LatticeMap );
     CPPUNIT_TEST( testConstruction );
+    CPPUNIT_TEST( testIndicesFromCell );
+    CPPUNIT_TEST( testNeighbourIndices );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstruction();
-
+    void testIndicesFromCell();
+    void testNeighbourIndices();
 };
 
 #endif
