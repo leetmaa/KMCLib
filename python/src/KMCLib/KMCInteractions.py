@@ -13,6 +13,7 @@ import numpy
 from KMCLib.KMCLocalConfiguration import KMCLocalConfiguration
 from KMCLib.Utilities.CheckUtilities import checkSequence
 from KMCLib.Exceptions.Error import Error
+from KMCLib.Backend import Backend
 
 
 class KMCInteractions:
@@ -30,7 +31,17 @@ class KMCInteractions:
                              two local configurations and a rate constant.
         :type interactions: [(KMCLocalConfiguration, KMCLocalConfiguration, float), ...]
         """
-        # Check the interactions.
+        # Check the interactions inpuy.
+        self.__raw_interactions = self.__checkInteractionsInput(interactions)
+
+        # Set the backend to be generated at first query.
+        self.__backend = None
+
+    def __checkInteractionsInput(self, interactions):
+        """ """
+        """
+        Private helper function to check the interactions input parameter.
+        """
         msg="The 'interactions' input must be a list of lists or tuples."
         interactions = checkSequence(interactions, msg)
 
@@ -68,9 +79,14 @@ class KMCInteractions:
                 msg = "The list of types may not match for the two configurations in each interaction.\nThe failing interaction is number %i."%(i)
                 raise Error(msg)
 
-        # Done with initial checking of input. Store the interactions on the class.
-        self.__raw_interactions = interactions
+        # Done with initial checking of input.
+        return interactions
 
+    def _backend(self):
+        """ Query for the interactions backend object. """
+        if self.__backend is None:
+            # NEEDS IMPLEMENTATION
+            self.__backend = Backend.Interactions()
 
-
-
+        # Return the stored backend.
+        return self.__backend

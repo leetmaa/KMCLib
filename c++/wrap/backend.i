@@ -11,6 +11,7 @@
 #include "../src/latticemodel.h"
 #include "../src/latticemap.h"
 #include "../src/configuration.h"
+#include "../src/interactions.h"
 %}
 
 %include "std_string.i"
@@ -23,5 +24,5 @@
 %include "../src/latticemodel.h"
 %include "../src/latticemap.h"
 %include "../src/configuration.h"
-
+%include "../src/interactions.h"
 

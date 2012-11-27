@@ -15,6 +15,7 @@
 // Other inclusions.
 #include "../src/configuration.h"
 #include "../src/latticemap.h"
+#include "../src/interactions.h"
 
 // -------------------------------------------------------------------------- //
 //
@@ -38,8 +39,11 @@ void Test_LatticeModel::testConstruction()
     // And a corresponding lattice map.
     LatticeMap lattice_map(1,2,1,1,true,true,true);
 
+    // We also need the interactions.
+    Interactions interactions;
+
     // construct.
-    LatticeModel model(config, lattice_map);
+    LatticeModel model(config, lattice_map, interactions);
 
     // Call the single step function.
     model.singleStep();

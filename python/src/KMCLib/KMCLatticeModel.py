@@ -48,21 +48,24 @@ class KMCLatticeModel:
         # Store.
         self.__interactions = interactions
 
+        # Set the backend to be generated at first query.
+        self.__backend = None
+
     def _backend(self):
         """
         Function for generating the C++ backend reperesentation of this object.
 
         :returns: The C++ LatticeModel based on the parameters given to this class on construction.
         """
-        # NEEDS IMPLEMENTATION
-
-        # Setup the C++ objects we need.
-        cpp_config       = self.__configuration._backend()
-        cpp_lattice_map  = self.__configuration._latticeMap()
-        #        cpp_interactions = self.__interactions._backend()
-        #
-        #        return KMCBackend.LatticeModel(cpp_config, cpp_lattice_map, cpp_interactions)
-        return Backend.LatticeModel(cpp_config, cpp_lattice_map)
+        if self.__backend is None:
+            # Setup the C++ objects we need.
+            cpp_config       = self.__configuration._backend()
+            cpp_lattice_map  = self.__configuration._latticeMap()
+            cpp_interactions = self.__interactions._backend()
+            # Construct the backend iobject.
+            self.__backend = Backend.LatticeModel(cpp_config, cpp_lattice_map, cpp_interactions)
+        # Return.
+        return self.__backend
 
     def run(control_parameters=None,
             trajectory_filename=None):

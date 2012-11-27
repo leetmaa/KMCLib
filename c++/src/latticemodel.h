@@ -18,9 +18,11 @@
 
 
 #include "latticemap.h"
+#include "interactions.h"
 
 // Forward declarations.
 class Configuration;
+class Process;
 
 /// Class for defining and running a lattice KMC model.
 class LatticeModel {
@@ -28,11 +30,14 @@ class LatticeModel {
 public:
 
     /*! \brief Constructor for setting up the model.
-     *  \param configuration: The configuration to run the simulation on.
-     *  \param lattice_map  : A lattice map object describing the lattice.
+     *  \param configuration : The configuration to run the simulation on.
+     *  \param lattice_map   : A lattice map object describing the lattice.
+     *  \param interactions  : An interactions object describing all interactions
+     *                         and possible processes in the system.
      */
     LatticeModel(Configuration & configuration,
-                 const LatticeMap & lattice_map);
+                 const LatticeMap & lattice_map,
+                 const Interactions & interactions);
 
     /*! \brief Function for taking one time step in the KMC lattice model.
      */
@@ -42,11 +47,32 @@ protected:
 
 private:
 
+    /*! \bref Function for calculating the initial matching.
+     */
+    void calculateInitialMatching();
+
+    /*! \bref Function for calculating / updating the matching for a given set
+     *        of indices.
+     *  \param indices: The indices to calculate for.
+     */
+    void calculateMatching(const std::vector<int> & indices);
+
+    /*! \bref Match a process against an index, and update the process' table
+     *        of available sites when necessary.
+     *  \param process : The process to consider.
+     *  \param index   : The index to check.
+     */
+    void match(const Process & process,
+               const int index);
+
     /// A reference to the configuration given at construction.
     Configuration & configuration_;
 
     /// A description of the lattice.
     LatticeMap lattice_map_;
+
+    /// The description of all interactions in the system.
+    Interactions interactions_;
 
 };
 
