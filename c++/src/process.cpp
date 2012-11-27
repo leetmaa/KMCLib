@@ -20,3 +20,27 @@ Process::Process()
     // NOTHING HERE YET
 }
 
+// -----------------------------------------------------------------------------
+//
+bool Process::isListed(const int index) const
+{
+    // NEEDS IMPLEMENTATION
+    return true;
+}
+
+// -----------------------------------------------------------------------------
+//
+void Process::addSite(const int index)
+{
+    // NEEDS IMPLEMENTATION
+}
+
+// -----------------------------------------------------------------------------
+//
+void Process::removeSite(const int index)
+{
+    // NEEDS IMPLEMENTATION
+}
+
+
+

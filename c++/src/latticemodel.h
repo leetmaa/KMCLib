@@ -47,23 +47,32 @@ protected:
 
 private:
 
-    /*! \bref Function for calculating the initial matching.
+    /*! \brief Function for calculating the initial matching.
      */
     void calculateInitialMatching();
 
-    /*! \bref Function for calculating / updating the matching for a given set
+    /*! \brief Function for calculating / updating the matching for a given set
      *        of indices.
      *  \param indices: The indices to calculate for.
      */
     void calculateMatching(const std::vector<int> & indices);
 
-    /*! \bref Match a process against an index, and update the process' table
+    /*! \brief Match a process against an index, and update the process' table
      *        of available sites when necessary.
      *  \param process : The process to consider.
      *  \param index   : The index to check.
      */
-    void match(const Process & process,
-               const int index);
+    void match(Process & process,
+               const int index) const;
+
+    /*! \brief Helper function to determine if a given neighbourhood
+     *         matches a certain process.
+     *  \param process       : The process to check.
+     *  \param neighbourhood : The neighbourhood to check.
+     *  \return : True if match.
+     */
+    bool isMatch(const Process & process,
+                 std::vector<int> & neighbourhood) const;
 
     /// A reference to the configuration given at construction.
     Configuration & configuration_;

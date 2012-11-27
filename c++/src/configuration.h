@@ -17,6 +17,10 @@
 
 #include <vector>
 #include <string>
+#include "matchlistentry.h"
+
+// Forward declarations.
+class LatticeMap;
 
 
 /*! \brief Class for defining the configuration used in a KMC simulation to
@@ -42,6 +46,16 @@ public:
      *  \return : The elements of the configuration.
      */
     const std::vector<std::string> & elements() const { return elements_; }
+
+    /*! \brief Construct and return the match list for the given list of
+     *         indices.
+     *  \param indices     : The indices to get the match list for.
+     *  \param lattice_map : The lattice map needed for calculating distances
+     *                       using correct boundaries.
+     *  \return : The match list.
+     */
+    std::vector<MatchListEntry> matchList(const std::vector<int> & indices,
+                                          const LatticeMap & lattice_map) const;
 
 protected:
 

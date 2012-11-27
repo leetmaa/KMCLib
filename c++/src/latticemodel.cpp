@@ -13,6 +13,7 @@
 
 #include "latticemodel.h"
 #include "configuration.h"
+#include "matchlistentry.h"
 
 #include <cstdio>
 
@@ -56,7 +57,7 @@ void LatticeModel::calculateMatching(const std::vector<int> & indices)
         // Match against all processes.
         for (int j = 0; j < interactions_.processes().size(); ++j)
         {
-            const Process & process = interactions_.processes()[j];
+            Process & process = interactions_.processes()[j];
             match(process, index);
         }
     }
@@ -65,28 +66,61 @@ void LatticeModel::calculateMatching(const std::vector<int> & indices)
 
 // -----------------------------------------------------------------------------
 //
-void LatticeModel::match(const Process & process,
-                         const int index)
+void LatticeModel::match(Process & process,
+                         const int index) const
 {
-    // NEEDS IMPLEMENTATION
-
     // Check in the indices list of this process to see if we have
     // a previous match.
-
-    // Go through the list of indices.
+    const bool in_list = process.isListed(index);
 
     // Get the neighbrourhood out.
+    std::vector<int> neighbourhood = lattice_map_.neighbourIndices(index);
 
     // Match the neighbrourhood with the process.
-
-    // If match and previous match - do nothing.
-
-    // If no match and not previous match - do nothing.
+    const bool is_match = isMatch(process, neighbourhood);
 
     // If match and not previous match - add to the list.
-
+    if (is_match && !in_list)
+    {
+        process.addSite(index);
+    }
     // If no match and previous match - remove from the list.
+    else if (!is_match && in_list)
+    {
+        process.removeSite(index);
+    }
+}
 
+
+// -----------------------------------------------------------------------------
+//
+bool LatticeModel::isMatch(const Process & process,
+                           std::vector<int> & neighbourhood) const
+{
+    // Return false if not enough sites in the neighbourhood.
+    if (neighbourhood.size() < process.sites().size())
+    {
+        return false;
+    }
+
+    // Get the types and distances match lists.
+    const std::vector<MatchListEntry> & process_match_list = process.matchList();
+    std::vector<MatchListEntry> index_match_list     = configuration_.matchList(neighbourhood, lattice_map_);
+
+    std::vector<MatchListEntry>::const_iterator it1 = process_match_list.begin();
+    std::vector<MatchListEntry>::const_iterator it2 = index_match_list.begin();
+
+    for( ; it1 != process_match_list.end(); ++it1, ++it2)
+    {
+        // Return false on mismatch.
+        if ((*it1) != (*it2))
+        {
+            return false;
+        }
+    }
+
+    // All match, return true.
+    return true;
 }
 
 

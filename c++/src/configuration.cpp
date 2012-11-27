@@ -11,9 +11,10 @@
  */
 
 
-#include "configuration.h"
-
 #include <cstdio>
+
+#include "configuration.h"
+#include "latticemap.h"
 
 // -----------------------------------------------------------------------------
 //
@@ -25,3 +26,12 @@ Configuration::Configuration(std::vector<std::vector<double> > const & coordinat
     // NOTHING HERE YET
 }
 
+
+// -----------------------------------------------------------------------------
+//
+std::vector<MatchListEntry> Configuration::matchList(const std::vector<int> & indices,
+                                                     const LatticeMap & lattice_map) const
+{
+    // NEEDS IMPLEMENTATION
+    return std::vector<MatchListEntry>(0,MatchListEntry(0,0,0.0,Coordinate(0.0,0.0,0.0)));
+}

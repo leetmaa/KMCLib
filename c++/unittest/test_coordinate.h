@@ -6,8 +6,8 @@
 */
 
 
-#ifndef __TEST_PROCESS__
-#define __TEST_PROCESS__
+#ifndef __TEST_COORDINATE__
+#define __TEST_COORDINATE__
 
 #include <iostream>
 #include <string>
@@ -19,19 +19,15 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-class Test_Process : public CppUnit::TestCase {
+class Test_Coordinate : public CppUnit::TestCase {
 
 public:
 
-    CPPUNIT_TEST_SUITE( Test_Process );
+    CPPUNIT_TEST_SUITE( Test_Coordinate );
     CPPUNIT_TEST( testConstruction );
-    CPPUNIT_TEST( testMatchList );
-    CPPUNIT_TEST( testAddAndRemoveSite );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstruction();
-    void testMatchList();
-    void testAddAndRemoveSite();
 
 };
 
