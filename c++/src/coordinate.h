@@ -37,30 +37,30 @@ public:
     /*! \brief Query for the x component.
      *  \return : The x component.
      */
-    const int & x() const { return x_; }
+    const double & x() const { return x_; }
 
     /*! \brief Query for the y component.
      *  \return : The y component.
      */
-    const int & y() const { return y_; }
+    const double & y() const { return y_; }
 
     /*! \brief Query for the z component.
      *  \return : The z component.
      */
-    const int & z() const { return z_; }
+    const double & z() const { return z_; }
 
 protected:
 
 private:
 
     /// The x coordinate.
-    int x_;
+    double x_;
 
     /// The y coordinate.
-    int y_;
+    double y_;
 
     /// The z coordinate.
-    int z_;
+    double z_;
 
 };
 

@@ -24,10 +24,12 @@ class Test_Coordinate : public CppUnit::TestCase {
 public:
 
     CPPUNIT_TEST_SUITE( Test_Coordinate );
-    CPPUNIT_TEST( testConstruction );
+    CPPUNIT_TEST( testConstructionAndQuery );
+    CPPUNIT_TEST( testLessOperator );
     CPPUNIT_TEST_SUITE_END();
 
-    void testConstruction();
+    void testConstructionAndQuery();
+    void testLessOperator();
 
 };
 

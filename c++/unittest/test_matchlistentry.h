@@ -25,9 +25,13 @@ public:
 
     CPPUNIT_TEST_SUITE( Test_MatchListEntry );
     CPPUNIT_TEST( testConstruction );
+    CPPUNIT_TEST( testNotEqualOperator );
+    CPPUNIT_TEST( testLessOperator );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstruction();
+    void testNotEqualOperator();
+    void testLessOperator();
 
 };
 
