@@ -23,7 +23,7 @@ class KMCLatticeModel:
                  interactions=None):
         """
         The KMCLatticeModel class is the central object in the KMCLib framework
-        for running a KMC simulation. Once a configuration with lattice is
+        for running a KMC simulation. Once a configuration with a lattice is
         defined and a set of interactions are setup, the KMCLatticeModel object
         unites this information, checks that the given interactions match the
         configurations, and provides means for running a KMC Lattice simulation.
