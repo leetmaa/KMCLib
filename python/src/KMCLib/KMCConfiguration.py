@@ -15,6 +15,7 @@ from KMCLib.Utilities.ConversionUtilities import numpy2DArrayToStdVectorStdVecto
 from KMCLib.Exceptions.Error import Error
 from KMCLib.Backend import Backend
 
+
 class KMCConfiguration:
     """
     Class for representing the configuration in a KMC simulation.
@@ -32,17 +33,19 @@ class KMCConfiguration:
         :param lattice: The lattice of the configurartion.
         :type lattice: Lattice
 
-        :param types: The site types at the lattice points, ordered as
-                      [a,b,c,i] with i being the fastest and a the slowest index,
-                      where a, b and c refers to the cell repetitions and i
+        :param types: The site types at the lattice points as a list, e.g. ['type1','type2',..],
+                      ordered as [a,b,c,i] with i being the fastest and a the slowest index and
+                      a, b and c refers to the cell repetitions and i
                       refers to the specific basis point in the cell. When using this format
-                      one can not specify a default type, and the number of elements in the
+                      one cannot specify a default type, and the number of elements in the
                       types list must match the number of grid points in the lattice. Alternatively
-                      one can specify the list as a list of tuples specifying the a,b,c,i for each type,
-                      e.g. [(0,0,1,0,'a'), (0,0,1,1,'b'), ...]
+                      one can specify the types input as a list of tuples specifying the a,b,c,i for each type,
+                      e.g. [(0,0,1,0,'a'), (0,0,1,1,'b'), ...]. If one uses the longer tuple format
+                      a default type should be given, which then will be used for all points not
+                      explicitly specified in the list.
 
-        :param possible_types: A list of possible types. This list is set to the
-                               types present in the types list by default if not given.
+        :param possible_types: A list of possible types. If not given this list will be set to the
+                               types present in the types list by default.
 
         :param default_type: This input parameter can only be given if the types are
                              given in long format i.e. [(0,0,1,0,'a'), (0,0,1,1,'b'), ...]
@@ -166,11 +169,11 @@ class KMCConfiguration:
             cpp_coords = numpy2DArrayToStdVectorStdVectorDouble(self.__lattice.sites())
 
             # Send in the coordinates and types to construct the backend configuration.
-            self.__cpp_backend = Backend.Configuration(cpp_coords,
+            self.__backend = Backend.Configuration(cpp_coords,
                                                        cpp_types)
 
         # Return the backend.
-        return self.__cpp_backend
+        return self.__backend
 
 
     def _latticeMap(self):

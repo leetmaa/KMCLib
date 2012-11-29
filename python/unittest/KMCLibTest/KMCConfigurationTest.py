@@ -11,11 +11,10 @@
 import unittest
 import numpy
 
-
 from KMCLib.Exceptions.Error import Error
 from KMCLib.KMCUnitCell import KMCUnitCell
 from KMCLib.KMCLattice import KMCLattice
-
+from KMCLib.Backend import Backend
 
 # Import the module to test.
 from KMCLib.KMCConfiguration import KMCConfiguration
@@ -367,6 +366,47 @@ class KMCConfigurationTest(unittest.TestCase):
 
         # Check that these two are references to the same underlying object.
         self.assertTrue(cpp_lattice_map == cpp_lattice_map_ref)
+
+    def testBackend(self):
+        """ Make sure the C++ backend is what we expect. """
+        # Setup a valid KMCUnitCell.
+        unit_cell = KMCUnitCell(cell_vectors=numpy.array([[2.8,0.0,0.0],
+                                                          [0.0,3.2,0.0],
+                                                          [0.0,0.5,3.0]]),
+                                basis_points=[[0.0,0.0,0.0],
+                                              [0.5,0.5,0.5],
+                                              [0.25,0.25,0.75]])
+
+        # Setup the lattice.
+        lattice = KMCLattice(unit_cell=unit_cell,
+                             repetitions=(4,4,1),
+                             periodic=(True,True,False))
+
+        types = ['a','a','a','a','b','b',
+                 'a','a','a','b','b','b',
+                 'b','b','a','a','b','a',
+                 'b','b','b','a','b','a',
+                 'b','a','a','a','b','b',
+                 'b','b','b','b','b','b',
+                 'a','a','a','a','b','b',
+                 'b','b','a','b','b','a']
+
+        # Setup the configuration.
+        config = KMCConfiguration(lattice=lattice,
+                                  types=types,
+                                  possible_types=['a','c','b'])
+
+        # Make sure that the backend stored on the config is None.
+        self.assertTrue(config._KMCConfiguration__backend is None)
+
+        # Query for the backend.
+        cpp_backend = config._backend()
+
+        # Check that the backend on the class is returned.
+        self.assertTrue(config._KMCConfiguration__backend == cpp_backend)
+
+        # Check the type of the cpp backend.
+        self.assertTrue(isinstance(cpp_backend, Backend.Configuration))
 
 
 if __name__ == '__main__':
