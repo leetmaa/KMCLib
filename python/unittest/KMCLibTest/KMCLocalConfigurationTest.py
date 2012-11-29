@@ -11,9 +11,7 @@
 import unittest
 import numpy
 
-
 from KMCLib.Exceptions.Error import Error
-
 
 # Import the module to test.
 from KMCLib.KMCLocalConfiguration import KMCLocalConfiguration
@@ -27,24 +25,30 @@ class KMCLocalConfigurationTest(unittest.TestCase):
         # Construct with coordinate list.
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
         types = ["A","B"]
-        local_config = KMCLocalConfiguration(coordinates=coords, types=types, center=1)
+        local_config = KMCLocalConfiguration(coordinates=coords,
+                                             types=types,
+                                             center=1)
 
         # Test.
         self.assertTrue(isinstance(local_config, KMCLocalConfiguration))
 
         # Construct with numpy coordinates.
         coords = numpy.array([[1.0,2.0,3.4],[1.1,1.2,1.3]])
-        local_config = KMCLocalConfiguration(coordinates=coords, types=types, center=0)
+        local_config = KMCLocalConfiguration(coordinates=coords,
+                                             types=types,
+                                             center=0)
 
         # Test.
         self.assertTrue(isinstance(local_config, KMCLocalConfiguration))
 
-    def testMemberData(self):
-        """ Check that the correct member data is stored on the class. """
+    def testMemberDataQuery(self):
+        """ Check that the correct member data is stored and returned. """
         # Setup the configuration.
         coords = [[1.0,2.0,3.0],[1.0,1.0,3.0],[3.0,8.0,9.0]]
         types = ["C","B","A"]
-        local_config = KMCLocalConfiguration(coordinates=coords, types=types, center=1)
+        local_config = KMCLocalConfiguration(coordinates=coords,
+                                             types=types,
+                                             center=1)
 
         # Define the reference data.
         ref_coords    = numpy.array([[0.0,0.0,0.0],[0.0,1.0,0.0],[2.0,7.0,6.0]])
@@ -78,24 +82,36 @@ class KMCLocalConfigurationTest(unittest.TestCase):
         # No arguments.
         self.assertRaises(Error, lambda: KMCLocalConfiguration())
         # Center out of bounds.
-        self.assertRaises(Error, lambda: KMCLocalConfiguration(coords, types, center))
+        self.assertRaises(Error, lambda: KMCLocalConfiguration(coords,
+                                                               types,
+                                                               center))
         # Missing types information.
-        self.assertRaises(Error, lambda: KMCLocalConfiguration(coordinates=coords, center=center))
+        self.assertRaises(Error, lambda: KMCLocalConfiguration(coordinates=coords,
+                                                               center=center))
         # Missing coordinate information.
-        self.assertRaises(Error, lambda: KMCLocalConfiguration(types=types, center=center))
+        self.assertRaises(Error, lambda: KMCLocalConfiguration(types=types,
+                                                               center=center))
         # Wrong type of types.
-        self.assertRaises(Error, lambda: KMCLocalConfiguration(coords, coords, center))
+        self.assertRaises(Error, lambda: KMCLocalConfiguration(coords,
+                                                               coords,
+                                                               center))
         # Wrong type of coordinates.
-        self.assertRaises(Error, lambda: KMCLocalConfiguration(types, types, center))
+        self.assertRaises(Error, lambda: KMCLocalConfiguration(types,
+                                                               types,
+                                                               center))
         # Wrong type of center.
-        self.assertRaises(Error, lambda: KMCLocalConfiguration(coords, types, center="A"))
+        self.assertRaises(Error, lambda: KMCLocalConfiguration(coords,
+                                                               types,
+                                                               center="A"))
 
     def testScript(self):
         """ Test the scripting functionality. """
         # Setup the configuration.
         coords = [[1.0,2.0,3.0]]
         types = ["C"]
-        local_config = KMCLocalConfiguration(coordinates=coords, types=types, center=0)
+        local_config = KMCLocalConfiguration(coordinates=coords,
+                                             types=types,
+                                             center=0)
 
         ref_script = """
 coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
@@ -112,7 +128,9 @@ local_configuration = KMCLocalConfiguration(
         # Get another script.
         coords = [[1.0,2.0,3.0],[1.0,1.0,3.0],[3.0,8.0,9.0]]
         types = ["C","B","A"]
-        local_config = KMCLocalConfiguration(coordinates=coords, types=types, center=0)
+        local_config = KMCLocalConfiguration(coordinates=coords,
+                                             types=types,
+                                             center=0)
         ref_script2 = """
 coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
                [   0.000000e+00,  -1.000000e+00,   0.000000e+00],

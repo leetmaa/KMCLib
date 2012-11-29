@@ -11,7 +11,6 @@
 from KMCLib.Utilities.CheckUtilities import checkCoordinateList
 from KMCLib.Utilities.CheckUtilities import checkIndexWithinBounds
 from KMCLib.Utilities.CheckUtilities import checkTypes
-
 from KMCLib.Utilities.CoordinateUtilities import centerCoordinates
 from KMCLib.Utilities.CoordinateUtilities import sortCoordinates
 
@@ -29,13 +28,16 @@ class KMCLocalConfiguration:
         """
         Constructor for the KMCLocalConfiguration.
 
-        :param coordinates: The coordinates of the configuration.
-        :type coordinates:  A 3xN sequence of floating point numbers, where N is the number of sites.
+        :param coordinates: The coordinates of the configuration given as
+                            a 3xN sequence of floating point numbers, where
+                            N is the number of local sites.
 
-        :param types: The lattice site types at the specified coordinates.
-        :type types:  A sequence of strings of length N.
+        :param types: The lattice site types at the specified coordinates given
+                      as a sequence of strings of length N.
 
-        :param center: The coordinate in the list to treat as the central site. If not given it will default to the first coordinate.
+        :param center: The coordinate in the list to treat as the central site
+                       indexed from zero. If not given it will default to the
+                       first coordinate (i.e. center == 0).
         :type center:  int
         """
         # Check the coordinates.
@@ -46,7 +48,9 @@ class KMCLocalConfiguration:
             center = 0
 
         # Check the bounds of the center coordinate.
-        center = checkIndexWithinBounds(center, coordinates, msg="The 'center' index paramter must be one in the coordinate list.")
+        center = checkIndexWithinBounds(center,
+                                        coordinates,
+                                        msg="The 'center' index paramter must be one in the coordinate list.")
 
         # Center the coordinates.
         coordinates = centerCoordinates(coordinates, center)
