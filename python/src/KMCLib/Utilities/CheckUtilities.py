@@ -21,7 +21,6 @@ def checkIndexWithinBounds(index, list, msg=None):
     :type index:  int
 
     :param list:  The list to check against.
-    :type list:   Any sequence object with __len__ defined.
 
     :param msg: The error message to print. If none is given the string default to "Index out of range."
     :type msg: string

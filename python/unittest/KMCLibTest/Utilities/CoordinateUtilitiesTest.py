@@ -52,7 +52,7 @@ class CoordinateUtilitiesTest(unittest.TestCase):
         ref_coords = numpy.array([[-1.0,-1.0,4.1],[0.0,0.0,0.0],[-10.9,9.0,5.1]])
 
         # Check.
-        self.assertAlmostEqual(((centered_coords-ref_coords)**2).sum(), 0.0, 10)
+        self.assertAlmostEqual( numpy.linalg.norm(centered_coords-ref_coords), 0.0, 10)
 
 
 if __name__ == '__main__':

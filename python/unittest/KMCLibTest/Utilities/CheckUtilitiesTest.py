@@ -32,12 +32,12 @@ class CheckUtilitiesTest(unittest.TestCase):
 
         # Make sure they pass the check.
         checked_coords = checkCoordinateList(valid_coordinates)
-        self.assertAlmostEqual(((valid_coordinates-checked_coords)**2).sum(), 0.0, 10)
+        self.assertAlmostEqual( numpy.linalg.norm(valid_coordinates-checked_coords), 0.0, 10)
 
         # Again, with numpy.
         valid_coordinates = numpy.array(valid_coordinates)
         checked_coords = checkCoordinateList(valid_coordinates)
-        self.assertAlmostEqual(((valid_coordinates-checked_coords)**2).sum(), 0.0, 10)
+        self.assertAlmostEqual( numpy.linalg.norm(valid_coordinates-checked_coords), 0.0, 10)
 
         # Test some things that fails.
 
@@ -139,7 +139,7 @@ class CheckUtilitiesTest(unittest.TestCase):
         # This also.
         sequence = numpy.array([[12.0,1.3],[1.,4.3]])
         checked_sequence = checkSequence(sequence)
-        self.assertAlmostEqual(((checked_sequence-sequence)**2).sum(), 0.0, 10)
+        self.assertAlmostEqual( numpy.linalg.norm(checked_sequence-sequence), 0.0, 10)
 
         # And these.
         sequence = "A"
