@@ -15,8 +15,8 @@
 
 // -----------------------------------------------------------------------------
 //
-Interactions::Interactions() :
-    processes_(0)
+Interactions::Interactions(const std::vector<Process> & processes) :
+    processes_(processes)
 {
     // NOTHING HERE YET
 }

@@ -17,8 +17,8 @@
 //
 void Test_Interactions::testConstruction()
 {
-
-    Interactions interactions;
+    std::vector<Process> processes;
+    Interactions interactions(processes);
 
     // DONE
 }

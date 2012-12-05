@@ -26,11 +26,12 @@ public:
     CPPUNIT_TEST_SUITE( Test_Coordinate );
     CPPUNIT_TEST( testConstructionAndQuery );
     CPPUNIT_TEST( testLessOperator );
+    CPPUNIT_TEST( testDistance );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstructionAndQuery();
     void testLessOperator();
-
+    void testDistance();
 };
 
 #endif

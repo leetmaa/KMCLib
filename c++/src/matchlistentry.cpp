@@ -17,12 +17,14 @@
 
 // -----------------------------------------------------------------------------
 //
-MatchListEntry::MatchListEntry(const int index,
-                               const int type,
+MatchListEntry::MatchListEntry(const int match_type,
+                               const int update_type,
                                const double distance,
-                               const Coordinate & coordinate) :
+                               const Coordinate & coordinate,
+                               const int index) :
+    match_type_(match_type),
+    update_type_(update_type),
     index_(index),
-    type_(type),
     distance_(distance),
     coordinate_(coordinate),
     eps_(1.0e-5)
@@ -37,7 +39,7 @@ MatchListEntry::MatchListEntry(const int index,
 bool MatchListEntry::operator!=(const MatchListEntry & other) const
 {
     // Check the type.
-    if (other.type_ != type_)
+    if (other.match_type_ != match_type_)
     {
         return true;
     }
@@ -73,14 +75,14 @@ bool MatchListEntry::operator<(const MatchListEntry & other) const
     {
         // If the distances are practically the same,
         // check the types.
-        if (type_ == other.type_)
+        if (match_type_ == other.match_type_)
         {
             // If the types are identical, check the coordinate.
             return (coordinate_ < other.coordinate_);
         }
         else
         {
-            return (type_ < other.type_);
+            return (match_type_ < other.match_type_);
         }
     }
 

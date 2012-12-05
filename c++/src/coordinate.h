@@ -49,6 +49,15 @@ public:
      */
     const double & z() const { return z_; }
 
+    /*! \brief Calculate the distance between this and another coordinate.
+     *  \return : The distance.
+     */
+    double distance(const Coordinate & other) const;
+
+    /* \brief Print the coordinate to stdout. Useful for debugging.
+     */
+    void print() const;
+
 protected:
 
 private:

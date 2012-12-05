@@ -12,6 +12,8 @@
 // Include the files to test.
 #include "../src/coordinate.h"
 
+#include <cmath>
+
 
 // -------------------------------------------------------------------------- //
 //
@@ -62,4 +64,36 @@ void Test_Coordinate::testLessOperator()
 }
 
 
+// -------------------------------------------------------------------------- //
+//
+void Test_Coordinate::testDistance()
+{
+    {
+        Coordinate c1(0.0,0.0,0.0);
+        Coordinate c2(1.0,1.0,1.0);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( c2.distance(c1), std::sqrt(3), 1.0e-14 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( c1.distance(c2), std::sqrt(3), 1.0e-14 );
+    }
+
+    {
+        Coordinate c1(-1.0,-1.0,-1.0);
+        Coordinate c2(1.0,1.0,1.0);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( c2.distance(c1), 2.0 * std::sqrt(3), 1.0e-14 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( c1.distance(c2), 2.0 * std::sqrt(3), 1.0e-14 );
+    }
+
+    {
+        Coordinate c1(0.0,0.0,0.0);
+        Coordinate c2(1.0,2.0,3.0);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( c2.distance(c1), std::sqrt(1.0+4.0+9.0), 1.0e-14 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( c1.distance(c2), std::sqrt(1.0+4.0+9.0), 1.0e-14 );
+    }
+
+    {
+        Coordinate c1(-1.0,1.0,5.0);
+        Coordinate c2(-1.0,2.0,3.0);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( c2.distance(c1), std::sqrt(5.0), 1.0e-14 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( c1.distance(c2), std::sqrt(5.0), 1.0e-14 );
+    }
+}
 

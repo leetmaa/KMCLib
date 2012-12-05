@@ -10,6 +10,8 @@
  *  \brief File for the implementation code of the Coordinate class.
  */
 
+#include <cmath>
+#include <iostream>
 
 #include "coordinate.h"
 
@@ -43,5 +45,23 @@ bool Coordinate::operator<(const Coordinate & other) const
     }
 
     return (x_ < other.x_);
+}
+
+
+// -----------------------------------------------------------------------------
+//
+double Coordinate::distance(const Coordinate & other) const
+{
+    return std::sqrt( ((x_ - other.x_) * (x_ - other.x_)) +
+                      ((y_ - other.y_) * (y_ - other.y_)) +
+                      ((z_ - other.z_) * (z_ - other.z_)) );
+}
+
+
+// -----------------------------------------------------------------------------
+//
+void Coordinate::print() const
+{
+    std::cout << x_ << " " << y_ << " " << z_ << std::endl;
 }
 

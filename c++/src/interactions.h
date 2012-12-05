@@ -25,7 +25,10 @@ class Interactions {
 
 public:
 
-    Interactions();
+    /*! \brief Construct the interactions object from a list of processes.
+     *  \param processes: The list of proceeses.
+     */
+    Interactions(const std::vector<Process> & processes);
 
     /*! \brief Query for the processes.
      *  \return : The processes of the system.

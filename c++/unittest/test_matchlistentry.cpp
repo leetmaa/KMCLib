@@ -35,16 +35,23 @@ void Test_MatchListEntry::testNotEqualOperator()
 
     // Two not equal in index, should equate to equal.
     {
-        MatchListEntry e1(1322,2,1.2,Coordinate(0.1,0.2,0.34));
-        MatchListEntry e2(1324,2,1.2,Coordinate(0.1,0.2,0.34));
+        MatchListEntry e1(1324,2,1.2,Coordinate(0.1,0.2,0.34), 1);
+        MatchListEntry e2(1324,2,1.2,Coordinate(0.1,0.2,0.34), 2);
         CPPUNIT_ASSERT( !(e1 != e2) );
     }
 
-    // Two not equal in type should equate to not equal.
+    // Two not equal in match type should equate to not equal.
+    {
+        MatchListEntry e1(1321,2,1.2,Coordinate(0.1,0.2,0.34));
+        MatchListEntry e2(1324,2,1.2,Coordinate(0.1,0.2,0.34));
+        CPPUNIT_ASSERT( (e1 != e2) );
+    }
+
+    // Two not equal in update type should still equate to equal.
     {
         MatchListEntry e1(1324,1,1.2,Coordinate(0.1,0.2,0.34));
         MatchListEntry e2(1324,2,1.2,Coordinate(0.1,0.2,0.34));
-        CPPUNIT_ASSERT( (e1 != e2) );
+        CPPUNIT_ASSERT( !(e1 != e2) );
     }
 
     // Two not equal in distance should equate to not equal.
@@ -121,17 +128,25 @@ void Test_MatchListEntry::testLessOperator()
 
     // e1 smaller than e2 in index -> equal
     {
-        MatchListEntry e1(1323,2,1.2,Coordinate(0.1,0.2,0.34));
-        MatchListEntry e2(1324,2,1.2,Coordinate(0.1,0.2,0.34));
+        MatchListEntry e1(1324,2,1.2,Coordinate(0.1,0.2,0.34), 1);
+        MatchListEntry e2(1324,2,1.2,Coordinate(0.1,0.2,0.34), 3);
         CPPUNIT_ASSERT( !(e1 < e2) );
         CPPUNIT_ASSERT( !(e2 < e1) );
     }
 
-    // e1 smaller than e2 in type
+    // e1 smaller than e2 in match type
+    {
+        MatchListEntry e1(1321,2,1.2,Coordinate(0.1,0.2,0.34));
+        MatchListEntry e2(1324,2,1.2,Coordinate(0.1,0.2,0.34));
+        CPPUNIT_ASSERT(  (e1 < e2) );
+        CPPUNIT_ASSERT( !(e2 < e1) );
+    }
+
+    // e1 smaller than e2 in update type
     {
         MatchListEntry e1(1324,1,1.2,Coordinate(0.1,0.2,0.34));
         MatchListEntry e2(1324,2,1.2,Coordinate(0.1,0.2,0.34));
-        CPPUNIT_ASSERT( (e1 < e2) );
+        CPPUNIT_ASSERT( !(e1 < e2) );
         CPPUNIT_ASSERT( !(e2 < e1) );
     }
 

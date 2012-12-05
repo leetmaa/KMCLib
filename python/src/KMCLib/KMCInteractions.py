@@ -85,6 +85,7 @@ class KMCInteractions:
     def _backend(self):
         """ Query for the interactions backend object. """
         if self.__backend is None:
+
             # NEEDS IMPLEMENTATION
             self.__backend = Backend.Interactions()
 
