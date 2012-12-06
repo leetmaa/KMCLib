@@ -43,11 +43,21 @@ void Test_Configuration::testConstruction()
     elements[3] = "H";
     elements[4] = "J";
 
+
+    // Setup the mapping from element to integer.
+    std::map<std::string, int> possible_types;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["D"] = 3;
+    possible_types["H"] = 4;
+    possible_types["J"] = 5;
+    possible_types["G"] = 6;
+
     // Construct the configuration.
-    Configuration config(coords, elements);
+    Configuration config(coords, elements, possible_types);
 
     // Extract the member data and check that it is the same as what whent in.
-    std::vector<std::vector<double> > const & ret_coords = config.coordinates();
+    std::vector<Coordinate> const & ret_coords = config.coordinates();
 
     for (size_t i=0; i < coords.size(); ++i)
     {

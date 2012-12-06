@@ -22,7 +22,7 @@
 
 // Forward declarations.
 class Configuration;
-
+class Coordinate;
 
 /// A minimal struct for representing three integers as a cell index.
 struct CellIndex {
@@ -75,6 +75,27 @@ public:
     const std::vector<int> & indicesFromCell(const int i,
                                              const int j,
                                              const int k) const;
+
+
+    /*! \brief Query for the periodicity.
+     * \returns: The periodicity in the direction.
+     */
+    const bool periodicA() const { return periodic_a_; }
+
+    /*! \brief Query for the periodicity.
+     * \returns: The periodicity in the direction.
+     */
+    const bool periodicB() const { return periodic_b_; }
+
+    /*! \brief Query for the periodicity.
+     * \returns: The periodicity in the direction.
+     */
+    const bool periodicC() const { return periodic_c_; }
+
+    /*! \brief Wrap the coordinate according to periodic boundaries.
+     * \param c (in/out): The coordinate to wrap.
+     */
+    void wrap(Coordinate & c) const;
 
 protected:
 

@@ -20,30 +20,27 @@
 //
 Process::Process(const Configuration & first,
                  const Configuration & second,
-                 const double barrier,
-                 const std::map<std::string,int> & possible_types) :
+                 const double barrier) :
     sites_(0)
 {
     // The check that the first and second configurartions match well enough
     // should be carried out in python so there is no need to do it again here.
 
     // Get a handle to the coordinates and elements.
-    const std::vector<std::vector<double> > & coords  = first.coordinates();
+    const std::vector<Coordinate> & coords  = first.coordinates();
 
     // Get the first coordinate out to calculate the distance against.
-    const Coordinate origin(coords[0][0], coords[0][1], coords[0][2]);
+    const Coordinate origin = coords[0];
 
     // Transform the configurations into match lists.
     for (size_t i = 0; i < first.elements().size(); ++i)
     {
         // Get the types as integers.
-        const std::string & first_key  = first.elements()[i];
-        const std::string & second_key = second.elements()[i];
-        const int first_type  = possible_types.find(first_key)->second;
-        const int second_type = possible_types.find(second_key)->second;
+        const int first_type  = first.types()[i];
+        const int second_type = second.types()[i];
 
         // Calculate the distance.
-        const Coordinate coordinate(coords[i][0], coords[i][1], coords[i][2]);
+        const Coordinate coordinate = coords[i];
         const double distance = coordinate.distance(origin);
 
         // Setup and add the match list entry.

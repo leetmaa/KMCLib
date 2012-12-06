@@ -17,11 +17,12 @@
 
 #include <vector>
 #include <string>
+#include <map>
 #include "matchlistentry.h"
+#include "coordinate.h"
 
 // Forward declarations.
 class LatticeMap;
-
 
 /*! \brief Class for defining the configuration used in a KMC simulation to
  *         use for communicating elements and positions to and from python.
@@ -31,21 +32,28 @@ class Configuration {
 public:
 
     /*! \brief Constructor for setting up the configuration.
-     *  \param coordinates : The coordinates of the configuration.
-     *  \param elements    : The elements of the configuration.
+     *  \param coordinates   : The coordinates of the configuration.
+     *  \param elements      : The elements of the configuration.
+     *  \param possible_types: A global mapping from type string to number.
      */
     Configuration(std::vector< std::vector<double> > const & coordinates,
-                  std::vector<std::string> const & elements);
+                  std::vector<std::string> const & elements,
+                  const std::map<std::string,int> & possible_types);
 
     /*! \brief Const query for the coordinates.
      *  \return : The coordinates of the configuration.
      */
-    const std::vector<std::vector<double> > & coordinates() const { return coordinates_; }
+    const std::vector<Coordinate> & coordinates() const { return coordinates_; }
 
     /*! \brief Const query for the elements.
      *  \return : The elements of the configuration.
      */
     const std::vector<std::string> & elements() const { return elements_; }
+
+    /*! \brief Const query for the types.
+     *  \return : The types of the configuration.
+     */
+    const std::vector<int> & types() const { return types_; }
 
     /*! \brief Construct and return the match list for the given list of
      *         indices.
@@ -62,11 +70,13 @@ protected:
 private:
 
     /// The coordinates.
-    std::vector<std::vector<double> > coordinates_;
+    std::vector<Coordinate> coordinates_;
 
     /// The elements.
     std::vector<std::string> elements_;
 
+    /// The elements.
+    std::vector<int> types_;
 };
 
 

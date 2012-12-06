@@ -97,3 +97,63 @@ void Test_Coordinate::testDistance()
     }
 }
 
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Coordinate::testMinusOperator()
+{
+    const Coordinate c1(std::sqrt(2.0),-std::sqrt(8),1.0/3.0);
+    const Coordinate c2(0.1,3.2,5.3);
+    Coordinate c3 = c1 - c2;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( c3.x(), c1.x() - c2.x(), 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( c3.y(), c1.y() - c2.y(), 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( c3.z(), c1.z() - c2.z(), 1.0e-14 );
+
+
+}
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Coordinate::testAccessOperator()
+{
+    Coordinate c1(std::sqrt(2.0),-std::sqrt(8),1.0/3.0);
+
+    // Test the values.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( c1.x(), c1[0], 1.0e-14);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( c1.y(), c1[1], 1.0e-14);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( c1.z(), c1[2], 1.0e-14);
+
+    // Test the references.
+
+    // X
+    const double & x_ref_1 = c1[0];
+    CPPUNIT_ASSERT_EQUAL( &x_ref_1, &c1.x() );
+    // Check that the reference is not constant.
+    c1[0] = 12.0;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 12.0, c1.x(), 1.0e-14);
+    // But these are not changed.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( -std::sqrt(8.0), c1.y(), 1.0e-14);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0/3.0, c1.z(), 1.0e-14);
+
+    // Y
+    const double & y_ref_1 = c1[1];
+    CPPUNIT_ASSERT_EQUAL( &y_ref_1, &c1.y() );
+    // Check that the reference is not constant.
+    c1[1] = 13.0;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 13.0, c1.y(), 1.0e-14);
+    // But these are not changed.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 12.0, c1.x(), 1.0e-14);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0/3.0, c1.z(), 1.0e-14);
+
+    // Z
+    const double & z_ref_1 = c1[2];
+    CPPUNIT_ASSERT_EQUAL( &z_ref_1, &c1.z() );
+    // Check that the reference is not constant.
+    c1[2] = 14.0;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 14.0, c1.z(), 1.0e-14);
+    // But these are not changed.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 12.0, c1.x(), 1.0e-14);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 13.0, c1.y(), 1.0e-14);
+
+    // DONE
+}

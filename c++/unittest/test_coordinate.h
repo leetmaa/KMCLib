@@ -27,11 +27,15 @@ public:
     CPPUNIT_TEST( testConstructionAndQuery );
     CPPUNIT_TEST( testLessOperator );
     CPPUNIT_TEST( testDistance );
+    CPPUNIT_TEST( testMinusOperator );
+    CPPUNIT_TEST( testAccessOperator );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstructionAndQuery();
     void testLessOperator();
     void testDistance();
+    void testMinusOperator();
+    void testAccessOperator();
 };
 
 #endif

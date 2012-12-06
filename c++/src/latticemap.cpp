@@ -12,6 +12,7 @@
 
 
 #include "latticemap.h"
+#include "coordinate.h"
 
 #include <cstdio>
 #include <cstring>
@@ -200,6 +201,14 @@ const std::vector<int> & LatticeMap::indicesFromCell(const int i,
 
     // Get the list out and return.
     return cell_to_index_.find(cell)->second;
+}
+
+
+// -----------------------------------------------------------------------------
+//
+void LatticeMap::wrap(Coordinate & c) const
+{
+    // NEEDS IMPLEMENTATION
 }
 
 

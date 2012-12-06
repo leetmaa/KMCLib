@@ -34,6 +34,24 @@ public:
      */
     bool operator<(const Coordinate & other) const;
 
+    /*! \brief 'minus' operator.
+     *  \param other : The Coordinate to subtract.
+     *  \return : this - other
+     */
+    Coordinate operator-(const Coordinate & other) const;
+
+    /*! \brief 'access' operator.
+     *  \param i : The index to get out (0,1 or 2) corresponding to x,y,z
+     *  \return : The queried component.
+     */
+    double operator[](const int i) const;
+
+    /*! \brief 'access' operator.
+     *  \param i : The index to get out (0,1 or 2) corresponding to x,y,z
+     *  \return : The queried component.
+     */
+    double & operator[](const int i);
+
     /*! \brief Query for the x component.
      *  \return : The x component.
      */

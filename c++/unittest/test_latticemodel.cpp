@@ -34,7 +34,11 @@ void Test_LatticeModel::testConstruction()
     elements[0] = "A";
     elements[1] = "V";
 
-    Configuration config(coords,elements);
+    std::map<std::string, int> possible_types;
+    possible_types["A"] = 1;
+    possible_types["V"] = 2;
+
+    Configuration config(coords,elements,possible_types);
 
     // And a corresponding lattice map.
     LatticeMap lattice_map(1,2,1,1,true,true,true);

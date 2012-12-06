@@ -40,12 +40,12 @@ void Test_Process::testConstruction()
     coords[1][2] = -4.4;
 
     // The configurations.
-    const Configuration config1(coords, elements1);
-    const Configuration config2(coords, elements2);
+    const Configuration config1(coords, elements1, possible_types);
+    const Configuration config2(coords, elements2, possible_types);
 
     // Construct the process.
     const double barrier = 13.7;
-    Process process(config1, config2, barrier, possible_types);
+    Process process(config1, config2, barrier);
 
     // Check that there are no listed indices by default.
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 0);
@@ -83,12 +83,12 @@ void Test_Process::testMatchList()
     coords[2][2] = -0.4;
 
     // The configurations.
-    const Configuration config1(coords, elements1);
-    const Configuration config2(coords, elements2);
+    const Configuration config1(coords, elements1, possible_types);
+    const Configuration config2(coords, elements2, possible_types);
 
     // Construct the process.
     const double barrier = 13.7;
-    Process process(config1, config2, barrier, possible_types);
+    Process process(config1, config2, barrier);
 
     // Get the match list out.
     const std::vector<MatchListEntry> & match_list = process.matchList();
@@ -175,12 +175,12 @@ void Test_Process::testAddAndRemoveSite()
     coords[1][2] = -4.4;
 
     // The configurations.
-    const Configuration config1(coords, elements1);
-    const Configuration config2(coords, elements2);
+    const Configuration config1(coords, elements1, possible_types);
+    const Configuration config2(coords, elements2, possible_types);
 
     // Construct the process.
     const double barrier = 13.7;
-    Process process(config1, config2, barrier, possible_types);
+    Process process(config1, config2, barrier);
 
     // Check that there are no listed indices by default.
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 0);

@@ -27,19 +27,18 @@ class Process {
 
 public:
 
-    /*! \brief Constructor for the process.
+    /*! \brief Constructor for the process. Note that the configurations given
+               to the process are local configurations and no periodic boundaries
+               will be taken into consideration.
      *  \param first         : The first configuration, to match against the local
                                coordinates around an active site.
      *  \param second        : The second configuration, to update the local
                                configuration with if the process is selected.
      *  \param barrier       : The energy barrier in eV for performing the process.
-     *  \param possible_types: A global mapping from types to vector indices
-                               needed to set up the match lists properly.
      */
     Process(const Configuration & first,
             const Configuration & second,
-            const double barrier,
-            const std::map<std::string,int> & possible_types);
+            const double barrier);
 
     /*! \brief Query for the number of listed possible sites for this process.
      *  \return : The number of listed indices.
