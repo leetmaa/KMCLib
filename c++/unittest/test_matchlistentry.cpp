@@ -182,3 +182,22 @@ void Test_MatchListEntry::testLessOperator()
         CPPUNIT_ASSERT( !(e2 < e1) );
     }
 }
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_MatchListEntry::testQuery()
+{
+    // Construct.
+    MatchListEntry e(1324,2,1.2,Coordinate(0.1,0.2,0.34),3);
+
+    // Query and check.
+    CPPUNIT_ASSERT_EQUAL(e.matchType(), 1324);
+    CPPUNIT_ASSERT_EQUAL(e.updateType(), 2);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(e.distance(), 1.2, 1.0e-14);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(e.coordinate().x(), 0.1, 1.0e-14);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(e.coordinate().y(), 0.2, 1.0e-14);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(e.coordinate().z(), 0.34, 1.0e-14);
+
+}
+

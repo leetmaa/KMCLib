@@ -27,11 +27,13 @@ public:
     CPPUNIT_TEST( testConstruction );
     CPPUNIT_TEST( testNotEqualOperator );
     CPPUNIT_TEST( testLessOperator );
+    CPPUNIT_TEST( testQuery );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstruction();
     void testNotEqualOperator();
     void testLessOperator();
+    void testQuery();
 
 };
 
