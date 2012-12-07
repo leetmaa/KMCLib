@@ -23,6 +23,10 @@ class MatchListEntry {
 
 public:
 
+    /*! \brief Default constructor needed for SWIG wrapping.
+     */
+    MatchListEntry() {}
+
     /*! \brief Constructor.
      *  \param match_type : The matching type of the entrty.
      *  \param update_type: The update type of the entrty.

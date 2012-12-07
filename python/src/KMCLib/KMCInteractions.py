@@ -92,9 +92,9 @@ class KMCInteractions:
         :returns: The interactions object in C++
         """
         if self.__backend is None:
-            cpp_processes = Backend.StdVectorProcess(len(self.__raw_interactions))
 
             # For each interaction.
+            cpp_processes = Backend.StdVectorProcess()
             for interaction in self.__raw_interactions:
 
                 # Get the corresponding C++ objects.

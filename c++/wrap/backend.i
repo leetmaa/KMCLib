@@ -14,6 +14,7 @@
 #include "../src/interactions.h"
 #include "../src/process.h"
 #include "../src/coordinate.h"
+#include "../src/matchlistentry.h"
 %}
 
 %include "std_string.i"
@@ -26,6 +27,7 @@
 %template(StdVectorBool) std::vector<bool>;
 %template(StdVectorProcess) std::vector<Process>;
 %template(StdVectorCoordinate) std::vector<Coordinate>;
+%template(StdVectorMatchListEntry) std::vector<MatchListEntry>;
 %template(StdVectorStdVectorDouble) std::vector<std::vector<double> >;
 %template(StdMapStringInt) std::map<std::string,int>;
 
@@ -35,6 +37,7 @@
 %include "../src/interactions.h"
 %include "../src/process.h"
 %include "../src/coordinate.h"
+%include "../src/matchlistentry.h"
 
 %extend Coordinate
 {
