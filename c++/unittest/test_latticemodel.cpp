@@ -41,7 +41,10 @@ void Test_LatticeModel::testConstruction()
     Configuration config(coords,elements,possible_types);
 
     // And a corresponding lattice map.
-    LatticeMap lattice_map(1,2,1,1,true,true,true);
+    std::vector<int> rep(3, 1);
+    rep[0] = 2;
+    const std::vector<bool> per(3, true);
+    LatticeMap lattice_map(1, rep, per);
 
     // We also need the interactions.
     const std::vector<Process> processes;

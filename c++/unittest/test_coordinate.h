@@ -26,6 +26,7 @@ public:
     CPPUNIT_TEST_SUITE( Test_Coordinate );
     CPPUNIT_TEST( testConstructionAndQuery );
     CPPUNIT_TEST( testLessOperator );
+    CPPUNIT_TEST( testEqualsOperator );
     CPPUNIT_TEST( testDistance );
     CPPUNIT_TEST( testMinusOperator );
     CPPUNIT_TEST( testAccessOperator );
@@ -33,6 +34,7 @@ public:
 
     void testConstructionAndQuery();
     void testLessOperator();
+    void testEqualsOperator();
     void testDistance();
     void testMinusOperator();
     void testAccessOperator();

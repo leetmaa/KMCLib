@@ -27,6 +27,10 @@ class Process {
 
 public:
 
+    /*! \brief Default constructor needed for SWIG wrapping.
+     */
+    Process() {};
+
     /*! \brief Constructor for the process. Note that the configurations given
                to the process are local configurations and no periodic boundaries
                will be taken into consideration.

@@ -186,12 +186,8 @@ class KMCLattice:
         # Generate the lattice map if not done allready.
         if self.__lattice_map is None:
             self.__lattice_map = Backend.LatticeMap(len(self.__unit_cell.basis()),
-                                                    self.__repetitions[0],
-                                                    self.__repetitions[1],
-                                                    self.__repetitions[2],
-                                                    self.__periodic[0],
-                                                    self.__periodic[1],
-                                                    self.__periodic[2])
+                                                    Backend.StdVectorInt(self.__repetitions),
+                                                    Backend.StdVectorBool(self.__periodic))
         # Return the lattice map.
         return self.__lattice_map
 

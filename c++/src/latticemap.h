@@ -41,21 +41,13 @@ class LatticeMap {
 public:
 
     /*! \brief Constructor for the map.
-     *  \param n_basis    : The number of basis points.
-     *  \param rep_a      : The number of repetitions along the a axis.
-     *  \param rep_b      : The number of repetitions along the b axis.
-     *  \param rep_c      : The number of repetitions along the c axis.
-     *  \param periodic_a : Indicating periodicity along the a axis.
-     *  \param periodic_b : Indicating periodicity along the b axis.
-     *  \param periodic_c : Indicating periodicity along the c axis.
+     *  \param n_basis      : The number of basis points.
+     *  \param repetitions  : The number of repetitions along the a, b and c axes.
+     *  \param periodic     : Indicating periodicity along the a, b and c axes.
      */
     LatticeMap(const int n_basis,
-               const int rep_a,
-               const int rep_b,
-               const int rep_c,
-               const bool periodic_a,
-               const bool periodic_b,
-               const bool periodic_c);
+               const std::vector<int> repetitions,
+               const std::vector<bool> periodic);
 
     /*! \brief Get the neighbouring indices of a given index,
      *         including all indices in nearby cells. The number
@@ -80,17 +72,17 @@ public:
     /*! \brief Query for the periodicity.
      * \returns: The periodicity in the direction.
      */
-    const bool periodicA() const { return periodic_a_; }
+    const bool periodicA() const { return periodic_[0]; }
 
     /*! \brief Query for the periodicity.
      * \returns: The periodicity in the direction.
      */
-    const bool periodicB() const { return periodic_b_; }
+    const bool periodicB() const { return periodic_[1]; }
 
     /*! \brief Query for the periodicity.
      * \returns: The periodicity in the direction.
      */
-    const bool periodicC() const { return periodic_c_; }
+    const bool periodicC() const { return periodic_[2]; }
 
     /*! \brief Wrap the coordinate according to periodic boundaries.
      * \param c (in/out): The coordinate to wrap.
@@ -103,22 +95,12 @@ private:
 
     /// The number of basis points in the elemntary unitcell.
     int n_basis_;
-    /// The number of repetitions along the a direction.
-    int rep_a_;
-    /// The number of repetitions along the b direction.
-    int rep_b_;
-    /// The number of repetitions along the c direction.
-    int rep_c_;
-    /// The periodicity in the a direction.
-    bool periodic_a_;
-    /// The periodicity in the b direction.
-    bool periodic_b_;
-    /// The periodicity in the c direction.
-    bool periodic_c_;
-
+    /// The number of repetitions along the a, b and c directions.
+    std::vector<int> repetitions_;
+    /// The periodicity in the a, b and c directions.
+    std::vector<bool> periodic_;
     /// The mapping from cell to a list of lattice indices.
     std::map<CellIndex,std::vector<int> > cell_to_index_;
-
     /// The mapping from index to cell.
     std::map<int,CellIndex> index_to_cell_;
 

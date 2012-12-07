@@ -82,12 +82,34 @@ class KMCInteractions:
         # Done with initial checking of input.
         return interactions
 
-    def _backend(self):
-        """ Query for the interactions backend object. """
-        if self.__backend is None:
+    def _backend(self, possible_types):
+        """
+        Query for the interactions backend object.
 
-            # NEEDS IMPLEMENTATION
-            self.__backend = Backend.Interactions()
+        :param possible_types: A dict with the global mapping of type strings
+                               to integers.
+
+        :returns: The interactions object in C++
+        """
+        if self.__backend is None:
+            cpp_processes = Backend.StdVectorProcess(len(self.__raw_interactions))
+
+            # For each interaction.
+            for interaction in self.__raw_interactions:
+
+                # Get the corresponding C++ objects.
+                cpp_config1   = interaction[0]._backend(possible_types)
+                cpp_config2   = interaction[1]._backend(possible_types)
+                barrier       = interaction[2]
+
+                # Construct and store the C++ process.
+                cpp_processes.push_back(Backend.Process(cpp_config1,
+                                                        cpp_config2,
+                                                        barrier))
+
+            # Construct the C++ interactions object.
+            self.__backend = Backend.Interactions(cpp_processes)
 
         # Return the stored backend.
         return self.__backend
+

@@ -19,6 +19,7 @@ from KMCLatticeModelTest import KMCLatticeModelTest
 
 from Utilities import UtilitiesTests
 from Exceptions import ExceptionsTests
+from Backend import BackendTests
 
 def suite():
     suite = unittest.TestSuite(
@@ -29,7 +30,8 @@ def suite():
          unittest.TestLoader().loadTestsFromTestCase(KMCLatticeTest),
          unittest.TestLoader().loadTestsFromTestCase(KMCLatticeModelTest),
          UtilitiesTests.suite(),
-         ExceptionsTests.suite()])
+         ExceptionsTests.suite(),
+         BackendTests.suite()])
     return suite
 
 if __name__ == '__main__':

@@ -13,7 +13,8 @@ from KMCLib.Utilities.CheckUtilities import checkIndexWithinBounds
 from KMCLib.Utilities.CheckUtilities import checkTypes
 from KMCLib.Utilities.CoordinateUtilities import centerCoordinates
 from KMCLib.Utilities.CoordinateUtilities import sortCoordinates
-
+from KMCLib.Utilities.ConversionUtilities import numpy2DArrayToStdVectorStdVectorDouble
+from KMCLib.Backend import Backend
 
 class KMCLocalConfiguration:
     """
@@ -61,6 +62,9 @@ class KMCLocalConfiguration:
         # Sort the coordinates with respect to distance from the center and store on the class.
         (self.__coordinates, self.__distances, self.__types) = sortCoordinates(coordinates, center, types)
 
+        # Set the backend to None, to generate it at first query.
+        self.__backend = None
+
     def coordinates(self):
         """
         Query function for the coordinates stored on the class.
@@ -82,6 +86,29 @@ class KMCLocalConfiguration:
         Query function for the distances from the center.
         """
         return self.__distances
+
+    def _backend(self, possible_types):
+        """
+        Query for the local configuration backend object.
+
+        :param possible_types: A dict with the global mapping of type strings
+                               to integers.
+
+        :returns: The interactions object in C++
+        """
+        if self.__backend is None:
+            # Construct the c++ backend object.
+            cpp_types  = Backend.StdVectorString(self.__types)
+            cpp_coords = numpy2DArrayToStdVectorStdVectorDouble(self.__coordinates)
+            cpp_possible_types = Backend.StdMapStringInt(possible_types)
+
+            # Send in the coordinates and types to construct the backend configuration.
+            self.__backend = Backend.Configuration(cpp_coords,
+                                                   cpp_types,
+                                                   cpp_possible_types)
+
+        # Return the backend.
+        return self.__backend
 
     def _script(self, variable_name="local_configuration"):
         """

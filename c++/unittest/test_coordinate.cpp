@@ -66,6 +66,44 @@ void Test_Coordinate::testLessOperator()
 
 // -------------------------------------------------------------------------- //
 //
+void Test_Coordinate::testEqualsOperator()
+{
+    // Two equal.
+    {
+        Coordinate c1(0.1,0.2,0.3);
+        Coordinate c2(0.1,0.2,0.3);
+        CPPUNIT_ASSERT(  (c1 == c2) );
+        CPPUNIT_ASSERT( !(c1 != c2) );
+    }
+
+    // c1 smaller in x.
+    {
+        Coordinate c1(0.099999,0.2,0.3);
+        Coordinate c2(0.1,0.2,0.3);
+        CPPUNIT_ASSERT( !(c1 == c2) );
+        CPPUNIT_ASSERT(  (c1 != c2) );
+    }
+
+    // c1 smaller in y.
+    {
+        Coordinate c1(0.1,0.19999999999,0.3);
+        Coordinate c2(0.1,0.2,0.3);
+        CPPUNIT_ASSERT( !(c1 == c2) );
+        CPPUNIT_ASSERT(  (c1 != c2) );
+    }
+
+    // c1 smaller in z.
+    {
+        Coordinate c1(0.1,0.2,0.299999999);
+        Coordinate c2(0.1,0.2,0.3);
+        CPPUNIT_ASSERT( !(c1 == c2) );
+        CPPUNIT_ASSERT(  (c1 != c2) );
+     }
+}
+
+
+// -------------------------------------------------------------------------- //
+//
 void Test_Coordinate::testDistance()
 {
     {

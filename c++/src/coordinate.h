@@ -21,6 +21,10 @@ class Coordinate {
 
 public:
 
+    /*! \brief Default constructor for wrapping.
+     */
+    Coordinate(){}
+
     /*! \brief Constructor.
      *  \param x : The x coordinate.
      *  \param y : The y coordinate.
@@ -33,6 +37,16 @@ public:
      *  \return : (this < other)
      */
     bool operator<(const Coordinate & other) const;
+
+    /*! \brief 'equals' operator.
+     *  \return : this == other
+     */
+    bool operator==(const Coordinate & other) const;
+
+    /*! \brief 'not equals' operator.
+     *  \return : this != other
+     */
+    bool operator!=(const Coordinate & other) const;
 
     /*! \brief 'minus' operator.
      *  \param other : The Coordinate to subtract.

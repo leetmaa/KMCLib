@@ -97,8 +97,7 @@ class KMCLatticeModelTest(unittest.TestCase):
         # Check that it has the correct configuration stored.
         self.assertTrue(model._KMCLatticeModel__configuration == config)
 
-    # FIXME
-    def notestBackend(self):
+    def testBackend(self):
         """ Test that the backend object is correctly constructed. """
         # Setup a unitcell.
         unit_cell = KMCUnitCell(cell_vectors=numpy.array([[2.8,0.0,0.0],

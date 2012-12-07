@@ -24,14 +24,19 @@ class Test_LatticeMap : public CppUnit::TestCase {
 public:
 
     CPPUNIT_TEST_SUITE( Test_LatticeMap );
-    CPPUNIT_TEST( testConstruction );
+    CPPUNIT_TEST( testConstructionAndQuery );
     CPPUNIT_TEST( testIndicesFromCell );
     CPPUNIT_TEST( testNeighbourIndices );
+    CPPUNIT_TEST( testWrap );
+    CPPUNIT_TEST( testWrapLong );
     CPPUNIT_TEST_SUITE_END();
 
-    void testConstruction();
+    void testConstructionAndQuery();
     void testIndicesFromCell();
     void testNeighbourIndices();
+    void testWrap();
+    void testWrapLong();
+
 };
 
 #endif

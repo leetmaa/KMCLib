@@ -61,7 +61,7 @@ class KMCLatticeModel:
             # Setup the C++ objects we need.
             cpp_config       = self.__configuration._backend()
             cpp_lattice_map  = self.__configuration._latticeMap()
-            cpp_interactions = self.__interactions._backend()
+            cpp_interactions = self.__interactions._backend(self.__configuration.possibleTypes())
             # Construct the backend iobject.
             self.__backend = Backend.LatticeModel(cpp_config, cpp_lattice_map, cpp_interactions)
         # Return.

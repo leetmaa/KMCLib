@@ -23,8 +23,7 @@ from KMCLib.KMCConfiguration import KMCConfiguration
 class KMCConfigurationTest(unittest.TestCase):
     """ Class for testing the KMCConfiguration class """
 
-    # FIXME
-    def notestConstructionShortFormat(self):
+    def testConstructionShortFormat(self):
         """ Test that the KMCConfiguration class can be constructed. """
 
         # Setup a valid KMCUnitCell.
@@ -61,20 +60,18 @@ class KMCConfigurationTest(unittest.TestCase):
         self.assertEqual(types, ret_types)
 
         # Check that the possible types are what we expect.
-        self.assertEqual(['a','c','b'], config._KMCConfiguration__possible_types)
-        # Check that the number of lattice sites corresponds
-        # to the lattice.
+        self.assertEqual(set(['a','c','b']), set(config._KMCConfiguration__possible_types.keys()))
+
+        # Check that the number of lattice sites corresponds to the lattice.
         self.assertEqual(config._KMCConfiguration__n_lattice_sites, len(lattice.sites()))
 
         # Construct without possible types and check that the list is set correctly
         # from the given types.
         config = KMCConfiguration(lattice=lattice,
                                   types=types)
-        self.assertEqual(['a','b'], config._KMCConfiguration__possible_types)
+        self.assertEqual(set(['a','b']), set(config._KMCConfiguration__possible_types.keys()))
 
-
-    # FIXME
-    def notestConstructionLongFormat(self):
+    def testConstructionLongFormat(self):
         """ Test that the KMCConfiguration class can be constructed with the long types format. """
 
         # Setup a valid KMCUnitCell.
@@ -368,8 +365,7 @@ class KMCConfigurationTest(unittest.TestCase):
         # Check that these two are references to the same underlying object.
         self.assertTrue(cpp_lattice_map == cpp_lattice_map_ref)
 
-    # FIXME
-    def notestBackend(self):
+    def testBackend(self):
         """ Make sure the C++ backend is what we expect. """
         # Setup a valid KMCUnitCell.
         unit_cell = KMCUnitCell(cell_vectors=numpy.array([[2.8,0.0,0.0],

@@ -11,7 +11,7 @@
  */
 
 #include <cmath>
-#include <iostream>
+#include <cstdio>
 
 #include "coordinate.h"
 
@@ -45,6 +45,22 @@ bool Coordinate::operator<(const Coordinate & other) const
     }
 
     return (x_ < other.x_);
+}
+
+
+// -----------------------------------------------------------------------------
+//
+bool Coordinate::operator==(const Coordinate & other) const
+{
+    return (!(*this < other) && !(other < *this));
+}
+
+
+// -----------------------------------------------------------------------------
+//
+bool Coordinate::operator!=(const Coordinate & other) const
+{
+    return !(*this == other);
 }
 
 
@@ -110,6 +126,6 @@ double Coordinate::distance(const Coordinate & other) const
 //
 void Coordinate::print() const
 {
-    std::cout << x_ << " " << y_ << " " << z_ << std::endl;
+    printf("(%20.10e %20.10e %20.10e)\n", x_, y_, z_);
 }
 

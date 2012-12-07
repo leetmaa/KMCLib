@@ -12,6 +12,7 @@ import unittest
 import numpy
 
 from KMCLib.Exceptions.Error import Error
+from KMCLib.Backend import Backend
 
 # Import the module to test.
 from KMCLib.KMCLocalConfiguration import KMCLocalConfiguration
@@ -144,6 +145,34 @@ local_config2 = KMCLocalConfiguration(
 """
         # Check.
         self.assertEqual(local_config._script(variable_name="local_config2"), ref_script2)
+
+    def testBackend(self):
+        """ Test that we can get a valid backend object out. """
+        # Construct with coordinate list.
+        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
+        types = ["A","B"]
+        local_config = KMCLocalConfiguration(coordinates=coords,
+                                             types=types,
+                                             center=1)
+
+        # Setup a possible types dict.
+        possible_types = {
+            "A" : 0,
+            "B" : 1,
+            "C" : 2,
+            }
+
+        # Get the backend.
+        backend = local_config._backend(possible_types)
+
+        # Check its type.
+        self.assertTrue( isinstance(backend, Backend.Configuration) )
+
+        # Get the coordinates back out.
+        ret_coords = numpy.array(backend.coordinates())
+
+        print ret_coords
+
 
 
 if __name__ == '__main__':

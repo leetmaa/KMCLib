@@ -12,16 +12,49 @@
 // Include the files to test.
 #include "../src/latticemap.h"
 
+#include "../src/coordinate.h"
+
 #include <algorithm>
 
 // -------------------------------------------------------------------------- //
 //
-void Test_LatticeMap::testConstruction()
+void Test_LatticeMap::testConstructionAndQuery()
 {
     // Construct a map.
-    CPPUNIT_ASSERT_NO_THROW( LatticeMap map(3,3,4,5,false,true,false) );
 
-    // DONE.
+    std::vector<int> repetitions(3);
+    repetitions[0] = 3;
+    repetitions[1] = 5;
+    repetitions[2] = 6;
+
+    std::vector<bool> periodicity(3, true);
+
+    CPPUNIT_ASSERT_NO_THROW( LatticeMap map(3, repetitions, periodicity) );
+
+    LatticeMap map(3, repetitions, periodicity);
+
+    // Test the query functions.
+    CPPUNIT_ASSERT( map.periodicA() );
+    CPPUNIT_ASSERT( map.periodicB() );
+    CPPUNIT_ASSERT( map.periodicC() );
+
+    periodicity[0] = false;
+    LatticeMap map2(3, repetitions, periodicity);
+    CPPUNIT_ASSERT( !map2.periodicA() );
+    CPPUNIT_ASSERT(  map2.periodicB() );
+    CPPUNIT_ASSERT(  map2.periodicC() );
+
+    periodicity[1] = false;
+    LatticeMap map3(3, repetitions, periodicity);
+    CPPUNIT_ASSERT( !map3.periodicA() );
+    CPPUNIT_ASSERT( !map3.periodicB() );
+    CPPUNIT_ASSERT(  map3.periodicC() );
+
+    periodicity[2] = false;
+    LatticeMap map4(3, repetitions, periodicity);
+    CPPUNIT_ASSERT( !map4.periodicA() );
+    CPPUNIT_ASSERT( !map4.periodicB() );
+    CPPUNIT_ASSERT( !map4.periodicC() );
 
 }
 
@@ -33,16 +66,18 @@ void Test_LatticeMap::testIndicesFromCell()
     {
         // A map with 1 in the basis.
         const int basis = 1;
-        const int nA = 3;
-        const int nB = 2;
-        const int nC = 4;
-        const LatticeMap map(basis,nA,nB,nC,false,false,false);
+        std::vector<int> repetitions(3);
+        repetitions[0] = 3;
+        repetitions[1] = 2;
+        repetitions[2] = 4;
+        const std::vector<bool> periodicity(3, false);
+        const LatticeMap map(basis, repetitions, periodicity);
 
         // Here indices from cell should just be the incrementat number.
         int index = 0;
-        for (int i = 0; i < nA; ++i) {
-            for (int j = 0; j < nB; ++j) {
-                for (int k = 0; k < nC; ++k) {
+        for (int i = 0; i < repetitions[0]; ++i) {
+            for (int j = 0; j < repetitions[1]; ++j) {
+                for (int k = 0; k < repetitions[2]; ++k) {
                     CPPUNIT_ASSERT_EQUAL( map.indicesFromCell(i,j,k)[0], index );
                     ++index;
                 }
@@ -52,16 +87,18 @@ void Test_LatticeMap::testIndicesFromCell()
     {
         // A map with 1 in the basis and other periodicity.
         const int basis = 1;
-        const int nA = 3;
-        const int nB = 2;
-        const int nC = 4;
-        const LatticeMap map(basis,nA,nB,nC,true,true,true);
+        std::vector<int> repetitions(3);
+        repetitions[0] = 3;
+        repetitions[1] = 2;
+        repetitions[2] = 4;
+        const std::vector<bool> periodicity(3, true);
+        const LatticeMap map(basis, repetitions, periodicity);
 
         // Here indices from cell should just be the incrementat number.
         int index = 0;
-        for (int i = 0; i < nA; ++i) {
-            for (int j = 0; j < nB; ++j) {
-                for (int k = 0; k < nC; ++k) {
+        for (int i = 0; i < repetitions[0]; ++i) {
+            for (int j = 0; j < repetitions[1]; ++j) {
+                for (int k = 0; k < repetitions[2]; ++k) {
                     CPPUNIT_ASSERT_EQUAL( map.indicesFromCell(i,j,k)[0], index );
                     ++index;
                 }
@@ -71,16 +108,18 @@ void Test_LatticeMap::testIndicesFromCell()
     {
         // A map with basis 2
         const int basis = 2;
-        const int nA = 3;
-        const int nB = 2;
-        const int nC = 4;
-        const LatticeMap map(basis,nA,nB,nC,false,false,false);
+        std::vector<int> repetitions(3);
+        repetitions[0] = 3;
+        repetitions[1] = 2;
+        repetitions[2] = 4;
+        const std::vector<bool> periodicity(3, false);
+        const LatticeMap map(basis, repetitions, periodicity);
 
         // Here indices from cell should just be the incrementat number.
         int index = 0;
-        for (int i = 0; i < nA; ++i) {
-            for (int j = 0; j < nB; ++j) {
-                for (int k = 0; k < nC; ++k) {
+        for (int i = 0; i < repetitions[0]; ++i) {
+            for (int j = 0; j < repetitions[1]; ++j) {
+                for (int k = 0; k < repetitions[2]; ++k) {
                     for (int l = 0; l < basis; ++l) {
                         CPPUNIT_ASSERT_EQUAL( map.indicesFromCell(i,j,k)[l], index );
                         ++index;
@@ -93,17 +132,18 @@ void Test_LatticeMap::testIndicesFromCell()
     {
         // A huge map with basis 12 (1 200 000 points)
         const int basis = 12;
-        const int nA = 100;
-        const int nB = 100;
-        const int nC = 10;
-
-        const LatticeMap map(basis,nA,nB,nC,false,false,false);
+        std::vector<int> repetitions(3);
+        repetitions[0] = 100;
+        repetitions[1] = 100;
+        repetitions[2] = 10;
+        const std::vector<bool> periodicity(3, false);
+        const LatticeMap map(basis, repetitions, periodicity);
 
         // Here indices from cell should just be the incrementat number.
         int index = 0;
-        for (int i = 0; i < nA; ++i) {
-            for (int j = 0; j < nB; ++j) {
-                for (int k = 0; k < nC; ++k) {
+        for (int i = 0; i < repetitions[0]; ++i) {
+            for (int j = 0; j < repetitions[1]; ++j) {
+                for (int k = 0; k < repetitions[2]; ++k) {
                     for (int l = 0; l < basis; ++l) {
 
                         CPPUNIT_ASSERT_EQUAL( map.indicesFromCell(i,j,k)[l], index );
@@ -128,10 +168,12 @@ void Test_LatticeMap::testNeighbourIndices()
     // middle. This should return all indices.
 
     const int basis = 1;
-    const int nA = 3;
-    const int nB = 3;
-    const int nC = 3;
-    const LatticeMap map(basis,nA,nB,nC,false,false,false);
+    std::vector<int> repetitions(3);
+    repetitions[0] = 3;
+    repetitions[1] = 3;
+    repetitions[2] = 3;
+    const std::vector<bool> periodicity(3, false);
+    const LatticeMap map(basis, repetitions, periodicity);
 
     // Get the central cell index.
     const int central_index = map.indicesFromCell(1,1,1)[0];
@@ -153,7 +195,8 @@ void Test_LatticeMap::testNeighbourIndices()
     // Now, check any other cell with periodicity.
     // The neighbours should be the same
     // after sorting.
-    const LatticeMap map2(basis,nA,nB,nC,true,true,true);
+    const std::vector<bool> periodicity2(3, true);
+    const LatticeMap map2(basis, repetitions, periodicity2);
 
     std::vector<int> neighbours2 = map2.neighbourIndices(0);
     std::sort(neighbours2.begin(), neighbours2.end());
@@ -168,7 +211,9 @@ void Test_LatticeMap::testNeighbourIndices()
     }
 
     // Remove periodicity from the first two directions.
-    const LatticeMap map3(basis,nA,nB,nC,false,false,true);
+    std::vector<bool> periodicity3(3, false);
+    periodicity3[2] = true;
+    const LatticeMap map3(basis, repetitions, periodicity3);
 
     // This should cut the 15 wrapped indices in the a and b directions.
     const std::vector<int> & neighbours4 = map3.neighbourIndices(0);
@@ -197,7 +242,10 @@ void Test_LatticeMap::testNeighbourIndices()
 
     // Removing periodicity in the x,z directions instead we should have:
     // 6,7,0,1,3,4,15,16,9,10,12,13
-    const LatticeMap map4(basis,nA,nB,nC,false,true,false);
+    std::vector<bool> periodicity4(3, false);
+    periodicity4[1] = true;
+    const LatticeMap map4(basis, repetitions, periodicity4);
+
     const std::vector<int> & neighbours5 = map4.neighbourIndices(0);
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(neighbours5.size()), static_cast<int>(neighbours.size())-15);
 
@@ -218,7 +266,7 @@ void Test_LatticeMap::testNeighbourIndices()
     CPPUNIT_ASSERT_EQUAL(neighbours5[11], 13);
 
     // Test with basis 2.
-    const LatticeMap map6(basis*2,nA,nB,nC,false,true,false);
+    const LatticeMap map6(basis*2, repetitions, periodicity4);
     const std::vector<int> & neighbours6 = map6.neighbourIndices(0);
 
     // Expecting twice the size.
@@ -242,4 +290,137 @@ void Test_LatticeMap::testNeighbourIndices()
     CPPUNIT_ASSERT_EQUAL(neighbours6[11], 9);
 
     // DONE.
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_LatticeMap::testWrap()
+{
+    // Construct a periodic map.
+    std::vector<int> repetitions(3);
+    repetitions[0] = 3;
+    repetitions[1] = 5;
+    repetitions[2] = 6;
+    const std::vector<bool> periodicity(3, true);
+    LatticeMap map(3, repetitions, periodicity);
+
+    // Check a few coordinates.
+
+    {
+        // Should be wrapped in all directions.
+        Coordinate c(1.5, 2.5, 3.0);
+        const Coordinate ref(-1.5, -2.5, -3.0);
+        // Wrap and check.
+        map.wrap(c);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(ref.x(), c.x(), 1.0e-14);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(ref.y(), c.y(), 1.0e-14);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(ref.z(), c.z(), 1.0e-14);
+    }
+    {
+        // Should not be wrapped.
+        Coordinate c(-1.5, -2.5, -3.0);
+        const Coordinate ref(-1.5, -2.5, -3.0);
+        // Wrap and check.
+        map.wrap(c);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(ref.x(), c.x(), 1.0e-14);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(ref.y(), c.y(), 1.0e-14);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(ref.z(), c.z(), 1.0e-14);
+    }
+    {
+        // Should be wrapped in a.
+        Coordinate c(1.50, -2.5, 2.0);
+        const Coordinate ref(-1.50, -2.5, 2.0);
+        // Wrap and check.
+        map.wrap(c);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(ref.x(), c.x(), 1.0e-14);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(ref.y(), c.y(), 1.0e-14);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(ref.z(), c.z(), 1.0e-14);
+    }
+    {
+        // Should be wrapped in a.
+        Coordinate c(-1.51, -2.5, 2.0);
+        const Coordinate ref(1.49, -2.5, 2.0);
+        // Wrap and check.
+        map.wrap(c);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(ref.x(), c.x(), 1.0e-14);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(ref.y(), c.y(), 1.0e-14);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(ref.z(), c.z(), 1.0e-14);
+    }
+    {
+        // Should be wrapped in b.
+        Coordinate c(-1.47, 2.50, 2.0);
+        const Coordinate ref(-1.47, -2.5, 2.0);
+        // Wrap and check.
+        map.wrap(c);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(ref.x(), c.x(), 1.0e-14);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(ref.y(), c.y(), 1.0e-14);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(ref.z(), c.z(), 1.0e-14);
+
+    }
+    {
+        // Should be wrapped in b.
+        Coordinate c(-1.47, -4.30, 2.0);
+        const Coordinate ref(-1.47, 0.70, 2.0);
+        // Wrap and check.
+        map.wrap(c);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(ref.x(), c.x(), 1.0e-14);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(ref.y(), c.y(), 1.0e-14);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(ref.z(), c.z(), 1.0e-14);
+    }
+    {
+        // Should be wrapped in c.
+        Coordinate c(-1.47, 0.70, 3.001);
+        const Coordinate ref(-1.47, 0.70, -2.999);
+        // Wrap and check.
+        map.wrap(c);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(ref.x(), c.x(), 1.0e-14);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(ref.y(), c.y(), 1.0e-14);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(ref.z(), c.z(), 1.0e-14);
+    }
+    {
+        // Should be wrapped in c.
+        Coordinate c(-1.47, 0.70, -3.001);
+        const Coordinate ref(-1.47, 0.70, 2.999);
+        // Wrap and check.
+        map.wrap(c);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(ref.x(), c.x(), 1.0e-14);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(ref.y(), c.y(), 1.0e-14);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(ref.z(), c.z(), 1.0e-14);
+    }
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_LatticeMap::testWrapLong()
+{
+    // Wrapping longer than one cell is not needed and will not be
+    // supported now. This test checks the expected behaviour.
+
+    // Construct a periodic map.
+    std::vector<int> repetitions(3);
+    repetitions[0] = 3;
+    repetitions[1] = 5;
+    repetitions[2] = 6;
+    const std::vector<bool> periodicity(3, true);
+    LatticeMap map(3, repetitions, periodicity);
+
+    {
+        // Should be wrapped in all directions.
+        Coordinate c(1.5+3.0, 2.5+5.0, 3.0+12.0);
+
+        // If wrapping more than one box length was supported this
+        // would be the correct reference.
+        const Coordinate ref(-1.5, -2.5, -3.0);
+
+        // Now this is what we expect to get instead.
+        const Coordinate ref2(1.5, 2.5, 9.0);
+
+        // Wrap and check.
+        map.wrap(c);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(ref2.x(), c.x(), 1.0e-14);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(ref2.y(), c.y(), 1.0e-14);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(ref2.z(), c.z(), 1.0e-14);
+    }
 }

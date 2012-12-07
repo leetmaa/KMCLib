@@ -145,7 +145,9 @@ class KMCConfiguration:
 
         # Every thing is checked - store the data on the class.
         self.__types = types_to_set
-        self.__possible_types = possible_types
+
+        # Setup the possible types as a dict.
+        self.__possible_types = dict(zip(possible_types, range(len(possible_types))))
 
     def types(self):
         """
@@ -159,6 +161,14 @@ class KMCConfiguration:
         # Return the types.
         return self.__types
 
+    def possibleTypes(self):
+        """
+        Query function for the possible types dict.
+
+        :returns: The stored possible types dict.
+        """
+        return self.__possible_types
+
     def _backend(self):
         """
         Query function for the c++ backend object.
@@ -167,14 +177,15 @@ class KMCConfiguration:
             # Construct the c++ backend object.
             cpp_types  = stringListToStdVectorString(self.__types)
             cpp_coords = numpy2DArrayToStdVectorStdVectorDouble(self.__lattice.sites())
+            cpp_possible_types = Backend.StdMapStringInt(self.__possible_types)
 
             # Send in the coordinates and types to construct the backend configuration.
             self.__backend = Backend.Configuration(cpp_coords,
-                                                       cpp_types)
+                                                   cpp_types,
+                                                   cpp_possible_types)
 
         # Return the backend.
         return self.__backend
-
 
     def _latticeMap(self):
         """

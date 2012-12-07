@@ -50,27 +50,19 @@ bool operator<(const CellIndex & index1, const CellIndex & index2)
 // -----------------------------------------------------------------------------
 //
 LatticeMap::LatticeMap(const int n_basis,
-                       const int rep_a,
-                       const int rep_b,
-                       const int rep_c,
-                       const bool periodic_a,
-                       const bool periodic_b,
-                       const bool periodic_c) :
+                       const std::vector<int> repetitions,
+                       const std::vector<bool> periodic) :
     n_basis_(n_basis),
-    rep_a_(rep_a),
-    rep_b_(rep_b),
-    rep_c_(rep_c),
-    periodic_a_(periodic_a),
-    periodic_b_(periodic_b),
-    periodic_c_(periodic_c)
+    repetitions_(repetitions),
+    periodic_(periodic)
 {
     // Setup the maps.
     int index = 0;
-    for (int i = 0; i < rep_a_; ++i)
+    for (int i = 0; i < repetitions_[0]; ++i)
     {
-        for (int j = 0; j < rep_b_; ++j)
+        for (int j = 0; j < repetitions_[1]; ++j)
         {
-            for (int k = 0; k < rep_c_; ++k)
+            for (int k = 0; k < repetitions_[2]; ++k)
             {
                 for (int b = 0; b < n_basis_; ++b)
                 {
@@ -112,56 +104,56 @@ std::vector<int> LatticeMap::neighbourIndices(const int index) const
     {
         int ii = i;
         // Handle periodicity.
-        if (periodic_a_)
+        if (periodic_[0])
         {
             if (ii < 0)
             {
-                ii += rep_a_;
+                ii += repetitions_[0];
             }
-            else if (ii >= rep_a_)
+            else if (ii >= repetitions_[0])
             {
-                ii -= rep_a_;
+                ii -= repetitions_[0];
             }
         }
         // Go on only if i is within bounds.
-        if (ii >= 0 && ii < rep_a_)
+        if (ii >= 0 && ii < repetitions_[0])
         {
             for (int j = cell.j - 1; j <= cell.j + 1; ++j)
             {
                 int jj = j;
                 // Handle periodicity.
-                if (periodic_b_)
+                if (periodic_[1])
                 {
                     if (jj < 0)
                     {
-                        jj += rep_b_;
+                        jj += repetitions_[1];
                     }
-                    else if (jj >= rep_b_)
+                    else if (jj >= repetitions_[1])
                     {
-                        jj -= rep_b_;
+                        jj -= repetitions_[1];
                     }
                 }
                 // Go on only if j is within bounds.
-                if (jj >= 0 && jj < rep_b_)
+                if (jj >= 0 && jj < repetitions_[1])
                 {
                     for (int k = cell.k - 1; k <= cell.k + 1; ++k)
                     {
                         int kk = k;
                         // Check that k is within bounds.
-                        if (periodic_c_)
+                        if (periodic_[2])
                         {
                             if (kk < 0)
                             {
-                                kk += rep_c_;
+                                kk += repetitions_[2];
                             }
-                            else if (kk >= rep_c_)
+                            else if (kk >= repetitions_[2])
                             {
-                                kk -= rep_c_;
+                                kk -= repetitions_[2];
                             }
                         }
 
                         // Go on only if k is within bounds.
-                        if (0 <= kk && kk < rep_c_)
+                        if (0 <= kk && kk < repetitions_[2])
                         {
                             // Take a reference to the mapped data.
                             const std::vector<int> & indices = indicesFromCell(ii,jj,kk);
@@ -208,7 +200,23 @@ const std::vector<int> & LatticeMap::indicesFromCell(const int i,
 //
 void LatticeMap::wrap(Coordinate & c) const
 {
-    // NEEDS IMPLEMENTATION
+    // Loop over directions.
+    for (int i = 0; i < 3; ++i)
+    {
+        // Wrap if periodic.
+        if (periodic_[i])
+        {
+            const double half_cell = 1.0 * repetitions_[i] / 2.0;
+            if (c[i] >= half_cell)
+            {
+                c[i] -= repetitions_[i];
+            }
+            else if (c[i] < -half_cell)
+            {
+                c[i] += repetitions_[i];
+            }
+        }
+    }
 }
 
 
