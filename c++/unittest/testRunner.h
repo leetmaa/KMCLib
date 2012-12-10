@@ -15,6 +15,7 @@
 #include "test_interactions.h"
 #include "test_coordinate.h"
 #include "test_matchlistentry.h"
+#include "test_matcher.h"
 
 // -------------------------------------------------------------------------- //
 // Add tests.
@@ -26,3 +27,5 @@ CPPUNIT_TEST_SUITE_REGISTRATION( Test_Process );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_Interactions );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_Coordinate );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_MatchListEntry );
+CPPUNIT_TEST_SUITE_REGISTRATION( Test_Matcher );
+
