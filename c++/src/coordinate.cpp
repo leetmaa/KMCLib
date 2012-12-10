@@ -43,8 +43,10 @@ bool Coordinate::operator<(const Coordinate & other) const
             return (y_ < other.y_);
         }
     }
-
-    return (x_ < other.x_);
+    else
+    {
+        return (x_ < other.x_);
+    }
 }
 
 

@@ -60,12 +60,15 @@ public:
                            const Configuration & configuration) const;
 
     /*! \brief Check the matching between a local neighbourhood index list and a process.
+     *  \param index         : The configuration index for which the
+                               neighbourhood should be matched.
      *  \param process       : The process to check against.
      *  \param lattice_map   : The lattice map describing the lattice.
      *  \param configuration : The configuration which the neighbrourhood indices refers to.
      *  \return : True if match.
      */
-    bool isMatch(std::vector<int> & neighbourhood,
+    bool isMatch(const int index,
+                 const std::vector<int> & neighbourhood,
                  const Process & process,
                  const LatticeMap & lattice_map,
                  const Configuration & configuration) const;

@@ -57,12 +57,14 @@ public:
 
     /*! \brief Construct and return the match list for the given list of
      *         indices.
-     *  \param indices     : The indices to get the match list for.
-     *  \param lattice_map : The lattice map needed for calculating distances
-     *                       using correct boundaries.
+     *  \param origin_index : The index to treat as the origin.
+     *  \param indices      : The indices to get the match list for.
+     *  \param lattice_map  : The lattice map needed for calculating distances
+     *                        using correct boundaries.
      *  \return : The match list.
      */
-    std::vector<MatchListEntry> matchList(const std::vector<int> & indices,
+    std::vector<MatchListEntry> matchList(const int origin_index,
+                                          const std::vector<int> & indices,
                                           const LatticeMap & lattice_map) const;
 
 protected:

@@ -11,6 +11,7 @@
  */
 
 #include <cmath>
+#include <cstdio>
 #include "matchlistentry.h"
 #include "coordinate.h"
 
@@ -85,8 +86,10 @@ bool MatchListEntry::operator<(const MatchListEntry & other) const
             return (match_type_ < other.match_type_);
         }
     }
-
-    // Sort wrt. distance.
-    return (distance_ < other.distance_);
+    else
+    {
+        // Sort wrt. distance.
+        return (distance_ < other.distance_);
+    }
 }
 

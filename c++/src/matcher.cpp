@@ -10,6 +10,7 @@
  *  \brief File for the implementation code of the Matcher class.
  */
 
+#include <cstdio>
 
 #include "matcher.h"
 #include "process.h"
@@ -62,10 +63,10 @@ void Matcher::calculateMatching(Process & process,
     const bool in_list = process.isListed(index);
 
     // Get the neighbrourhood out.
-    std::vector<int> neighbourhood = lattice_map.neighbourIndices(index);
+    const std::vector<int> neighbourhood = lattice_map.neighbourIndices(index);
 
     // Match the neighbrourhood with the process.
-    const bool is_match = isMatch(neighbourhood, process, lattice_map, configuration);
+    const bool is_match = isMatch(index, neighbourhood, process, lattice_map, configuration);
 
     // If match and not previous match - add to the list.
     if (is_match && !in_list)
@@ -82,7 +83,8 @@ void Matcher::calculateMatching(Process & process,
 
 // -----------------------------------------------------------------------------
 //
-bool Matcher::isMatch(std::vector<int> & neighbourhood,
+bool Matcher::isMatch(const int index,
+                      const std::vector<int> & neighbourhood,
                       const Process & process,
                       const LatticeMap & lattice_map,
                       const Configuration & configuration) const
@@ -95,7 +97,7 @@ bool Matcher::isMatch(std::vector<int> & neighbourhood,
 
     // Get the types and distances match lists.
     const std::vector<MatchListEntry> & process_match_list = process.matchList();
-    const std::vector<MatchListEntry> index_match_list = configuration.matchList(neighbourhood, lattice_map);
+    const std::vector<MatchListEntry> index_match_list = configuration.matchList(index, neighbourhood, lattice_map);
 
     // Check the match lists and return.
     return isMatch(process_match_list,
@@ -112,6 +114,8 @@ bool Matcher::isMatch(const std::vector<MatchListEntry> & process_match_list,
     std::vector<MatchListEntry>::const_iterator it1 = process_match_list.begin();
     std::vector<MatchListEntry>::const_iterator it2 = index_match_list.begin();
 
+    it1 = process_match_list.begin();
+    it2 = index_match_list.begin();
     // Loop over the process match list and compare.
     for( ; it1 != process_match_list.end(); ++it1, ++it2)
     {

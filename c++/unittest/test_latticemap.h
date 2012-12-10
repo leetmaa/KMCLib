@@ -27,6 +27,8 @@ public:
     CPPUNIT_TEST( testConstructionAndQuery );
     CPPUNIT_TEST( testIndicesFromCell );
     CPPUNIT_TEST( testNeighbourIndices );
+    CPPUNIT_TEST( testNeighbourIndicesMinimal );
+    CPPUNIT_TEST( testNeighbourIndicesMinimal2 );
     CPPUNIT_TEST( testWrap );
     CPPUNIT_TEST( testWrapLong );
     CPPUNIT_TEST_SUITE_END();
@@ -34,6 +36,8 @@ public:
     void testConstructionAndQuery();
     void testIndicesFromCell();
     void testNeighbourIndices();
+    void testNeighbourIndicesMinimal();
+    void testNeighbourIndicesMinimal2();
     void testWrap();
     void testWrapLong();
 

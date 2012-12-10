@@ -50,9 +50,7 @@ public:
                const std::vector<bool> periodic);
 
     /*! \brief Get the neighbouring indices of a given index,
-     *         including all indices in nearby cells. The number
-     *         of cell shells to include depends on the map_size
-     *         parameter given at construction.
+     *         including all indices in nearby cells.
      * \param index : The index to query for.
      * \returns: The list of indices.
      */

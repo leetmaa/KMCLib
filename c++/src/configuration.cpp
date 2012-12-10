@@ -12,6 +12,7 @@
 
 
 #include <cstdio>
+#include <algorithm>
 
 #include "configuration.h"
 #include "latticemap.h"
@@ -43,15 +44,15 @@ Configuration::Configuration(std::vector<std::vector<double> > const & coordinat
 
 // -----------------------------------------------------------------------------
 //
-std::vector<MatchListEntry> Configuration::matchList(const std::vector<int> & indices,
+std::vector<MatchListEntry> Configuration::matchList(const int origin_index,
+                                                     const std::vector<int> & indices,
                                                      const LatticeMap & lattice_map) const
 {
     // Setup the return data.
     std::vector<MatchListEntry> match_list;
 
     // Extract the coordinate of the first index.
-    const int idx0 = indices[0];
-    const Coordinate center = coordinates_[idx0];
+    const Coordinate center = coordinates_[origin_index];
     const Coordinate origin(0.0, 0.0, 0.0);
 
     // For each index: center, wrap and calculate the distance.
@@ -80,6 +81,7 @@ std::vector<MatchListEntry> Configuration::matchList(const std::vector<int> & in
                                             index));
     }
 
-    // DONE
+    // Sort and return.
+    std::sort(match_list.begin(), match_list.end());
     return match_list;
 }

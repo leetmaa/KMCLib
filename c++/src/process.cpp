@@ -11,6 +11,7 @@
  */
 
 #include <algorithm>
+#include <cstdio>
 
 #include "process.h"
 

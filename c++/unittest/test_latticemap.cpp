@@ -295,6 +295,76 @@ void Test_LatticeMap::testNeighbourIndices()
 
 // -------------------------------------------------------------------------- //
 //
+void Test_LatticeMap::testNeighbourIndicesMinimal()
+{
+    // Minimal case, base two, no periodicity. One cell repetition.
+    // This should return all indices in the cell.
+
+    const int basis = 2;
+    std::vector<int> repetitions(3);
+    repetitions[0] = 1;
+    repetitions[1] = 1;
+    repetitions[2] = 1;
+    const std::vector<bool> periodicity(3, false);
+    const LatticeMap map(basis, repetitions, periodicity);
+
+    // Get the central index.
+    const int central_index = 0;
+
+    // Get the neighbours.
+    std::vector<int> neighbours = map.neighbourIndices(central_index);
+
+    // The length of neighbours should be as many as there are cells times the basis.
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(neighbours.size()), 1*1*1*basis);
+
+    // If we sort the indices they should be just the incremental numbers
+    // from 0 to 1
+    std::sort(neighbours.begin(), neighbours.end());
+    CPPUNIT_ASSERT_EQUAL(neighbours[0], 0);
+    CPPUNIT_ASSERT_EQUAL(neighbours[1], 1);
+
+    // DONE.
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_LatticeMap::testNeighbourIndicesMinimal2()
+{
+    // Minimal case, base two, no periodicity. One cell repetition.
+    // This should return all indices in the cell.
+
+    const int basis = 2;
+    std::vector<int> repetitions(3);
+    repetitions[0] = 1;
+    repetitions[1] = 1;
+    repetitions[2] = 2;
+    const std::vector<bool> periodicity(3, false);
+    const LatticeMap map(basis, repetitions, periodicity);
+
+    // Get the central index.
+    const int central_index = 1;
+
+    // Get the neighbours.
+    std::vector<int> neighbours = map.neighbourIndices(central_index);
+
+    // The length of neighbours should be as many as there are cells times the basis.
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(neighbours.size()), 1*1*2*basis);
+
+    // If we sort the indices they should be just the incremental numbers
+    // from 0 to 3
+    std::sort(neighbours.begin(), neighbours.end());
+    CPPUNIT_ASSERT_EQUAL(neighbours[0], 0);
+    CPPUNIT_ASSERT_EQUAL(neighbours[1], 1);
+    CPPUNIT_ASSERT_EQUAL(neighbours[2], 2);
+    CPPUNIT_ASSERT_EQUAL(neighbours[3], 3);
+
+    // DONE.
+}
+
+
+// -------------------------------------------------------------------------- //
+//
 void Test_LatticeMap::testWrap()
 {
     // Construct a periodic map.

@@ -56,18 +56,25 @@ void Test_Configuration::testConstruction()
     // Construct the configuration.
     Configuration config(coords, elements, possible_types);
 
+
     // Extract the member data and check that it is the same as what whent in.
     std::vector<Coordinate> const & ret_coords = config.coordinates();
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(ret_coords.size()),
+                         static_cast<int>(coords.size()));
 
-    for (size_t i=0; i < coords.size(); ++i)
+    for (size_t i = 0; i < coords.size(); ++i)
     {
         CPPUNIT_ASSERT_DOUBLES_EQUAL(ret_coords[i][0], coords[i][0], 1.0e-12);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(ret_coords[i][1], coords[i][1], 1.0e-12);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(ret_coords[i][2], coords[i][2], 1.0e-12);
     }
 
+    // Check the size of the elements.
     std::vector<std::string> const & ret_elements = config.elements();
-    for (size_t i=0; i < elements.size(); ++i)
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(ret_coords.size()),
+                         static_cast<int>(ret_elements.size()));
+
+    for (size_t i = 0; i < elements.size(); ++i)
     {
         CPPUNIT_ASSERT_EQUAL(ret_elements[i], elements[i]);
     }
