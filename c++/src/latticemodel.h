@@ -19,6 +19,7 @@
 
 #include "latticemap.h"
 #include "interactions.h"
+#include "matcher.h"
 
 // Forward declarations.
 class Configuration;
@@ -47,32 +48,10 @@ protected:
 
 private:
 
-    /*! \brief Function for calculating the initial matching.
+    /*! \brief Private helper function to initiate matching of all
+     *         processes with all indices in the configuration.
      */
     void calculateInitialMatching();
-
-    /*! \brief Function for calculating / updating the matching for a given set
-     *        of indices.
-     *  \param indices: The indices to calculate for.
-     */
-    void calculateMatching(const std::vector<int> & indices);
-
-    /*! \brief Match a process against an index, and update the process' table
-     *        of available sites when necessary.
-     *  \param process : The process to consider.
-     *  \param index   : The index to check.
-     */
-    void match(Process & process,
-               const int index) const;
-
-    /*! \brief Helper function to determine if a given neighbourhood
-     *         matches a certain process.
-     *  \param process       : The process to check.
-     *  \param neighbourhood : The neighbourhood to check.
-     *  \return : True if match.
-     */
-    bool isMatch(const Process & process,
-                 std::vector<int> & neighbourhood) const;
 
     /// A reference to the configuration given at construction.
     Configuration & configuration_;
@@ -83,6 +62,8 @@ private:
     /// The description of all interactions in the system.
     Interactions interactions_;
 
+    /// The Matcher to use for calculating matches and update the process lists.
+    Matcher matcher_;
 };
 
 
