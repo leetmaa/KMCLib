@@ -25,9 +25,17 @@ public:
 
     CPPUNIT_TEST_SUITE( Test_Matcher );
     CPPUNIT_TEST( testConstruction );
+    CPPUNIT_TEST( testIsMatchMatchList );
+    CPPUNIT_TEST( testIsMatchIndexList );
+    CPPUNIT_TEST( testCalculateMatchingProcess );
+    CPPUNIT_TEST( testCalculateMatchingInteractions );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstruction();
+    void testIsMatchMatchList();
+    void testIsMatchIndexList();
+    void testCalculateMatchingProcess();
+    void testCalculateMatchingInteractions();
 
 };
 

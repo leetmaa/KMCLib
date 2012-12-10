@@ -16,5 +16,52 @@
 //
 void Test_Matcher::testConstruction()
 {
+    // Construct.
+    Matcher m;
+}
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Matcher::testIsMatchMatchList()
+{
+    // Construct.
+    Matcher m;
+
+    // Setup two match lists to check.
+
     // NEEDS IMPLEMENTATION
 }
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Matcher::testIsMatchIndexList()
+{
+    // Construct.
+    Matcher m;
+
+    // NEEDS IMPLEMENTATION
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Matcher::testCalculateMatchingProcess()
+{
+    // Construct.
+    Matcher m;
+
+    // NEEDS IMPLEMENTATION
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Matcher::testCalculateMatchingInteractions()
+{
+    // Construct.
+    Matcher m;
+
+    // NEEDS IMPLEMENTATION
+}
+
