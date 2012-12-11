@@ -35,6 +35,11 @@ public:
      */
     std::vector<Process> & processes() { return processes_; }
 
+    /*! \brief Const query for the processes.
+     *  \return : A handle to the processes of the system.
+     */
+    const std::vector<Process> & processes() const { return processes_; }
+
 protected:
 
 private:

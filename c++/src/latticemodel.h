@@ -44,6 +44,21 @@ public:
      */
     void singleStep();
 
+    /*! \brief Query for the interactions.
+     *  \return : A handle to the interactions stored on the class.
+     */
+    const Interactions & interactions() const { return interactions_; }
+
+    /*! \brief Query for the configuration.
+     *  \return : A handle to the configuration stored on the class.
+     */
+    const Configuration & configuration() const { return configuration_; }
+
+    /*! \brief Query for the lattice map.
+     *  \return : A handle to the lattice map stored on the class.
+     */
+    const LatticeMap & latticeMap() const { return lattice_map_; }
+
 protected:
 
 private:

@@ -89,8 +89,8 @@ bool Matcher::isMatch(const int index,
                       const LatticeMap & lattice_map,
                       const Configuration & configuration) const
 {
-    // Return false if not enough sites in the neighbourhood.
-    if (neighbourhood.size() < process.sites().size())
+    // Return false if not enough indices in the neighbourhood.
+    if (neighbourhood.size() < process.matchList().size())
     {
         return false;
     }

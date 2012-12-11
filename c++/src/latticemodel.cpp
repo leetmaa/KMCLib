@@ -36,6 +36,7 @@ void LatticeModel::calculateInitialMatching()
 {
     // Match all centeres.
     std::vector<int> indices;
+
     for(size_t i = 0; i < configuration_.elements().size(); ++i)
     {
         indices.push_back(i);
