@@ -82,7 +82,7 @@ class KMCLatticeModelTest(unittest.TestCase):
 
         # Construct the interactions object.
         interactions_list = [interaction_0, interaction_1]
-        interactions = KMCInteractions(interactions=interactions_list)
+        interactions = KMCInteractions(interactions_list=interactions_list)
 
         # Construct the model.
         model = KMCLatticeModel(config, interactions)
@@ -155,7 +155,7 @@ class KMCLatticeModelTest(unittest.TestCase):
 
         # Construct the interactions object.
         interactions_list = [interaction_0, interaction_1]
-        interactions = KMCInteractions(interactions=interactions_list)
+        interactions = KMCInteractions(interactions_list=interactions_list)
 
         # Construct the model.
         model = KMCLatticeModel(config, interactions)

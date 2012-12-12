@@ -50,20 +50,20 @@ class KMCInteractionsTest(unittest.TestCase):
         rate_0_1 = 1.5
         interaction_1 = (local_config_0, local_config_1, rate_0_1)
 
-        interactions = [interaction_0, interaction_1]
+        interactions_list = [interaction_0, interaction_1]
 
         # Construct the interactions object.
-        kmc_interactions = KMCInteractions(interactions=interactions)
+        kmc_interactions = KMCInteractions(interactions_list=interactions_list)
 
         # Check the raw interactions stored on the object.
         stored_interactions = kmc_interactions._KMCInteractions__raw_interactions
 
         # Checks that the address is the same.
-        self.assertTrue(stored_interactions == interactions)
+        self.assertTrue(stored_interactions == interactions_list)
 
     def testConstructionFailNoList(self):
         """ Test that the construction fails if the interactions list is not a list. """
-        self.assertRaises(Error, lambda: KMCInteractions(interactions=KMCLocalConfiguration))
+        self.assertRaises(Error, lambda: KMCInteractions(interactions_list=KMCLocalConfiguration))
 
     def testConstructionFailNoTuple(self):
         """ Test that the construction fails if the elements in the interactions list are not lists or tuples of the correct length. """
@@ -93,25 +93,25 @@ class KMCInteractionsTest(unittest.TestCase):
         rate_0_1 = 1.5
         interaction_1 = (local_config_0, local_config_1, rate_0_1, rate_0_1)
 
-        interactions = [interaction_0, interaction_1]
+        interactions_list = [interaction_0, interaction_1]
 
         # Fails because interaction_1 is of wrong length.
-        self.assertRaises( Error, lambda: KMCInteractions(interactions=interactions) )
+        self.assertRaises( Error, lambda: KMCInteractions(interactions_list=interactions_list) )
 
         interaction_0 = local_config_0
         interaction_1 = local_config_1
-        interactions = [interaction_0, interaction_1]
+        interactions_list = [interaction_0, interaction_1]
 
         # Fails because the interactions are not lists or tuples.
-        self.assertRaises( Error, lambda: KMCInteractions(interactions=interactions) )
+        self.assertRaises( Error, lambda: KMCInteractions(interactions_list=interactions_list) )
 
     def testConstructionFailWrongType(self):
         """ Test that the construction fails if the configurations are of wrong type. """
         interaction_0 = (Error("dummy"),1.0, 123.0)
-        interactions = [interaction_0, interaction_0]
+        interactions_list = [interaction_0, interaction_0]
 
         # Check that it fails.
-        self.assertRaises( Error, lambda: KMCInteractions(interactions=interactions) )
+        self.assertRaises( Error, lambda: KMCInteractions(interactions_list=interactions_list) )
 
     def testConstructionFailWrongRateType(self):
         """ Test that the construction fails if the rate is of wrong type. """
@@ -142,10 +142,10 @@ class KMCInteractionsTest(unittest.TestCase):
         rate_0_1 = 1
         interaction_1 = (local_config_0, local_config_1, rate_0_1)
 
-        interactions = [interaction_0, interaction_1]
+        interactions_list = [interaction_0, interaction_1]
 
         # Construct the interactions object - fails because of the integer rate.
-        self.assertRaises( Error, lambda: KMCInteractions(interactions=interactions) )
+        self.assertRaises( Error, lambda: KMCInteractions(interactions_list=interactions_list) )
 
     def testConstructionFailNotSameCoords(self):
         """ Test that the construction fails unless the coordinates are equal. """
@@ -176,10 +176,10 @@ class KMCInteractionsTest(unittest.TestCase):
         rate_0_1 = 1.3
         interaction_1 = (local_config_0, local_config_1, rate_0_1)
 
-        interactions = [interaction_0, interaction_1]
+        interactions_list = [interaction_0, interaction_1]
 
         # Fails because of different coordinates.
-        self.assertRaises( Error, lambda: KMCInteractions(interactions=interactions) )
+        self.assertRaises( Error, lambda: KMCInteractions(interactions_list=interactions_list) )
 
     def testConstructionFailSameTypes(self):
         """ Test that the construction fails if the types are identical. """
@@ -209,10 +209,10 @@ class KMCInteractionsTest(unittest.TestCase):
         rate_0_1 = 1.5
         interaction_1 = (local_config_0, local_config_1, rate_0_1)
 
-        interactions = [interaction_0, interaction_1]
+        interactions_list = [interaction_0, interaction_1]
 
         # Fails because of same types.
-        self.assertRaises( Error, lambda: KMCInteractions(interactions=interactions) )
+        self.assertRaises( Error, lambda: KMCInteractions(interactions_list=interactions_list) )
 
     def testBackend(self):
         """
@@ -244,10 +244,10 @@ class KMCInteractionsTest(unittest.TestCase):
         rate_0_1 = 1.5
         interaction_1 = (local_config_0, local_config_1, rate_0_1)
 
-        interactions = [interaction_0, interaction_1]
+        interactions_list = [interaction_0, interaction_1]
 
         # Construct the interactions object.
-        kmc_interactions = KMCInteractions(interactions=interactions)
+        kmc_interactions = KMCInteractions(interactions_list=interactions_list)
 
         # Setup a dict with the possible types.
         possible_types = {
@@ -285,6 +285,141 @@ class KMCInteractionsTest(unittest.TestCase):
         # Match type should be "C" -> 5 and update type "A" -> 13
         self.assertEqual( match_type,   5)
         self.assertEqual( update_type, 13)
+
+    def testScript(self):
+        """ Test that the KMCInteractions can generate its own script. """
+        # A first interaction.
+        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
+        types = ["A","B"]
+        local_config_0 = KMCLocalConfiguration(coordinates=coords,
+                                               types=types,
+                                               center=0)
+        types = ["B","A"]
+        local_config_1 = KMCLocalConfiguration(coordinates=coords,
+                                               types=types,
+                                               center=0)
+        rate_0_1 = 3.5
+        interaction_0 = (local_config_0, local_config_1, rate_0_1)
+
+        # A second interaction.
+        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
+        types = ["A","C"]
+        local_config_0 = KMCLocalConfiguration(coordinates=coords,
+                                               types=types,
+                                               center=0)
+        types = ["C","A"]
+        local_config_1 = KMCLocalConfiguration(coordinates=coords,
+                                               types=types,
+                                               center=0)
+        rate_0_1 = 1.5
+        interaction_1 = (local_config_0, local_config_1, rate_0_1)
+
+        interactions_list = [interaction_0, interaction_1]
+
+        # Construct the interactions object.
+        kmc_interactions = KMCInteractions(interactions_list=interactions_list)
+
+        script = kmc_interactions._script()
+
+        ref_script = """
+# -----------------------------------------------------------------------------
+# Local configuration
+
+coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
+               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
+
+types = ['A', 'B']
+
+conf1_0 = KMCLocalConfiguration(
+    coordinates=coordinates,
+    types=types)
+
+# -----------------------------------------------------------------------------
+# Local configuration
+
+coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
+               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
+
+types = ['B', 'A']
+
+conf2_0 = KMCLocalConfiguration(
+    coordinates=coordinates,
+    types=types)
+
+# -----------------------------------------------------------------------------
+# Local configuration
+
+coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
+               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
+
+types = ['A', 'C']
+
+conf1_1 = KMCLocalConfiguration(
+    coordinates=coordinates,
+    types=types)
+
+# -----------------------------------------------------------------------------
+# Local configuration
+
+coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
+               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
+
+types = ['C', 'A']
+
+conf2_1 = KMCLocalConfiguration(
+    coordinates=coordinates,
+    types=types)
+
+# -----------------------------------------------------------------------------
+# Interactions
+
+interactions_list = [(conf1_0, conf2_0,    3.500000e+00),
+                     (conf1_1, conf2_1,    1.500000e+00)]
+
+interactions = KMCInteractions(interactions_list=interactions_list)
+"""
+        self.assertEqual(script, ref_script)
+
+        # Get a script with another name and another number of interactions.
+
+        interactions_list = [interaction_0]
+        kmc_interactions = KMCInteractions(interactions_list=interactions_list)
+
+        script = kmc_interactions._script(variable_name="my_kmc_interactions")
+
+        ref_script = """
+# -----------------------------------------------------------------------------
+# Local configuration
+
+coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
+               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
+
+types = ['A', 'B']
+
+conf1_0 = KMCLocalConfiguration(
+    coordinates=coordinates,
+    types=types)
+
+# -----------------------------------------------------------------------------
+# Local configuration
+
+coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
+               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
+
+types = ['B', 'A']
+
+conf2_0 = KMCLocalConfiguration(
+    coordinates=coordinates,
+    types=types)
+
+# -----------------------------------------------------------------------------
+# Interactions
+
+interactions_list = [(conf1_0, conf2_0,    3.500000e+00)]
+
+my_kmc_interactions = KMCInteractions(interactions_list=interactions_list)
+"""
+        self.assertEqual(script, ref_script)
 
 
 if __name__ == '__main__':

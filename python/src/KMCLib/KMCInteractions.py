@@ -23,16 +23,16 @@ class KMCInteractions(object):
     """
 
     def __init__(self,
-                 interactions=None):
+                 interactions_list=None):
         """
         Constructor for the KMCInteractions.
 
-        :param interactions: The interactions, given as a list of lists or tuples with
-                             two local configurations and a rate constant.
-        :type interactions: [(KMCLocalConfiguration, KMCLocalConfiguration, float), ...]
+        :param interactions_list: The interactions, given as a list of lists or tuples with
+                                  two local configurations and a rate constant.
+        :type interactions_list: [(KMCLocalConfiguration, KMCLocalConfiguration, float), ...]
         """
         # Check the interactions inpuy.
-        self.__raw_interactions = self.__checkInteractionsInput(interactions)
+        self.__raw_interactions = self.__checkInteractionsInput(interactions_list)
 
         # Set the backend to be generated at first query.
         self.__backend = None
@@ -112,4 +112,57 @@ class KMCInteractions(object):
 
         # Return the stored backend.
         return self.__backend
+
+    def _script(self, variable_name="interactions"):
+        """
+        Generate a script representation of an instance.
+
+        :param variable_name: A name to use as variable name for
+                              the KMCInteractions in the generated script.
+        :type variable_name: str
+
+        :returns: A script that can generate this interactions object.
+        """
+
+        # Loop through the list of interactions and for each one set up the
+        # script for the pair of local configurations that goes together in a tuple.
+
+        interaction_strings = []
+        configuration_script = ""
+        interactions_string = "interactions_list = ["
+        for i,interaction in enumerate(self.__raw_interactions):
+
+            conf1_name = "conf1_%i"%(i)
+            conf1_script = interaction[0]._script(conf1_name)
+            configuration_script += conf1_script
+
+            conf2_name = "conf2_%i"%(i)
+            conf2_script = interaction[1]._script(conf2_name)
+            configuration_script += conf2_script
+
+            if i == 0:
+                indent = ""
+            else:
+                indent = " "*21
+
+            interactions_string += indent + "(%s, %s, %15.6e)"%(conf1_name, conf2_name, interaction[2])
+
+            # If this is the last string, close.
+            if (i == len(self.__raw_interactions)-1):
+                interactions_string += "]\n"
+            else:
+                interactions_string += ",\n"
+
+        # Add a comment line.
+        comment_string = """
+# -----------------------------------------------------------------------------
+# Interactions
+
+"""
+        kmc_interactions_string = variable_name + " = KMCInteractions(interactions_list=interactions_list)\n"
+
+        # Return the script.
+        return configuration_script + comment_string + interactions_string + "\n" + \
+            kmc_interactions_string
+
 
