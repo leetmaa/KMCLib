@@ -115,6 +115,9 @@ class KMCLocalConfigurationTest(unittest.TestCase):
                                              center=0)
 
         ref_script = """
+# -----------------------------------------------------------------------------
+# Local configuration
+
 coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
 
 types = ['C']
@@ -133,6 +136,9 @@ local_configuration = KMCLocalConfiguration(
                                              types=types,
                                              center=0)
         ref_script2 = """
+# -----------------------------------------------------------------------------
+# Local configuration
+
 coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
                [   0.000000e+00,  -1.000000e+00,   0.000000e+00],
                [   2.000000e+00,   6.000000e+00,   6.000000e+00]]

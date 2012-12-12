@@ -160,6 +160,12 @@ class KMCLocalConfiguration(object):
     types=types)
 """
 
+        # Add the comment.
+        comment_string = """
+# -----------------------------------------------------------------------------
+# Local configuration
+
+"""
         # Return the script.
-        return "\n" + coords_string + "\n" + types_string + "\n" + config_string
+        return comment_string + coords_string + "\n" + types_string + "\n" + config_string
 

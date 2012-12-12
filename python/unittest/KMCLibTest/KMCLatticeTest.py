@@ -372,6 +372,9 @@ class KMCLatticeTest(unittest.TestCase):
         script =  lattice._script()
 
         ref_script = """
+# -----------------------------------------------------------------------------
+# Unit cell
+
 cell_vectors = [[   2.300000e+00,   0.000000e+00,   0.000000e+00],
                 [   2.400000e+00,   3.000000e+00,   0.000000e+00],
                 [   0.000000e+00,   0.000000e+00,   1.180000e+01]]
@@ -382,6 +385,9 @@ basis_points = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
 unit_cell = KMCUnitCell(
     cell_vectors=cell_vectors,
     basis_points=basis_points)
+
+# -----------------------------------------------------------------------------
+# Lattice
 
 lattice = KMCLattice(
     unit_cell=unit_cell,
@@ -394,6 +400,9 @@ lattice = KMCLattice(
         script =  lattice._script(variable_name="ANOTHER_NAME")
 
         ref_script = """
+# -----------------------------------------------------------------------------
+# Unit cell
+
 cell_vectors = [[   2.300000e+00,   0.000000e+00,   0.000000e+00],
                 [   2.400000e+00,   3.000000e+00,   0.000000e+00],
                 [   0.000000e+00,   0.000000e+00,   1.180000e+01]]
@@ -404,6 +413,9 @@ basis_points = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
 unit_cell = KMCUnitCell(
     cell_vectors=cell_vectors,
     basis_points=basis_points)
+
+# -----------------------------------------------------------------------------
+# Lattice
 
 ANOTHER_NAME = KMCLattice(
     unit_cell=unit_cell,

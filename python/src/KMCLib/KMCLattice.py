@@ -224,5 +224,11 @@ class KMCLattice(object):
     periodic=%s)
 """%(nI, nJ, nK, str(self.__periodic))
 
-        return unit_cell_script + "\n" + lattice_string
+        # Add the comment.
+        comment_string = """
+# -----------------------------------------------------------------------------
+# Lattice
+
+"""
+        return unit_cell_script + comment_string + lattice_string
 

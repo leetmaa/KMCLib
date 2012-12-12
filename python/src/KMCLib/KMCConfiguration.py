@@ -257,7 +257,14 @@ class KMCConfiguration(object):
     types=types,
     possible_types=possible_types)
 """
+
+        # Add the comment.
+        comment_string = """
+# -----------------------------------------------------------------------------
+# Configuration
+
+"""
         # Return the script.
-        return lattice_script + "\n" + types_string + "\n" + \
+        return lattice_script + comment_string + types_string + "\n" + \
             possible_types_string + "\n" + configuration_string
 

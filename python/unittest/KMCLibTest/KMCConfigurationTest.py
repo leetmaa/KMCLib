@@ -439,6 +439,9 @@ class KMCConfigurationTest(unittest.TestCase):
         script = config._script()
 
         ref_script = """
+# -----------------------------------------------------------------------------
+# Unit cell
+
 cell_vectors = [[   2.800000e+00,   0.000000e+00,   0.000000e+00],
                 [   0.000000e+00,   3.200000e+00,   0.000000e+00],
                 [   0.000000e+00,   5.000000e-01,   3.000000e+00]]
@@ -451,10 +454,16 @@ unit_cell = KMCUnitCell(
     cell_vectors=cell_vectors,
     basis_points=basis_points)
 
+# -----------------------------------------------------------------------------
+# Lattice
+
 lattice = KMCLattice(
     unit_cell=unit_cell,
     repetitions=(4,4,1),
     periodic=(True, True, False))
+
+# -----------------------------------------------------------------------------
+# Configuration
 
 types = ['a','a','a','a','b','b','a','a','a','b','b','b','b',
          'b','a','a','b','a','b','b','b','a','b','a','b','a',
@@ -496,6 +505,9 @@ configuration = KMCConfiguration(
         script = config._script(variable_name="config")
 
         ref_script = """
+# -----------------------------------------------------------------------------
+# Unit cell
+
 cell_vectors = [[   2.800000e+00,   0.000000e+00,   0.000000e+00],
                 [   0.000000e+00,   3.200000e+00,   0.000000e+00],
                 [   0.000000e+00,   5.000000e-01,   3.000000e+00]]
@@ -506,10 +518,16 @@ unit_cell = KMCUnitCell(
     cell_vectors=cell_vectors,
     basis_points=basis_points)
 
+# -----------------------------------------------------------------------------
+# Lattice
+
 lattice = KMCLattice(
     unit_cell=unit_cell,
     repetitions=(1,1,1),
     periodic=(False, False, False))
+
+# -----------------------------------------------------------------------------
+# Configuration
 
 types = ['ThisIsTheTypeOfMyOnlySiteInThisUnrealisticallyShortStructure']
 

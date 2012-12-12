@@ -97,8 +97,14 @@ class KMCUnitCell(object):
     cell_vectors=cell_vectors,
     basis_points=basis_points)
 """
+        # Add the comment.
+        comment_string = """
+# -----------------------------------------------------------------------------
+# Unit cell
+
+"""
         # Return the script.
-        return "\n" + cell_string + "\n" + basis_string + "\n" + unit_cell_string
+        return comment_string + cell_string + "\n" + basis_string + "\n" + unit_cell_string
 
 
 
