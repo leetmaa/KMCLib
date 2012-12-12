@@ -171,8 +171,7 @@ local_config2 = KMCLocalConfiguration(
         # Get the coordinates back out.
         ret_coords = numpy.array(backend.coordinates())
 
-        print ret_coords
-
+        # NEEDS IMPLEMENTATION
 
 
 if __name__ == '__main__':

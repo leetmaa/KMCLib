@@ -193,5 +193,71 @@ class KMCConfiguration(object):
         """
         return self.__lattice._map()
 
+    def _script(self, variable_name="configuration"):
+        """
+        Generate a script representation of an instance.
 
+        :param variable_name: A name to use as variable name for
+                              the KMCConfiguration in the generated script.
+        :type variable_name: str
+
+        :returns: A script that can generate this configuration.
+        """
+        # Get the lattice script.
+        lattice_script = self.__lattice._script(variable_name="lattice")
+
+        # Get the types string.
+        types_string = "types = "
+        indent = " "*9
+        line = "["
+        nT = len(self.__types)
+        for i,t in enumerate(self.__types):
+            # Add the type.
+            line += "'" + t + "'"
+            if i == nT-1:
+                # Stop if we reach the end.
+                line += "]\n"
+                types_string += line
+                break
+            else:
+            # Add the separator.
+                line += ","
+
+            # Check if we should add a new line.
+            if len(line) > 50:
+                types_string += line + "\n" + indent
+                line = ""
+
+        # Generate the possible types string.
+        possible_types_string = "possible_types = "
+        indent = " "*18
+        line = "["
+        possible_types = list(set(self.__possible_types.keys()))
+        nT = len(possible_types)
+        for i,t in enumerate(possible_types):
+            # Add the type.
+            line += "'" + t + "'"
+            if i == nT-1:
+                # Stop if we reach the end.
+                line += "]\n"
+                possible_types_string += line
+                break
+            else:
+            # Add the separator.
+                line += ","
+
+            # Check if we should add a new line.
+            if len(line) > 50:
+                possible_types_string += line + "\n" + indent
+                line = ""
+
+        # Setup the configuration string.
+        configuration_string = variable_name + """ = KMCConfiguration(
+    lattice=lattice,
+    types=types,
+    possible_types=possible_types)
+"""
+        # Return the script.
+        return lattice_script + "\n" + types_string + "\n" + \
+            possible_types_string + "\n" + configuration_string
 
