@@ -145,6 +145,14 @@ class KMCLattice:
         """
         return self.__repetitions
 
+    def periodic(self):
+        """
+        Query function for the periodicity.
+
+        :returns: The periodicity information along the a b and c directions.
+        """
+        return self.__periodic
+
     def basis(self):
         """
         Query function for the basis.
