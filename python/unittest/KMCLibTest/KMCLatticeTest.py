@@ -343,6 +343,75 @@ class KMCLatticeTest(unittest.TestCase):
         # Check the instance.
         self.assertTrue(cpp_lattice_map == cpp_lattice_map2)
 
+    def testScript(self):
+        """ Check that we can generate a valid script. """
+        cell_vectors = [[2.3, 0.0, 0.0],
+                        [2.4, 3.0, 0.0],
+                        [0.0, 0.0, 11.8]]
+
+        basis_points = [[0.0, 0.0, 0.0],
+                        [0.5, 0.5, 0.0]]
+
+        unit_cell = KMCUnitCell(cell_vectors=cell_vectors,
+                                basis_points=basis_points)
+
+        # Setup the repetitions.
+        nI = 2
+        nJ = 12
+        nK = 3
+        nB = 2
+        repetitions = (nI,nJ,nK)
+        periodic = (True,True,False)
+
+        # Construct the KMCLattice object.
+        lattice = KMCLattice(unit_cell=unit_cell,
+                             repetitions=repetitions,
+                             periodic=periodic)
+
+        # Get the script.
+        script =  lattice._script()
+
+        ref_script = """
+cell_vectors = [[   2.300000e+00,   0.000000e+00,   0.000000e+00],
+                [   2.400000e+00,   3.000000e+00,   0.000000e+00],
+                [   0.000000e+00,   0.000000e+00,   1.180000e+01]]
+
+basis_points = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
+                [   5.000000e-01,   5.000000e-01,   0.000000e+00]]
+
+unit_cell = KMCUnitCell(
+    cell_vectors=cell_vectors,
+    basis_points=basis_points)
+
+lattice = KMCLattice(
+    unit_cell=unit_cell,
+    repetitions=(2,12,3),
+    periodic=(True, True, False))
+"""
+        self.assertEqual(script, ref_script)
+
+        # Get the script.
+        script =  lattice._script(variable_name="ANOTHER_NAME")
+
+        ref_script = """
+cell_vectors = [[   2.300000e+00,   0.000000e+00,   0.000000e+00],
+                [   2.400000e+00,   3.000000e+00,   0.000000e+00],
+                [   0.000000e+00,   0.000000e+00,   1.180000e+01]]
+
+basis_points = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
+                [   5.000000e-01,   5.000000e-01,   0.000000e+00]]
+
+unit_cell = KMCUnitCell(
+    cell_vectors=cell_vectors,
+    basis_points=basis_points)
+
+ANOTHER_NAME = KMCLattice(
+    unit_cell=unit_cell,
+    repetitions=(2,12,3),
+    periodic=(True, True, False))
+"""
+        self.assertEqual(script, ref_script)
+
 
 if __name__ == '__main__':
     unittest.main()

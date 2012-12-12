@@ -199,3 +199,30 @@ class KMCLattice(object):
         # Return the lattice map.
         return self.__lattice_map
 
+    def _script(self, variable_name="lattice"):
+        """
+        Generate a script representation of an instance.
+
+        :param variable_name: A name to use as variable name for
+                              the KMCLattice in the generated script.
+        :type variable_name: str
+
+        :returns: A script that can generate this lattice.
+        """
+        # Get the unit cell script.
+        unit_cell_script = self.__unit_cell._script(variable_name="unit_cell")
+
+        # To generate the repetitions string.
+        nI = self.__repetitions[0]
+        nJ = self.__repetitions[1]
+        nK = self.__repetitions[2]
+
+        # Generate the lattice string.
+        lattice_string = variable_name + """ = KMCLattice(
+    unit_cell=unit_cell,
+    repetitions=(%i,%i,%i),
+    periodic=%s)
+"""%(nI, nJ, nK, str(self.__periodic))
+
+        return unit_cell_script + "\n" + lattice_string
+

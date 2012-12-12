@@ -151,7 +151,7 @@ unit_cell = KMCUnitCell(
                         vector_c]
         cell = KMCUnitCell(cell_vectors=cell_vectors,
                            basis_points=basis_points)
-        script = cell._script()
+        script = cell._script(variable_name="CELL_NAME_HERE")
 
         # Check against the known reference.
         ref_script = """
@@ -161,7 +161,7 @@ cell_vectors = [[   2.300000e+00,   1.000000e+00,   1.000000e-01],
 
 basis_points = [[   4.000000e-01,   3.000000e-01,   2.000000e-01]]
 
-unit_cell = KMCUnitCell(
+CELL_NAME_HERE = KMCUnitCell(
     cell_vectors=cell_vectors,
     basis_points=basis_points)
 """
