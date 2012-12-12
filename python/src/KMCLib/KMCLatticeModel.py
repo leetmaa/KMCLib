@@ -13,7 +13,7 @@ from KMCLib.Backend import Backend
 from KMCLib.KMCConfiguration import KMCConfiguration
 from KMCLib.KMCInteractions import KMCInteractions
 
-class KMCLatticeModel:
+class KMCLatticeModel(object):
     """
     Class for representing a lattice KMC model.
     """

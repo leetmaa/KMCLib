@@ -16,7 +16,7 @@ from KMCLib.Utilities.CoordinateUtilities import sortCoordinates
 from KMCLib.Utilities.ConversionUtilities import numpy2DArrayToStdVectorStdVectorDouble
 from KMCLib.Backend import Backend
 
-class KMCLocalConfiguration:
+class KMCLocalConfiguration(object):
     """
     Class for representing the local environment around a central site
     in a Lattice KMC simulation.

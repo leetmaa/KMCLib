@@ -16,7 +16,7 @@ from KMCLib.Utilities.CheckUtilities import checkSequence
 from KMCLib.Exceptions.Error import Error
 
 
-class KMCLattice:
+class KMCLattice(object):
     """ Class for describing the lattice used in a KMC simulation. """
 
     def __init__(self,

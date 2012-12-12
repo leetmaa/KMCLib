@@ -16,7 +16,7 @@ from KMCLib.Exceptions.Error import Error
 from KMCLib.Backend import Backend
 
 
-class KMCInteractions:
+class KMCInteractions(object):
     """
     Class for holding information about all possible interactions used in a
     Lattice KMC simulation.

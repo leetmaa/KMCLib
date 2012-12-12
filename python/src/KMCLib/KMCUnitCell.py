@@ -14,7 +14,7 @@ from KMCLib.Exceptions.Error import Error
 from KMCLib.Utilities.CheckUtilities import checkCellVectors
 from KMCLib.Utilities.CheckUtilities import checkCoordinateList
 
-class KMCUnitCell:
+class KMCUnitCell(object):
     """ Class for describing a unitcell. """
 
     def __init__(self,

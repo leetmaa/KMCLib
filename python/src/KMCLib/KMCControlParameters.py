@@ -8,7 +8,7 @@
 #
 
 
-class KMCControlParameters:
+class KMCControlParameters(object):
     """
     Class for handling the control parameters that goes in to a KMC simulation.
     """
