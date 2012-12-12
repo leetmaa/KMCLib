@@ -18,10 +18,20 @@ from KMCLib.KMCControlParameters import KMCControlParameters
 class KMCControlParametersTest(unittest.TestCase):
     """ Class for testing the KMCControlParameters class. """
 
-    def testConstruction(self):
+    def testConstructionAndQuery(self):
         """ Test the construction of the control parametes object """
-        # NEEDS IMPLEMENTATION
-        pass
+        # Default construction.
+        control_params = KMCControlParameters()
+
+        # Check the default values.
+        self.assertEqual(control_params.numberOfSteps(), 0)
+
+        # Non-default construction.
+        control_params = KMCControlParameters(number_of_steps=2000000)
+
+        # Check the values.
+        self.assertEqual(control_params.numberOfSteps(), 2000000)
+
 
 if __name__ == '__main__':
     unittest.main()

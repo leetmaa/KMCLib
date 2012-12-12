@@ -163,4 +163,34 @@ def checkTypes(types, length):
     return types
 
 
+def checkPositiveInteger(parameter, default_parameter, parameter_name):
+    """
+    Utility function for checking that a parameter is a positive integer.
+
+    :param parameter: The parameter to check.
+
+    :param default_parameter: The value to use if the parameter value is None
+
+    :param parameter_name: The name of the parameter to use in error messages.
+    :type parameter_name: str
+
+    :returns: The checked parameter.
+    """
+    # Set default.
+    if parameter is None:
+        parameter = default_parameter
+
+    # The error message.
+    msg = "The parameter '%s' must be given as a positive integer."%(parameter_name)
+    # Check type.
+    if not isinstance(parameter, int):
+        raise Error(msg)
+
+    # Check value.
+    if parameter < 0:
+        raise Error(msg)
+
+    # Checked.
+    return parameter
+
 

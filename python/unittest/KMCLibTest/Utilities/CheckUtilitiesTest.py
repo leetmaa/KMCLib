@@ -19,7 +19,7 @@ from KMCLib.Utilities.CheckUtilities import checkIndexWithinBounds
 from KMCLib.Utilities.CheckUtilities import checkSequence
 from KMCLib.Utilities.CheckUtilities import checkTypes
 from KMCLib.Utilities.CheckUtilities import checkCellVectors
-
+from KMCLib.Utilities.CheckUtilities import checkPositiveInteger
 
 # Implement the test.
 class CheckUtilitiesTest(unittest.TestCase):
@@ -173,6 +173,32 @@ class CheckUtilitiesTest(unittest.TestCase):
         # Not a list.
         types = "ABCDEfgH"
         self.assertRaises(Error, lambda: checkTypes(types,8))
+
+    def testCheckPositiveInteger(self):
+        """ Test that the positive integer checking works. """
+        # Test pass.
+        integer0 = checkPositiveInteger(21, 1234, "integer0")
+        self.assertEqual(integer0, 21)
+
+        integer0 = checkPositiveInteger(0, 1234, "integer0")
+        self.assertEqual(integer0, 0)
+
+        # Test default.
+        integer0 = checkPositiveInteger(None, 1234, "integer0")
+        self.assertEqual(integer0, 1234)
+
+        # Test fail negative.
+        self.assertRaises( Error,
+                           lambda: checkPositiveInteger(-1, 12, "fail") )
+
+        # Test fail wrong type.
+        self.assertRaises( Error,
+                           lambda: checkPositiveInteger(1.1, 12, "fail") )
+
+        # Test fail wrong type.
+        self.assertRaises( Error,
+                           lambda: checkPositiveInteger("1", 12, "fail") )
+
 
 
 if __name__ == '__main__':
