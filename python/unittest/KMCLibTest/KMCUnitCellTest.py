@@ -107,6 +107,66 @@ class KMCUnitCellTest(unittest.TestCase):
                         vector_c]
         self.assertRaises(Error, lambda: KMCUnitCell(cell_vectors=cell_vectors, basis_points=basis_points))
 
+    def testScript(self):
+        """ Test that a valid script can be generated. """
+        # Setup a valid cell.
+        vector_a = [2.3, 1.0, 0.1]
+        vector_b = [2.4, 3.0, 0.0]
+        vector_c = [0.4, 0.3, 11.8]
+        basis_points = [[0.4, 0.3, 0.2],
+                        [0.2, 0.33, 0.11],
+                        [0.6, 0.5, 0.1]]
+        cell_vectors = [vector_a,
+                        vector_b,
+                        vector_c]
+        cell = KMCUnitCell(cell_vectors=cell_vectors,
+                           basis_points=basis_points)
+
+        # Get the script.
+        script = cell._script()
+
+        # Check against the known reference script.
+        ref_script = """
+cell_vectors = [[   2.300000e+00,   1.000000e+00,   1.000000e-01],
+                [   2.400000e+00,   3.000000e+00,   0.000000e+00],
+                [   4.000000e-01,   3.000000e-01,   1.180000e+01]]
+
+basis_points = [[   4.000000e-01,   3.000000e-01,   2.000000e-01],
+                [   2.000000e-01,   3.300000e-01,   1.100000e-01],
+                [   6.000000e-01,   5.000000e-01,   1.000000e-01]]
+
+unit_cell = KMCUnitCell(
+    cell_vectors=cell_vectors,
+    basis_points=basis_points)
+"""
+        self.assertEqual(script, ref_script)
+
+       # Setup another valid cell.
+        vector_a = [2.3, 1.0, 0.1]
+        vector_b = [2.4, 3.0, 0.0]
+        vector_c = [0.4, 0.3, 11.8]
+        basis_points = [[0.4, 0.3, 0.2]]
+        cell_vectors = [vector_a,
+                        vector_b,
+                        vector_c]
+        cell = KMCUnitCell(cell_vectors=cell_vectors,
+                           basis_points=basis_points)
+        script = cell._script()
+
+        # Check against the known reference.
+        ref_script = """
+cell_vectors = [[   2.300000e+00,   1.000000e+00,   1.000000e-01],
+                [   2.400000e+00,   3.000000e+00,   0.000000e+00],
+                [   4.000000e-01,   3.000000e-01,   1.180000e+01]]
+
+basis_points = [[   4.000000e-01,   3.000000e-01,   2.000000e-01]]
+
+unit_cell = KMCUnitCell(
+    cell_vectors=cell_vectors,
+    basis_points=basis_points)
+"""
+        self.assertEqual(script, ref_script)
+
 
 if __name__ == '__main__':
     unittest.main()

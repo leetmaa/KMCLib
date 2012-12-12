@@ -114,8 +114,10 @@ class KMCLocalConfiguration(object):
         """
         Generate a script reperesentation of an isntance.
 
-        :param variable_name: A name to use as variable name for KMCLocalConfiguration in the generated script.
-        :type variable_name: string
+        :param variable_name: A name to use as variable name for
+                              the KMCLocalConfiguration in the
+                              generated script.
+        :type variable_name: str
 
         :returns: A script that can generate this local configuration.
         """

@@ -52,3 +52,53 @@ class KMCUnitCell(object):
         """
         return self.__basis_points
 
+    def _script(self, variable_name="unit_cell"):
+        """
+        Generate a script representation of an instance.
+
+        :param variable_name: A name to use as variable name for
+                              the KMCUnitCell in the generated script.
+        :type variable_name: str
+
+        :returns: A script that can generate this unit cell.
+        """
+        # Define the float format string.
+        ff = "%15.6e"
+
+        # Setup the cell vectors script part.
+        indent = " "*16
+        cell_vector_a_str = "[" + ff + "," + ff + "," + ff + "],\n"
+        cell_vector_b_str = indent + "[" + ff + "," + ff + "," + ff + "],\n"
+        cell_vector_c_str = indent + "[" + ff + "," + ff + "," + ff + "]]\n"
+
+        cell_vector_a = cell_vector_a_str%(self.__cell_vectors[0][0], self.__cell_vectors[0][1], self.__cell_vectors[0][2])
+        cell_vector_b = cell_vector_b_str%(self.__cell_vectors[1][0], self.__cell_vectors[1][1], self.__cell_vectors[1][2])
+        cell_vector_c = cell_vector_c_str%(self.__cell_vectors[2][0], self.__cell_vectors[2][1], self.__cell_vectors[2][2])
+        cell_string = "cell_vectors = [" + cell_vector_a + cell_vector_b + cell_vector_c
+
+        # Setup the basis points scipt part.
+        basis_string = "basis_points = ["
+
+        # Loop over and add the basis points.
+        basis_point_str = "[" + ff + "," + ff + "," + ff + "]"
+        for i,point in enumerate(self.__basis_points):
+            if (i == 0):
+                basis_string += basis_point_str%(point[0], point[1], point[2])
+            else:
+                basis_string += indent + basis_point_str%(point[0], point[1], point[2])
+
+            if len(self.__basis_points) > i+1:
+                basis_string += ",\n"
+            else:
+                basis_string += "]\n"
+
+        # Construct the KMCUnitCell script part.
+        unit_cell_string = variable_name + """ = KMCUnitCell(
+    cell_vectors=cell_vectors,
+    basis_points=basis_points)
+"""
+        # Return the script.
+        return "\n" + cell_string + "\n" + basis_string + "\n" + unit_cell_string
+
+
+
