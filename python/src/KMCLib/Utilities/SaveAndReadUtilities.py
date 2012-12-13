@@ -9,12 +9,14 @@
 
 from KMCLib.Exceptions.Error import Error
 from KMCLib.KMCConfiguration import KMCConfiguration
+from KMCLib.KMCInteractions import KMCInteractions
+from KMCLib.KMCLatticeModel import KMCLatticeModel
 
 def KMCConfigurationFromScript(script_file_path):
     """
     Utility function to read a KMCConfiguration from a script file.
 
-    :param script_file_path: The Script file path to read.
+    :param script_file_path: The script file path to read.
     :type script_file_path: str
 
     :return: The KMCConfiguration saved in the file.
@@ -23,12 +25,38 @@ def KMCConfigurationFromScript(script_file_path):
     return getScriptComponent(script_file_path, KMCConfiguration)
 
 
+def KMCInteractionsFromScript(script_file_path):
+    """
+    Utility function to read a KMCInteractions from a script file.
+
+    :param script_file_path: The script file path to read.
+    :type script_file_path: str
+
+    :return: The KMCInteractions saved in the file.
+    """
+    # Get the stored configurations.
+    return getScriptComponent(script_file_path, KMCInteractions)
+
+
+def KMCLatticeModelFromScript(script_file_path):
+    """
+    Utility function to read a KMCLatticeModel from a script file.
+
+    :param script_file_path: The script file path to read.
+    :type script_file_path: str
+
+    :return: The KMCLatticeModel saved in the file.
+    """
+    # Get the stored configurations.
+    return getScriptComponent(script_file_path, KMCLatticeModel)
+
+
 def getScriptComponent(script_file_path, component_type):
     """
     Utility function to get a component of a certain type from a
     script file.
 
-    :param script_file_path: The Script file path to read.
+    :param script_file_path: The script file path to read.
     :type script_file_path: str
 
     :param component_type: The class type of the component to extract.
@@ -51,5 +79,3 @@ def getScriptComponent(script_file_path, component_type):
 
     # Nothing was found, return None.
     return None
-
-

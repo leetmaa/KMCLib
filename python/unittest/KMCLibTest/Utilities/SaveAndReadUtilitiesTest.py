@@ -14,11 +14,14 @@ import numpy
 from KMCLib.KMCConfiguration import KMCConfiguration
 from KMCLib.KMCLattice import KMCLattice
 from KMCLib.KMCUnitCell import KMCUnitCell
-
+from KMCLib.KMCLatticeModel import KMCLatticeModel
+from KMCLib.KMCInteractions import KMCInteractions
 from KMCLib.Exceptions.Error import Error
 
 # Import from the module we test.
 from KMCLib.Utilities.SaveAndReadUtilities import KMCConfigurationFromScript
+from KMCLib.Utilities.SaveAndReadUtilities import KMCInteractionsFromScript
+from KMCLib.Utilities.SaveAndReadUtilities import KMCLatticeModelFromScript
 from KMCLib.Utilities.SaveAndReadUtilities import getScriptComponent
 
 
@@ -41,6 +44,38 @@ class SaveAndReadUtilitiesTest(unittest.TestCase):
 
         # Make sure that it is of the correct type.
         self.assertTrue( isinstance(configuration, KMCConfiguration) )
+
+    def testKMCInteractionsFromScript(self):
+        """ Test the function that reads a KMCInteractions from a script. """
+        # Set the path to the file to read from.
+        module_path = os.path.abspath(os.path.dirname(__file__))
+        script_file_path = os.path.join(module_path,"..","TestUtilities","Scripts")
+        script_file_path = os.path.join(script_file_path, "kmc_lattice_model_script.py")
+
+        # Make sure the file exists.
+        self.assertTrue( os.path.exists(script_file_path) )
+
+        # Now, get the KMCInteractions out of the script.
+        configuration = KMCInteractionsFromScript(script_file_path)
+
+        # Make sure that it is of the correct type.
+        self.assertTrue( isinstance(configuration, KMCInteractions) )
+
+    def testKMCLatticeModelFromScript(self):
+        """ Test the function that reads a KMCLatticeModel from a script. """
+        # Set the path to the file to read from.
+        module_path = os.path.abspath(os.path.dirname(__file__))
+        script_file_path = os.path.join(module_path,"..","TestUtilities","Scripts")
+        script_file_path = os.path.join(script_file_path, "kmc_lattice_model_script.py")
+
+        # Make sure the file exists.
+        self.assertTrue( os.path.exists(script_file_path) )
+
+        # Now, get the KMCLatticeModel out of the script.
+        configuration = KMCLatticeModelFromScript(script_file_path)
+
+        # Make sure that it is of the correct type.
+        self.assertTrue( isinstance(configuration, KMCLatticeModel) )
 
     def testGetScriptComponent(self):
         """ Test the general get script component function. """
