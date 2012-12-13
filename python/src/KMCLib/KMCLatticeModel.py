@@ -103,3 +103,33 @@ class KMCLatticeModel(object):
 
         # Sync the configurations.
 
+    def _script(self, variable_name="model"):
+        """
+        Generate a script representation of an instance.
+
+        :param variable_name: A name to use as variable name for
+                              the KMCLatticeModel in the generated script.
+        :type variable_name: str
+
+        :returns: A script that can generate this kmc lattice model.
+        """
+        # Get the configuration and interactions scripts.
+        configuration_script = self.__configuration._script(variable_name="configuration")
+        interactions_script  = self.__interactions._script(variable_name="interactions")
+
+        # Setup the lattice model string.
+        lattice_model_string = variable_name + """ = KMCLatticeModel(
+    configuration=configuration,
+    interactions=interactions)
+"""
+
+        # And a comment string.
+        comment_string = """
+# -----------------------------------------------------------------------------
+# Lattice model
+
+"""
+        # Return the script.
+        return configuration_script + interactions_script + \
+            comment_string + lattice_model_string
+
