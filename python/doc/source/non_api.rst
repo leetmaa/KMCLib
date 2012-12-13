@@ -17,6 +17,20 @@ CheckUtilities
    :members:
 
 
+ConversionUtilities
+--------------------
+
+.. automodule:: KMCLib.Utilities.ConversionUtilities
+   :members:
+
+
+SaveAndReadUtilities
+.....................
+
+.. automodule:: KMCLib.Utilities.SaveAndReadUtilities
+   :members:
+
+
 Error
 --------------
 

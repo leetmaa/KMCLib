@@ -1,4 +1,4 @@
-""" Module for holding common coordinate manipulating utility functions. """
+""" Module for holding common type conversion utility functions. """
 
 
 # Copyright (c)  2012  Mikael Leetmaa

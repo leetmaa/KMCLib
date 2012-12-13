@@ -48,4 +48,18 @@ KMCLattice
    :special-members:
 
 
+KMCLatticeModel
+-----------------
+
+.. autoclass:: KMCLib.KMCLatticeModel
+   :members:
+   :special-members:
+
+
+KMCControlParameters
+---------------------
+
+.. autoclass:: KMCLib.KMCControlParameters
+   :members:
+   :special-members:
 

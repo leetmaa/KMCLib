@@ -9,5 +9,6 @@ from KMCUnitCell import KMCUnitCell
 from KMCControlParameters import KMCControlParameters
 
 __all__ = ['KMCLocalConfiguration', 'KMCInteractions', 'KMCConfiguration',
-           'KMCLattice', 'KMCLatticeModel', 'KMCUnitCell', 'KMCControlParameters']
+           'KMCLattice', 'KMCLatticeModel', 'KMCUnitCell',
+           'KMCControlParameters']
 
