@@ -70,17 +70,17 @@ public:
     /*! \brief Query for the periodicity.
      * \returns: The periodicity in the direction.
      */
-    const bool periodicA() const { return periodic_[0]; }
+    bool periodicA() const { return periodic_[0]; }
 
     /*! \brief Query for the periodicity.
      * \returns: The periodicity in the direction.
      */
-    const bool periodicB() const { return periodic_[1]; }
+    bool periodicB() const { return periodic_[1]; }
 
     /*! \brief Query for the periodicity.
      * \returns: The periodicity in the direction.
      */
-    const bool periodicC() const { return periodic_[2]; }
+    bool periodicC() const { return periodic_[2]; }
 
     /*! \brief Wrap the coordinate according to periodic boundaries.
      * \param c (in/out): The coordinate to wrap.

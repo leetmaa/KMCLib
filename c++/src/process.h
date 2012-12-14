@@ -79,13 +79,14 @@ protected:
 
 private:
 
+    /// The barrier in eV.
+    double barrier_;
+
     /// The available sites for this process.
     std::vector<int> sites_;
 
     /// The match list for comparing against local configurations.
     std::vector<MatchListEntry> match_list_;
-
-
 
 };
 

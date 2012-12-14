@@ -42,7 +42,7 @@ void Matcher::calculateMatching(Interactions & interactions,
         const int index = indices[i];
 
         // Match against all processes.
-        for (int j = 0; j < interactions.processes().size(); ++j)
+        for (size_t j = 0; j < interactions.processes().size(); ++j)
         {
             Process & process = interactions.processes()[j];
             calculateMatching(process, index, lattice_map, configuration);

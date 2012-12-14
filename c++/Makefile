@@ -9,8 +9,8 @@
 # A simplest possible makefile will do for the moment.
 
 CC = g++
-CCFLAGS   = -fPIC -g -O3 -c
-SOFLAGS   = -fPIC -Wall -Wextra -shared -flat_namespace
+CCFLAGS   = -fPIC -g -std=c++0x -O3 -Wall -Wextra -pedantic -c
+SOFLAGS   = -fPIC -Wall -Wextra -pedantic -shared -flat_namespace
 TEST_LINK = -lcppunit
 
 SRC_CPPFILES  = $(wildcard ./src/*.cpp)

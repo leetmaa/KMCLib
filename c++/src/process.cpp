@@ -22,6 +22,7 @@
 Process::Process(const Configuration & first,
                  const Configuration & second,
                  const double barrier) :
+    barrier_(barrier),
     sites_(0)
 {
     // The check that the first and second configurartions match well enough
