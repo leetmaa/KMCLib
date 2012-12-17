@@ -139,7 +139,7 @@ class KMCLatticeTest(unittest.TestCase):
         # Check against a hardcoded reference.
         self.assertAlmostEqual(numpy.linalg.norm(sites-ref_sites), 0.0, 10)
 
-    def testQueryRepetitions(self):
+    def testQueryRepetitionsAndPeriodic(self):
         """ Test that the returned repetitions data is coorect. """
         cell_vectors = [[2.3, 0.0, 0.0],
                         [2.4, 3.0, 0.0],
@@ -164,6 +164,33 @@ class KMCLatticeTest(unittest.TestCase):
         self.assertEqual(lattice.repetitions()[0], repetitions[0])
         self.assertEqual(lattice.repetitions()[1], repetitions[1])
         self.assertEqual(lattice.repetitions()[2], repetitions[2])
+
+        # Check that the periodic is the same.
+        self.assertTrue(  lattice.periodic()[0] )
+        self.assertTrue(  lattice.periodic()[1] )
+        self.assertFalse( lattice.periodic()[2] )
+
+        # Setup again with different periodicity and check.
+        periodic = (True,False,True)
+
+        # Construct the KMCLattice object.
+        lattice = KMCLattice(unit_cell=unit_cell,
+                             repetitions=repetitions,
+                             periodic=periodic)
+        self.assertTrue(  lattice.periodic()[0] )
+        self.assertFalse( lattice.periodic()[1] )
+        self.assertTrue(  lattice.periodic()[2] )
+
+        # And again.
+        periodic = (False,True,True)
+
+        # Construct the KMCLattice object.
+        lattice = KMCLattice(unit_cell=unit_cell,
+                             repetitions=repetitions,
+                             periodic=periodic)
+        self.assertFalse( lattice.periodic()[0] )
+        self.assertTrue(  lattice.periodic()[1] )
+        self.assertTrue(  lattice.periodic()[2] )
 
     def testQueryBasis(self):
         """ Test that the returned basis data is coorect. """
