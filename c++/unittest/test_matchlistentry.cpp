@@ -18,6 +18,7 @@
 void Test_MatchListEntry::testConstruction()
 {
     // Construct.
+    MatchListEntry e0;
     MatchListEntry e(1324,2,1.2,Coordinate(0.1,0.2,0.34));
 }
 

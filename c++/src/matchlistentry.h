@@ -23,7 +23,7 @@ class MatchListEntry {
 
 public:
 
-    /*! \brief Default constructor needed for SWIG wrapping.
+    /*! \brief Default constructor needed for SWIG wrapping in std::vector.
      */
     MatchListEntry() {}
 
@@ -87,7 +87,9 @@ private:
     /// The coordinate.
     Coordinate coordinate_;
 
-    /// The epsilon to determine if two distances are equal or not.
+    /*! \brief The epsilon to determine if two distances are equal or not.
+     *         It is in units of primitive cell fractional coordinates.
+     */
     double eps_;
 
 };

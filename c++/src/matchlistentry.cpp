@@ -30,8 +30,6 @@ MatchListEntry::MatchListEntry(const int match_type,
     coordinate_(coordinate),
     eps_(1.0e-5)
 {
-    // NOTE: The eps should be set from knowledge of system size in cartesina
-    //       coordinates.
 }
 
 
