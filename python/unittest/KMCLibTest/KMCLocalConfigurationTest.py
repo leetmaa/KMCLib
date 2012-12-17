@@ -174,10 +174,19 @@ local_config2 = KMCLocalConfiguration(
         # Check its type.
         self.assertTrue( isinstance(backend, Backend.Configuration) )
 
-        # Get the coordinates back out.
-        ret_coords = numpy.array(backend.coordinates())
+        # Get the coordinates back out and check.
+        cpp_coords = backend.coordinates()
+        py_coords  = local_config.coordinates()
 
-        # NEEDS IMPLEMENTATION
+        self.assertAlmostEqual( cpp_coords[0][0], py_coords[0][0], 10 )
+        self.assertAlmostEqual( cpp_coords[0][1], py_coords[0][1], 10 )
+        self.assertAlmostEqual( cpp_coords[0][2], py_coords[0][2], 10 )
+
+        # Get the types back out.
+        cpp_types = list(backend.elements())
+        py_types  = local_config.types()
+
+        self.assertEqual(py_types, cpp_types)
 
 
 if __name__ == '__main__':
