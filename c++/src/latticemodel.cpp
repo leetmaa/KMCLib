@@ -27,6 +27,10 @@ LatticeModel::LatticeModel(Configuration & configuration,
 {
     // Setup the mapping between coordinates and processes.
     calculateInitialMatching();
+
+    // Initialize the interactions table here.
+    // NEEDS IMPLEMENTATION
+
 }
 
 
