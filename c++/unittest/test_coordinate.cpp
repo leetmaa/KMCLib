@@ -19,6 +19,13 @@
 //
 void Test_Coordinate::testConstructionAndQuery()
 {
+    // Default construct.
+    Coordinate c0;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( c0.x(), 0.0, 1.0e-14);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( c0.y(), 0.0, 1.0e-14);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( c0.z(), 0.0, 1.0e-14);
+
+    // Construct with arguments.
     Coordinate c(0.1,0.2,0.3);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c.x(), 0.1, 1.0e-14);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c.y(), 0.2, 1.0e-14);

@@ -21,9 +21,9 @@ class Coordinate {
 
 public:
 
-    /*! \brief Default constructor for wrapping.
+    /*! \brief Default constructor for SWIG wrapping in std::vector.
      */
-    Coordinate(){}
+    Coordinate();
 
     /*! \brief Constructor.
      *  \param x : The x coordinate.

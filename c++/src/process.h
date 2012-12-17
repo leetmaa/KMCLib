@@ -27,7 +27,7 @@ class Process {
 
 public:
 
-    /*! \brief Default constructor needed for SWIG wrapping.
+    /*! \brief Default constructor needed for use in std::vector SWIG wrapping.
      */
     Process() {};
 
