@@ -40,12 +40,30 @@ public:
      */
     const std::vector<Process> & processes() const { return processes_; }
 
+    /*! \brief Const query for the probability table.
+     *  \return : A handle to the present probability table.
+     */
+    const std::vector<std::pair<double,int> > & probabilityTable() const { return probability_table_; }
+
+    /*! \brief Recalculate the table of process probabilities based on the
+     *         number of available sites for each process and their barriers.
+     */
+    void updateProbabilityTable();
+
+    /*! \brief Pick an availabe process according to its probability.
+     *  \return : A possible available process picked according to its probability.
+     */
+    int pickProcess();
+
 protected:
 
 private:
 
     /// The processes.
     std::vector<Process> processes_;
+
+    /// The probability table.
+    std::vector<std::pair<double,int> > probability_table_;
 
 };
 

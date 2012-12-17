@@ -29,8 +29,7 @@ LatticeModel::LatticeModel(Configuration & configuration,
     calculateInitialMatching();
 
     // Initialize the interactions table here.
-    // NEEDS IMPLEMENTATION
-
+    interactions_.updateProbabilityTable();
 }
 
 

@@ -26,10 +26,12 @@ public:
     CPPUNIT_TEST_SUITE( Test_Interactions );
     CPPUNIT_TEST( testConstruction );
     CPPUNIT_TEST( testQuery );
+    CPPUNIT_TEST( testUpdateAndPick );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstruction();
     void testQuery();
+    void testUpdateAndPick();
 
 };
 

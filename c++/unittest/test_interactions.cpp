@@ -14,6 +14,7 @@
 
 #include "../src/configuration.h"
 #include "../src/matchlistentry.h"
+#include "../src/random.h"
 
 // -------------------------------------------------------------------------- //
 //
@@ -98,5 +99,130 @@ void Test_Interactions::testQuery()
     CPPUNIT_ASSERT_EQUAL( queried_processes[2].matchList()[2].updateType(), 1 );
 
 
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Interactions::testUpdateAndPick()
+{
+    // Setup two valid processes.
+    std::vector<Process> processes;
+
+    // Setup a vector of dummy processes.
+    std::vector<std::string> process_elements1(1);
+    process_elements1[0] = "A";
+
+    std::vector<std::string> process_elements2(1);
+    process_elements2[0] = "B";
+
+    std::vector<std::vector<double> > process_coordinates(1, std::vector<double>(3, 0.0));
+
+    // Possible types.
+    std::map<std::string, int> possible_types;
+    possible_types["A"] = 0;
+    possible_types["B"] = 1;
+    possible_types["V"] = 2;
+
+    const double barrier = 13.7;
+    Configuration c1(process_coordinates, process_elements1, possible_types);
+    Configuration c2(process_coordinates, process_elements2, possible_types);
+    processes.push_back(Process(c1,c2,barrier));
+    processes.push_back(Process(c1,c2,barrier));
+    processes.push_back(Process(c1,c2,barrier+barrier));
+    processes.push_back(Process(c1,c2,barrier));
+    processes.push_back(Process(c1,c2,barrier));
+    processes.push_back(Process(c1,c2,barrier));
+
+    // Fake a matching by adding sites to the processes.
+
+    // First process, 3 sites.
+    processes[0].addSite(12);
+    processes[0].addSite(123);
+    processes[0].addSite(332);
+
+    // Second process, 2 sites.
+    processes[1].addSite(19);
+    processes[1].addSite(12);
+
+    // Third process, 4 sites.
+    processes[2].addSite(19);
+    processes[2].addSite(12);
+    processes[2].addSite(234);
+    processes[2].addSite(991);
+
+    // The sixth process, one site.
+    processes[5].addSite(992);
+
+    // Setup the interactions object.
+    Interactions interactions(processes);
+
+    // Update the probability table.
+    interactions.updateProbabilityTable();
+
+    // Check the values of the probability table.
+    const std::vector<std::pair<double, int> > & probability_table = \
+        interactions.probabilityTable();
+
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(probability_table.size()),
+                          static_cast<int>(processes.size()) );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[0].first,  3.0/barrier, 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[1].first,  5.0/barrier, 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[2].first,  7.0/barrier, 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[3].first,  7.0/barrier, 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[4].first,  7.0/barrier, 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[5].first,  8.0/barrier, 1.0e-14 );
+
+    CPPUNIT_ASSERT_EQUAL( probability_table[0].second, 3 );
+    CPPUNIT_ASSERT_EQUAL( probability_table[1].second, 2 );
+    CPPUNIT_ASSERT_EQUAL( probability_table[2].second, 4 );
+    CPPUNIT_ASSERT_EQUAL( probability_table[3].second, 0 );
+    CPPUNIT_ASSERT_EQUAL( probability_table[4].second, 0 );
+    CPPUNIT_ASSERT_EQUAL( probability_table[5].second, 1 );
+
+
+    // Make sure to seed the random number generator before we test any
+    // random dependent stuff.
+    seedRandom(false, 131);
+
+    // Pick processes from this table with enough statistics should give
+    // the distribution proportional to the number of available sites,
+    // but with the double barrier for the third process should halve
+    // this entry.
+    std::vector<int> picked(6,0);
+    const int n_loop = 1000000;
+    for (int i = 0; i < n_loop; ++i)
+    {
+        const int p = interactions.pickProcess();
+        // Make sure the picked process is not negative or too large.
+        CPPUNIT_ASSERT( p >= 0 );
+        CPPUNIT_ASSERT( p < static_cast<int>(probability_table.size()) );
+        ++picked[p];
+    }
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 8.0*picked[0]/n_loop,
+                                  1.0*probability_table[0].second,
+                                  1.0e-2 );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 8.0*picked[1]/n_loop,
+                                  1.0*probability_table[1].second,
+                                  1.0e-2 );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 8.0*picked[2]/n_loop,
+                                  1.0*probability_table[2].second/2.0,
+                                  1.0e-2 );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 8.0*picked[3]/n_loop,
+                                  1.0*probability_table[3].second,
+                                  1.0e-2 );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 8.0*picked[4]/n_loop,
+                                  1.0*probability_table[4].second,
+                                  1.0e-2 );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 8.0*picked[5]/n_loop,
+                                  1.0*probability_table[5].second,
+                                  1.0e-2 );
 }
 

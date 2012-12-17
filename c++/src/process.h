@@ -44,6 +44,12 @@ public:
             const Configuration & second,
             const double barrier);
 
+    /*! \brief Query for the rate constant.
+     *         NOTE: THIS IS A DUMMY IMPLEMENTATION
+     *  \return : The rate constant of the process.
+     */
+    double rateConstant() const { return 1.0 / barrier_; } // NEEDS IMPLEMENTATION
+
     /*! \brief Query for the number of listed possible sites for this process.
      *  \return : The number of listed indices.
      */
