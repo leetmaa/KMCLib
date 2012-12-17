@@ -308,3 +308,17 @@ epub_copyright = u'2012, Mikael Leetmaa'
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'http://docs.python.org/': None}
+
+def skip(app, what, name, obj, skip, options):
+    print app, what, name, obj, skip, options
+    if skip:
+        return True
+    elif name == '__weakref__':
+        return True
+    else:
+        return False
+
+def setup(app):
+    app.connect('autodoc-skip-member', skip)
+
+

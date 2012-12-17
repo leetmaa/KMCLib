@@ -68,12 +68,20 @@ void Test_Random::testSeedAndCall()
     rnd4 = randomDouble01();
 
     // Check that we get a different series.
+
+    // This could eventually fail by chanse, but that would be very unlikely.
     CPPUNIT_ASSERT( std::fabs(rnd0-ref_rnd0) > 1.0e-10);
+    CPPUNIT_ASSERT( std::fabs(rnd1-ref_rnd1) > 1.0e-10);
+    CPPUNIT_ASSERT( std::fabs(rnd2-ref_rnd2) > 1.0e-10);
+    CPPUNIT_ASSERT( std::fabs(rnd3-ref_rnd3) > 1.0e-10);
+    CPPUNIT_ASSERT( std::fabs(rnd4-ref_rnd4) > 1.0e-10);
 
     // Sleep, seed, call and check again.
     sleep(2);
     seedRandom(true, 13);
     const double rnd01 = randomDouble01();
+
+    // This should give another number.
     CPPUNIT_ASSERT( std::fabs(rnd01-rnd0) > 1.0e-10);
 
     // DONE

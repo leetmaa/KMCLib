@@ -49,7 +49,7 @@ KMCLattice
 
 
 KMCLatticeModel
------------------
+---------------------
 
 .. autoclass:: KMCLib.KMCLatticeModel
    :members:
