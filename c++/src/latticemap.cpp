@@ -17,7 +17,7 @@
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
-
+#include <algorithm>
 
 // -----------------------------------------------------------------------------
 /*! \brief 'Less than' operator for comparing two cell index structs needed for
@@ -176,6 +176,41 @@ std::vector<int> LatticeMap::neighbourIndices(const int index) const
     // Resize and return.
     neighbours.resize(counter);
     return neighbours;
+}
+
+
+// -----------------------------------------------------------------------------
+//
+std::vector<int> LatticeMap::supersetNeighbourIndices(const std::vector<int> & indices)
+{
+    // PERFORMME:
+    // We can use several different stategies here and this might
+    // be performance critical, thus we need to time it. So, for now,
+    // use the simplest possible naive implementation.
+
+    std::vector<int> superset;
+
+    for (size_t i = 0; i < indices.size(); ++i)
+    {
+        // Get the index.
+        const int index = indices[i];
+
+        // And its neighbours.
+        const std::vector<int> neighbours = neighbourIndices(index);
+
+        // Add its neighbourlist to the superset.
+        for (size_t j = 0; j < neighbours.size(); ++j)
+        {
+            superset.push_back(neighbours[j]);
+        }
+    }
+
+    // Sort the superset.
+    std::sort(superset.begin(), superset.end());
+
+    // Get the unique elements out.
+    superset.resize(std::unique(superset.begin(), superset.end())-superset.begin());
+    return superset;
 }
 
 

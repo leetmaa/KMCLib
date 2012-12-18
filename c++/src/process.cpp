@@ -14,7 +14,7 @@
 #include <cstdio>
 
 #include "process.h"
-
+#include "random.h"
 #include "configuration.h"
 
 // -----------------------------------------------------------------------------
@@ -23,7 +23,8 @@ Process::Process(const Configuration & first,
                  const Configuration & second,
                  const double barrier) :
     barrier_(barrier),
-    sites_(0)
+    sites_(0),
+    affected_indices_(0)
 {
     // The check that the first and second configurartions match well enough
     // should be carried out in python so there is no need to do it again here.
@@ -48,6 +49,13 @@ Process::Process(const Configuration & first,
         // Setup and add the match list entry.
         const MatchListEntry entry(first_type, second_type, distance, coordinate);
         match_list_.push_back(entry);
+
+        // If the first and second type differ increase the length of the
+        // affected_sites list accordingly.
+        if (first_type != second_type)
+        {
+            affected_indices_.push_back(0);
+        }
     }
 
     // Sort the match list.
@@ -84,5 +92,14 @@ void Process::removeSite(const int index)
     sites_.pop_back();
 }
 
+
+// -----------------------------------------------------------------------------
+//
+int Process::pickSite() const
+{
+    // Draw an integer between 0 and sites_.size() - 1
+    const int rnd = static_cast<int>(randomDouble01() * sites_.size());
+    return sites_[rnd];
+}
 
 

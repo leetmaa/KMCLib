@@ -16,6 +16,9 @@
 #include "../src/configuration.h"
 #include "../src/latticemap.h"
 #include "../src/interactions.h"
+#include "../src/random.h"
+
+#include <ctime>
 
 // -------------------------------------------------------------------------- //
 //
@@ -271,5 +274,607 @@ void Test_LatticeModel::testSetupAndQuery()
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(ret_interactions_2.processes()[2].sites().size()), (nI*nJ*nK*nB/3)-4);
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(ret_interactions_2.processes()[3].sites().size()), 3 );
 
+    // DONE
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_LatticeModel::testSingleStepFunction()
+{
+    // Setup a realistic system and check.
+    std::vector< std::vector<double> > basis(3, std::vector<double>(3,0.0));
+    basis[1][0] = 0.25;
+    basis[1][1] = 0.25;
+    basis[1][2] = 0.25;
+    basis[2][0] = 0.75;
+    basis[2][1] = 0.75;
+    basis[2][2] = 0.75;
+
+    std::vector<std::string> basis_elements(3);
+    basis_elements[0] = "A";
+    basis_elements[1] = "B";
+    basis_elements[2] = "B";
+
+    // Make a 37x18x19 structure.
+    const int nI = 37;
+    const int nJ = 18;
+    const int nK = 19;
+    const int nB = 3;
+
+    // Coordinates and elements.
+    std::vector<std::vector<double> > coordinates;
+    std::vector<std::string> elements;
+
+    for (int i = 0; i < nI; ++i)
+    {
+        for (int j = 0; j < nJ; ++j)
+        {
+            for (int k = 0; k < nK; ++k)
+            {
+                for (int b = 0; b < nB; ++b)
+                {
+                    std::vector<double> c(3);
+                    c[0] = i + basis[b][0];
+                    c[1] = j + basis[b][1];
+                    c[2] = k + basis[b][2];
+                    coordinates.push_back(c);
+                    elements.push_back(basis_elements[b]);
+                }
+            }
+        }
+    }
+
+    // Introduce a few different typed sites.
+    elements[0]    = "V";
+    elements[216]  = "V";   // These affects process 0,1 and 3
+    elements[1434] = "V";
+    elements[2101] = "V";   // This affects process 0,1 and 2
+
+    // Possible types.
+    std::map<std::string, int> possible_types;
+    possible_types["A"] = 0;
+    possible_types["B"] = 1;
+    possible_types["V"] = 2;
+
+    // Setup the configuration.
+    Configuration configuration(coordinates, elements, possible_types);
+
+    // Setup the lattice map.
+    std::vector<int> repetitions(3);
+    repetitions[0] = nI;
+    repetitions[1] = nJ;
+    repetitions[2] = nK;
+    std::vector<bool> periodicity(3, true);
+    LatticeMap lattice_map(nB, repetitions, periodicity);
+
+    // Setup the interactions object.
+    std::vector<Process> processes;
+
+    // A process that independent of local environment swaps a "B" to "V"
+    {
+        const std::vector<std::string> process_elements1(1,"B");
+        const std::vector<std::string> process_elements2(1,"V");
+        const std::vector<std::vector<double> > process_coordinates(1, std::vector<double>(3, 0.0));
+        const double barrier = 1.234;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        Process p(c1, c2, barrier);
+        // Store twize.
+        processes.push_back(p);
+        processes.push_back(p);
+    }
+
+    // A process that finds an A between two B's in the 1,1,1 direction
+    // and swap the A and the first B.
+    {
+        std::vector<std::string> process_elements1(3);
+        process_elements1[0] = "A";
+        process_elements1[1] = "B";
+        process_elements1[2] = "B";
+
+        std::vector<std::string> process_elements2(3);
+        process_elements2[0] = "B";
+        process_elements2[1] = "A";
+        process_elements2[2] = "B";
+
+        std::vector<std::vector<double> > process_coordinates(3, std::vector<double>(3, 0.0));
+
+        process_coordinates[1][0] = -0.25;
+        process_coordinates[1][1] = -0.25;
+        process_coordinates[1][2] = -0.25;
+        process_coordinates[2][0] =  0.25;
+        process_coordinates[2][1] =  0.25;
+        process_coordinates[2][2] =  0.25;
+
+        const double barrier = 13.7;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        Process p(c1, c2, barrier);
+        processes.push_back(p);
+    }
+
+    // A process that finds a V between two A in the 1,1,1 direction
+    // and turn the V into B.
+    {
+        std::vector<std::string> process_elements1(3);
+        process_elements1[0] = "V";
+        process_elements1[1] = "B";
+        process_elements1[2] = "B";
+
+        std::vector<std::string> process_elements2(3);
+        process_elements2[0] = "B";
+        process_elements2[1] = "A";
+        process_elements2[2] = "B";
+
+        std::vector<std::vector<double> > process_coordinates(3, std::vector<double>(3, 0.0));
+
+        process_coordinates[1][0] = -0.25;
+        process_coordinates[1][1] = -0.25;
+        process_coordinates[1][2] = -0.25;
+        process_coordinates[2][0] =  0.25;
+        process_coordinates[2][1] =  0.25;
+        process_coordinates[2][2] =  0.25;
+
+        const double barrier = 13.7;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        Process p(c1, c2, barrier);
+        processes.push_back(p);
+    }
+
+    Interactions interactions(processes);
+
+    // Construct the lattice model to test.
+    LatticeModel lattice_model(configuration, lattice_map, interactions);
+
+    // Call the single step function a couple of times to make sure it is
+    // stable - the rest of the testing of this function should be done on
+    // a higher level.
+    const int n_loop = 1000;
+    for (int i = 0; i < n_loop; ++i)
+    {
+        lattice_model.singleStep();
+    }
+}
+
+// -------------------------------------------------------------------------- //
+//
+void Test_LatticeModel::testTiming()
+{
+    // Possible types.
+    std::map<std::string, int> possible_types;
+    possible_types["A"] = 0;
+    possible_types["V"] = 1;
+
+    // Setup the interactions object.
+    std::vector<Process> processes;
+
+    // This defines the moving directions.
+    std::vector<std::vector<double> > process_coordinates(7, std::vector<double>(3, 0.0));
+    process_coordinates[1][0] = -1.0;
+    process_coordinates[2][0] =  1.0;
+    process_coordinates[3][1] = -1.0;
+    process_coordinates[4][1] =  1.0;
+    process_coordinates[5][2] = -1.0;
+    process_coordinates[6][2] =  1.0;
+
+    // A process that moves a vacancy to the left with barrier 10
+    {
+        std::vector<std::string> process_elements1(7);
+        process_elements1[0] = "V";  // center
+        process_elements1[1] = "A";  // left
+        process_elements1[2] = "A";  // right
+        process_elements1[3] = "A";  // front
+        process_elements1[4] = "A";  // back
+        process_elements1[5] = "A";  // down
+        process_elements1[6] = "A";  // up
+
+        std::vector<std::string> process_elements2(7);
+        process_elements2[0] = "A";
+        process_elements2[1] = "V";
+        process_elements2[2] = "A";
+        process_elements2[3] = "A";
+        process_elements2[4] = "A";
+        process_elements2[5] = "A";
+        process_elements2[6] = "A";
+
+        const double barrier = 10.0;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        Process p(c1, c2, barrier);
+        // Store.
+        processes.push_back(p);
+    }
+
+
+    // A process that moves a vacancy to the right with barrier 10
+    {
+        std::vector<std::string> process_elements1(7);
+        process_elements1[0] = "V";  // center
+        process_elements1[1] = "A";  // left
+        process_elements1[2] = "A";  // right
+        process_elements1[3] = "A";  // front
+        process_elements1[4] = "A";  // back
+        process_elements1[5] = "A";  // down
+        process_elements1[6] = "A";  // up
+
+        std::vector<std::string> process_elements2(7);
+        process_elements2[0] = "A";
+        process_elements2[1] = "A";
+        process_elements2[2] = "V";
+        process_elements2[3] = "A";
+        process_elements2[4] = "A";
+        process_elements2[5] = "A";
+        process_elements2[6] = "A";
+
+        const double barrier = 10.0;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        Process p(c1, c2, barrier);
+        // Store.
+        processes.push_back(p);
+    }
+
+    // A process that moves a vacancy to the front with barrier 10
+    {
+        std::vector<std::string> process_elements1(7);
+        process_elements1[0] = "V";  // center
+        process_elements1[1] = "A";  // left
+        process_elements1[2] = "A";  // right
+        process_elements1[3] = "A";  // front
+        process_elements1[4] = "A";  // back
+        process_elements1[5] = "A";  // down
+        process_elements1[6] = "A";  // up
+
+        std::vector<std::string> process_elements2(7);
+        process_elements2[0] = "A";
+        process_elements2[1] = "A";
+        process_elements2[2] = "A";
+        process_elements2[3] = "V";
+        process_elements2[4] = "A";
+        process_elements2[5] = "A";
+        process_elements2[6] = "A";
+
+        const double barrier = 10.0;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        Process p(c1, c2, barrier);
+        // Store.
+        processes.push_back(p);
+    }
+
+    // A process that moves a vacancy to the back with barrier 10
+    {
+        std::vector<std::string> process_elements1(7);
+        process_elements1[0] = "V";  // center
+        process_elements1[1] = "A";  // left
+        process_elements1[2] = "A";  // right
+        process_elements1[3] = "A";  // front
+        process_elements1[4] = "A";  // back
+        process_elements1[5] = "A";  // donw
+        process_elements1[6] = "A";  // up
+
+        std::vector<std::string> process_elements2(7);
+        process_elements2[0] = "A";
+        process_elements2[1] = "A";
+        process_elements2[2] = "A";
+        process_elements2[3] = "A";
+        process_elements2[4] = "V";
+        process_elements2[5] = "A";
+        process_elements2[6] = "A";
+
+        const double barrier = 10.0;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        Process p(c1, c2, barrier);
+        // Store.
+        processes.push_back(p);
+    }
+
+    // A process that moves a vacancy down with barrier 10
+    {
+        std::vector<std::string> process_elements1(7);
+        process_elements1[0] = "V";  // center
+        process_elements1[1] = "A";  // left
+        process_elements1[2] = "A";  // right
+        process_elements1[3] = "A";  // front
+        process_elements1[4] = "A";  // back
+        process_elements1[5] = "A";  // down
+        process_elements1[6] = "A";  // up
+
+        std::vector<std::string> process_elements2(7);
+        process_elements2[0] = "A";
+        process_elements2[1] = "A";
+        process_elements2[2] = "A";
+        process_elements2[3] = "A";
+        process_elements2[4] = "A";
+        process_elements2[5] = "V";
+        process_elements2[6] = "A";
+
+        const double barrier = 10.0;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        Process p(c1, c2, barrier);
+        // Store.
+        processes.push_back(p);
+    }
+
+    // A process that moves a vacancy up with barrier 10
+    {
+        std::vector<std::string> process_elements1(7);
+        process_elements1[0] = "V";  // center
+        process_elements1[1] = "A";  // left
+        process_elements1[2] = "A";  // right
+        process_elements1[3] = "A";  // front
+        process_elements1[4] = "A";  // back
+        process_elements1[5] = "A";  // down
+        process_elements1[6] = "A";  // up
+
+        std::vector<std::string> process_elements2(7);
+        process_elements2[0] = "A";
+        process_elements2[1] = "A";
+        process_elements2[2] = "A";
+        process_elements2[3] = "A";
+        process_elements2[4] = "A";
+        process_elements2[5] = "A";
+        process_elements2[6] = "V";
+
+        const double barrier = 10.0;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        Process p(c1, c2, barrier);
+        // Store.
+        processes.push_back(p);
+    }
+
+    // Processes that moves a vacancy away from other vacancies with barrier 15.
+
+    // Left.
+    {
+        std::vector<std::string> process_elements1(7);
+        process_elements1[0] = "V";  // center
+        process_elements1[1] = "A";  // left
+        process_elements1[2] = "V";  // right
+        process_elements1[3] = "A";  // front
+        process_elements1[4] = "A";  // back
+        process_elements1[5] = "A";  // down
+        process_elements1[6] = "A";  // up
+
+        std::vector<std::string> process_elements2(7);
+        process_elements2[0] = "A";
+        process_elements2[1] = "V";
+        process_elements2[2] = "V";
+        process_elements2[3] = "A";
+        process_elements2[4] = "A";
+        process_elements2[5] = "A";
+        process_elements2[6] = "A";
+
+        const double barrier = 15.0;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        Process p(c1, c2, barrier);
+        // Store.
+        processes.push_back(p);
+    }
+
+    // Right.
+    {
+        std::vector<std::string> process_elements1(7);
+        process_elements1[0] = "V";  // center
+        process_elements1[1] = "V";  // left
+        process_elements1[2] = "A";  // right
+        process_elements1[3] = "A";  // front
+        process_elements1[4] = "A";  // back
+        process_elements1[5] = "A";  // down
+        process_elements1[6] = "A";  // up
+
+        std::vector<std::string> process_elements2(7);
+        process_elements2[0] = "A";
+        process_elements2[1] = "V";
+        process_elements2[2] = "V";
+        process_elements2[3] = "A";
+        process_elements2[4] = "A";
+        process_elements2[5] = "A";
+        process_elements2[6] = "A";
+
+        const double barrier = 15.0;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        Process p(c1, c2, barrier);
+        // Store.
+        processes.push_back(p);
+    }
+
+    // Front.
+    {
+        std::vector<std::string> process_elements1(7);
+        process_elements1[0] = "V";  // center
+        process_elements1[1] = "A";  // left
+        process_elements1[2] = "A";  // right
+        process_elements1[3] = "A";  // front
+        process_elements1[4] = "V";  // back
+        process_elements1[5] = "A";  // down
+        process_elements1[6] = "A";  // up
+
+        std::vector<std::string> process_elements2(7);
+        process_elements2[0] = "A";
+        process_elements2[1] = "A";
+        process_elements2[2] = "A";
+        process_elements2[3] = "V";
+        process_elements2[4] = "V";
+        process_elements2[5] = "A";
+        process_elements2[6] = "A";
+
+        const double barrier = 15.0;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        Process p(c1, c2, barrier);
+        // Store.
+        processes.push_back(p);
+    }
+
+    // Back.
+    {
+        std::vector<std::string> process_elements1(7);
+        process_elements1[0] = "V";  // center
+        process_elements1[1] = "A";  // left
+        process_elements1[2] = "A";  // right
+        process_elements1[3] = "V";  // front
+        process_elements1[4] = "A";  // back
+        process_elements1[5] = "A";  // donw
+        process_elements1[6] = "A";  // up
+
+        std::vector<std::string> process_elements2(7);
+        process_elements2[0] = "A";
+        process_elements2[1] = "A";
+        process_elements2[2] = "A";
+        process_elements2[3] = "V";
+        process_elements2[4] = "V";
+        process_elements2[5] = "A";
+        process_elements2[6] = "A";
+
+        const double barrier = 15.0;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        Process p(c1, c2, barrier);
+        // Store.
+        processes.push_back(p);
+    }
+
+    // Down.
+    {
+        std::vector<std::string> process_elements1(7);
+        process_elements1[0] = "V";  // center
+        process_elements1[1] = "A";  // left
+        process_elements1[2] = "A";  // right
+        process_elements1[3] = "A";  // front
+        process_elements1[4] = "A";  // back
+        process_elements1[5] = "A";  // down
+        process_elements1[6] = "V";  // up
+
+        std::vector<std::string> process_elements2(7);
+        process_elements2[0] = "A";
+        process_elements2[1] = "A";
+        process_elements2[2] = "A";
+        process_elements2[3] = "A";
+        process_elements2[4] = "A";
+        process_elements2[5] = "V";
+        process_elements2[6] = "V";
+
+        const double barrier = 15.0;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        Process p(c1, c2, barrier);
+        // Store.
+        processes.push_back(p);
+    }
+
+    // Up.
+    {
+        std::vector<std::string> process_elements1(7);
+        process_elements1[0] = "V";  // center
+        process_elements1[1] = "A";  // left
+        process_elements1[2] = "A";  // right
+        process_elements1[3] = "A";  // front
+        process_elements1[4] = "A";  // back
+        process_elements1[5] = "V";  // down
+        process_elements1[6] = "A";  // up
+
+        std::vector<std::string> process_elements2(7);
+        process_elements2[0] = "A";
+        process_elements2[1] = "A";
+        process_elements2[2] = "A";
+        process_elements2[3] = "A";
+        process_elements2[4] = "A";
+        process_elements2[5] = "V";
+        process_elements2[6] = "V";
+
+        const double barrier = 15.0;
+        Configuration c1(process_coordinates, process_elements1, possible_types);
+        Configuration c2(process_coordinates, process_elements2, possible_types);
+        Process p(c1, c2, barrier);
+        // Store.
+        processes.push_back(p);
+    }
+
+    // Setup a binary 3D system with voids and occupied.
+    std::vector< std::vector<double> > basis(1, std::vector<double>(3,0.0));
+
+    const int nI = 1000;
+    const int nJ = 10;
+    const int nK = 10;
+    const int nB = 1;
+
+    // Coordinates and elements.
+    std::vector<std::vector<double> > coordinates;
+    std::vector<std::string> elements;
+
+    // Seed the random number generator to make the test reproducible.
+    seedRandom(false, 14159265);
+
+    for (int i = 0; i < nI; ++i)
+    {
+        for (int j = 0; j < nJ; ++j)
+        {
+            for (int k = 0; k < nK; ++k)
+            {
+                std::vector<double> c(3);
+                c[0] = i;
+                c[1] = j;
+                c[2] = k;
+                coordinates.push_back(c);
+
+                if (randomDouble01() < 0.05)
+                {
+                    elements.push_back("V");
+                }
+                else
+                {
+                    elements.push_back("A");
+                }
+            }
+        }
+    }
+
+    // Setup the configuration.
+    Configuration configuration(coordinates, elements, possible_types);
+
+    // Setup the lattice map.
+    std::vector<int> repetitions(3);
+    repetitions[0] = nI;
+    repetitions[1] = nJ;
+    repetitions[2] = nK;
+    std::vector<bool> periodicity(3, true);
+    LatticeMap lattice_map(nB, repetitions, periodicity);
+    Interactions interactions(processes);
+
+    // Construct the lattice model to test.
+    LatticeModel lattice_model(configuration, lattice_map, interactions);
+
+    // Call the single step function a couple of times to make sure it is
+    // stable - the rest of the testing of this function should be done on
+    // a higher level.
+
+    time_t seconds;
+    time(&seconds);
+
+    const int n_loop = 10000;
+    for (int i = 0; i < n_loop; ++i)
+    {
+        lattice_model.singleStep();
+    }
+
+    time_t seconds2;
+    time(&seconds2);
+
+    int diff_t = static_cast<int>(seconds2-seconds);
+    printf("\nTIMING: %i steps were performed in %i seconds (%f ms/step)\n",
+           n_loop,
+           diff_t,
+           1000.0*static_cast<double>(diff_t)/n_loop);
+
+    printf("        with %i processes (7 centers per process) for %i sites in the lattice.\n",
+           static_cast<int>(processes.size()), nI*nJ*nK*nB);
 
 }

@@ -51,9 +51,17 @@ public:
     void updateProbabilityTable();
 
     /*! \brief Pick an availabe process according to its probability.
-     *  \return : A possible available process picked according to its probability.
+     *  \return : The index of a possible available process picked according
+     *            to its probability.
      */
-    int pickProcess();
+    int pickProcessIndex() const;
+
+    /*! \brief Pick an availabe process according to its probability and return
+     *         a reference to that process.
+     *  \return : A reference to a possible available process picked according
+     *            to its probability.
+     */
+    Process & pickProcess();
 
 protected:
 

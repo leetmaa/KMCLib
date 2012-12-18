@@ -55,7 +55,35 @@ void LatticeModel::calculateInitialMatching()
 //
 void LatticeModel::singleStep()
 {
-    printf("Taking a step.\n");
-    // NOTHING HERE YET
+    // Select a process.
+    Process & process = interactions_.pickProcess();
+
+    // Select a site.
+    const int site_index = process.pickSite();
+
+    // Perform the operation.
+    configuration_.performProcess(process, site_index, lattice_map_);
+
+    // Propagate the time.
+    //timer_.propagateGlobalTime();
+    // NEEDS IMPLEMENTATION
+
+    // Write/update the trajectory.
+    // NEEDS IMPLEMENTATION
+    // printf("Taking a step.\n");
+
+    // Run the re-matching of the affected sites and their neighbours.
+    const std::vector<int> & indices = \
+        lattice_map_.supersetNeighbourIndices(process.affectedIndices());
+
+    matcher_.calculateMatching(interactions_,
+                               indices,
+                               lattice_map_,
+                               configuration_);
+
+    // Update the interactions' probability table.
+    interactions_.updateProbabilityTable();
+
+    // Ready for the next step.
 }
 

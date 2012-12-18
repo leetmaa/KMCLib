@@ -25,9 +25,11 @@ public:
 
     CPPUNIT_TEST_SUITE( Test_Configuration );
     CPPUNIT_TEST( testConstruction );
+    CPPUNIT_TEST( testPerformProcess );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstruction();
+    void testPerformProcess();
 
 };
 

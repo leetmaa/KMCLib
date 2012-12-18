@@ -23,6 +23,7 @@
 
 // Forward declarations.
 class LatticeMap;
+class Process;
 
 /*! \brief Class for defining the configuration used in a KMC simulation to
  *         use for communicating elements and positions to and from python.
@@ -67,6 +68,16 @@ public:
                                           const std::vector<int> & indices,
                                           const LatticeMap & lattice_map) const;
 
+    /*! \brief Perform the given process.
+     *  \param process : The process to perform, which will be updated with the affected
+     *                   indices.
+     *  \param site_index : The index of the site where the process should be performed.
+     *  \param lattice_map  : The lattice map describing the periodicity of the system.
+     */
+    void performProcess(Process & process,
+                        const int site_index,
+                        const LatticeMap & lattice_map);
+
 protected:
 
 private:
@@ -79,6 +90,10 @@ private:
 
     /// The elements.
     std::vector<int> types_;
+
+    /// The mapping from type integers to names.
+    std::vector<std::string> type_names_;
+
 };
 
 

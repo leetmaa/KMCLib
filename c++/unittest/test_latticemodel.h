@@ -26,10 +26,14 @@ public:
     CPPUNIT_TEST_SUITE( Test_LatticeModel );
     CPPUNIT_TEST( testConstruction );
     CPPUNIT_TEST( testSetupAndQuery );
+    CPPUNIT_TEST( testSingleStepFunction );
+    CPPUNIT_TEST( testTiming );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstruction();
     void testSetupAndQuery();
+    void testSingleStepFunction();
+    void testTiming();
 
 };
 

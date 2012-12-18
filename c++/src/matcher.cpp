@@ -114,8 +114,6 @@ bool Matcher::isMatch(const std::vector<MatchListEntry> & process_match_list,
     std::vector<MatchListEntry>::const_iterator it1 = process_match_list.begin();
     std::vector<MatchListEntry>::const_iterator it2 = index_match_list.begin();
 
-    it1 = process_match_list.begin();
-    it2 = index_match_list.begin();
     // Loop over the process match list and compare.
     for( ; it1 != process_match_list.end(); ++it1, ++it2)
     {
@@ -129,3 +127,6 @@ bool Matcher::isMatch(const std::vector<MatchListEntry> & process_match_list,
     // All match, return true.
     return true;
 }
+
+
+

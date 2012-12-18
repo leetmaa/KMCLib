@@ -28,12 +28,16 @@ public:
     CPPUNIT_TEST( testMatchList );
     CPPUNIT_TEST( testMatchListLong );
     CPPUNIT_TEST( testAddAndRemoveSite );
+    CPPUNIT_TEST( testPickSite );
+    CPPUNIT_TEST( testAffectedIndices );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstruction();
     void testMatchList();
     void testMatchListLong();
     void testAddAndRemoveSite();
+    void testPickSite();
+    void testAffectedIndices();
 
 };
 

@@ -15,6 +15,7 @@
 
 #include <cmath>
 #include "../src/configuration.h"
+#include "../src/random.h"
 
 // -------------------------------------------------------------------------- //
 //
@@ -374,4 +375,100 @@ void Test_Process::testAddAndRemoveSite()
     // process.removeSite(1234);
 
     // DONE
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Process::testPickSite()
+{
+    // Default construct a process.
+    Process process;
+
+    // Add sites.
+    process.addSite(12);
+    process.addSite(199);
+    process.addSite(19);
+
+    // Get the cite.
+    int counter12  = 0;
+    int counter19  = 0;
+    int counter199 = 0;
+
+    seedRandom(false, 97);
+    const int n_loop = 1000000;
+
+    for (int i = 0; i < n_loop; ++i)
+    {
+        const int site = process.pickSite();
+        CPPUNIT_ASSERT( ! (site != 12 && site != 199 && site != 19) );
+
+        // Count how often each gets selected.
+        if (site == 12)
+        {
+            ++counter12;
+        }
+
+        if (site == 199)
+        {
+            ++counter199;
+        }
+
+        if (site == 19)
+        {
+            ++counter19;
+        }
+    }
+
+    // Test.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0 * n_loop / (3 * n_loop) , 1.0 * counter12 / n_loop,  1.0e-2);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0 * n_loop / (3 * n_loop) , 1.0 * counter19 / n_loop,  1.0e-2);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0 * n_loop / (3 * n_loop) , 1.0 * counter199 / n_loop, 1.0e-2);
+
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Process::testAffectedIndices()
+{
+    // Setup a valid possible types map.
+    std::map<std::string,int> possible_types;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["C"] = 0;
+
+    // Setup the two configurations.
+    std::vector<std::string> elements1;
+    elements1.push_back("A");
+    elements1.push_back("B");
+
+    std::vector<std::string> elements2;
+    elements2.push_back("C");
+    elements2.push_back("B");
+
+    // Setup coordinates.
+    std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
+    coords[1][0] =  1.0;
+    coords[1][1] =  1.3;
+    coords[1][2] = -4.4;
+
+    // The configurations.
+    const Configuration config1(coords, elements1, possible_types);
+    const Configuration config2(coords, elements2, possible_types);
+
+    // Construct the process.
+    const double barrier = 13.7;
+    Process process(config1, config2, barrier);
+
+    // Check that the size of the affected is correct.
+    size_t one = 1;
+    CPPUNIT_ASSERT_EQUAL( process.affectedIndices().size(), one );
+
+    // Make sure we can add at some position.
+    process.affectedIndices()[1] = 123;
+
+    // And access.
+    CPPUNIT_ASSERT_EQUAL( process.affectedIndices()[1], 123 );
+
 }

@@ -81,6 +81,23 @@ public:
      */
     const std::vector<MatchListEntry> & matchList() const { return match_list_; }
 
+    /*! \brief Query for the latest affected indices.
+     *  \return : The affected indices from the last time the process was
+     *            performed on a calculation.
+     */
+    const std::vector<int> & affectedIndices() const { return affected_indices_; }
+
+    /*! \brief Query for the latest affected indices.
+     *  \return : The affected indices from the last time the process was
+     *            performed on a calculation.
+     */
+    std::vector<int> & affectedIndices() { return affected_indices_; }
+
+    /*! \brief Pick a random available process.
+     *  \return : A random available process.
+     */
+    int pickSite() const;
+
 protected:
 
 private:
@@ -93,6 +110,11 @@ private:
 
     /// The match list for comparing against local configurations.
     std::vector<MatchListEntry> match_list_;
+
+    /*! \brief: The configuration indices that were affected last time
+     *          the process was used to update a configuration.
+     */
+    std::vector<int> affected_indices_;
 
 };
 

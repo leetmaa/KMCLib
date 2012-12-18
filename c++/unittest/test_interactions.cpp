@@ -194,7 +194,8 @@ void Test_Interactions::testUpdateAndPick()
     const int n_loop = 1000000;
     for (int i = 0; i < n_loop; ++i)
     {
-        const int p = interactions.pickProcess();
+        const int p = interactions.pickProcessIndex();
+
         // Make sure the picked process is not negative or too large.
         CPPUNIT_ASSERT( p >= 0 );
         CPPUNIT_ASSERT( p < static_cast<int>(probability_table.size()) );
@@ -224,5 +225,16 @@ void Test_Interactions::testUpdateAndPick()
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 8.0*picked[5]/n_loop,
                                   1.0*probability_table[5].second,
                                   1.0e-2 );
+
+    // Check that picking the process twice with two different access methods and
+    // a seed reset inbetween gives a reference to the same object.
+    seedRandom(false, 87);
+    const int p = interactions.pickProcessIndex();
+    const Process & proc1 = interactions.processes()[p];
+
+    seedRandom(false, 87);
+    const Process & proc2 = interactions.pickProcess();
+    CPPUNIT_ASSERT_EQUAL( &proc1, &proc2 );
+
 }
 

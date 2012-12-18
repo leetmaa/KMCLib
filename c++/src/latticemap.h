@@ -52,15 +52,22 @@ public:
     /*! \brief Get the neighbouring indices of a given index,
      *         including all indices in nearby cells.
      * \param index : The index to query for.
-     * \returns: The list of indices.
+     * \return: The list of indices.
      */
     std::vector<int> neighbourIndices(const int index) const;
+
+    /*! \brief Get the unique neighbouring indices of a set of given
+     *         indices.
+     * \param indices : The vector of indices to get the neighbours for.
+     * \return: The list of indices.
+     */
+    std::vector<int> supersetNeighbourIndices(const std::vector<int> & indices);
 
     /*! \brief Get the indices from a given cell.
      * \param i : The cell index in the a direction.
      * \param j : The cell index in the b direction.
      * \param k : The cell index in the c direction.
-     * \returns: The list of indices.
+     * \return: The list of indices.
      */
     const std::vector<int> & indicesFromCell(const int i,
                                              const int j,
@@ -68,17 +75,17 @@ public:
 
 
     /*! \brief Query for the periodicity.
-     * \returns: The periodicity in the direction.
+     * \return: The periodicity in the direction.
      */
     bool periodicA() const { return periodic_[0]; }
 
     /*! \brief Query for the periodicity.
-     * \returns: The periodicity in the direction.
+     * \return: The periodicity in the direction.
      */
     bool periodicB() const { return periodic_[1]; }
 
     /*! \brief Query for the periodicity.
-     * \returns: The periodicity in the direction.
+     * \return: The periodicity in the direction.
      */
     bool periodicC() const { return periodic_[2]; }
 

@@ -69,7 +69,7 @@ void Interactions::updateProbabilityTable()
 
 // -----------------------------------------------------------------------------
 //
-int Interactions::pickProcess()
+int Interactions::pickProcessIndex() const
 {
     // Get a random number between 0.0 and the total imcremented rate.
     const double rnd = randomDouble01() * probability_table_.back().first;
@@ -89,4 +89,12 @@ int Interactions::pickProcess()
     return it1-begin;
 }
 
+
+// -----------------------------------------------------------------------------
+//
+Process & Interactions::pickProcess()
+{
+    const int index = pickProcessIndex();
+    return processes_[index];
+}
 

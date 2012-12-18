@@ -12,6 +12,8 @@
 // Include the files to test.
 #include "../src/configuration.h"
 
+#include "../src/latticemap.h"
+#include "../src/process.h"
 
 // -------------------------------------------------------------------------- //
 //
@@ -82,4 +84,136 @@ void Test_Configuration::testConstruction()
     // DONE
 
 }
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Configuration::testPerformProcess()
+{
+    // Setup a realistic system.
+    std::vector< std::vector<double> > basis(3, std::vector<double>(3,0.0));
+    basis[1][0] = 0.25;
+    basis[1][1] = 0.25;
+    basis[1][2] = 0.25;
+    basis[2][0] = 0.75;
+    basis[2][1] = 0.75;
+    basis[2][2] = 0.75;
+
+    std::vector<std::string> basis_elements(3);
+    basis_elements[0] = "A";
+    basis_elements[1] = "B";
+    basis_elements[2] = "B";
+
+    // Make a 37x18x19 structure.
+    const int nI = 37;
+    const int nJ = 18;
+    const int nK = 19;
+    const int nB = 3;
+
+    // Coordinates and elements.
+    std::vector<std::vector<double> > coordinates;
+    std::vector<std::string> elements;
+
+    for (int i = 0; i < nI; ++i)
+    {
+        for (int j = 0; j < nJ; ++j)
+        {
+            for (int k = 0; k < nK; ++k)
+            {
+                for (int b = 0; b < nB; ++b)
+                {
+                    std::vector<double> c(3);
+                    c[0] = i + basis[b][0];
+                    c[1] = j + basis[b][1];
+                    c[2] = k + basis[b][2];
+                    coordinates.push_back(c);
+                    elements.push_back(basis_elements[b]);
+                }
+            }
+        }
+    }
+
+    elements[0]    = "V";
+    elements[216]  = "V";   // These affects process 0,1 and 3
+    elements[1434] = "V";
+    elements[2101] = "V";   // This affects process 0,1 and 2
+
+    // Possible types.
+    std::map<std::string, int> possible_types;
+    possible_types["A"] = 0;
+    possible_types["B"] = 1;
+    possible_types["V"] = 2;
+
+    // Setup the configuration.
+    Configuration configuration(coordinates, elements, possible_types);
+
+    // Setup the lattice map.
+    std::vector<int> repetitions(3);
+    repetitions[0] = nI;
+    repetitions[1] = nJ;
+    repetitions[2] = nK;
+    std::vector<bool> periodicity(3, true);
+    LatticeMap lattice_map(nB, repetitions, periodicity);
+
+    // Get a process that finds a V between two B and turns one of
+    // the Bs into an A.
+    std::vector<std::string> process_elements1(3);
+    process_elements1[0] = "V";
+    process_elements1[1] = "B";
+    process_elements1[2] = "B";
+
+    std::vector<std::string> process_elements2(3);
+    process_elements2[0] = "B";
+    process_elements2[1] = "A";
+    process_elements2[2] = "B";
+
+    std::vector<std::vector<double> > process_coordinates(3, std::vector<double>(3, 0.0));
+
+    process_coordinates[1][0] = -0.25;
+    process_coordinates[1][1] = -0.25;
+    process_coordinates[1][2] = -0.25;
+    process_coordinates[2][0] =  0.25;
+    process_coordinates[2][1] =  0.25;
+    process_coordinates[2][2] =  0.25;
+
+    const double barrier = 13.7;
+    Configuration c1(process_coordinates, process_elements1, possible_types);
+    Configuration c2(process_coordinates, process_elements2, possible_types);
+    Process p(c1, c2, barrier);
+
+    // Construct the configuration.
+    Configuration config(coordinates, elements, possible_types);
+
+    // Now, add index 1434 to the process.
+    // We know by construction that these match.
+    p.addSite(1434);
+
+    // For site 1434
+    // 350 changes from 1 to 0
+    // 1434 changes from 2 to 1
+    // All other must remain unchanged.
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[1434], 2 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[350],  1 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[1433], 1 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[349],  1 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[351],  0 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[2517], 0 );
+
+    // Peform the process.
+    configuration.performProcess(p, 1434, lattice_map);
+
+    // Check that the types were correctly updated.
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[1434], 1 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[350],  0 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[1433], 1 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[349],  1 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[351],  0 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[2517], 0 );
+
+    // Check that the correct indices were added to the list of affected.
+    const std::vector<int> affected = p.affectedIndices();
+    CPPUNIT_ASSERT_EQUAL( affected[0], 1434 );
+    CPPUNIT_ASSERT_EQUAL( affected[1], 350  );
+
+ }
 
