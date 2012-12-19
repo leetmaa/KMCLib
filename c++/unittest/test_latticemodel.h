@@ -27,7 +27,7 @@ public:
     CPPUNIT_TEST( testConstruction );
     CPPUNIT_TEST( testSetupAndQuery );
     CPPUNIT_TEST( testSingleStepFunction );
-    CPPUNIT_TEST( testTiming );
+    //CPPUNIT_TEST( testTiming );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstruction();

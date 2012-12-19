@@ -79,6 +79,14 @@ void Test_LatticeMap::testIndicesFromCell()
             for (int j = 0; j < repetitions[1]; ++j) {
                 for (int k = 0; k < repetitions[2]; ++k) {
                     CPPUNIT_ASSERT_EQUAL( map.indicesFromCell(i,j,k)[0], index );
+                    // Check the reverse mapping.
+                    int tmp_i, tmp_j, tmp_k;
+
+                    map.indexToCell(index, tmp_i, tmp_j, tmp_k);
+                    CPPUNIT_ASSERT_EQUAL(tmp_i, i);
+                    CPPUNIT_ASSERT_EQUAL(tmp_j, j);
+                    CPPUNIT_ASSERT_EQUAL(tmp_k, k);
+
                     ++index;
                 }
             }
@@ -100,6 +108,14 @@ void Test_LatticeMap::testIndicesFromCell()
             for (int j = 0; j < repetitions[1]; ++j) {
                 for (int k = 0; k < repetitions[2]; ++k) {
                     CPPUNIT_ASSERT_EQUAL( map.indicesFromCell(i,j,k)[0], index );
+
+                    // Check the reverse mapping.
+                    int tmp_i, tmp_j, tmp_k;
+                    map.indexToCell(index, tmp_i, tmp_j, tmp_k);
+                    CPPUNIT_ASSERT_EQUAL(tmp_i, i);
+                    CPPUNIT_ASSERT_EQUAL(tmp_j, j);
+                    CPPUNIT_ASSERT_EQUAL(tmp_k, k);
+
                     ++index;
                 }
             }
@@ -122,6 +138,14 @@ void Test_LatticeMap::testIndicesFromCell()
                 for (int k = 0; k < repetitions[2]; ++k) {
                     for (int l = 0; l < basis; ++l) {
                         CPPUNIT_ASSERT_EQUAL( map.indicesFromCell(i,j,k)[l], index );
+
+                        // Check the reverse mapping.
+                        int tmp_i, tmp_j, tmp_k;
+                        map.indexToCell(index, tmp_i, tmp_j, tmp_k);
+                        CPPUNIT_ASSERT_EQUAL(tmp_i, i);
+                        CPPUNIT_ASSERT_EQUAL(tmp_j, j);
+                        CPPUNIT_ASSERT_EQUAL(tmp_k, k);
+
                         ++index;
                     }
                 }
@@ -147,6 +171,14 @@ void Test_LatticeMap::testIndicesFromCell()
                     for (int l = 0; l < basis; ++l) {
 
                         CPPUNIT_ASSERT_EQUAL( map.indicesFromCell(i,j,k)[l], index );
+
+                        // Check the reverse mapping.
+                        int tmp_i, tmp_j, tmp_k;
+                        map.indexToCell(index, tmp_i, tmp_j, tmp_k);
+                        CPPUNIT_ASSERT_EQUAL(tmp_i, i);
+                        CPPUNIT_ASSERT_EQUAL(tmp_j, j);
+                        CPPUNIT_ASSERT_EQUAL(tmp_k, k);
+
                         ++index;
                     }
                 }

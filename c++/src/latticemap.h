@@ -24,17 +24,6 @@
 class Configuration;
 class Coordinate;
 
-/// A minimal struct for representing three integers as a cell index.
-struct CellIndex {
-
-    /// The index in the a direction.
-    int i;
-    /// The index in the b direction.
-    int j;
-    /// The index in the c direction.
-    int k;
-};
-
 /// Class for handling lattice indeces and neighbours.
 class LatticeMap {
 
@@ -61,7 +50,7 @@ public:
      * \param indices : The vector of indices to get the neighbours for.
      * \return: The list of indices.
      */
-    std::vector<int> supersetNeighbourIndices(const std::vector<int> & indices);
+    std::vector<int> supersetNeighbourIndices(const std::vector<int> & indices) const;
 
     /*! \brief Get the indices from a given cell.
      * \param i : The cell index in the a direction.
@@ -73,6 +62,16 @@ public:
                                              const int j,
                                              const int k) const;
 
+    /*! \brief Get the cell indices given a global index.
+     * \param index (int) : The index to the the cell for.
+     * \param i (out): The cell index in the a direction.
+     * \param j (out): The cell index in the b direction.
+     * \param k (out): The cell index in the c direction.
+     */
+    void indexToCell(const int index,
+                     int & cell_i,
+                     int & cell_j,
+                     int & cell_k) const;
 
     /*! \brief Query for the periodicity.
      * \return: The periodicity in the direction.
@@ -104,11 +103,6 @@ private:
     std::vector<int> repetitions_;
     /// The periodicity in the a, b and c directions.
     std::vector<bool> periodic_;
-    /// The mapping from cell to a list of lattice indices.
-    std::map<CellIndex,std::vector<int> > cell_to_index_;
-    /// The mapping from index to cell.
-    std::map<int,CellIndex> index_to_cell_;
-
 };
 
 

@@ -19,32 +19,20 @@
 #include <cstdlib>
 #include <algorithm>
 
-// -----------------------------------------------------------------------------
-/*! \brief 'Less than' operator for comparing two cell index structs needed for
- *         the use in std::map.
- *  \param index1 : The first cell index.
- *  \param index2 : The second cell index.
- *  \return (index1 < index2)
- */
-bool operator<(const CellIndex & index1, const CellIndex & index2)
-{
-    // If the first index is equal, compare the second, etc.
-    if (index1.i == index2.i)
-    {
-        if (index1.j == index2.j)
-        {
-            return (index1.k < index2.k);
-        }
-        else
-        {
-            return (index1.j < index2.j);
-        }
-    }
-    else
-    {
-        return (index1.i < index2.i);
-    }
-}
+// A minimal struct for representing three integers as a cell index.
+struct CellIndex {
+
+    // The index in the a direction.
+    int i;
+    // The index in the b direction.
+    int j;
+    // The index in the c direction.
+    int k;
+};
+
+
+// Temporary storage for the indices form cell.
+static std::vector<int> tmp_cell_indices__;
 
 
 // -----------------------------------------------------------------------------
@@ -56,40 +44,21 @@ LatticeMap::LatticeMap(const int n_basis,
     repetitions_(repetitions),
     periodic_(periodic)
 {
-    // Setup the maps.
-    int index = 0;
-    for (int i = 0; i < repetitions_[0]; ++i)
-    {
-        for (int j = 0; j < repetitions_[1]; ++j)
-        {
-            for (int k = 0; k < repetitions_[2]; ++k)
-            {
-                for (int b = 0; b < n_basis_; ++b)
-                {
-                    // Map the cell to the index.
-                    CellIndex cell;
-                    cell.i = i;
-                    cell.j = j;
-                    cell.k = k;
-                    cell_to_index_[cell].push_back(index);
-
-                    // Map the index to the cell.
-                    index_to_cell_[index] = cell;
-
-                    // Increment the index.
-                    index++;
-                }
-            }
-        }
-    }
+    // Resize the global data.
+    tmp_cell_indices__.resize(n_basis_);
 }
+
 
 // -----------------------------------------------------------------------------
 //
 std::vector<int> LatticeMap::neighbourIndices(const int index) const
 {
+    // PERFORMME
+
     // Get the cell index.
-    const CellIndex & cell = index_to_cell_.find(index)->second;
+    CellIndex c;
+    indexToCell(index, c.i, c.j, c.k);
+    const CellIndex & cell = c;
 
     // Setup the return data structure.
     std::vector<int> neighbours(n_basis_*27);
@@ -181,7 +150,7 @@ std::vector<int> LatticeMap::neighbourIndices(const int index) const
 
 // -----------------------------------------------------------------------------
 //
-std::vector<int> LatticeMap::supersetNeighbourIndices(const std::vector<int> & indices)
+std::vector<int> LatticeMap::supersetNeighbourIndices(const std::vector<int> & indices) const
 {
     // PERFORMME:
     // We can use several different stategies here and this might
@@ -220,14 +189,63 @@ const std::vector<int> & LatticeMap::indicesFromCell(const int i,
                                                      const int j,
                                                      const int k) const
 {
-    // Take care of periodic boundary conditions here.
-    CellIndex cell;
-    cell.i = i;
-    cell.j = j;
-    cell.k = k;
+    // Get the indices that are in cell i,j,k.
+    const int tmp1 = i * repetitions_[1] + j;
+    const int tmp2 = tmp1 * repetitions_[2] + k;
+    const int tmp3 = tmp2 * n_basis_;
 
-    // Get the list out and return.
-    return cell_to_index_.find(cell)->second;
+    for (int l = 0; l < n_basis_; ++l)
+    {
+        tmp_cell_indices__[l] = tmp3 + l;
+    }
+
+    return tmp_cell_indices__;
+}
+
+
+// -----------------------------------------------------------------------------
+//
+void LatticeMap::indexToCell(const int index,
+                             int & cell_i,
+                             int & cell_j,
+                             int & cell_k) const
+{
+    // Given an index, calculate the cell i,j,k.
+    const int idx = index / n_basis_ + 1;
+
+    // Increment until cell_i is correct.
+    cell_i = 0;
+    const int factor_i = repetitions_[1] * repetitions_[2];
+    int cmp = factor_i;
+    while(cmp < idx)
+    {
+        ++cell_i;
+        cmp += factor_i;
+    }
+
+    // Increment until cell_j is correct.
+    cell_j = 0;
+    const int ci = cell_i * factor_i;
+    const int factor_j = repetitions_[2];
+    const int idx_j = idx - ci;
+    cmp = factor_j;
+    while( cmp < idx_j )
+    {
+        ++cell_j;
+        cmp += factor_j;
+    }
+
+    // Increment until cell_k is correct.
+    cell_k = 1;
+    const int cij = ci + cell_j * factor_j;
+    const int idx_k = idx - cij;
+    while(cell_k < idx_k)
+    {
+        ++cell_k;
+    }
+    --cell_k;
+
+    // DONE
 }
 
 
