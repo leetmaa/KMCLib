@@ -18,6 +18,11 @@
 #include "latticemap.h"
 #include "process.h"
 
+// Temporary data for the match list return.
+static std::vector<MatchListEntry> tmp_match_list__(0);
+// ML:
+static std::vector<MinimalMatchListEntry> tmp_minimal_match_list__(0);
+
 // -----------------------------------------------------------------------------
 //
 Configuration::Configuration(std::vector<std::vector<double> > const & coordinates,
@@ -59,19 +64,21 @@ Configuration::Configuration(std::vector<std::vector<double> > const & coordinat
 
 // -----------------------------------------------------------------------------
 //
-std::vector<MatchListEntry> Configuration::matchList(const int origin_index,
-                                                     const std::vector<int> & indices,
-                                                     const LatticeMap & lattice_map) const
+const std::vector<MatchListEntry> & Configuration::matchList(const int origin_index,
+                                                             const std::vector<int> & indices,
+                                                             const LatticeMap & lattice_map) const
 {
     // Setup the return data.
-    std::vector<MatchListEntry> match_list;
+    const size_t size = indices.size();
+    tmp_match_list__.resize(size);
+    //std::vector<MatchListEntry> match_list(size);
 
     // Extract the coordinate of the first index.
     const Coordinate center = coordinates_[origin_index];
     const Coordinate origin(0.0, 0.0, 0.0);
 
     // For each index: center, wrap and calculate the distance.
-    for (size_t i = 0; i < indices.size(); ++i)
+    for (size_t i = 0; i < size; ++i)
     {
         // Get the index.
         const int index = indices[i];
@@ -88,17 +95,72 @@ std::vector<MatchListEntry> Configuration::matchList(const int origin_index,
         // Get the type.
         const int match_type = types_[index];
 
-        // Push back on the match list.
+        // Save in the match list.
+        tmp_match_list__[i] = MatchListEntry(match_type,
+                                             match_type,
+                                             distance,
+                                             c,
+                                             index);
+        /*
         match_list.push_back(MatchListEntry(match_type,
                                             match_type,
                                             distance,
                                             c,
                                             index));
+        */
     }
 
     // Sort and return.
-    std::sort(match_list.begin(), match_list.end());
-    return match_list;
+    std::sort(tmp_match_list__.begin(), tmp_match_list__.end());
+    //std::sort(match_list.begin(), match_list.end());
+    return tmp_match_list__;
+    //return match_list;
+}
+
+
+// -----------------------------------------------------------------------------
+//
+const std::vector<MinimalMatchListEntry> & Configuration::minimalMatchList(const int origin_index,
+                                                                           const std::vector<int> & indices,
+                                                                           const LatticeMap & lattice_map) const
+{
+    // Setup the return data.
+    const size_t size = indices.size();
+    tmp_minimal_match_list__.resize(size);
+    //std::vector<MatchListEntry> match_list(size);
+
+    // Extract the coordinate of the first index.
+    const Coordinate center = coordinates_[origin_index];
+    const Coordinate origin(0.0, 0.0, 0.0);
+
+    // For each index: center, wrap and calculate the distance.
+    for (size_t i = 0; i < size; ++i)
+    {
+        // Get the index.
+        const int index = indices[i];
+
+        // Center.
+        Coordinate c = coordinates_[index] - center;
+
+        // Wrap with coorect periodicity.
+        lattice_map.wrap(c);
+
+        // Calculate the distance.
+        const double distance = c.distance(origin);
+
+        // Get the type.
+        const int match_type = types_[index];
+
+        // Save in the match list.
+        tmp_minimal_match_list__[i].match_type  = match_type;
+        tmp_minimal_match_list__[i].update_type = match_type;
+        tmp_minimal_match_list__[i].distance    = distance;
+        tmp_minimal_match_list__[i].coordinate  = c;
+    }
+
+    // Sort and return.
+    std::sort(tmp_minimal_match_list__.begin(), tmp_minimal_match_list__.end());
+    return tmp_minimal_match_list__;
 }
 
 

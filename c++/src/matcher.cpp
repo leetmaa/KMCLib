@@ -90,14 +90,14 @@ bool Matcher::isMatch(const int index,
                       const Configuration & configuration) const
 {
     // Return false if not enough indices in the neighbourhood.
-    if (neighbourhood.size() < process.matchList().size())
+    if (neighbourhood.size() < process.minimalMatchList().size())
     {
         return false;
     }
 
     // Get the types and distances match lists.
-    const std::vector<MatchListEntry> & process_match_list = process.matchList();
-    const std::vector<MatchListEntry> index_match_list = configuration.matchList(index, neighbourhood, lattice_map);
+    const std::vector<MinimalMatchListEntry> & process_match_list = process.minimalMatchList();
+    const std::vector<MinimalMatchListEntry> & index_match_list   = configuration.minimalMatchList(index, neighbourhood, lattice_map);
 
     // Check the match lists and return.
     return isMatch(process_match_list,
@@ -107,12 +107,12 @@ bool Matcher::isMatch(const int index,
 
 // -----------------------------------------------------------------------------
 //
-bool Matcher::isMatch(const std::vector<MatchListEntry> & process_match_list,
-                      const std::vector<MatchListEntry> & index_match_list) const
+bool Matcher::isMatch(const std::vector<MinimalMatchListEntry> & process_match_list,
+                      const std::vector<MinimalMatchListEntry> & index_match_list) const
 {
     // Iterators to the match list entries.
-    std::vector<MatchListEntry>::const_iterator it1 = process_match_list.begin();
-    std::vector<MatchListEntry>::const_iterator it2 = index_match_list.begin();
+    std::vector<MinimalMatchListEntry>::const_iterator it1 = process_match_list.begin();
+    std::vector<MinimalMatchListEntry>::const_iterator it2 = index_match_list.begin();
 
     // Loop over the process match list and compare.
     for( ; it1 != process_match_list.end(); ++it1, ++it2)
@@ -127,6 +127,4 @@ bool Matcher::isMatch(const std::vector<MatchListEntry> & process_match_list,
     // All match, return true.
     return true;
 }
-
-
 

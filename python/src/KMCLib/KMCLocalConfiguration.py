@@ -8,6 +8,8 @@
 #
 
 
+import numpy
+
 from KMCLib.Utilities.CheckUtilities import checkCoordinateList
 from KMCLib.Utilities.CheckUtilities import checkIndexWithinBounds
 from KMCLib.Utilities.CheckUtilities import checkTypes
@@ -60,7 +62,13 @@ class KMCLocalConfiguration(object):
         types = checkTypes(types, len(coordinates))
 
         # Sort the coordinates with respect to distance from the center and store on the class.
-        (self.__coordinates, self.__distances, self.__types) = sortCoordinates(coordinates, center, types)
+
+        # FIXME:
+        # We can not sort wrt type here that messes up the interaction processes.
+        self.__coordinates = numpy.array(coordinates)
+        self.__types = types
+
+        #(self.__coordinates, self.__distances, self.__types) = sortCoordinates(coordinates, center, types)
 
         # Set the backend to None, to generate it at first query.
         self.__backend = None

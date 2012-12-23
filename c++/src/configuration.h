@@ -64,9 +64,13 @@ public:
      *                        using correct boundaries.
      *  \return : The match list.
      */
-    std::vector<MatchListEntry> matchList(const int origin_index,
-                                          const std::vector<int> & indices,
-                                          const LatticeMap & lattice_map) const;
+    const std::vector<MatchListEntry> & matchList(const int origin_index,
+                                                  const std::vector<int> & indices,
+                                                  const LatticeMap & lattice_map) const;
+    // ML:
+    const std::vector<MinimalMatchListEntry> & minimalMatchList(const int origin_index,
+                                                                const std::vector<int> & indices,
+                                                                const LatticeMap & lattice_map) const;
 
     /*! \brief Perform the given process.
      *  \param process : The process to perform, which will be updated with the affected

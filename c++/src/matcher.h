@@ -79,8 +79,8 @@ public:
      *  \param index_match_list   : The index match list to compare.
      *  \return : True if match.
      */
-    bool isMatch(const std::vector<MatchListEntry> & process_match_list,
-                 const std::vector<MatchListEntry> & index_match_list) const;
+    bool isMatch(const std::vector<MinimalMatchListEntry> & process_match_list,
+                 const std::vector<MinimalMatchListEntry> & index_match_list) const;
 
 
 protected:

@@ -50,6 +50,14 @@ Process::Process(const Configuration & first,
         const MatchListEntry entry(first_type, second_type, distance, coordinate);
         match_list_.push_back(entry);
 
+        // ML: Set up the minimal match list also.
+        MinimalMatchListEntry m;
+        m.match_type  = first_type;
+        m.update_type = second_type;
+        m.distance    = distance;
+        m.coordinate  = coordinate;
+        minimal_match_list_.push_back(m);
+
         // If the first and second type differ increase the length of the
         // affected_sites list accordingly.
         if (first_type != second_type)
@@ -60,6 +68,9 @@ Process::Process(const Configuration & first,
 
     // Sort the match list.
     std::sort(match_list_.begin(), match_list_.end());
+
+    // ML: Also for the minimal match list.
+    std::sort(minimal_match_list_.begin(), minimal_match_list_.end());
 }
 
 // -----------------------------------------------------------------------------

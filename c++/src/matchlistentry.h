@@ -16,6 +16,36 @@
 
 #include "coordinate.h"
 
+/// A minimal struct to replace the MatchListEntry class.
+struct MinimalMatchListEntry {
+
+    /// The match type integer.
+    int match_type;
+
+    /// The update type integer.
+    int update_type;
+
+    /// The index in the global structure.
+    int index;
+
+    /// The distance.
+    double distance;
+
+    /// The coordinate.
+    Coordinate coordinate;
+};
+
+/*! \brief 'not equal' operator for comparing matchlist entries.
+ */
+bool operator!=(const MinimalMatchListEntry & m1,
+                const MinimalMatchListEntry & m2);
+
+/*! \brief 'less than' for sorting matchlists.
+ */
+bool operator<(const MinimalMatchListEntry & m1,
+               const MinimalMatchListEntry & m2);
+
+
 /*! \brief Class for defining an entry in the match list, corresponding to
  *         a type a distance and coordinates.
  */

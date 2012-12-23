@@ -15,6 +15,68 @@
 #include "matchlistentry.h"
 #include "coordinate.h"
 
+static double eps__ = 1.0e-5;
+
+// -----------------------------------------------------------------------------
+//
+bool operator!=(const MinimalMatchListEntry & m1,
+                const MinimalMatchListEntry & m2)
+{
+    // Check the type.
+    if (m2.match_type != m1.match_type)
+    {
+        return true;
+    }
+    // Check the distance.
+    else if (std::fabs(m2.distance - m1.distance) > eps__)
+    {
+        return true;
+    }
+    // Check the coordinate.
+    else if (std::fabs(m2.coordinate.x() - m1.coordinate.x()) > eps__)
+    {
+        return true;
+    }
+    else if (std::fabs(m2.coordinate.y() - m1.coordinate.y()) > eps__)
+    {
+        return true;
+    }
+    else if (std::fabs(m2.coordinate.z() - m1.coordinate.z()) > eps__)
+    {
+        return true;
+    }
+    return false;
+}
+
+// -----------------------------------------------------------------------------
+//
+bool operator<(const MinimalMatchListEntry & m1,
+               const MinimalMatchListEntry & m2)
+{
+    // Sort along distance, type and coordinate.
+    if (std::fabs(m2.distance - m1.distance) < eps__)
+    {
+        // If the distances are practically the same,
+        // check the types.
+        if (m1.match_type == m2.match_type)
+        {
+            // If the types are identical, check the coordinate.
+            return (m1.coordinate < m2.coordinate);
+        }
+        else
+        {
+            return (m1.match_type < m2.match_type);
+        }
+    }
+    else
+    {
+        // Sort wrt. distance.
+        return (m1.distance < m2.distance);
+    }
+}
+
+// -----------------------------------------------------------------------------
+
 
 // -----------------------------------------------------------------------------
 //

@@ -12,6 +12,8 @@ from KMCLib.Backend import Backend
 
 from KMCLib.KMCConfiguration import KMCConfiguration
 from KMCLib.KMCInteractions import KMCInteractions
+from KMCLib.KMCControlParameters import KMCControlParameters
+from KMCLib.Exceptions.Error import Error
 
 class KMCLatticeModel(object):
     """
@@ -67,21 +69,22 @@ class KMCLatticeModel(object):
         # Return.
         return self.__backend
 
-    def run(control_parameters=None,
+    def run(self,
+            control_parameters=None,
             trajectory_filename=None):
         """
         Run the KMC lattice model simulation with specified parameters.
         """
-        pass
         # Check the input.
-        #if not isinstance(control_parameters, KMCControlParameters):
-        #    raise Error("The 'control_parameters' input to the KMCLatticeModel run funtion\nmust be an instance of type KMCControlParameters.")
+        if not isinstance(control_parameters, KMCControlParameters):
+            raise Error("The 'control_parameters' input to the KMCLatticeModel run funtion\nmust be an instance of type KMCControlParameters.")
 
         # Check the trajectory filename.
         # NEEDS IMPLEMENTATION
 
         # Construct the C++ lattice model.
-        #cpp_model = self._backend()
+        print " KMCLib: setting up the backend C++ object."
+        cpp_model = self._backend()
 
         # Setup a trajector object.
         # NEEDS IMPLEMENTATION
@@ -90,16 +93,20 @@ class KMCLatticeModel(object):
         # Get the needed parameters.
         # NEEDS IMPLEMENTATION
         #temperature = control_parameters.temperature()
-        #n_steps     = control_parameters.steps()
+        n_steps     = control_parameters.numberOfSteps()
+
+        print " KMCLib: Runing for %i steps."%(n_steps)
 
         # Run the loop.
-        # for step in n_steps:
-        # NEEDS IMPLEMENTATION
+        for step in range(n_steps):
+
+            print " KMCLib: Leaving Python."
 
             # Take a step.
-            # cpp_model.singleStep(temperature)
+            cpp_model.singleStep()
 
             # Perform IO using the trajectory object.
+            print " KMCLib: Back in Python."
 
         # Sync the configurations.
 
