@@ -125,39 +125,200 @@ const std::vector<MinimalMatchListEntry> & Configuration::minimalMatchList(const
                                                                            const LatticeMap & lattice_map) const
 {
     // Setup the return data.
-    const size_t size = indices.size();
-    tmp_minimal_match_list__.resize(size);
-    //std::vector<MatchListEntry> match_list(size);
+    tmp_minimal_match_list__.resize(indices.size());
 
     // Extract the coordinate of the first index.
     const Coordinate center = coordinates_[origin_index];
-    const Coordinate origin(0.0, 0.0, 0.0);
 
-    // For each index: center, wrap and calculate the distance.
-    for (size_t i = 0; i < size; ++i)
+    // Setup the needed iterators.
+    std::vector<int>::const_iterator it_index  = indices.begin();
+    const std::vector<int>::const_iterator end = indices.end();
+    std::vector<MinimalMatchListEntry>::iterator it_match_list = tmp_minimal_match_list__.begin();
+
+    const bool periodic_a = lattice_map.periodicA();
+    const bool periodic_b = lattice_map.periodicB();
+    const bool periodic_c = lattice_map.periodicC();
+
+    const int repetitions_a = lattice_map.repetitionsA();
+    const int repetitions_b = lattice_map.repetitionsB();
+    const int repetitions_c = lattice_map.repetitionsC();
+
+    const double half_cell_a = 1.0 * repetitions_a / 2.0;
+    const double half_cell_b = 1.0 * repetitions_b / 2.0;
+    const double half_cell_c = 1.0 * repetitions_c / 2.0;
+
+    // Since we know the periodicity outside the loop we can make the
+    // logics outside also.
+
+    // Periodic a-b-c
+    if (periodic_a && periodic_b && periodic_c)
     {
-        // Get the index.
-        const int index = indices[i];
+        // Loop, calculate and add to the return list.
+        for ( ; it_index != end; ++it_index, ++it_match_list)
+        {
+            // Center.
+            Coordinate c = coordinates_[(*it_index)] - center;
 
+            // Wrap with coorect periodicity.
+            //lattice_map.wrap(c);
+
+            // Wrap explicitly.
+            if (c[0] >= half_cell_a)
+            {
+                c[0] -= repetitions_a;
+            }
+            else if (c[0] < -half_cell_a)
+            {
+                c[0] += repetitions_a;
+            }
+            if (c[1] >= half_cell_b)
+            {
+                c[1] -= repetitions_b;
+            }
+            else if (c[1] < -half_cell_b)
+            {
+                c[1] += repetitions_b;
+            }
+            if (c[2] >= half_cell_c)
+            {
+                c[2] -= repetitions_c;
+            }
+            else if (c[2] < -half_cell_c)
+            {
+                c[2] += repetitions_c;
+            }
+
+            // Get the distance.
+            const double distance = std::sqrt(c[0]*c[0] + c[1]*c[1] + c[2]*c[2]);
+
+            // Get the type.
+            const int match_type = types_[(*it_index)];
+
+            // Save in the match list.
+            (*it_match_list).match_type  = match_type;
+            (*it_match_list).update_type = match_type;
+            (*it_match_list).distance    = distance;
+            (*it_match_list).coordinate  = c;
+        }
+    }
+    // Periodic a-b
+    else if (periodic_a && periodic_b)
+    {
+        // Loop, calculate and add to the return list.
+        for ( ; it_index != end; ++it_index, ++it_match_list)
+        {
+            // Center.
+            Coordinate c = coordinates_[(*it_index)] - center;
+
+            // Wrap with coorect periodicity.
+            //lattice_map.wrap(c);
+
+            // Wrap explicitly.
+            if (c[0] >= half_cell_a)
+            {
+                c[0] -= repetitions_a;
+            }
+            else if (c[0] < -half_cell_a)
+            {
+                c[0] += repetitions_a;
+            }
+
+            if (c[1] >= half_cell_b)
+            {
+                c[1] -= repetitions_b;
+            }
+            else if (c[1] < -half_cell_b)
+            {
+                c[1] += repetitions_b;
+            }
+
+            // Get the distance.
+            const double distance = std::sqrt(c[0]*c[0] + c[1]*c[1] + c[2]*c[2]);
+
+            // Get the type.
+            const int match_type = types_[(*it_index)];
+
+            // Save in the match list.
+            (*it_match_list).match_type  = match_type;
+            (*it_match_list).update_type = match_type;
+            (*it_match_list).distance    = distance;
+            (*it_match_list).coordinate  = c;
+        }
+    }
+    else {
+    // Periodic b-c
+
+    // Periodic a-c
+
+    // Periodic a
+
+    // Periodic b
+
+    // Periodic c
+
+    // Loop, calculate and add to the return list.
+    for ( ; it_index != end; ++it_index, ++it_match_list)
+    {
         // Center.
-        Coordinate c = coordinates_[index] - center;
+        Coordinate c = coordinates_[(*it_index)] - center;
 
         // Wrap with coorect periodicity.
-        lattice_map.wrap(c);
+        //lattice_map.wrap(c);
+
+        // Wrap explicitly.
+        if (periodic_a)
+        {
+            if (c[0] >= half_cell_a)
+            {
+                c[0] -= repetitions_a;
+            }
+            else if (c[0] < -half_cell_a)
+            {
+                c[0] += repetitions_a;
+            }
+        }
+        if (periodic_b)
+        {
+            if (c[1] >= half_cell_b)
+            {
+                c[1] -= repetitions_b;
+            }
+            else if (c[1] < -half_cell_b)
+            {
+                c[1] += repetitions_b;
+            }
+        }
+        if (periodic_c)
+        {
+            if (c[2] >= half_cell_c)
+            {
+                c[2] -= repetitions_c;
+            }
+            else if (c[2] < -half_cell_c)
+            {
+                c[2] += repetitions_c;
+            }
+        }
+
+        // Explicit distance calculation.
+
+        //const double distance = (std::pow(c[0], 2) +
+        //                         std::pow(c[1], 2) +
+        //                         std::pow(c[2], 2));
 
         // Calculate the distance.
-        const double distance = c.distance(origin);
+        // const double distance = c.distanceToOrigin();
 
         // Get the type.
-        const int match_type = types_[index];
+        const int match_type = types_[(*it_index)];
 
         // Save in the match list.
-        tmp_minimal_match_list__[i].match_type  = match_type;
-        tmp_minimal_match_list__[i].update_type = match_type;
-        tmp_minimal_match_list__[i].distance    = distance;
-        tmp_minimal_match_list__[i].coordinate  = c;
+        (*it_match_list).match_type  = match_type;
+        (*it_match_list).update_type = match_type;
+        (*it_match_list).distance    = std::sqrt(c[0]*c[0] + c[1]*c[1] + c[2]*c[2]);
+        (*it_match_list).coordinate  = c;
     }
-
+    } // FIXME
     // Sort and return.
     std::sort(tmp_minimal_match_list__.begin(), tmp_minimal_match_list__.end());
     return tmp_minimal_match_list__;

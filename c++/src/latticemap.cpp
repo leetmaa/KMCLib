@@ -249,27 +249,3 @@ void LatticeMap::indexToCell(const int index,
 }
 
 
-// -----------------------------------------------------------------------------
-//
-void LatticeMap::wrap(Coordinate & c) const
-{
-    // Loop over directions.
-    for (int i = 0; i < 3; ++i)
-    {
-        // Wrap if periodic.
-        if (periodic_[i])
-        {
-            const double half_cell = 1.0 * repetitions_[i] / 2.0;
-            if (c[i] >= half_cell)
-            {
-                c[i] -= repetitions_[i];
-            }
-            else if (c[i] < -half_cell)
-            {
-                c[i] += repetitions_[i];
-            }
-        }
-    }
-}
-
-

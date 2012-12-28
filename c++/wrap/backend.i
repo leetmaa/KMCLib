@@ -27,7 +27,7 @@
 %template(StdVectorBool) std::vector<bool>;
 %template(StdVectorProcess) std::vector<Process>;
 %template(StdVectorCoordinate) std::vector<Coordinate>;
-%template(StdVectorMatchListEntry) std::vector<MatchListEntry>;
+%template(StdVectorMinimalMatchListEntry) std::vector<MinimalMatchListEntry>;
 %template(StdVectorStdVectorDouble) std::vector<std::vector<double> >;
 %template(StdMapStringInt) std::map<std::string,int>;
 

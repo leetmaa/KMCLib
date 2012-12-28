@@ -64,17 +64,11 @@ void LatticeModel::calculateInitialMatching()
 //
 void LatticeModel::singleStep()
 {
-
-    printf(" KMCLib: Picking a process.\n");
     // Select a process.
     Process & process = interactions_.pickProcess();
 
-    printf(" KMCLib: Picking a site.\n");
-
     // Select a site.
     const int site_index = process.pickSite();
-
-    printf(" KMCLib: Performing the process.\n");
 
     // Perform the operation.
     configuration_.performProcess(process, site_index, lattice_map_);
@@ -87,25 +81,16 @@ void LatticeModel::singleStep()
     // NEEDS IMPLEMENTATION
     // printf("Taking a step.\n");
 
-    printf(" KMCLib: Get the affected neighbours.\n");
-
     // Run the re-matching of the affected sites and their neighbours.
     const std::vector<int> & indices = \
         lattice_map_.supersetNeighbourIndices(process.affectedIndices());
-
-    printf(" KMCLib: Re-calculate the matching.\n");
 
     matcher_.calculateMatching(interactions_,
                                indices,
                                lattice_map_,
                                configuration_);
 
-    printf(" KMCLib: Update the probability table.\n");
-
     // Update the interactions' probability table.
     interactions_.updateProbabilityTable();
-
-    // Ready for the next step.
-    printf(" KMCLib: Ready for the next step.\n");
 }
 

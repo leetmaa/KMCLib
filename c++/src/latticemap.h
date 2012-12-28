@@ -18,11 +18,11 @@
 
 #include <vector>
 #include <map>
-
+#include "coordinate.h"
 
 // Forward declarations.
 class Configuration;
-class Coordinate;
+//class Coordinate;
 
 /// Class for handling lattice indeces and neighbours.
 class LatticeMap {
@@ -88,9 +88,25 @@ public:
      */
     bool periodicC() const { return periodic_[2]; }
 
+    /*! \brief Query for the repetition.
+     * \return: The repetitions in the direction.
+     */
+    int repetitionsA() const { return repetitions_[0]; }
+
+    /*! \brief Query for the repetition.
+     * \return: The repetitions in the direction.
+     */
+    int repetitionsB() const { return repetitions_[1]; }
+
+    /*! \brief Query for the repetition.
+     * \return: The repetitions in the direction.
+     */
+    int repetitionsC() const { return repetitions_[2]; }
+
     /*! \brief Wrap the coordinate according to periodic boundaries.
      * \param c (in/out): The coordinate to wrap.
      */
+    inline
     void wrap(Coordinate & c) const;
 
 protected:
@@ -104,6 +120,32 @@ private:
     /// The periodicity in the a, b and c directions.
     std::vector<bool> periodic_;
 };
+
+// -----------------------------------------------------------------------------
+// INLINE FUNCTION DEFINITIONS FOLLOW
+
+// -----------------------------------------------------------------------------
+//
+void LatticeMap::wrap(Coordinate & c) const
+{
+    // Loop over directions.
+    for (int i = 0; i < 3; ++i)
+    {
+        // Wrap if periodic.
+        if (periodic_[i])
+        {
+            const double half_cell = 1.0 * repetitions_[i] / 2.0;
+            if (c[i] >= half_cell)
+            {
+                c[i] -= repetitions_[i];
+            }
+            else if (c[i] < -half_cell)
+            {
+                c[i] += repetitions_[i];
+            }
+        }
+    }
+}
 
 
 #endif // __LATTICEMAP__

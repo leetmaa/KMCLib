@@ -93,20 +93,26 @@ class KMCLatticeModel(object):
         # Get the needed parameters.
         # NEEDS IMPLEMENTATION
         #temperature = control_parameters.temperature()
-        n_steps     = control_parameters.numberOfSteps()
+        n_steps = control_parameters.numberOfSteps()
+        n_chunk = len(self.__configuration.types())
 
         print " KMCLib: Runing for %i steps."%(n_steps)
 
         # Run the loop.
         for step in range(n_steps):
 
-            print " KMCLib: Leaving Python."
-
             # Take a step.
-            cpp_model.singleStep()
+            for n_i in range(n_chunk):
+                cpp_model.singleStep()
+
+                # Screen IO.
+                print_step = (step*n_chunk + n_i)
+                if (print_step%10 == 0):
+                    print " KMCLib: %i primitive steps executed."%(print_step)
+
 
             # Perform IO using the trajectory object.
-            print " KMCLib: Back in Python."
+            #print " KMCLib: %i primitive steps executed."%(n_i*n_chunk)
 
         # Sync the configurations.
 

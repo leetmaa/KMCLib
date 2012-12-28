@@ -15,6 +15,7 @@
 #define __MATCHLISTENTRY__
 
 #include "coordinate.h"
+#include <cmath>
 
 /// A minimal struct to replace the MatchListEntry class.
 struct MinimalMatchListEntry {
@@ -33,17 +34,73 @@ struct MinimalMatchListEntry {
 
     /// The coordinate.
     Coordinate coordinate;
+
 };
 
-/*! \brief 'not equal' operator for comparing matchlist entries.
+
+/*! \brief 'not equal' for comparing entries.
  */
+static double epsi__ = 1.0e-5;
+
+inline
 bool operator!=(const MinimalMatchListEntry & m1,
-                const MinimalMatchListEntry & m2);
+                const MinimalMatchListEntry & m2)
+{
+    // Check the type.
+    if (m2.match_type != m1.match_type)
+    {
+        return true;
+    }
+    // Check the distance.
+    else if (std::fabs(m2.distance - m1.distance) > epsi__)
+    {
+        return true;
+    }
+    // Check the coordinate.
+    else if (std::fabs(m2.coordinate.x() - m1.coordinate.x()) > epsi__)
+    {
+        return true;
+    }
+    else if (std::fabs(m2.coordinate.y() - m1.coordinate.y()) > epsi__)
+    {
+        return true;
+    }
+    else if (std::fabs(m2.coordinate.z() - m1.coordinate.z()) > epsi__)
+    {
+        return true;
+    }
+    return false;
+}
+
 
 /*! \brief 'less than' for sorting matchlists.
  */
+inline
 bool operator<(const MinimalMatchListEntry & m1,
-               const MinimalMatchListEntry & m2);
+               const MinimalMatchListEntry & m2)
+{
+    // Sort along distance, type and coordinate.
+    if (std::fabs(m2.distance - m1.distance) < epsi__)
+    {
+        // If the distances are practically the same,
+        // check the types.
+        if (m1.match_type == m2.match_type)
+        {
+            // If the types are identical, check the coordinate.
+            return (m1.coordinate < m2.coordinate);
+        }
+        else
+        {
+            return (m1.match_type < m2.match_type);
+        }
+    }
+    else
+    {
+        // Sort wrt. distance.
+        return (m1.distance < m2.distance);
+    }
+}
+
 
 
 /*! \brief Class for defining an entry in the match list, corresponding to

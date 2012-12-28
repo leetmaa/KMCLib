@@ -15,10 +15,11 @@
 #include "matchlistentry.h"
 #include "coordinate.h"
 
-static double eps__ = 1.0e-5;
+//static double eps__ = 1.0e-5;
 
 // -----------------------------------------------------------------------------
 //
+/*
 bool operator!=(const MinimalMatchListEntry & m1,
                 const MinimalMatchListEntry & m2)
 {
@@ -47,9 +48,11 @@ bool operator!=(const MinimalMatchListEntry & m1,
     }
     return false;
 }
+*/
 
 // -----------------------------------------------------------------------------
 //
+ /*
 bool operator<(const MinimalMatchListEntry & m1,
                const MinimalMatchListEntry & m2)
 {
@@ -74,7 +77,7 @@ bool operator<(const MinimalMatchListEntry & m1,
         return (m1.distance < m2.distance);
     }
 }
-
+ */
 // -----------------------------------------------------------------------------
 
 
