@@ -46,9 +46,14 @@ Process::Process(const Configuration & first,
         const Coordinate coordinate = coords[i];
         const double distance = coordinate.distance(origin);
 
-        // Setup and add the match list entry.
-        const MatchListEntry entry(first_type, second_type, distance, coordinate);
-        match_list_.push_back(entry);
+        // Set up the match list.
+        MinimalMatchListEntry m;
+        m.match_type  = first_type;
+        m.update_type = second_type;
+        m.distance    = distance;
+        m.coordinate  = coordinate;
+        m.index       = -1;
+        minimal_match_list_.push_back(m);
 
         // If the first and second type differ increase the length of the
         // affected_sites list accordingly.
@@ -59,7 +64,7 @@ Process::Process(const Configuration & first,
     }
 
     // Sort the match list.
-    std::sort(match_list_.begin(), match_list_.end());
+    std::sort(minimal_match_list_.begin(), minimal_match_list_.end());
 }
 
 // -----------------------------------------------------------------------------

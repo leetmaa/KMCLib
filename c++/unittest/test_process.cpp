@@ -94,59 +94,59 @@ void Test_Process::testMatchList()
     Process process(config1, config2, barrier);
 
     // Get the match list out.
-    const std::vector<MatchListEntry> & match_list = process.matchList();
+    const std::vector<MinimalMatchListEntry> & match_list = process.minimalMatchList();
 
     // Check the size of the match list.
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(match_list.size()), 3);
 
     // Get the first entry out and check.
     {
-        const MatchListEntry entry = match_list[0];
-        CPPUNIT_ASSERT_EQUAL(entry.index(), -1);
-        CPPUNIT_ASSERT_EQUAL(entry.matchType(), 123);
-        CPPUNIT_ASSERT_EQUAL(entry.updateType(), 0);
+        const MinimalMatchListEntry entry = match_list[0];
+        CPPUNIT_ASSERT_EQUAL(entry.index, -1);
+        CPPUNIT_ASSERT_EQUAL(entry.match_type, 123);
+        CPPUNIT_ASSERT_EQUAL(entry.update_type, 0);
 
         // Make sure these coordinates are equal.
         Coordinate check_coord(coords[0][0],coords[0][1],coords[0][2]);
-        CPPUNIT_ASSERT( !(entry.coordinate() < check_coord) );
-        CPPUNIT_ASSERT( !(check_coord        < entry.coordinate()) );
+        CPPUNIT_ASSERT( !(entry.coordinate < check_coord) );
+        CPPUNIT_ASSERT( !(check_coord        < entry.coordinate) );
 
         // Check the distance.
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(entry.distance(), 0.0, 1.0e-14);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(entry.distance, 0.0, 1.0e-14);
 
     }
 
     // Get the third entry out and check.
     {
-        const MatchListEntry entry = match_list[2];
-        CPPUNIT_ASSERT_EQUAL(entry.index(), -1);
-        CPPUNIT_ASSERT_EQUAL(entry.matchType(), 24);
-        CPPUNIT_ASSERT_EQUAL(entry.updateType(), 24);
+        const MinimalMatchListEntry entry = match_list[2];
+        CPPUNIT_ASSERT_EQUAL(entry.index, -1);
+        CPPUNIT_ASSERT_EQUAL(entry.match_type, 24);
+        CPPUNIT_ASSERT_EQUAL(entry.update_type, 24);
 
         // Make sure these coordinates are equal.
         Coordinate check_coord(coords[1][0],coords[1][1],coords[1][2]);
-        CPPUNIT_ASSERT( !(entry.coordinate() < check_coord) );
-        CPPUNIT_ASSERT( !(check_coord        < entry.coordinate()) );
+        CPPUNIT_ASSERT( !(entry.coordinate < check_coord) );
+        CPPUNIT_ASSERT( !(check_coord      < entry.coordinate) );
 
         // Check the distance.
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(entry.distance(), check_coord.distance(Coordinate(0.0,0.0,0.0)), 1.0e-14);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(entry.distance, check_coord.distance(Coordinate(0.0,0.0,0.0)), 1.0e-14);
 
     }
 
     // Get the second entry out and check.
     {
-        const MatchListEntry entry = match_list[1];
-        CPPUNIT_ASSERT_EQUAL(entry.index(), -1);
-        CPPUNIT_ASSERT_EQUAL(entry.matchType(), 0);
-        CPPUNIT_ASSERT_EQUAL(entry.updateType(), 123);
+        const MinimalMatchListEntry entry = match_list[1];
+        CPPUNIT_ASSERT_EQUAL(entry.index, -1);
+        CPPUNIT_ASSERT_EQUAL(entry.match_type, 0);
+        CPPUNIT_ASSERT_EQUAL(entry.update_type, 123);
 
         // Make sure these coordinates are equal.
         Coordinate check_coord(coords[2][0],coords[2][1],coords[2][2]);
-        CPPUNIT_ASSERT( !(entry.coordinate() < check_coord) );
-        CPPUNIT_ASSERT( !(check_coord        < entry.coordinate()) );
+        CPPUNIT_ASSERT( !(entry.coordinate < check_coord) );
+        CPPUNIT_ASSERT( !(check_coord      < entry.coordinate) );
 
         // Check the distance.
-        CPPUNIT_ASSERT_DOUBLES_EQUAL(entry.distance(), check_coord.distance(Coordinate(0.0,0.0,0.0)), 1.0e-14);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(entry.distance, check_coord.distance(Coordinate(0.0,0.0,0.0)), 1.0e-14);
 
     }
 }
@@ -235,66 +235,66 @@ void Test_Process::testMatchListLong()
     Process process(config1, config2, barrier);
 
     // Get the match list out.
-    const std::vector<MatchListEntry> match_list = process.matchList();
+    const std::vector<MinimalMatchListEntry> match_list = process.minimalMatchList();
 
     // Check the size of the match list.
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(process_coords.size()),
                           static_cast<int>(match_list.size()));
 
     // Check the coordinates.
-    const Coordinate c0 = match_list[0].coordinate();
+    const Coordinate c0 = match_list[0].coordinate;
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c0.x(), 0.0, 1.0e-14);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c0.y(), 0.0, 1.0e-14);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c0.z(), 0.0, 1.0e-14);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( match_list[0].distance(), 0.0, 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( match_list[0].distance, 0.0, 1.0e-14 );
 
-    const Coordinate c1 = match_list[1].coordinate();
+    const Coordinate c1 = match_list[1].coordinate;
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c1.x(),-0.5, 1.0e-14);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c1.y(),-0.5, 1.0e-14);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c1.z(),-0.5, 1.0e-14);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( match_list[1].distance(), std::sqrt(0.25*3.0), 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( match_list[1].distance, std::sqrt(0.25*3.0), 1.0e-14 );
 
-    const Coordinate c2 = match_list[2].coordinate();
+    const Coordinate c2 = match_list[2].coordinate;
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c2.x(),-0.5, 1.0e-14);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c2.y(),-0.5, 1.0e-14);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c2.z(), 0.5, 1.0e-14);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( match_list[2].distance(), std::sqrt(0.25*3.0), 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( match_list[2].distance, std::sqrt(0.25*3.0), 1.0e-14 );
 
-    const Coordinate c3 = match_list[3].coordinate();
+    const Coordinate c3 = match_list[3].coordinate;
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c3.x(),-0.5, 1.0e-14);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c3.y(), 0.5, 1.0e-14);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c3.z(),-0.5, 1.0e-14);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( match_list[3].distance(), std::sqrt(0.25*3.0), 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( match_list[3].distance, std::sqrt(0.25*3.0), 1.0e-14 );
 
-    const Coordinate c4 = match_list[4].coordinate();
+    const Coordinate c4 = match_list[4].coordinate;
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c4.x(),-0.5, 1.0e-14);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c4.y(), 0.5, 1.0e-14);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c4.z(), 0.5, 1.0e-14);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( match_list[4].distance(), std::sqrt(0.25*3.0), 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( match_list[4].distance, std::sqrt(0.25*3.0), 1.0e-14 );
 
-    const Coordinate c5 = match_list[5].coordinate();
+    const Coordinate c5 = match_list[5].coordinate;
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c5.x(), 0.5, 1.0e-14);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c5.y(),-0.5, 1.0e-14);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c5.z(),-0.5, 1.0e-14);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( match_list[5].distance(), std::sqrt(0.25*3.0), 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( match_list[5].distance, std::sqrt(0.25*3.0), 1.0e-14 );
 
-    const Coordinate c6 = match_list[6].coordinate();
+    const Coordinate c6 = match_list[6].coordinate;
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c6.x(), 0.5, 1.0e-14);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c6.y(),-0.5, 1.0e-14);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c6.z(), 0.5, 1.0e-14);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( match_list[6].distance(), std::sqrt(0.25*3.0), 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( match_list[6].distance, std::sqrt(0.25*3.0), 1.0e-14 );
 
-    const Coordinate c7 = match_list[7].coordinate();
+    const Coordinate c7 = match_list[7].coordinate;
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c7.x(), 0.5, 1.0e-14);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c7.y(), 0.5, 1.0e-14);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c7.z(),-0.5, 1.0e-14);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( match_list[7].distance(), std::sqrt(0.25*3.0), 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( match_list[7].distance, std::sqrt(0.25*3.0), 1.0e-14 );
 
-    const Coordinate c8 = match_list[8].coordinate();
+    const Coordinate c8 = match_list[8].coordinate;
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c8.x(), 0.5, 1.0e-14);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c8.y(), 0.5, 1.0e-14);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c8.z(), 0.5, 1.0e-14);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( match_list[8].distance(), std::sqrt(0.25*3.0), 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( match_list[8].distance, std::sqrt(0.25*3.0), 1.0e-14 );
 
 }
 

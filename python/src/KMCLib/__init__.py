@@ -7,8 +7,12 @@ from KMCLattice import KMCLattice
 from KMCLatticeModel import KMCLatticeModel
 from KMCUnitCell import KMCUnitCell
 from KMCControlParameters import KMCControlParameters
+from Utilities.SaveAndReadUtilities import KMCInteractionsFromScript
+from Utilities.SaveAndReadUtilities import KMCConfigurationFromScript
+
 
 __all__ = ['KMCLocalConfiguration', 'KMCInteractions', 'KMCConfiguration',
            'KMCLattice', 'KMCLatticeModel', 'KMCUnitCell',
-           'KMCControlParameters']
+           'KMCControlParameters', 'KMCInteractionsFromScript',
+           'KMCConfigurationFromScript']
 

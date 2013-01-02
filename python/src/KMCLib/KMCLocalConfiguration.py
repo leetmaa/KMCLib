@@ -8,6 +8,8 @@
 #
 
 
+import numpy
+
 from KMCLib.Utilities.CheckUtilities import checkCoordinateList
 from KMCLib.Utilities.CheckUtilities import checkIndexWithinBounds
 from KMCLib.Utilities.CheckUtilities import checkTypes
@@ -54,13 +56,10 @@ class KMCLocalConfiguration(object):
                                         msg="The 'center' index paramter must be one in the coordinate list.")
 
         # Center the coordinates.
-        coordinates = centerCoordinates(coordinates, center)
+        self.__coordinates = centerCoordinates(coordinates, center)
 
         # Check the tyeps.
-        types = checkTypes(types, len(coordinates))
-
-        # Sort the coordinates with respect to distance from the center and store on the class.
-        (self.__coordinates, self.__distances, self.__types) = sortCoordinates(coordinates, center, types)
+        self.__types = checkTypes(types, len(coordinates))
 
         # Set the backend to None, to generate it at first query.
         self.__backend = None
@@ -80,12 +79,6 @@ class KMCLocalConfiguration(object):
         :returns: The stored types.
         """
         return self.__types
-
-    def distances(self):
-        """
-        Query function for the distances from the center.
-        """
-        return self.__distances
 
     def _backend(self, possible_types):
         """

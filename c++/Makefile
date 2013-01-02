@@ -9,9 +9,16 @@
 # A simplest possible makefile will do for the moment.
 
 CC = g++
-CCFLAGS   = -fPIC -g -std=c++0x -O3 -Wall -Wextra -pedantic -c
-SOFLAGS   = -fPIC -Wall -Wextra -pedantic -shared -flat_namespace
+#CCFLAGS   = -fPIC -g -std=c++0x -O3 -Wall -Wextra -pedantic -c
+#SOFLAGS   = -fPIC -Wall -Wextra -pedantic -shared -flat_namespace
+#TEST_LINK = -lcppunit
+#SO_LINK   =
+
+# For profiling.
+CCFLAGS   = -pg -fPIC -g -std=c++0x -O3 -Wall -Wextra -pedantic -fno-omit-frame-pointer -c
+SOFLAGS   = -pg -fPIC -Wall -Wextra -pedantic -shared -flat_namespace
 TEST_LINK = -lcppunit
+SO_LINK   = -L /home/leetmaa/installs/lib -lprofiler
 
 SRC_CPPFILES  = $(wildcard ./src/*.cpp)
 SRC_HFILES    = $(SRC_CPPFILES:.cpp=.h)
@@ -35,7 +42,7 @@ wrap: ./wrap/backend.i $(SRC_HFILES)
 
 # Create the shared library to use.
 bundle: src wrap
-	$(CC) $(SOFLAGS) ./src/*.o ./wrap/*.o -o _Backend.so
+	$(CC) $(SOFLAGS) ./src/*.o ./wrap/*.o -o _Backend.so ${SO_LINK}
 
 # Make the backend for python.
 backend: bundle

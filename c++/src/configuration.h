@@ -41,6 +41,11 @@ public:
                   std::vector<std::string> const & elements,
                   const std::map<std::string,int> & possible_types);
 
+    /*! \brief Initiate the calculation of the match lists.
+     *  \param lattice_map : The lattice map needed to get coordinates wrapped.
+     */
+    void initMatchLists(const LatticeMap & lattice_map);
+
     /*! \brief Const query for the coordinates.
      *  \return : The coordinates of the configuration.
      */
@@ -64,19 +69,23 @@ public:
      *                        using correct boundaries.
      *  \return : The match list.
      */
-    std::vector<MatchListEntry> matchList(const int origin_index,
-                                          const std::vector<int> & indices,
-                                          const LatticeMap & lattice_map) const;
+    const std::vector<MinimalMatchListEntry> & minimalMatchList(const int origin_index,
+                                                                const std::vector<int> & indices,
+                                                                const LatticeMap & lattice_map) const;
+
+    /*! \brief Update and return the cached match list for the given central index.
+     *  \param index : The index to get the match list for.
+     *  \return : The match list.
+     */
+    const std::vector<MinimalMatchListEntry> & minimalMatchList(const int index);
 
     /*! \brief Perform the given process.
      *  \param process : The process to perform, which will be updated with the affected
      *                   indices.
      *  \param site_index : The index of the site where the process should be performed.
-     *  \param lattice_map  : The lattice map describing the periodicity of the system.
      */
     void performProcess(Process & process,
-                        const int site_index,
-                        const LatticeMap & lattice_map);
+                        const int site_index);
 
 protected:
 
@@ -94,6 +103,8 @@ private:
     /// The mapping from type integers to names.
     std::vector<std::string> type_names_;
 
+    /// The match lists for all indices.
+    std::vector< std::vector<MinimalMatchListEntry> > match_lists_;
 };
 
 

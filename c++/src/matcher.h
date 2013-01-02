@@ -20,7 +20,6 @@
 
 // Forward declarations.
 class Interactions;
-class LatticeMap;
 class Configuration;
 class Process;
 
@@ -37,41 +36,23 @@ public:
     /*! \brief Calculate/update the matching of provided indices with
      *         all possible processes.
      *  \param interactions  : The interactions object holding info on possible processes.
+     *  \param configuration : The configuration which the list of indices refers to.
      *  \param indices       : The configuration indices for which the neighbourhood should
      *                         be matched against all possible processes.
-     *  \param lattice_map   : The lattice map describing the lattice.
-     *  \param configuration : The configuration which the list of indices refers to.
      */
     void calculateMatching(Interactions & interactions,
-                           const std::vector<int> & indices,
-                           const LatticeMap & lattice_map,
-                           const Configuration & configuration) const;
+                           Configuration & configuration,
+                           const std::vector<int> & indices) const;
 
     /*! \brief Calculate/update the matching of a provided index and process.
      *  \param process       : The process to check against and update if needed.
+     *  \param configuration : The configuration which the index refers to.
      *  \param index         : The configuration index for which the neighbourhood should
      *                         be matched against the process.
-     *  \param lattice_map   : The lattice map describing the lattice.
-     *  \param configuration : The configuration which the index refers to.
-     */
+      */
     void calculateMatching(Process & process,
-                           const int index,
-                           const LatticeMap & lattice_map,
-                           const Configuration & configuration) const;
-
-    /*! \brief Check the matching between a local neighbourhood index list and a process.
-     *  \param index         : The configuration index for which the
-                               neighbourhood should be matched.
-     *  \param process       : The process to check against.
-     *  \param lattice_map   : The lattice map describing the lattice.
-     *  \param configuration : The configuration which the neighbrourhood indices refers to.
-     *  \return : True if match.
-     */
-    bool isMatch(const int index,
-                 const std::vector<int> & neighbourhood,
-                 const Process & process,
-                 const LatticeMap & lattice_map,
-                 const Configuration & configuration) const;
+                           Configuration & configuration,
+                           const int index) const;
 
     /*! \brief Check the matching between two match lists, where the process match list
      *         must be shorter or equal in length to the index match list.
@@ -79,8 +60,8 @@ public:
      *  \param index_match_list   : The index match list to compare.
      *  \return : True if match.
      */
-    bool isMatch(const std::vector<MatchListEntry> & process_match_list,
-                 const std::vector<MatchListEntry> & index_match_list) const;
+    bool isMatch(const std::vector<MinimalMatchListEntry> & process_match_list,
+                 const std::vector<MinimalMatchListEntry> & index_match_list) const;
 
 
 protected:

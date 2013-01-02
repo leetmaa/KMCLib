@@ -271,16 +271,16 @@ class KMCInteractionsTest(unittest.TestCase):
         self.assertEqual(cpp_processes.size(), 2)
 
         # Get the elements out of the second process.
-        match_type  = cpp_processes[1].matchList()[0].matchType()
-        update_type = cpp_processes[1].matchList()[0].updateType()
+        match_type  = cpp_processes[1].minimalMatchList()[0].match_type
+        update_type = cpp_processes[1].minimalMatchList()[0].update_type
 
         # Match type should be "A" -> 15 and update type "C" -> 5
         self.assertEqual( match_type, 13)
         self.assertEqual( update_type, 5)
 
         # Get the elements out of the second process.
-        match_type  = cpp_processes[1].matchList()[1].matchType()
-        update_type = cpp_processes[1].matchList()[1].updateType()
+        match_type  = cpp_processes[1].minimalMatchList()[1].match_type
+        update_type = cpp_processes[1].minimalMatchList()[1].update_type
 
         # Match type should be "C" -> 5 and update type "A" -> 13
         self.assertEqual( match_type,   5)

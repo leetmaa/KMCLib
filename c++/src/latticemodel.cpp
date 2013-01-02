@@ -13,6 +13,7 @@
 
 #include "latticemodel.h"
 #include "configuration.h"
+#include "random.h"
 
 #include <cstdio>
 
@@ -25,11 +26,19 @@ LatticeModel::LatticeModel(Configuration & configuration,
     lattice_map_(lattice_map),
     interactions_(interactions)
 {
+    // ML: Temporarily init the random number generator here.
+    seedRandom(false, 2013);
+
+    printf(" KMCLib: Calculating initial matching.\n");
     // Setup the mapping between coordinates and processes.
     calculateInitialMatching();
 
+    printf(" KMCLib: Update the probability table.\n");
+
     // Initialize the interactions table here.
     interactions_.updateProbabilityTable();
+
+    printf(" KMCLib: Setup done.\n");
 }
 
 
@@ -37,7 +46,10 @@ LatticeModel::LatticeModel(Configuration & configuration,
 //
 void LatticeModel::calculateInitialMatching()
 {
-    // Match all centeres.
+    // Calculate the match lists.
+    configuration_.initMatchLists(lattice_map_);
+
+   // Match all centeres.
     std::vector<int> indices;
 
     for(size_t i = 0; i < configuration_.elements().size(); ++i)
@@ -45,9 +57,8 @@ void LatticeModel::calculateInitialMatching()
         indices.push_back(i);
     }
     matcher_.calculateMatching(interactions_,
-                               indices,
-                               lattice_map_,
-                               configuration_);
+                               configuration_,
+                               indices);
 }
 
 
@@ -62,7 +73,7 @@ void LatticeModel::singleStep()
     const int site_index = process.pickSite();
 
     // Perform the operation.
-    configuration_.performProcess(process, site_index, lattice_map_);
+    configuration_.performProcess(process, site_index);
 
     // Propagate the time.
     //timer_.propagateGlobalTime();
@@ -70,20 +81,16 @@ void LatticeModel::singleStep()
 
     // Write/update the trajectory.
     // NEEDS IMPLEMENTATION
-    // printf("Taking a step.\n");
 
     // Run the re-matching of the affected sites and their neighbours.
     const std::vector<int> & indices = \
         lattice_map_.supersetNeighbourIndices(process.affectedIndices());
 
     matcher_.calculateMatching(interactions_,
-                               indices,
-                               lattice_map_,
-                               configuration_);
+                               configuration_,
+                               indices);
 
     // Update the interactions' probability table.
     interactions_.updateProbabilityTable();
-
-    // Ready for the next step.
 }
 
