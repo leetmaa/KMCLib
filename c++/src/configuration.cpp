@@ -142,7 +142,7 @@ const std::vector<MinimalMatchListEntry> & Configuration::minimalMatchList(const
 
             // Save in the match list.
             (*it_match_list).match_type  = match_type;
-            (*it_match_list).update_type = match_type;
+            (*it_match_list).update_type = -1;
             (*it_match_list).distance    = distance;
             (*it_match_list).coordinate  = c;
             (*it_match_list).index       = (*it_index);
@@ -169,7 +169,7 @@ const std::vector<MinimalMatchListEntry> & Configuration::minimalMatchList(const
 
             // Save in the match list.
             (*it_match_list).match_type  = match_type;
-            (*it_match_list).update_type = match_type;
+            (*it_match_list).update_type = -1;
             (*it_match_list).distance    = distance;
             (*it_match_list).coordinate  = c;
             (*it_match_list).index       = (*it_index);
@@ -202,7 +202,7 @@ const std::vector<MinimalMatchListEntry> & Configuration::minimalMatchList(const
 
         // Save in the match list.
         (*it_match_list).match_type  = match_type;
-        (*it_match_list).update_type = match_type;
+        (*it_match_list).update_type = -1;
         (*it_match_list).distance    = distance;
         (*it_match_list).coordinate  = c;
         (*it_match_list).index       = (*it_index);
