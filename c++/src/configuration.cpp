@@ -19,8 +19,6 @@
 #include "process.h"
 
 // Temporary data for the match list return.
-static std::vector<MatchListEntry> tmp_match_list__(0);
-// ML:
 static std::vector<MinimalMatchListEntry> tmp_minimal_match_list__(0);
 
 // -----------------------------------------------------------------------------
@@ -28,7 +26,8 @@ static std::vector<MinimalMatchListEntry> tmp_minimal_match_list__(0);
 Configuration::Configuration(std::vector<std::vector<double> > const & coordinates,
                              std::vector<std::string> const & elements,
                              const std::map<std::string,int> & possible_types) :
-    elements_(elements)
+    elements_(elements),
+    match_lists_(elements_.size())
 {
     // Setup the coordinates.
     for (size_t i = 0; i < coordinates.size(); ++i)
@@ -64,57 +63,36 @@ Configuration::Configuration(std::vector<std::vector<double> > const & coordinat
 
 // -----------------------------------------------------------------------------
 //
-const std::vector<MatchListEntry> & Configuration::matchList(const int origin_index,
-                                                             const std::vector<int> & indices,
-                                                             const LatticeMap & lattice_map) const
+void Configuration::initMatchLists(const LatticeMap & lattice_map)
 {
-    // Setup the return data.
-    const size_t size = indices.size();
-    tmp_match_list__.resize(size);
-    //std::vector<MatchListEntry> match_list(size);
-
-    // Extract the coordinate of the first index.
-    const Coordinate center = coordinates_[origin_index];
-    const Coordinate origin(0.0, 0.0, 0.0);
-
-    // For each index: center, wrap and calculate the distance.
-    for (size_t i = 0; i < size; ++i)
+    // Loop over all indices.
+    for (size_t i = 0; i < types_.size(); ++i)
     {
-        // Get the index.
-        const int index = indices[i];
+        // Calculate and store the match list.
+        const int origin_index = i;
+        const std::vector<int> neighbourhood = lattice_map.neighbourIndices(origin_index);
+        match_lists_[i] = minimalMatchList(origin_index,
+                                           neighbourhood,
+                                           lattice_map);
+    }
+}
 
-        // Center.
-        Coordinate c = coordinates_[index] - center;
 
-        // Wrap with coorect periodicity.
-        lattice_map.wrap(c);
+// -----------------------------------------------------------------------------
+//
+const std::vector<MinimalMatchListEntry> & Configuration::minimalMatchList(const int index)
+{
+    // Update the match list's types information.
+    std::vector<MinimalMatchListEntry>::iterator it1   = match_lists_[index].begin();
+    const std::vector<MinimalMatchListEntry>::const_iterator end = match_lists_[index].end();
 
-        // Calculate the distance.
-        const double distance = c.distance(origin);
-
-        // Get the type.
-        const int match_type = types_[index];
-
-        // Save in the match list.
-        tmp_match_list__[i] = MatchListEntry(match_type,
-                                             match_type,
-                                             distance,
-                                             c,
-                                             index);
-        /*
-        match_list.push_back(MatchListEntry(match_type,
-                                            match_type,
-                                            distance,
-                                            c,
-                                            index));
-        */
+    for ( ; it1 != end; ++it1 )
+    {
+        (*it1).match_type = types_[(*it1).index];
     }
 
-    // Sort and return.
-    std::sort(tmp_match_list__.begin(), tmp_match_list__.end());
-    //std::sort(match_list.begin(), match_list.end());
-    return tmp_match_list__;
-    //return match_list;
+    // Return.
+    return match_lists_[index];
 }
 
 
@@ -139,14 +117,6 @@ const std::vector<MinimalMatchListEntry> & Configuration::minimalMatchList(const
     const bool periodic_b = lattice_map.periodicB();
     const bool periodic_c = lattice_map.periodicC();
 
-    const int repetitions_a = lattice_map.repetitionsA();
-    const int repetitions_b = lattice_map.repetitionsB();
-    const int repetitions_c = lattice_map.repetitionsC();
-
-    const double half_cell_a = 1.0 * repetitions_a / 2.0;
-    const double half_cell_b = 1.0 * repetitions_b / 2.0;
-    const double half_cell_c = 1.0 * repetitions_c / 2.0;
-
     // Since we know the periodicity outside the loop we can make the
     // logics outside also.
 
@@ -160,36 +130,12 @@ const std::vector<MinimalMatchListEntry> & Configuration::minimalMatchList(const
             Coordinate c = coordinates_[(*it_index)] - center;
 
             // Wrap with coorect periodicity.
-            //lattice_map.wrap(c);
-
-            // Wrap explicitly.
-            if (c[0] >= half_cell_a)
-            {
-                c[0] -= repetitions_a;
-            }
-            else if (c[0] < -half_cell_a)
-            {
-                c[0] += repetitions_a;
-            }
-            if (c[1] >= half_cell_b)
-            {
-                c[1] -= repetitions_b;
-            }
-            else if (c[1] < -half_cell_b)
-            {
-                c[1] += repetitions_b;
-            }
-            if (c[2] >= half_cell_c)
-            {
-                c[2] -= repetitions_c;
-            }
-            else if (c[2] < -half_cell_c)
-            {
-                c[2] += repetitions_c;
-            }
+            lattice_map.wrap(c, 0);
+            lattice_map.wrap(c, 1);
+            lattice_map.wrap(c, 2);
 
             // Get the distance.
-            const double distance = std::sqrt(c[0]*c[0] + c[1]*c[1] + c[2]*c[2]);
+            const double distance = c.distanceToOrigin();
 
             // Get the type.
             const int match_type = types_[(*it_index)];
@@ -199,6 +145,7 @@ const std::vector<MinimalMatchListEntry> & Configuration::minimalMatchList(const
             (*it_match_list).update_type = match_type;
             (*it_match_list).distance    = distance;
             (*it_match_list).coordinate  = c;
+            (*it_match_list).index       = (*it_index);
         }
     }
     // Periodic a-b
@@ -211,29 +158,11 @@ const std::vector<MinimalMatchListEntry> & Configuration::minimalMatchList(const
             Coordinate c = coordinates_[(*it_index)] - center;
 
             // Wrap with coorect periodicity.
-            //lattice_map.wrap(c);
-
-            // Wrap explicitly.
-            if (c[0] >= half_cell_a)
-            {
-                c[0] -= repetitions_a;
-            }
-            else if (c[0] < -half_cell_a)
-            {
-                c[0] += repetitions_a;
-            }
-
-            if (c[1] >= half_cell_b)
-            {
-                c[1] -= repetitions_b;
-            }
-            else if (c[1] < -half_cell_b)
-            {
-                c[1] += repetitions_b;
-            }
+            lattice_map.wrap(c, 0);
+            lattice_map.wrap(c, 1);
 
             // Get the distance.
-            const double distance = std::sqrt(c[0]*c[0] + c[1]*c[1] + c[2]*c[2]);
+            const double distance = c.distanceToOrigin();
 
             // Get the type.
             const int match_type = types_[(*it_index)];
@@ -243,6 +172,7 @@ const std::vector<MinimalMatchListEntry> & Configuration::minimalMatchList(const
             (*it_match_list).update_type = match_type;
             (*it_match_list).distance    = distance;
             (*it_match_list).coordinate  = c;
+            (*it_match_list).index       = (*it_index);
         }
     }
     else {
@@ -263,51 +193,9 @@ const std::vector<MinimalMatchListEntry> & Configuration::minimalMatchList(const
         Coordinate c = coordinates_[(*it_index)] - center;
 
         // Wrap with coorect periodicity.
-        //lattice_map.wrap(c);
+        lattice_map.wrap(c);
 
-        // Wrap explicitly.
-        if (periodic_a)
-        {
-            if (c[0] >= half_cell_a)
-            {
-                c[0] -= repetitions_a;
-            }
-            else if (c[0] < -half_cell_a)
-            {
-                c[0] += repetitions_a;
-            }
-        }
-        if (periodic_b)
-        {
-            if (c[1] >= half_cell_b)
-            {
-                c[1] -= repetitions_b;
-            }
-            else if (c[1] < -half_cell_b)
-            {
-                c[1] += repetitions_b;
-            }
-        }
-        if (periodic_c)
-        {
-            if (c[2] >= half_cell_c)
-            {
-                c[2] -= repetitions_c;
-            }
-            else if (c[2] < -half_cell_c)
-            {
-                c[2] += repetitions_c;
-            }
-        }
-
-        // Explicit distance calculation.
-
-        //const double distance = (std::pow(c[0], 2) +
-        //                         std::pow(c[1], 2) +
-        //                         std::pow(c[2], 2));
-
-        // Calculate the distance.
-        // const double distance = c.distanceToOrigin();
+        const double distance = c.distanceToOrigin();
 
         // Get the type.
         const int match_type = types_[(*it_index)];
@@ -315,8 +203,9 @@ const std::vector<MinimalMatchListEntry> & Configuration::minimalMatchList(const
         // Save in the match list.
         (*it_match_list).match_type  = match_type;
         (*it_match_list).update_type = match_type;
-        (*it_match_list).distance    = std::sqrt(c[0]*c[0] + c[1]*c[1] + c[2]*c[2]);
+        (*it_match_list).distance    = distance;
         (*it_match_list).coordinate  = c;
+        (*it_match_list).index       = (*it_index);
     }
     } // FIXME
     // Sort and return.
@@ -331,26 +220,23 @@ void Configuration::performProcess(Process & process,
                                    const int site_index,
                                    const LatticeMap & lattice_map)
 {
-    // Get the neighbrourhood out.
-    const std::vector<int> neighbourhood = lattice_map.neighbourIndices(site_index);
-
-    // Create the proper match list.
-    const std::vector<MatchListEntry> & process_match_list = process.matchList();
-    const std::vector<MatchListEntry> site_match_list = matchList(site_index, neighbourhood, lattice_map);
+    // Get the proper match lists.
+    const std::vector<MinimalMatchListEntry> & process_match_list = process.minimalMatchList();
+    const std::vector<MinimalMatchListEntry> & site_match_list    = minimalMatchList(site_index);
 
     // Iterators to the match list entries.
-    std::vector<MatchListEntry>::const_iterator it1 = process_match_list.begin();
-    std::vector<MatchListEntry>::const_iterator it2 = site_match_list.begin();
+    std::vector<MinimalMatchListEntry>::const_iterator it1 = process_match_list.begin();
+    std::vector<MinimalMatchListEntry>::const_iterator it2 = site_match_list.begin();
     std::vector<int>::iterator it3 = process.affectedIndices().begin();
 
     // Loop over the match lists and get the types and indices out.
     for( ; it1 != process_match_list.end(); ++it1, ++it2)
     {
         // Get the type out of the process match list.
-        const int update_type = (*it1).updateType();
+        const int update_type = (*it1).update_type;
 
         // Get the index out of the configuration match list.
-        const int index = (*it2).index();
+        const int index = (*it2).index;
 
         if (types_[index] != update_type)
         {

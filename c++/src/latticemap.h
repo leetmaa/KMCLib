@@ -109,6 +109,14 @@ public:
     inline
     void wrap(Coordinate & c) const;
 
+    /*! \brief Wrap the coordinate according to periodic boundaries in the
+     *         given direction.
+     * \param c (in/out): The coordinate to wrap.
+     * \param direction : The direction to wrap.
+     */
+    inline
+    void wrap(Coordinate & c, const int direction) const;
+
 protected:
 
 private:
@@ -128,22 +136,33 @@ private:
 //
 void LatticeMap::wrap(Coordinate & c) const
 {
-    // Loop over directions.
-    for (int i = 0; i < 3; ++i)
+    // Wrap in all directions.
+    if (periodic_[0])
     {
-        // Wrap if periodic.
-        if (periodic_[i])
-        {
-            const double half_cell = 1.0 * repetitions_[i] / 2.0;
-            if (c[i] >= half_cell)
-            {
-                c[i] -= repetitions_[i];
-            }
-            else if (c[i] < -half_cell)
-            {
-                c[i] += repetitions_[i];
-            }
-        }
+        wrap(c, 0);
+    }
+    if (periodic_[1])
+    {
+        wrap(c, 1);
+    }
+    if (periodic_[2])
+    {
+        wrap(c, 2);
+    }
+}
+
+// -----------------------------------------------------------------------------
+//
+void LatticeMap::wrap(Coordinate & c, const int direction) const
+{
+    const double half_cell = 1.0 * repetitions_[direction] / 2.0;
+    if (c[direction] >= half_cell)
+    {
+        c[direction] -= repetitions_[direction];
+    }
+    else if (c[direction] < -half_cell)
+    {
+        c[direction] += repetitions_[direction];
     }
 }
 

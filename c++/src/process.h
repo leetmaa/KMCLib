@@ -79,8 +79,6 @@ public:
     /*! \brief Query for the configuration as a vector of match list entries.
      *  \return : The stored match list.
      */
-    const std::vector<MatchListEntry> & matchList() const { return match_list_; }
-    // ML:
     const std::vector<MinimalMatchListEntry> & minimalMatchList() const { return minimal_match_list_; }
 
     /*! \brief Query for the latest affected indices.
@@ -111,7 +109,6 @@ private:
     std::vector<int> sites_;
 
     /// The match list for comparing against local configurations.
-    std::vector<MatchListEntry> match_list_;
     std::vector<MinimalMatchListEntry> minimal_match_list_;
 
     /*! \brief: The configuration indices that were affected last time

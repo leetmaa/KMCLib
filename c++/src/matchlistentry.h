@@ -79,20 +79,13 @@ inline
 bool operator<(const MinimalMatchListEntry & m1,
                const MinimalMatchListEntry & m2)
 {
+
     // Sort along distance, type and coordinate.
     if (std::fabs(m2.distance - m1.distance) < epsi__)
     {
         // If the distances are practically the same,
-        // check the types.
-        if (m1.match_type == m2.match_type)
-        {
-            // If the types are identical, check the coordinate.
-            return (m1.coordinate < m2.coordinate);
-        }
-        else
-        {
-            return (m1.match_type < m2.match_type);
-        }
+        // check the coordinate.
+        return (m1.coordinate < m2.coordinate);
     }
     else
     {
@@ -100,87 +93,6 @@ bool operator<(const MinimalMatchListEntry & m1,
         return (m1.distance < m2.distance);
     }
 }
-
-
-
-/*! \brief Class for defining an entry in the match list, corresponding to
- *         a type a distance and coordinates.
- */
-class MatchListEntry {
-
-public:
-
-    /*! \brief Default constructor needed for SWIG wrapping in std::vector.
-     */
-    MatchListEntry() {}
-
-    /*! \brief Constructor.
-     *  \param match_type : The matching type of the entrty.
-     *  \param update_type: The update type of the entrty.
-     *  \param distance   : The distance from center.
-     *  \param coordinate : The coordinate for which the distance was calculated.
-     *  \param index      : The index of the entry, defaults to -1.
-     */
-    MatchListEntry(const int match_type_,
-                   const int update_type_,
-                   const double distance,
-                   const Coordinate & coordinate,
-                   const int index=-1);
-
-    /*! \brief 'not equal' operator for comparing matchlist entries.
-     */
-    bool operator!=(const MatchListEntry & other) const;
-
-    /*! \brief 'less than' for sorting matchlists.
-     */
-    bool operator<(const MatchListEntry & other) const;
-
-    /*! \brief Query for the match type.
-     */
-    const int & matchType() const { return match_type_; }
-
-    /*! \brief Query for the update type.
-     */
-    const int & updateType() const { return update_type_; }
-
-    /*! \brief Query for the index.
-     */
-    const int & index() const { return index_; }
-
-    /*! \brief Query for the distance.
-     */
-    const double & distance() const { return distance_; }
-
-    /*! \brief Query for the coordinate.
-     */
-    const Coordinate & coordinate() const { return coordinate_; }
-
-protected:
-
-private:
-
-    /// The match type integer.
-    int match_type_;
-
-    /// The update type integer.
-    int update_type_;
-
-    /// The index in the global structure.
-    int index_;
-
-    /// The distance.
-    double distance_;
-
-    /// The coordinate.
-    Coordinate coordinate_;
-
-    /*! \brief The epsilon to determine if two distances are equal or not.
-     *         It is in units of primitive cell fractional coordinates.
-     */
-    double eps_;
-
-};
-
 
 #endif // __MATCHLISTENTRY__
 

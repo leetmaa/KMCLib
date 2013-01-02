@@ -155,6 +155,9 @@ void Test_Configuration::testPerformProcess()
     std::vector<bool> periodicity(3, true);
     LatticeMap lattice_map(nB, repetitions, periodicity);
 
+    // Init the match lists.
+    configuration.initMatchLists(lattice_map);
+
     // Get a process that finds a V between two B and turns one of
     // the Bs into an A.
     std::vector<std::string> process_elements1(3);
@@ -180,9 +183,6 @@ void Test_Configuration::testPerformProcess()
     Configuration c1(process_coordinates, process_elements1, possible_types);
     Configuration c2(process_coordinates, process_elements2, possible_types);
     Process p(c1, c2, barrier);
-
-    // Construct the configuration.
-    Configuration config(coordinates, elements, possible_types);
 
     // Now, add index 1434 to the process.
     // We know by construction that these match.
@@ -215,5 +215,5 @@ void Test_Configuration::testPerformProcess()
     CPPUNIT_ASSERT_EQUAL( affected[0], 1434 );
     CPPUNIT_ASSERT_EQUAL( affected[1], 350  );
 
- }
+}
 

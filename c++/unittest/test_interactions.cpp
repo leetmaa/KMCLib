@@ -92,11 +92,11 @@ void Test_Interactions::testQuery()
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(queried_processes.size()), 3 );
 
     // Get the types in the queried processes and check.
-    CPPUNIT_ASSERT_EQUAL( queried_processes[0].matchList()[0].matchType(), 1 );
-    CPPUNIT_ASSERT_EQUAL( queried_processes[0].matchList()[0].updateType(), 2 );
+    CPPUNIT_ASSERT_EQUAL( queried_processes[0].minimalMatchList()[0].match_type, 1 );
+    CPPUNIT_ASSERT_EQUAL( queried_processes[0].minimalMatchList()[0].update_type, 2 );
 
-    CPPUNIT_ASSERT_EQUAL( queried_processes[2].matchList()[2].matchType(), 1 );
-    CPPUNIT_ASSERT_EQUAL( queried_processes[2].matchList()[2].updateType(), 1 );
+    CPPUNIT_ASSERT_EQUAL( queried_processes[2].minimalMatchList()[2].match_type, 1 );
+    CPPUNIT_ASSERT_EQUAL( queried_processes[2].minimalMatchList()[2].update_type, 1 );
 
 
 }

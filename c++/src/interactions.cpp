@@ -71,6 +71,19 @@ void Interactions::updateProbabilityTable()
 //
 int Interactions::pickProcessIndex() const
 {
+    // ML:
+    size_t sum = 0;
+    for (size_t i = 0; i < processes_.size(); ++i)
+    {
+        sum += processes_[i].sites().size();
+    }
+    if (sum == 0)
+    {
+        // Should be a graceful callback.
+        printf("ERROR - no more available processes.\n");
+        exit(8);
+    }
+
     // Get a random number between 0.0 and the total imcremented rate.
     const double rnd = randomDouble01() * probability_table_.back().first;
     const std::pair<double,int> rnd_pair(rnd,1);

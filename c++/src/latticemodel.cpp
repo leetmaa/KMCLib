@@ -46,7 +46,10 @@ LatticeModel::LatticeModel(Configuration & configuration,
 //
 void LatticeModel::calculateInitialMatching()
 {
-    // Match all centeres.
+    // Calculate the match lists.
+    configuration_.initMatchLists(lattice_map_);
+
+   // Match all centeres.
     std::vector<int> indices;
 
     for(size_t i = 0; i < configuration_.elements().size(); ++i)
@@ -54,9 +57,8 @@ void LatticeModel::calculateInitialMatching()
         indices.push_back(i);
     }
     matcher_.calculateMatching(interactions_,
-                               indices,
-                               lattice_map_,
-                               configuration_);
+                               configuration_,
+                               indices);
 }
 
 
@@ -79,16 +81,15 @@ void LatticeModel::singleStep()
 
     // Write/update the trajectory.
     // NEEDS IMPLEMENTATION
-    // printf("Taking a step.\n");
 
     // Run the re-matching of the affected sites and their neighbours.
     const std::vector<int> & indices = \
         lattice_map_.supersetNeighbourIndices(process.affectedIndices());
 
+    //configuration_.initMatchLists(lattice_map_);
     matcher_.calculateMatching(interactions_,
-                               indices,
-                               lattice_map_,
-                               configuration_);
+                               configuration_,
+                               indices);
 
     // Update the interactions' probability table.
     interactions_.updateProbabilityTable();

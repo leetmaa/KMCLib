@@ -348,6 +348,9 @@ void Test_LatticeModel::testSingleStepFunction()
     std::vector<bool> periodicity(3, true);
     LatticeMap lattice_map(nB, repetitions, periodicity);
 
+    // ML:
+    configuration.initMatchLists(lattice_map);
+
     // Setup the interactions object.
     std::vector<Process> processes;
 

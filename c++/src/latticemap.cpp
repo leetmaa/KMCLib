@@ -179,6 +179,7 @@ std::vector<int> LatticeMap::supersetNeighbourIndices(const std::vector<int> & i
 
     // Get the unique elements out.
     superset.resize(std::unique(superset.begin(), superset.end())-superset.begin());
+
     return superset;
 }
 

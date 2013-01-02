@@ -29,23 +29,22 @@ Matcher::Matcher()
 // -----------------------------------------------------------------------------
 //
 void Matcher::calculateMatching(Interactions & interactions,
-                                const std::vector<int> & indices,
-                                const LatticeMap & lattice_map,
-                                const Configuration & configuration) const
+                                Configuration & configuration,
+                                const std::vector<int> & indices) const
 {
     // Loop through all provided indices.
     for(size_t i = 0; i < indices.size(); ++i)
     {
         // This is the index in the configuration which should
-        // be compared (together with its neighbourhood) with
-        // all possible processes stored in the interactions object.
+        // be compared against all possible processes stored in the
+        // interactions object.
         const int index = indices[i];
 
         // Match against all processes.
         for (size_t j = 0; j < interactions.processes().size(); ++j)
         {
             Process & process = interactions.processes()[j];
-            calculateMatching(process, index, lattice_map, configuration);
+            calculateMatching(process, configuration, index);
         }
     }
 }
@@ -54,19 +53,22 @@ void Matcher::calculateMatching(Interactions & interactions,
 // -----------------------------------------------------------------------------
 //
 void Matcher::calculateMatching(Process & process,
-                                const int index,
-                                const LatticeMap & lattice_map,
-                                const Configuration & configuration) const
+                                Configuration & configuration,
+                                const int index) const
 {
     // Check in the indices list of this process to see if we have
     // a previous match.
     const bool in_list = process.isListed(index);
 
-    // Get the neighbrourhood out.
-    const std::vector<int> neighbourhood = lattice_map.neighbourIndices(index);
+    // Get the match lists out.
+    const std::vector<MinimalMatchListEntry> & process_match_list = process.minimalMatchList();
 
-    // Match the neighbrourhood with the process.
-    const bool is_match = isMatch(index, neighbourhood, process, lattice_map, configuration);
+    // This gets the updated match list.
+    const std::vector<MinimalMatchListEntry> & index_match_list   = configuration.minimalMatchList(index);
+
+    // Check the match.
+    const bool is_match = isMatch(process_match_list,
+                                  index_match_list);
 
     // If match and not previous match - add to the list.
     if (is_match && !in_list)
@@ -83,33 +85,14 @@ void Matcher::calculateMatching(Process & process,
 
 // -----------------------------------------------------------------------------
 //
-bool Matcher::isMatch(const int index,
-                      const std::vector<int> & neighbourhood,
-                      const Process & process,
-                      const LatticeMap & lattice_map,
-                      const Configuration & configuration) const
+bool Matcher::isMatch(const std::vector<MinimalMatchListEntry> & process_match_list,
+                      const std::vector<MinimalMatchListEntry> & index_match_list) const
 {
-    // Return false if not enough indices in the neighbourhood.
-    if (neighbourhood.size() < process.minimalMatchList().size())
+    if (index_match_list.size() < process_match_list.size())
     {
         return false;
     }
 
-    // Get the types and distances match lists.
-    const std::vector<MinimalMatchListEntry> & process_match_list = process.minimalMatchList();
-    const std::vector<MinimalMatchListEntry> & index_match_list   = configuration.minimalMatchList(index, neighbourhood, lattice_map);
-
-    // Check the match lists and return.
-    return isMatch(process_match_list,
-                   index_match_list);
-}
-
-
-// -----------------------------------------------------------------------------
-//
-bool Matcher::isMatch(const std::vector<MinimalMatchListEntry> & process_match_list,
-                      const std::vector<MinimalMatchListEntry> & index_match_list) const
-{
     // Iterators to the match list entries.
     std::vector<MinimalMatchListEntry>::const_iterator it1 = process_match_list.begin();
     std::vector<MinimalMatchListEntry>::const_iterator it2 = index_match_list.begin();
