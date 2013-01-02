@@ -200,7 +200,7 @@ void Test_Configuration::testPerformProcess()
     CPPUNIT_ASSERT_EQUAL( configuration.types()[2517], 0 );
 
     // Peform the process.
-    configuration.performProcess(p, 1434, lattice_map);
+    configuration.performProcess(p, 1434);
 
     // Check that the types were correctly updated.
     CPPUNIT_ASSERT_EQUAL( configuration.types()[1434], 1 );

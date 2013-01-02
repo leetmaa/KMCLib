@@ -73,7 +73,7 @@ void LatticeModel::singleStep()
     const int site_index = process.pickSite();
 
     // Perform the operation.
-    configuration_.performProcess(process, site_index, lattice_map_);
+    configuration_.performProcess(process, site_index);
 
     // Propagate the time.
     //timer_.propagateGlobalTime();

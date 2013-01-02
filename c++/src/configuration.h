@@ -41,7 +41,6 @@ public:
                   std::vector<std::string> const & elements,
                   const std::map<std::string,int> & possible_types);
 
-    // ML: This will be moved to the construction.
     /*! \brief Initiate the calculation of the match lists.
      *  \param lattice_map : The lattice map needed to get coordinates wrapped.
      */
@@ -73,7 +72,11 @@ public:
     const std::vector<MinimalMatchListEntry> & minimalMatchList(const int origin_index,
                                                                 const std::vector<int> & indices,
                                                                 const LatticeMap & lattice_map) const;
-    // ML:
+
+    /*! \brief Update and return the cached match list for the given central index.
+     *  \param index : The index to get the match list for.
+     *  \return : The match list.
+     */
     const std::vector<MinimalMatchListEntry> & minimalMatchList(const int index);
 
     /*! \brief Perform the given process.
@@ -82,8 +85,7 @@ public:
      *  \param site_index : The index of the site where the process should be performed.
      */
     void performProcess(Process & process,
-                        const int site_index,
-                        const LatticeMap & lattice_map);
+                        const int site_index);
 
 protected:
 

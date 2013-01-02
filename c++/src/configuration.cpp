@@ -217,8 +217,7 @@ const std::vector<MinimalMatchListEntry> & Configuration::minimalMatchList(const
 // -----------------------------------------------------------------------------
 //
 void Configuration::performProcess(Process & process,
-                                   const int site_index,
-                                   const LatticeMap & lattice_map)
+                                   const int site_index)
 {
     // Get the proper match lists.
     const std::vector<MinimalMatchListEntry> & process_match_list = process.minimalMatchList();
