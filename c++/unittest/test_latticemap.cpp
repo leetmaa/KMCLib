@@ -490,6 +490,28 @@ void Test_LatticeMap::testWrap()
         CPPUNIT_ASSERT_DOUBLES_EQUAL(ref.y(), c.y(), 1.0e-14);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(ref.z(), c.z(), 1.0e-14);
     }
+
+
+    {
+        // Check the componentwise wrapping.
+        Coordinate c(1.5, 2.5, 3.0);
+        const Coordinate refA(-1.5, 2.5, 3.0);
+        const Coordinate refAB(-1.5, -2.5, 3.0);
+        const Coordinate refABC(-1.5, -2.5, -3.0);
+        // Wrap and check.
+        map.wrap(c,0);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(refA.x(), c.x(), 1.0e-14);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(refA.y(), c.y(), 1.0e-14);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(refA.z(), c.z(), 1.0e-14);
+        map.wrap(c,1);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(refAB.x(), c.x(), 1.0e-14);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(refAB.y(), c.y(), 1.0e-14);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(refAB.z(), c.z(), 1.0e-14);
+        map.wrap(c,2);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(refABC.x(), c.x(), 1.0e-14);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(refABC.y(), c.y(), 1.0e-14);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(refABC.z(), c.z(), 1.0e-14);
+    }
 }
 
 
