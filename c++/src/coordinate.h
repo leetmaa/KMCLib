@@ -226,7 +226,7 @@ double & Coordinate::operator[](const int index)
 double Coordinate::distance(const Coordinate & other) const
 {
     // PERFOMME:
-    // Working in squared distances saves a few percent in the time
+    // Working in squared distances saves only a few percent in the time
     // it takes to setup the configuration match lists.
     const double tmp_value = (std::pow(x_ - other.x_, 2) +
                               std::pow(y_ - other.y_, 2) +
@@ -241,7 +241,7 @@ double Coordinate::distance(const Coordinate & other) const
 double Coordinate::distanceToOrigin() const
 {
     // PERFOMME:
-    // Working in squared distances saves a few percent in the time
+    // Working in squared distances saves only a few percent in the time
     // it takes to setup the configuration match lists.
     const double tmp_value = (std::pow(x_, 2) +
                               std::pow(y_, 2) +

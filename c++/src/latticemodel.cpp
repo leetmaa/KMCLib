@@ -86,7 +86,6 @@ void LatticeModel::singleStep()
     const std::vector<int> & indices = \
         lattice_map_.supersetNeighbourIndices(process.affectedIndices());
 
-    //configuration_.initMatchLists(lattice_map_);
     matcher_.calculateMatching(interactions_,
                                configuration_,
                                indices);
