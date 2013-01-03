@@ -15,6 +15,7 @@
 #include "../src/process.h"
 #include "../src/coordinate.h"
 #include "../src/matchlistentry.h"
+#include "../src/simulationtimer.h"
 %}
 
 %include "std_string.i"
@@ -38,6 +39,7 @@
 %include "../src/process.h"
 %include "../src/coordinate.h"
 %include "../src/matchlistentry.h"
+%include "../src/simulationtimer.h"
 
 %extend Coordinate
 {

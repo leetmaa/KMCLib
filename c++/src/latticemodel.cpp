@@ -13,6 +13,7 @@
 
 #include "latticemodel.h"
 #include "configuration.h"
+#include "simulationtimer.h"
 #include "random.h"
 
 #include <cstdio>
@@ -20,9 +21,11 @@
 // -----------------------------------------------------------------------------
 //
 LatticeModel::LatticeModel(Configuration & configuration,
+                           SimulationTimer & simulation_timer,
                            const LatticeMap & lattice_map,
                            const Interactions & interactions) :
     configuration_(configuration),
+    simulation_timer_(simulation_timer),
     lattice_map_(lattice_map),
     interactions_(interactions)
 {
@@ -76,11 +79,7 @@ void LatticeModel::singleStep()
     configuration_.performProcess(process, site_index);
 
     // Propagate the time.
-    //timer_.propagateGlobalTime();
-    // NEEDS IMPLEMENTATION
-
-    // Write/update the trajectory.
-    // NEEDS IMPLEMENTATION
+    simulation_timer_.propagateTime(interactions_.totalRate());
 
     // Run the re-matching of the affected sites and their neighbours.
     const std::vector<int> & indices = \

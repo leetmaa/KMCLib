@@ -17,10 +17,10 @@
 #include "test_matchlistentry.h"
 #include "test_matcher.h"
 #include "test_random.h"
+#include "test_simulationtimer.h"
 
 // -------------------------------------------------------------------------- //
 // Add tests.
-
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_LatticeModel );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_Configuration );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_LatticeMap );
@@ -30,5 +30,5 @@ CPPUNIT_TEST_SUITE_REGISTRATION( Test_Coordinate );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_MatchListEntry );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_Matcher );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_Random );
-
+CPPUNIT_TEST_SUITE_REGISTRATION( Test_SimulationTimer );
 

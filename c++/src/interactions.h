@@ -50,6 +50,11 @@ public:
      */
     void updateProbabilityTable();
 
+    /*! \brief Query for the total rate of the system.
+     *  \return : The total rate.
+     */
+    double totalRate() const { return probability_table_.back().first; }
+
     /*! \brief Pick an availabe process according to its probability.
      *  \return : The index of a possible available process picked according
      *            to its probability.
@@ -72,7 +77,6 @@ private:
 
     /// The probability table.
     std::vector<std::pair<double,int> > probability_table_;
-
 };
 
 

@@ -23,6 +23,7 @@
 
 // Forward declarations.
 class Configuration;
+class SimulationTimer;
 class Process;
 
 /// Class for defining and running a lattice KMC model.
@@ -31,12 +32,14 @@ class LatticeModel {
 public:
 
     /*! \brief Constructor for setting up the model.
-     *  \param configuration : The configuration to run the simulation on.
-     *  \param lattice_map   : A lattice map object describing the lattice.
-     *  \param interactions  : An interactions object describing all interactions
+     *  \param configuration    : The configuration to run the simulation on.
+     *  \param simulation_timer : The timer for the simulation.
+     *  \param lattice_map      : A lattice map object describing the lattice.
+     *  \param interactions     : An interactions object describing all interactions
      *                         and possible processes in the system.
      */
     LatticeModel(Configuration & configuration,
+                 SimulationTimer & simulation_timer,
                  const LatticeMap & lattice_map,
                  const Interactions & interactions);
 
@@ -70,6 +73,9 @@ private:
 
     /// A reference to the configuration given at construction.
     Configuration & configuration_;
+
+    /// A reference to the timer given at construction.
+    SimulationTimer & simulation_timer_;
 
     /// A description of the lattice.
     LatticeMap lattice_map_;

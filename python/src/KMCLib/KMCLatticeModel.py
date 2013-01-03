@@ -64,8 +64,15 @@ class KMCLatticeModel(object):
             cpp_config       = self.__configuration._backend()
             cpp_lattice_map  = self.__configuration._latticeMap()
             cpp_interactions = self.__interactions._backend(self.__configuration.possibleTypes())
+
+            # Construct a timer.
+            self.__cpp_timer = Backend.SimulationTimer()
+
             # Construct the backend iobject.
-            self.__backend = Backend.LatticeModel(cpp_config, cpp_lattice_map, cpp_interactions)
+            self.__backend = Backend.LatticeModel(cpp_config,
+                                                  self.__cpp_timer,
+                                                  cpp_lattice_map,
+                                                  cpp_interactions)
         # Return.
         return self.__backend
 
@@ -91,30 +98,19 @@ class KMCLatticeModel(object):
         # trajectory = KMCTrajectory(filename=trajectory_filename)
 
         # Get the needed parameters.
-        # NEEDS IMPLEMENTATION
-        #temperature = control_parameters.temperature()
         n_steps = control_parameters.numberOfSteps()
-        n_chunk = len(self.__configuration.types())
 
-        print " KMCLib: Runing for %i steps."%(n_steps)
+        print " KMCLib: Runing for %i steps, starting from time: %f\n"%(n_steps,self.__cpp_timer.simulationTime())
 
-        # Run the loop.
+        # For profiling.
         for step in range(n_steps):
-
             # Take a step.
-            for n_i in range(n_chunk):
-                cpp_model.singleStep()
+            cpp_model.singleStep()
 
-                # Screen IO.
-                print_step = (step*n_chunk + n_i)
-                if (print_step%10 == 0):
-                    print " KMCLib: %i primitive steps executed."%(print_step)
-
+            if ((step+1)%10 == 0):
+                print " KMCLib: %i steps executed. time: "%(step+1, self.__cpp_timer.simulationTime())
 
             # Perform IO using the trajectory object.
-            #print " KMCLib: %i primitive steps executed."%(n_i*n_chunk)
-
-        # Sync the configurations.
 
     def _script(self, variable_name="model"):
         """

@@ -85,7 +85,7 @@ int Interactions::pickProcessIndex() const
     }
 
     // Get a random number between 0.0 and the total imcremented rate.
-    const double rnd = randomDouble01() * probability_table_.back().first;
+    const double rnd = randomDouble01() * totalRate();
     const std::pair<double,int> rnd_pair(rnd,1);
 
     // Find the lower bound - corresponding to the first element for which

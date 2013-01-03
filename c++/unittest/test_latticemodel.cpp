@@ -17,6 +17,7 @@
 #include "../src/latticemap.h"
 #include "../src/interactions.h"
 #include "../src/random.h"
+#include "../src/simulationtimer.h"
 
 #include <ctime>
 
@@ -53,8 +54,11 @@ void Test_LatticeModel::testConstruction()
     const std::vector<Process> processes;
     Interactions interactions(processes);
 
+    // And a timer.
+    SimulationTimer timer;
+
     // construct.
-    LatticeModel model(config, lattice_map, interactions);
+    LatticeModel model(config, timer, lattice_map, interactions);
 
 }
 
@@ -200,8 +204,11 @@ void Test_LatticeModel::testSetupAndQuery()
 
     Interactions interactions(processes);
 
+    // We need a timer.
+    SimulationTimer timer;
+
     // Construct the lattice model to test.
-    LatticeModel lattice_model(configuration, lattice_map, interactions);
+    LatticeModel lattice_model(configuration, timer, lattice_map, interactions);
 
     // Get the interactions out and check that they are setup as expected.
     const Interactions ret_interactions = lattice_model.interactions();
@@ -264,7 +271,7 @@ void Test_LatticeModel::testSetupAndQuery()
     configuration = Configuration(coordinates, elements, possible_types);
 
     // Get a new lattice model to test.
-    LatticeModel lattice_model_2(configuration, lattice_map, interactions);
+    LatticeModel lattice_model_2(configuration, timer, lattice_map, interactions);
 
     // Get the interactions out and check.
     const Interactions ret_interactions_2 = lattice_model_2.interactions();
@@ -428,8 +435,11 @@ void Test_LatticeModel::testSingleStepFunction()
 
     Interactions interactions(processes);
 
+    // Get a timer.
+    SimulationTimer timer;
+
     // Construct the lattice model to test.
-    LatticeModel lattice_model(configuration, lattice_map, interactions);
+    LatticeModel lattice_model(configuration, timer, lattice_map, interactions);
 
     // Call the single step function a couple of times to make sure it is
     // stable - the rest of the testing of this function should be done on
@@ -851,9 +861,10 @@ void Test_LatticeModel::testTiming()
     std::vector<bool> periodicity(3, true);
     LatticeMap lattice_map(nB, repetitions, periodicity);
     Interactions interactions(processes);
+    SimulationTimer timer;
 
     // Construct the lattice model to test.
-    LatticeModel lattice_model(configuration, lattice_map, interactions);
+    LatticeModel lattice_model(configuration, timer, lattice_map, interactions);
 
     // Call the single step function a couple of times to make sure it is
     // stable - the rest of the testing of this function should be done on
