@@ -108,7 +108,7 @@ class KMCLatticeModel(object):
             cpp_model.singleStep()
 
             if ((step+1)%10 == 0):
-                print " KMCLib: %i steps executed. time: "%(step+1, self.__cpp_timer.simulationTime())
+                print " KMCLib: %i steps executed. time: %f "%(step+1, self.__cpp_timer.simulationTime())
 
             # Perform IO using the trajectory object.
 
