@@ -161,6 +161,14 @@ class KMCConfiguration(object):
         # Return the types.
         return self.__types
 
+    def sites(self):
+        """
+        Query function for the lattice sites.
+
+        :returns: The lattice sites.
+        """
+        return self.__lattice.sites()
+
     def possibleTypes(self):
         """
         Query function for the possible types dict.

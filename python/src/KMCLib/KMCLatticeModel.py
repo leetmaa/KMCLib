@@ -14,6 +14,7 @@ from KMCLib.KMCConfiguration import KMCConfiguration
 from KMCLib.KMCInteractions import KMCInteractions
 from KMCLib.KMCControlParameters import KMCControlParameters
 from KMCLib.Exceptions.Error import Error
+from KMCLib.Utilities.Trajectory.Trajectory import Trajectory
 
 class KMCLatticeModel(object):
     """
@@ -90,6 +91,7 @@ The 'control_parameters' input to the KMCLatticeModel run funtion
             raise Error(msg)
 
         # Check the trajectory filename.
+        use_trajectory = True
         if trajectory_filename is None:
             use_trajectory = False
             msg =""" KMCLib: WARNING: No trajectory filename given -> no trajectory will be saved."""
@@ -104,9 +106,10 @@ must be given as string."""
         print " KMCLib: setting up the backend C++ object."
         cpp_model = self._backend()
 
-        # Setup a trajector object.
-        # NEEDS IMPLEMENTATION
-        # trajectory = KMCTrajectory(filename=trajectory_filename)
+        # Setup a trajectory object.
+        if use_trajectory:
+            trajectory = Trajectory(trajectory_filename=trajectory_filename,
+                                    sites=self.__configuration.sites())
 
         # Get the needed parameters.
         n_steps = control_parameters.numberOfSteps()
@@ -121,7 +124,10 @@ must be given as string."""
             if ((step+1)%n_dump == 0):
                 print " KMCLib: %i steps executed. time: %f "%(step+1, self.__cpp_timer.simulationTime())
 
-            # Perform IO using the trajectory object.
+                # Perform IO using the trajectory object.
+                if use_trajectory:
+                    trajectory.append(simulation_time  = self.__cpp_timer.simulationTime(),
+                                      types            = self.__configuration.types())
 
     def _script(self, variable_name="model"):
         """
