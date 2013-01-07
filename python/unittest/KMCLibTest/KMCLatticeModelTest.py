@@ -1,7 +1,7 @@
 """ Module for testing the KMCLatticeModel class. """
 
 
-# Copyright (c)  2012  Mikael Leetmaa
+# Copyright (c)  2012-2013  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -14,6 +14,7 @@ import numpy
 from KMCLib.KMCInteractions import KMCInteractions
 from KMCLib.KMCConfiguration import KMCConfiguration
 from KMCLib.KMCLocalConfiguration import KMCLocalConfiguration
+from KMCLib.KMCControlParameters import KMCControlParameters
 from KMCLib.KMCUnitCell import KMCUnitCell
 from KMCLib.KMCLattice  import KMCLattice
 
@@ -97,6 +98,103 @@ class KMCLatticeModelTest(unittest.TestCase):
         # Check that it has the correct configuration stored.
         self.assertTrue(model._KMCLatticeModel__configuration == config)
 
+
+    def testRun(self):
+        """ Test that ta valid model can run for a few steps. """
+        # Setup a unitcell.
+        unit_cell = KMCUnitCell(cell_vectors=numpy.array([[1.0,0.0,0.0],
+                                                          [0.0,1.0,0.0],
+                                                          [0.0,0.0,1.0]]),
+                                basis_points=[[0.0,0.0,0.0]])
+        # And a lattice.
+        lattice = KMCLattice(unit_cell=unit_cell,
+                             repetitions=(128,128,1),
+                             periodic=(True,True,False))
+
+        # Generate the stating configuration types with a 5%
+        # random concentration of type A.
+        types = ["B"]*(128*128)
+        for i in range(len(types)):
+            if (numpy.random.uniform(0.0,1.0) < 0.05):
+                types[i] = "A"
+
+        # Setup the configuration.
+        config = KMCConfiguration(lattice=lattice,
+                                  types=types,
+                                  possible_types=["A","B"])
+
+        # Generate the interactions.
+
+        coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
+                       [  -1.000000e+00,   0.000000e+00,   0.000000e+00],
+                       [   1.000000e+00,   0.000000e+00,   0.000000e+00],
+                       [   0.000000e+00,  -1.000000e+00,   0.000000e+00],
+                       [   0.000000e+00,   1.000000e+00,   0.000000e+00]]
+
+        types = ['A', 'B', 'B', 'B', 'B']
+
+        conf1_28 = KMCLocalConfiguration(
+            coordinates=coordinates,
+            types=types)
+
+        types = ['B', 'A', 'B', 'B', 'B']
+
+        conf2_28 = KMCLocalConfiguration(
+            coordinates=coordinates,
+            types=types)
+
+        types = ['A', 'B', 'B', 'B', 'B']
+
+        conf1_29 = KMCLocalConfiguration(
+            coordinates=coordinates,
+            types=types)
+
+        types = ['B', 'B', 'A', 'B', 'B']
+
+        conf2_29 = KMCLocalConfiguration(
+            coordinates=coordinates,
+            types=types)
+
+        types = ['A', 'B', 'B', 'B', 'B']
+
+        conf1_30 = KMCLocalConfiguration(
+            coordinates=coordinates,
+            types=types)
+
+        types = ['B', 'B', 'B', 'A', 'B']
+
+        conf2_30 = KMCLocalConfiguration(
+            coordinates=coordinates,
+            types=types)
+
+        types = ['A', 'B', 'B', 'B', 'B']
+
+        conf1_31 = KMCLocalConfiguration(
+            coordinates=coordinates,
+            types=types)
+
+        types = ['B', 'B', 'B', 'B', 'A']
+
+        conf2_31 = KMCLocalConfiguration(
+            coordinates=coordinates,
+            types=types)
+
+        # Interactions.
+        interactions_list = [(conf1_28, conf2_28,    1.000000e+00),
+                             (conf1_29, conf2_29,    1.000000e+00),
+                             (conf1_30, conf2_30,    1.000000e+00),
+                             (conf1_31, conf2_31,    1.000000e+00)]
+
+        interactions = KMCInteractions(interactions_list=interactions_list)
+
+        # Create the model.
+        model = KMCLatticeModel(config, interactions)
+
+        # Setup the run paramters.
+        control_parameters = KMCControlParameters(number_of_steps=100,
+                                                  dump_interval=13)
+        model.run(control_parameters)
+
     def testBackend(self):
         """ Test that the backend object is correctly constructed. """
         # Setup a unitcell.
@@ -165,10 +263,6 @@ class KMCLatticeModelTest(unittest.TestCase):
 
         # Check that this backend object is stored on the class.
         self.assertTrue(model._KMCLatticeModel__backend == cpp_model)
-
-        # FIXME: The model is not valid since there is no available process.
-        # Check that we can call the singleStep function.
-        #cpp_model.singleStep()
 
     def testScript(self):
         """ Test that a script can be created. """

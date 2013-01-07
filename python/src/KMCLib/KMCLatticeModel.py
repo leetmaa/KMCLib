@@ -1,7 +1,7 @@
 """ Module for the KMCLatticeModel """
 
 
-# Copyright (c)  2012  Mikael Leetmaa
+# Copyright (c)  2012-2013  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -84,10 +84,21 @@ class KMCLatticeModel(object):
         """
         # Check the input.
         if not isinstance(control_parameters, KMCControlParameters):
-            raise Error("The 'control_parameters' input to the KMCLatticeModel run funtion\nmust be an instance of type KMCControlParameters.")
+            msg ="""
+The 'control_parameters' input to the KMCLatticeModel run funtion
+                         must be an instance of type KMCControlParameters."""
+            raise Error(msg)
 
         # Check the trajectory filename.
-        # NEEDS IMPLEMENTATION
+        if trajectory_filename is None:
+            use_trajectory = False
+            msg =""" KMCLib: WARNING: No trajectory filename given -> no trajectory will be saved."""
+            print msg
+        elif not (isinstance(trajectory_filename, str)):
+            msg = """
+The 'trajectory_filename' input to the KMCLattice model run function
+must be given as string."""
+            raise Error(msg)
 
         # Construct the C++ lattice model.
         print " KMCLib: setting up the backend C++ object."
@@ -99,7 +110,7 @@ class KMCLatticeModel(object):
 
         # Get the needed parameters.
         n_steps = control_parameters.numberOfSteps()
-
+        n_dump  = control_parameters.dumpInterval()
         print " KMCLib: Runing for %i steps, starting from time: %f\n"%(n_steps,self.__cpp_timer.simulationTime())
 
         # For profiling.
@@ -107,7 +118,7 @@ class KMCLatticeModel(object):
             # Take a step.
             cpp_model.singleStep()
 
-            if ((step+1)%10 == 0):
+            if ((step+1)%n_dump == 0):
                 print " KMCLib: %i steps executed. time: %f "%(step+1, self.__cpp_timer.simulationTime())
 
             # Perform IO using the trajectory object.

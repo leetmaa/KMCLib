@@ -1,7 +1,7 @@
 """ Module for testing the KMCControlParameters class. """
 
 
-# Copyright (c)  2012  Mikael Leetmaa
+# Copyright (c)  2012-2013  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -25,12 +25,15 @@ class KMCControlParametersTest(unittest.TestCase):
 
         # Check the default values.
         self.assertEqual(control_params.numberOfSteps(), 0)
+        self.assertEqual(control_params.dumpInterval(), 1)
 
         # Non-default construction.
-        control_params = KMCControlParameters(number_of_steps=2000000)
+        control_params = KMCControlParameters(number_of_steps=2000000,
+                                              dump_interval=1000)
 
         # Check the values.
         self.assertEqual(control_params.numberOfSteps(), 2000000)
+        self.assertEqual(control_params.dumpInterval(), 1000)
 
 
 if __name__ == '__main__':
