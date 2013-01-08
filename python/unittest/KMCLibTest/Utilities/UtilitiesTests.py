@@ -14,12 +14,15 @@ from CoordinateUtilitiesTest import CoordinateUtilitiesTest
 from ConversionUtilitiesTest import ConversionUtilitiesTest
 from SaveAndReadUtilitiesTest import SaveAndReadUtilitiesTest
 
+from Trajectory import TrajectoryTests
+
 def suite():
     suite = unittest.TestSuite(
         [unittest.TestLoader().loadTestsFromTestCase(CheckUtilitiesTest),
          unittest.TestLoader().loadTestsFromTestCase(CoordinateUtilitiesTest),
          unittest.TestLoader().loadTestsFromTestCase(ConversionUtilitiesTest),
-         unittest.TestLoader().loadTestsFromTestCase(SaveAndReadUtilitiesTest)])
+         unittest.TestLoader().loadTestsFromTestCase(SaveAndReadUtilitiesTest),
+         TrajectoryTests.suite()])
     return suite
 
 
