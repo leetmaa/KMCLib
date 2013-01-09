@@ -1,5 +1,5 @@
 /*
-  Copyright (c)  2012  Mikael Leetmaa
+  Copyright (c)  2012-2013  Mikael Leetmaa
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -71,6 +71,13 @@ void Interactions::updateProbabilityTable()
 //
 int Interactions::pickProcessIndex() const
 {
+    // PERFORMME:
+    // This implements the O(N) SSA algorithm.
+    // One could consider implementing the O(logN) SSA-GB algorithm,
+    // or the O(1) algorithm described in J.Chem.Phys. 128, 205101, (2008)
+    // but it is typically the re-matching after an event that sets the
+    // limit in terms of scaling with the number of processes.
+
     // ML:
     size_t sum = 0;
     for (size_t i = 0; i < processes_.size(); ++i)

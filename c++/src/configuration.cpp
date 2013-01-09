@@ -47,7 +47,16 @@ Configuration::Configuration(std::vector<std::vector<double> > const & coordinat
             max_type = it1->second;
         }
     }
-    type_names_ = std::vector<std::string>(max_type+1,"");
+
+    // Set the size of the type names list.
+    type_names_ = std::vector<std::string>(max_type+1);
+
+    // Fill the list.
+    it1 = possible_types.begin();
+    for ( ; it1 != possible_types.end(); ++it1 )
+    {
+        type_names_[it1->second] = it1->first;
+    }
 
     // Setup the types from the elements strings.
     for (size_t i = 0; i < elements_.size(); ++i)
@@ -55,8 +64,6 @@ Configuration::Configuration(std::vector<std::vector<double> > const & coordinat
         const std::string element = elements_[i];
         const int type = possible_types.find(element)->second;
         types_.push_back(type);
-        // Setup the reverse mapping.
-        type_names_[type] = element;
     }
 }
 

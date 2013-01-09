@@ -108,14 +108,18 @@ class Trajectory(object):
         # Write if the buffer is to large of if enough time has passed.
         if (types_size > self.__max_buffer_size) or \
                 ((time.time() - self.__time_last_dump) > self.__max_buffer_time):
-            # Wite.
-            self.__writeToFile(self.__simulation_time_buffer,
-                               self.__step_buffer,
-                               self.__types_buffer)
-            # Reset.
-            self.__simulation_time_buffer = []
-            self.__step_buffer            = []
-            self.__types_buffer           = []
+            self.flush()
+
+    def flush(self):
+        """ Write all buffers to file. """
+        # Wite.
+        self.__writeToFile(self.__simulation_time_buffer,
+                           self.__step_buffer,
+                           self.__types_buffer)
+        # Reset.
+        self.__simulation_time_buffer = []
+        self.__step_buffer            = []
+        self.__types_buffer           = []
 
     def __writeToFile(self, simulation_time_buffer, step_buffer, types_buffer):
         """

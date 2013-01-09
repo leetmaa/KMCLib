@@ -27,8 +27,8 @@ class TrajectoryTest(unittest.TestCase):
 
     def tearDown(self):
         """ The tearDown method for test fixtures. """
-#        for f in self.__files_to_remove:
-#            os.remove(f)
+        for f in self.__files_to_remove:
+            os.remove(f)
 
     def testConstruction(self):
         """ Test the Trajectory object can be constructed. """

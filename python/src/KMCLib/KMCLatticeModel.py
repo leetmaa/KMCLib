@@ -110,24 +110,35 @@ must be given as string."""
         if use_trajectory:
             trajectory = Trajectory(trajectory_filename=trajectory_filename,
                                     sites=self.__configuration.sites())
+            # Add the first step.
+            trajectory.append(simulation_time  = self.__cpp_timer.simulationTime(),
+                              step             = 0,
+                              types            = self.__configuration.types())
 
         # Get the needed parameters.
         n_steps = control_parameters.numberOfSteps()
         n_dump  = control_parameters.dumpInterval()
         print " KMCLib: Runing for %i steps, starting from time: %f\n"%(n_steps,self.__cpp_timer.simulationTime())
 
-        # For profiling.
-        for step in range(n_steps):
+        # Loop over the steps.
+        for s in range(n_steps):
+            step = s+1
             # Take a step.
             cpp_model.singleStep()
 
-            if ((step+1)%n_dump == 0):
-                print " KMCLib: %i steps executed. time: %f "%(step+1, self.__cpp_timer.simulationTime())
+            if ((step)%n_dump == 0):
+                print " KMCLib: %i steps executed. time: %f "%(step, self.__cpp_timer.simulationTime())
 
                 # Perform IO using the trajectory object.
                 if use_trajectory:
                     trajectory.append(simulation_time  = self.__cpp_timer.simulationTime(),
+                                      step             = step,
                                       types            = self.__configuration.types())
+
+        # Flush the buffers when done.
+        if use_trajectory:
+            trajectory.flush()
+
 
     def _script(self, variable_name="model"):
         """
