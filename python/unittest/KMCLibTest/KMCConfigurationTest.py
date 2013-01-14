@@ -66,7 +66,7 @@ class KMCConfigurationTest(unittest.TestCase):
         self.assertEqual(config._KMCConfiguration__n_lattice_sites, len(lattice.sites()))
 
         # Check that the lattice site can be returned from the configuration.
-        self.assertEqual( numpy.linalg.norm(numpy.array(config.sites()) - numpy.array(lattice.sites())), 10 )
+        self.assertAlmostEqual( numpy.linalg.norm(numpy.array(config.sites()) - numpy.array(lattice.sites())), 0.0, 10 )
 
         # Construct without possible types and check that the list is set correctly
         # from the given types.
