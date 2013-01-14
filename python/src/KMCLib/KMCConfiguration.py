@@ -146,7 +146,12 @@ class KMCConfiguration(object):
         # Every thing is checked - store the data on the class.
         self.__types = types_to_set
 
+        # Check that the wildcard has not made it into the possible types allready.
+        if "*" in possible_types:
+            raise Error("The wildcard caracter '*' is not a valid type.")
+
         # Setup the possible types as a dict.
+        possible_types = ["*"] + possible_types
         self.__possible_types = dict(zip(possible_types, range(len(possible_types))))
 
     def types(self):
@@ -240,7 +245,8 @@ class KMCConfiguration(object):
         possible_types_string = "possible_types = "
         indent = " "*18
         line = "["
-        possible_types = list(set(self.__possible_types.keys()))
+        possible_types = [t for t in list(set(self.__possible_types.keys())) if t != "*"]
+
         nT = len(possible_types)
         for i,t in enumerate(possible_types):
             # Add the type.

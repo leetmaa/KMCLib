@@ -60,7 +60,7 @@ class KMCConfigurationTest(unittest.TestCase):
         self.assertEqual(types, ret_types)
 
         # Check that the possible types are what we expect.
-        self.assertEqual(set(['a','c','b']), set(config._KMCConfiguration__possible_types.keys()))
+        self.assertEqual(set(['a','c','b','*']), set(config._KMCConfiguration__possible_types.keys()))
 
         # Check that the number of lattice sites corresponds to the lattice.
         self.assertEqual(config._KMCConfiguration__n_lattice_sites, len(lattice.sites()))
@@ -72,7 +72,7 @@ class KMCConfigurationTest(unittest.TestCase):
         # from the given types.
         config = KMCConfiguration(lattice=lattice,
                                   types=types)
-        self.assertEqual(set(['a','b']), set(config._KMCConfiguration__possible_types.keys()))
+        self.assertEqual(set(['a','b','*']), set(config._KMCConfiguration__possible_types.keys()))
 
     def testConstructionLongFormat(self):
         """ Test that the KMCConfiguration class can be constructed with the long types format. """
@@ -115,7 +115,7 @@ class KMCConfigurationTest(unittest.TestCase):
         self.assertEqual(ref_types, ret_types)
 
         # Check that the possible types are what we expect.
-        self.assertEqual(set(['a','g','h']), set(config._KMCConfiguration__possible_types))
+        self.assertEqual(set(['a','g','h','*']), set(config._KMCConfiguration__possible_types))
 
         # Check that the number of lattice sites corresponds
         # to the lattice.
@@ -128,7 +128,7 @@ class KMCConfigurationTest(unittest.TestCase):
                                   possible_types=['aa','a','h','g'])
 
         # Check that the possible types are what we expect.
-        self.assertEqual(set(['aa','a','g','h']), set(config._KMCConfiguration__possible_types))
+        self.assertEqual(set(['aa','a','g','h','*']), set(config._KMCConfiguration__possible_types))
 
 
     def testConstructionFailShort(self):

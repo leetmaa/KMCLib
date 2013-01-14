@@ -46,8 +46,13 @@ inline
 bool operator!=(const MinimalMatchListEntry & m1,
                 const MinimalMatchListEntry & m2)
 {
+    // Handle the wildcard case.
+    if (m1.match_type == 0)
+    {
+        return false;
+    }
     // Check the type.
-    if (m2.match_type != m1.match_type)
+    else if (m2.match_type != m1.match_type && m1.match_type)
     {
         return true;
     }

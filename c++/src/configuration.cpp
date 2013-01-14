@@ -244,7 +244,8 @@ void Configuration::performProcess(Process & process,
         // Get the index out of the configuration match list.
         const int index = (*it2).index;
 
-        if (types_[index] != update_type)
+        // NOTE: The > 0 is needed for handling the wild card match.
+        if (types_[index] != update_type && update_type > 0)
         {
             // Set the type at this index.
             types_[index]    = update_type;

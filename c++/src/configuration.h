@@ -105,6 +105,7 @@ private:
 
     /// The match lists for all indices.
     std::vector< std::vector<MinimalMatchListEntry> > match_lists_;
+
 };
 
 

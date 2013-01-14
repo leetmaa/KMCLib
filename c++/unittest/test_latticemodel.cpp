@@ -39,6 +39,7 @@ void Test_LatticeModel::testConstruction()
     elements[1] = "V";
 
     std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
     possible_types["A"] = 1;
     possible_types["V"] = 2;
 
@@ -112,9 +113,10 @@ void Test_LatticeModel::testSetupAndQuery()
 
     // Possible types.
     std::map<std::string, int> possible_types;
-    possible_types["A"] = 0;
-    possible_types["B"] = 1;
-    possible_types["V"] = 2;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["V"] = 3;
 
     // Setup the configuration.
     Configuration configuration(coordinates, elements, possible_types);
@@ -340,9 +342,10 @@ void Test_LatticeModel::testSingleStepFunction()
 
     // Possible types.
     std::map<std::string, int> possible_types;
-    possible_types["A"] = 0;
-    possible_types["B"] = 1;
-    possible_types["V"] = 2;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["V"] = 3;
 
     // Setup the configuration.
     Configuration configuration(coordinates, elements, possible_types);
@@ -457,8 +460,9 @@ void Test_LatticeModel::testTiming()
 {
     // Possible types.
     std::map<std::string, int> possible_types;
-    possible_types["A"] = 0;
-    possible_types["V"] = 1;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["V"] = 2;
 
     // Setup the interactions object.
     std::vector<Process> processes;

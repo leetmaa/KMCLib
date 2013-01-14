@@ -48,6 +48,7 @@ void Test_Configuration::testConstruction()
 
     // Setup the mapping from element to integer.
     std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
     possible_types["A"] = 1;
     possible_types["B"] = 2;
     possible_types["D"] = 3;
@@ -140,9 +141,10 @@ void Test_Configuration::testPerformProcess()
 
     // Possible types.
     std::map<std::string, int> possible_types;
-    possible_types["A"] = 0;
-    possible_types["B"] = 1;
-    possible_types["V"] = 2;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["V"] = 3;
 
     // Setup the configuration.
     Configuration configuration(coordinates, elements, possible_types);
@@ -192,23 +194,23 @@ void Test_Configuration::testPerformProcess()
     // 350 changes from 1 to 0
     // 1434 changes from 2 to 1
     // All other must remain unchanged.
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[1434], 2 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[350],  1 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[1433], 1 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[349],  1 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[351],  0 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[2517], 0 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[1434], 3 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[350],  2 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[1433], 2 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[349],  2 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[351],  1 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[2517], 1 );
 
     // Peform the process.
     configuration.performProcess(p, 1434);
 
     // Check that the types were correctly updated.
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[1434], 1 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[350],  0 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[1433], 1 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[349],  1 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[351],  0 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[2517], 0 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[1434], 2 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[350],  1 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[1433], 2 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[349],  2 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[351],  1 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[2517], 1 );
 
     // Check that the correct indices were added to the list of affected.
     const std::vector<int> affected = p.affectedIndices();
@@ -272,9 +274,10 @@ void Test_Configuration::testMatchLists()
 
     // Possible types.
     std::map<std::string, int> possible_types;
-    possible_types["A"] = 0;
-    possible_types["B"] = 1;
-    possible_types["V"] = 2;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["V"] = 3;
 
     // Setup the configuration.
     Configuration configuration(coordinates, elements, possible_types);
@@ -370,23 +373,23 @@ void Test_Configuration::testMatchLists()
     // 350 changes from 1 to 0
     // 1434 changes from 2 to 1
     // All other must remain unchanged.
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[1434], 2 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[350],  1 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[1433], 1 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[349],  1 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[351],  0 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[2517], 0 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[1434], 3 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[350],  2 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[1433], 2 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[349],  2 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[351],  1 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[2517], 1 );
 
     // Peform the process.
     configuration.performProcess(p, 1434);
 
     // Check that the types were correctly updated.
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[1434], 1 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[350],  0 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[1433], 1 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[349],  1 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[351],  0 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[2517], 0 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[1434], 2 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[350],  1 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[1433], 2 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[349],  2 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[351],  1 );
+    CPPUNIT_ASSERT_EQUAL( configuration.types()[2517], 1 );
 
     // Check that the match cached match list was correctly updated.
     const std::vector<MinimalMatchListEntry> ref2_1434 =        \

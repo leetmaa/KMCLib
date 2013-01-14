@@ -135,12 +135,13 @@ void Test_Matcher::testIsMatchIndexListMinimal()
 
     // Setup the mapping from element to integer.
     std::map<std::string, int> possible_types;
-    possible_types["A"] = 0;
-    possible_types["B"] = 1;
-    possible_types["C"] = 2;
-    possible_types["D"] = 3;
-    possible_types["E"] = 4;
-    possible_types["F"] = 5;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["C"] = 3;
+    possible_types["D"] = 4;
+    possible_types["E"] = 5;
+    possible_types["F"] = 6;
 
     // Construct the configuration.
     Configuration config(coords, elements, possible_types);
@@ -322,12 +323,13 @@ void Test_Matcher::testIsMatchIndexListMinimalPeriodic()
 
     // Setup the mapping from element to integer.
     std::map<std::string, int> possible_types;
-    possible_types["A"] = 0;
-    possible_types["B"] = 1;
-    possible_types["C"] = 2;
-    possible_types["D"] = 3;
-    possible_types["E"] = 4;
-    possible_types["F"] = 5;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["C"] = 3;
+    possible_types["D"] = 4;
+    possible_types["E"] = 5;
+    possible_types["F"] = 6;
 
     // Construct the configuration.
     Configuration config(coords, elements, possible_types);
@@ -575,12 +577,13 @@ void Test_Matcher::testIsMatchIndexListComplicatedPeriodic()
 
     // Setup the mapping from element to integer.
     std::map<std::string, int> possible_types;
-    possible_types["A"] = 0;
-    possible_types["B"] = 1;
-    possible_types["C"] = 2;
-    possible_types["D"] = 3;
-    possible_types["E"] = 4;
-    possible_types["F"] = 5;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["C"] = 3;
+    possible_types["D"] = 4;
+    possible_types["E"] = 5;
+    possible_types["F"] = 6;
 
     // Construct the configuration.
     Configuration config(coords, elements, possible_types);
@@ -830,12 +833,13 @@ void Test_Matcher::testCalculateMatchingProcess()
 
     // Setup the mapping from element to integer.
     std::map<std::string, int> possible_types;
-    possible_types["A"] = 0;
-    possible_types["B"] = 1;
-    possible_types["C"] = 2;
-    possible_types["D"] = 3;
-    possible_types["E"] = 4;
-    possible_types["F"] = 5;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["C"] = 3;
+    possible_types["D"] = 4;
+    possible_types["E"] = 5;
+    possible_types["F"] = 6;
 
     // Construct the configuration.
     Configuration config(coords, elements, possible_types);
@@ -1040,12 +1044,13 @@ void Test_Matcher::testCalculateMatchingInteractions()
 
     // Setup the mapping from element to integer.
     std::map<std::string, int> possible_types;
-    possible_types["A"] = 0;
-    possible_types["B"] = 1;
-    possible_types["C"] = 2;
-    possible_types["D"] = 3;
-    possible_types["E"] = 4;
-    possible_types["F"] = 5;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["C"] = 3;
+    possible_types["D"] = 4;
+    possible_types["E"] = 5;
+    possible_types["F"] = 6;
 
     // Construct the configuration.
     Configuration config(coords, elements, possible_types);
