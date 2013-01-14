@@ -41,9 +41,10 @@ public:
     /*! \brief Get the neighbouring indices of a given index,
      *         including all indices in nearby cells.
      * \param index : The index to query for.
+     * \param shells: The number of shells to include (in terms of primitive cells.)
      * \return: The list of indices.
      */
-    std::vector<int> neighbourIndices(const int index) const;
+    std::vector<int> neighbourIndices(const int index, const int shells=1) const;
 
     /*! \brief Get the unique neighbouring indices of a set of given
      *         indices.

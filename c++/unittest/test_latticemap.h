@@ -29,6 +29,7 @@ public:
     CPPUNIT_TEST( testNeighbourIndices );
     CPPUNIT_TEST( testNeighbourIndicesMinimal );
     CPPUNIT_TEST( testNeighbourIndicesMinimal2 );
+    CPPUNIT_TEST( testNeighbourIndicesLong );
     CPPUNIT_TEST( testWrap );
     CPPUNIT_TEST( testWrapLong );
     CPPUNIT_TEST_SUITE_END();
@@ -38,6 +39,7 @@ public:
     void testNeighbourIndices();
     void testNeighbourIndicesMinimal();
     void testNeighbourIndicesMinimal2();
+    void testNeighbourIndicesLong();
     void testWrap();
     void testWrapLong();
 

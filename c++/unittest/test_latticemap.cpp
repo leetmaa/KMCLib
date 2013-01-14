@@ -13,6 +13,7 @@
 #include "../src/latticemap.h"
 
 #include "../src/coordinate.h"
+#include "../src/configuration.h"
 
 #include <algorithm>
 
@@ -363,7 +364,7 @@ void Test_LatticeMap::testNeighbourIndicesMinimal()
 //
 void Test_LatticeMap::testNeighbourIndicesMinimal2()
 {
-    // Minimal case, base two, no periodicity. One cell repetition.
+    // Minimal case, base two, no periodicity. Two repetitions in in z.
     // This should return all indices in the cell.
 
     const int basis = 2;
@@ -390,6 +391,117 @@ void Test_LatticeMap::testNeighbourIndicesMinimal2()
     CPPUNIT_ASSERT_EQUAL(neighbours[1], 1);
     CPPUNIT_ASSERT_EQUAL(neighbours[2], 2);
     CPPUNIT_ASSERT_EQUAL(neighbours[3], 3);
+
+    // DONE.
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_LatticeMap::testNeighbourIndicesLong()
+{
+    // Realistic case, base two, periodicity in y and z. 16, 14 and 15 x, y and z repetitions.
+    const int basis = 2;
+    std::vector<int> repetitions(3);
+    repetitions[0] = 16;
+    repetitions[1] = 14;
+    repetitions[2] = 15;
+    const std::vector<bool> periodicity(3, true);
+    const LatticeMap map(basis, repetitions, periodicity);
+
+    // Setup a configuration.
+    std::vector<std::vector<double> > coordinates(repetitions[0]*repetitions[1]*repetitions[2]*basis, std::vector<double>(3,0.0));
+    std::vector<std::string> types;
+    int cnt = 0;
+    for (int i = 0; i < repetitions[0]; ++i)
+    {
+        for (int j = 0; j < repetitions[1]; ++j)
+        {
+            for (int k = 0; k < repetitions[2]; ++k)
+            {
+                coordinates[2*cnt][0] = i + 0.0;
+                coordinates[2*cnt][1] = j + 0.0;
+                coordinates[2*cnt][2] = k + 0.0;
+                coordinates[2*cnt+1][0] = i + 0.5;
+                coordinates[2*cnt+1][1] = j + 0.25;
+                coordinates[2*cnt+1][2] = k + 0.25;
+                ++cnt;
+                types.push_back("A");
+                types.push_back("B");
+            }
+        }
+    }
+    std::map<std::string,int> possible_types;
+    possible_types["A"] = 0;
+    possible_types["B"] = 1;
+    Configuration configuration(coordinates, types, possible_types);
+
+    // Get the central index.
+    const int central_index = 10;
+
+    // Get the neighbours.
+    const std::vector<int> default_neighbours     = map.neighbourIndices(central_index);
+    const std::vector<int> one_shell_neighbours   = map.neighbourIndices(central_index, 1);
+    const std::vector<int> two_shell_neighbours   = map.neighbourIndices(central_index, 2);
+    const std::vector<int> three_shell_neighbours = map.neighbourIndices(central_index, 3);
+
+    // Check the sizes of these lists.
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(default_neighbours.size()),     basis * 3 * 3 * 3 );
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(one_shell_neighbours.size()),   basis * 3 * 3 * 3 );
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(two_shell_neighbours.size()),   basis * 5 * 5 * 5 );
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(three_shell_neighbours.size()), basis * 7 * 7 * 7 );
+
+    // Calculate corresponding match lists.
+    std::vector<MinimalMatchListEntry> default_matchlist =              \
+        configuration.minimalMatchList(central_index, default_neighbours, map);
+
+    std::vector<MinimalMatchListEntry> one_shell_matchlist =            \
+        configuration.minimalMatchList(central_index, one_shell_neighbours, map);
+
+    std::vector<MinimalMatchListEntry> two_shell_matchlist =            \
+        configuration.minimalMatchList(central_index, two_shell_neighbours, map);
+
+    std::vector<MinimalMatchListEntry> three_shell_matchlist =          \
+        configuration.minimalMatchList(central_index, three_shell_neighbours, map);
+
+    // Now, compare the match lists.
+    std::vector<MinimalMatchListEntry>::const_iterator it0 = default_matchlist.begin();
+    std::vector<MinimalMatchListEntry>::const_iterator it1 = one_shell_matchlist.begin();
+
+    // These should be equal.
+    for ( ; it0 != default_matchlist.end(); ++it0, ++it1 )
+    {
+        CPPUNIT_ASSERT( !((*it0) != (*it1)) );
+    }
+
+    // Check that they are correctly sorted.
+    std::vector<MinimalMatchListEntry>::const_iterator it2 = two_shell_matchlist.begin();
+    double prev_dist = 0.0;
+    for ( ; it2 != two_shell_matchlist.end(); ++it2 )
+    {
+        CPPUNIT_ASSERT( prev_dist <= (*it2).distance );
+        prev_dist = (*it2).distance;
+    }
+
+    std::vector<MinimalMatchListEntry>::const_iterator it3 = three_shell_matchlist.begin();
+    prev_dist = 0.0;
+    for ( ; it3 != three_shell_matchlist.end(); ++it3 )
+    {
+        CPPUNIT_ASSERT( prev_dist <= (*it3).distance );
+        prev_dist = (*it3).distance;
+    }
+
+    // Check a few hardcoded values.
+    MinimalMatchListEntry m2 = two_shell_matchlist[5*4*3*2+1];
+    MinimalMatchListEntry m3 = three_shell_matchlist[7*6*5*2+5];
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( m2.coordinate.x(), -2.0000000000e+00, 1.0e-10 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( m2.coordinate.y(), -1.0000000000e+00, 1.0e-10 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( m2.coordinate.z(), -1.0000000000e+00, 1.0e-10 );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( m3.coordinate.x(), -2.0000000000e+00, 1.0e-10 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( m3.coordinate.y(), -3.0000000000e+00, 1.0e-10 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( m3.coordinate.z(), -1.0000000000e+00, 1.0e-10 );
 
     // DONE.
 }

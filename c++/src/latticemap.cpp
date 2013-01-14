@@ -51,7 +51,8 @@ LatticeMap::LatticeMap(const int n_basis,
 
 // -----------------------------------------------------------------------------
 //
-std::vector<int> LatticeMap::neighbourIndices(const int index) const
+std::vector<int> LatticeMap::neighbourIndices(const int index,
+                                              const int shells) const
 {
     // PERFORMME
 
@@ -61,7 +62,8 @@ std::vector<int> LatticeMap::neighbourIndices(const int index) const
     const CellIndex & cell = c;
 
     // Setup the return data structure.
-    std::vector<int> neighbours(n_basis_*27);
+    const int n_neighbours = std::pow((2*shells + 1), 3) * n_basis_;
+    std::vector<int> neighbours(n_neighbours);
 
     // Get a pointer to the neighbours data for direct write access.
     int* neighbours_ptr = &neighbours[0];
@@ -69,7 +71,7 @@ std::vector<int> LatticeMap::neighbourIndices(const int index) const
     // A counter to know how much we have added.
     int counter = 0;
 
-    for (int i = cell.i - 1; i <= cell.i + 1; ++i)
+    for (int i = cell.i - shells; i <= cell.i + shells; ++i)
     {
         int ii = i;
         // Handle periodicity.
@@ -87,7 +89,7 @@ std::vector<int> LatticeMap::neighbourIndices(const int index) const
         // Go on only if i is within bounds.
         if (ii >= 0 && ii < repetitions_[0])
         {
-            for (int j = cell.j - 1; j <= cell.j + 1; ++j)
+            for (int j = cell.j - shells; j <= cell.j + shells; ++j)
             {
                 int jj = j;
                 // Handle periodicity.
@@ -105,7 +107,7 @@ std::vector<int> LatticeMap::neighbourIndices(const int index) const
                 // Go on only if j is within bounds.
                 if (jj >= 0 && jj < repetitions_[1])
                 {
-                    for (int k = cell.k - 1; k <= cell.k + 1; ++k)
+                    for (int k = cell.k - shells; k <= cell.k + shells; ++k)
                     {
                         int kk = k;
                         // Check that k is within bounds.

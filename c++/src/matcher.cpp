@@ -97,6 +97,20 @@ bool Matcher::isMatch(const std::vector<MinimalMatchListEntry> & process_match_l
     std::vector<MinimalMatchListEntry>::const_iterator it1 = process_match_list.begin();
     std::vector<MinimalMatchListEntry>::const_iterator it2 = index_match_list.begin();
 
+    // FIXME: for debug and test setup - should be removed.
+    /*
+    // Loop over the process match list and compare.
+    for( ; it1 != process_match_list.end(); ++it1, ++it2)
+    {
+        printf("match_types %i %i\n", (*it1).match_type, (*it2).match_type);
+        printf("distances   %f %f\n", (*it1).distance, (*it2).distance);
+        printf("x y z  %f %f %f\n", (*it1).coordinate.x(), (*it1).coordinate.y(), (*it1).coordinate.z());
+        printf("x y z  %f %f %f\n", (*it2).coordinate.x(), (*it2).coordinate.y(), (*it2).coordinate.z());
+    }
+    it1 = process_match_list.begin();
+    it2 = index_match_list.begin();
+    */
+
     // Loop over the process match list and compare.
     for( ; it1 != process_match_list.end(); ++it1, ++it2)
     {
