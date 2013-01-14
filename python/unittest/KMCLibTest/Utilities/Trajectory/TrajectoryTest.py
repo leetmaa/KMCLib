@@ -344,6 +344,71 @@ class TrajectoryTest(unittest.TestCase):
                      ["A","A","A","A","A","B"]]
         self.assertEqual( ret_types, ref_types )
 
+    def testFlush(self):
+        """ Make sure we can flush the buffer as expected. """
+        # Get a filename.
+        name = os.path.abspath(os.path.dirname(__file__))
+        name = os.path.join(name, "..", "..")
+        name = os.path.join(name, "TestUtilities", "Scratch")
+        trajectory_filename = os.path.join(name, "tmp_trajectory_file.py")
+        self.__files_to_remove.append(trajectory_filename)
+
+        # Construct the trajecctory object.
+        sites = [[0.0,1.0,2.3],
+                 [1.0,0.0,2.3],
+                 [1.0,1.0,0.3],
+                 [1.0,1.0,2.3],
+                 [3.4,4.5,4.3],
+                 [3.4,4.3,4.3],
+                 [3.4,5.5,4.3],
+                 [3.7,7.5,6.5]]
+
+        # Construct.
+        t = Trajectory(trajectory_filename, sites)
+
+        # Check that the file is created but only with meta information.
+        global_dict = {}
+        local_dict  = {}
+        execfile(trajectory_filename, global_dict, local_dict)
+
+        empty_list = []
+
+        ret_types = local_dict['types']
+        self.assertEqual( ret_types, empty_list )
+
+        ret_times = local_dict['times']
+        self.assertEqual( ret_times, empty_list )
+
+        ret_steps = local_dict['steps']
+        self.assertEqual( ret_steps, empty_list )
+
+        # Fill the buffers.
+        t._Trajectory__types_buffer           = [["ABC", "123"],["123", "ABC"]]
+        t._Trajectory__simulation_time_buffer = [1.234, 5.678]
+        t._Trajectory__step_buffer = [1, 99]
+
+        # Flush the buffers.
+        t.flush()
+
+        # Check that the buffers are empty.
+        self.assertEqual( t._Trajectory__types_buffer, empty_list )
+        self.assertEqual( t._Trajectory__simulation_time_buffer, empty_list )
+        self.assertEqual( t._Trajectory__step_buffer, empty_list )
+
+        # Check that the file has the flushed values.
+        global_dict = {}
+        local_dict  = {}
+        execfile(trajectory_filename, global_dict, local_dict)
+
+        ret_types = local_dict['types']
+        self.assertEqual( ret_types, [["ABC", "123"],["123", "ABC"]] )
+
+        ret_times = local_dict['times']
+        self.assertAlmostEqual( ret_times, [1.234, 5.678], 10 )
+
+        ret_steps = local_dict['steps']
+        self.assertEqual( ret_steps, [1, 99] )
+
 
 if __name__ == '__main__':
     unittest.main()
