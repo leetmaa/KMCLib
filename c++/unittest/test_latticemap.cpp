@@ -56,6 +56,8 @@ void Test_LatticeMap::testConstructionAndQuery()
     CPPUNIT_ASSERT( !map4.periodicA() );
     CPPUNIT_ASSERT( !map4.periodicB() );
     CPPUNIT_ASSERT( !map4.periodicC() );
+    CPPUNIT_ASSERT_EQUAL( map4.nBasis(), 3 );
+
 
 }
 
@@ -73,6 +75,9 @@ void Test_LatticeMap::testIndicesFromCell()
         repetitions[2] = 4;
         const std::vector<bool> periodicity(3, false);
         const LatticeMap map(basis, repetitions, periodicity);
+
+        // Check the basis.
+        CPPUNIT_ASSERT_EQUAL( map.nBasis(), basis );
 
         // Here indices from cell should just be the incrementat number.
         int index = 0;
@@ -163,6 +168,9 @@ void Test_LatticeMap::testIndicesFromCell()
         repetitions[2] = 10;
         const std::vector<bool> periodicity(3, false);
         const LatticeMap map(basis, repetitions, periodicity);
+
+        // Check the basis.
+        CPPUNIT_ASSERT_EQUAL( map.nBasis(), basis );
 
         // Here indices from cell should just be the incrementat number.
         int index = 0;

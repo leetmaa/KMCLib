@@ -47,12 +47,21 @@ void Test_Process::testConstruction()
     const Configuration config2(coords, elements2, possible_types);
 
     // Construct the process.
-    const std::vector<int> basis_sites(1,0);
+    std::vector<int> basis_sites(3,0);
+    basis_sites[1] = 23;
+    basis_sites[2] = 11;
     const double barrier = 13.7;
     Process process(config1, config2, barrier, basis_sites);
 
     // Check that there are no listed indices by default.
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 0);
+
+    // Check that the basis sites can be returned correctly.
+    const std::vector<int> ret_basis_sites = process.basisSites();
+    CPPUNIT_ASSERT_EQUAL( ret_basis_sites[0], basis_sites[0] );
+    CPPUNIT_ASSERT_EQUAL( ret_basis_sites[1], basis_sites[1] );
+    CPPUNIT_ASSERT_EQUAL( ret_basis_sites[2], basis_sites[2] );
+
 }
 
 

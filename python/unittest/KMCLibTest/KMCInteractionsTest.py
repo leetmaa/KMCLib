@@ -224,7 +224,7 @@ class KMCInteractionsTest(unittest.TestCase):
         # Fails because of same types.
         self.assertRaises( Error, lambda: KMCInteractions(interactions_list=interactions_list) )
 
-    def testConstructionFailsWronWildcard(self):
+    def testConstructionFailsWrongWildcard(self):
         """ Test that we fail to construct with other than bool input for the implicit wildcard flag """
         # A first interaction.
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]

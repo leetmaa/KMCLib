@@ -98,7 +98,7 @@ public:
     /*! \brief Query for the basis sites.
      *  \return : The basis sites at which this process is applicable.
      */
-    std::vector<int> & basisSites() { return basis_sites_; }
+    const std::vector<int> & basisSites() const { return basis_sites_; }
 
     /*! \brief Pick a random available process.
      *  \return : A random available process.
