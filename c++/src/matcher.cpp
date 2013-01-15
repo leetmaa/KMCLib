@@ -11,12 +11,14 @@
  */
 
 #include <cstdio>
+#include <algorithm>
 
 #include "matcher.h"
 #include "process.h"
 #include "interactions.h"
 #include "latticemap.h"
 #include "configuration.h"
+#include "latticemap.h"
 
 // -----------------------------------------------------------------------------
 //
@@ -30,8 +32,12 @@ Matcher::Matcher()
 //
 void Matcher::calculateMatching(Interactions & interactions,
                                 Configuration & configuration,
+                                const LatticeMap & lattice_map,
                                 const std::vector<int> & indices) const
 {
+    // PERFORMME:
+    // Any changes here should be timed using realistic test systems.
+
     // Loop through all provided indices.
     for(size_t i = 0; i < indices.size(); ++i)
     {
@@ -40,15 +46,20 @@ void Matcher::calculateMatching(Interactions & interactions,
         // interactions object.
         const int index = indices[i];
 
-        // PERFORMME:
-        // Filter out indices which we know does not match any process, ever.
-        // Depending on the modeled system this should give quite a large speedup.
+        // Get the basis site.
+        const int basis_site = lattice_map.basisSiteFromIndex(index);
 
         // Match against all processes.
         for (size_t j = 0; j < interactions.processes().size(); ++j)
         {
             Process & process = interactions.processes()[j];
-            calculateMatching(process, configuration, index);
+
+            // Check if the basis site is listed.
+            const std::vector<int> & process_basis_sites = process.basisSites();
+            if ( std::find(process_basis_sites.begin(), process_basis_sites.end(), basis_site) != process_basis_sites.end() )
+            {
+                calculateMatching(process, configuration, index);
+            }
         }
     }
 }

@@ -64,6 +64,7 @@ void LatticeModel::calculateInitialMatching()
     }
     matcher_.calculateMatching(interactions_,
                                configuration_,
+                               lattice_map_,
                                indices);
 }
 
@@ -90,6 +91,7 @@ void LatticeModel::singleStep()
 
     matcher_.calculateMatching(interactions_,
                                configuration_,
+                               lattice_map_,
                                indices);
 
     // Update the interactions' probability table.

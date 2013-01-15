@@ -32,6 +32,7 @@ public:
     CPPUNIT_TEST( testNeighbourIndicesLong );
     CPPUNIT_TEST( testWrap );
     CPPUNIT_TEST( testWrapLong );
+    CPPUNIT_TEST( testBasisSiteFromIndex );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstructionAndQuery();
@@ -42,6 +43,7 @@ public:
     void testNeighbourIndicesLong();
     void testWrap();
     void testWrapLong();
+    void testBasisSiteFromIndex();
 
 };
 

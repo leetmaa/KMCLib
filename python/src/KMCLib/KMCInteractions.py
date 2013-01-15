@@ -143,11 +143,8 @@ class KMCInteractions(object):
 
                 basis_list = range(n_basis)
                 if len(interaction) == 4:
-                    basis_list = interactions[3]
+                    basis_list = interaction[3]
                 cpp_basis = Backend.StdVectorInt(basis_list)
-
-                print cpp_basis
-
 
                 # Construct and store the C++ process.
                 cpp_processes.push_back(Backend.Process(cpp_config1,

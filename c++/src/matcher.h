@@ -22,6 +22,7 @@
 class Interactions;
 class Configuration;
 class Process;
+class LatticeMap;
 
 /*! \brief Class for matching local geometries.
  */
@@ -37,11 +38,13 @@ public:
      *         all possible processes.
      *  \param interactions  : The interactions object holding info on possible processes.
      *  \param configuration : The configuration which the list of indices refers to.
+     *  \param lattice_map   : The lattice map describing the configuration.
      *  \param indices       : The configuration indices for which the neighbourhood should
      *                         be matched against all possible processes.
      */
     void calculateMatching(Interactions & interactions,
                            Configuration & configuration,
+                           const LatticeMap & lattice_map,
                            const std::vector<int> & indices) const;
 
     /*! \brief Calculate/update the matching of a provided index and process.

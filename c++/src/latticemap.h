@@ -74,6 +74,12 @@ public:
                      int & cell_j,
                      int & cell_k) const;
 
+    /*! \brief Get the basis site for a given index.
+     *  \param index: The index get the basis site for.
+     *  \return: The basis site for this index.
+     */
+    int basisSiteFromIndex(const int index) const { return index % n_basis_; }
+
     /*! \brief Query for the basis size.
      * \return: The basis size.
      */

@@ -1316,7 +1316,7 @@ void Test_Matcher::testCalculateMatchingInteractions()
 
     // Call the matching function and check that all processes have been
     // updated correctly.
-    m.calculateMatching(interactions, config, indices);
+    m.calculateMatching(interactions, config, lattice_map, indices);
 
     // The first process should match all even indices except the first.
     CPPUNIT_ASSERT( !interactions.processes()[0].isListed(0) );
@@ -1334,7 +1334,7 @@ void Test_Matcher::testCalculateMatchingInteractions()
     CPPUNIT_ASSERT( !interactions.processes()[1].isListed(5) );
 
     // Call the matching function again does not change any thing.
-    m.calculateMatching(interactions, config, indices);
+    m.calculateMatching(interactions, config, lattice_map, indices);
 
     CPPUNIT_ASSERT( !interactions.processes()[0].isListed(0) );
     CPPUNIT_ASSERT(  interactions.processes()[0].isListed(2) );
@@ -1354,7 +1354,7 @@ void Test_Matcher::testCalculateMatchingInteractions()
     elements[0] = "C";
     config = Configuration(coords, elements, possible_types);
     config.initMatchLists(lattice_map);
-    m.calculateMatching(interactions, config, indices);
+    m.calculateMatching(interactions, config, lattice_map, indices);
 
     CPPUNIT_ASSERT(  interactions.processes()[0].isListed(0) );
     CPPUNIT_ASSERT(  interactions.processes()[0].isListed(2) );

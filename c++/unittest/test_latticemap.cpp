@@ -668,3 +668,42 @@ void Test_LatticeMap::testWrapLong()
         CPPUNIT_ASSERT_DOUBLES_EQUAL(ref2.z(), c.z(), 1.0e-14);
     }
 }
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_LatticeMap::testBasisSiteFromIndex()
+{
+    // Construct a periodic map with 3 in the basis.
+    std::vector<int> repetitions(3);
+    repetitions[0] = 3;
+    repetitions[1] = 5;
+    repetitions[2] = 6;
+    const std::vector<bool> periodicity(3, true);
+    LatticeMap map(3, repetitions, periodicity);
+
+    // Get the first cell basis.
+    CPPUNIT_ASSERT_EQUAL( map.basisSiteFromIndex(0), 0 );
+    CPPUNIT_ASSERT_EQUAL( map.basisSiteFromIndex(1), 1 );
+    CPPUNIT_ASSERT_EQUAL( map.basisSiteFromIndex(2), 2 );
+
+    // The result must be invariant if we add a multiple of 3 (the basis size)
+    CPPUNIT_ASSERT_EQUAL( map.basisSiteFromIndex(18), 0 );
+    CPPUNIT_ASSERT_EQUAL( map.basisSiteFromIndex(19), 1 );
+    CPPUNIT_ASSERT_EQUAL( map.basisSiteFromIndex(20), 2 );
+    CPPUNIT_ASSERT_EQUAL( map.basisSiteFromIndex(21), 0 );
+    CPPUNIT_ASSERT_EQUAL( map.basisSiteFromIndex(22), 1 );
+    CPPUNIT_ASSERT_EQUAL( map.basisSiteFromIndex(23), 2 );
+
+    // Setup a new map with basis size 2
+    LatticeMap map2(2, repetitions, periodicity);
+
+    // Get the first cell basis.
+    CPPUNIT_ASSERT_EQUAL( map2.basisSiteFromIndex(0), 0 );
+    CPPUNIT_ASSERT_EQUAL( map2.basisSiteFromIndex(1), 1 );
+    CPPUNIT_ASSERT_EQUAL( map2.basisSiteFromIndex(2), 0 );
+    CPPUNIT_ASSERT_EQUAL( map2.basisSiteFromIndex(3), 1 );
+    CPPUNIT_ASSERT_EQUAL( map2.basisSiteFromIndex(200), 0 );
+    CPPUNIT_ASSERT_EQUAL( map2.basisSiteFromIndex(201), 1 );
+
+}
