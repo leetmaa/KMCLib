@@ -112,14 +112,18 @@ class Trajectory(object):
 
     def flush(self):
         """ Write all buffers to file. """
-        # Wite.
-        self.__writeToFile(self.__simulation_time_buffer,
-                           self.__step_buffer,
-                           self.__types_buffer)
-        # Reset.
-        self.__simulation_time_buffer = []
-        self.__step_buffer            = []
-        self.__types_buffer           = []
+        # Wite - but only if there is something to write.
+        if len(self.__simulation_time_buffer) > 0 and \
+                len(self.__step_buffer) > 0 and \
+                len(self.__types_buffer) > 0:
+
+            self.__writeToFile(self.__simulation_time_buffer,
+                               self.__step_buffer,
+                               self.__types_buffer)
+            # Reset.
+            self.__simulation_time_buffer = []
+            self.__step_buffer            = []
+            self.__types_buffer           = []
 
     def __writeToFile(self, simulation_time_buffer, step_buffer, types_buffer):
         """
