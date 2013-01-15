@@ -204,6 +204,11 @@ class KMCConfigurationTest(unittest.TestCase):
                                                            types=types,
                                                            possible_types="ABCD"))
 
+        # Use a possible types list with a wildcard.
+        self.assertRaises(Error, lambda : KMCConfiguration(lattice=lattice,
+                                                           types=types,
+                                                           possible_types=['g','a','h','*']))
+
 
     def testConstructionFailLongFormat(self):
         """ Test everything that can go wrong when constructing with the long fomat. """
@@ -255,6 +260,12 @@ class KMCConfigurationTest(unittest.TestCase):
                                                            types=types,
                                                            default_type=default_type,
                                                            possible_types=['a','h']))
+
+        # This fails because there is a wildcard character in the possible types list.
+        self.assertRaises(Error, lambda : KMCConfiguration(lattice=lattice,
+                                                           types=types,
+                                                           default_type=default_type,
+                                                           possible_types=['g','a','*','h']))
 
         types_1 = [123,345]
         # This fails because of wrong type in the types list.

@@ -1,5 +1,5 @@
 /*
-  Copyright (c)  2012  Mikael Leetmaa
+  Copyright (c)  2012-2013  Mikael Leetmaa
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -46,6 +46,24 @@ void Test_MatchListEntry::testNotEqualOperator()
         m2.coordinate = Coordinate(0.1,0.2,0.34);
 
         CPPUNIT_ASSERT( !(m1 != m2) );
+    }
+
+    // Two equal - by wildcard.
+    {
+        MinimalMatchListEntry m1;
+        m1.match_type = 0;
+        m1.update_type = 2;
+        m1.distance = 1.2;
+        m1.coordinate = Coordinate(0.1,0.2,0.34);
+
+        MinimalMatchListEntry m2;
+        m2.match_type = 1324;
+        m2.update_type = 2;
+        m2.distance = 1.2;
+        m2.coordinate = Coordinate(0.1,0.2,0.34);
+
+        CPPUNIT_ASSERT( !(m1 != m2) );
+        CPPUNIT_ASSERT(  (m2 != m1) );
     }
 
     // Two not equal in index, should equate to equal.

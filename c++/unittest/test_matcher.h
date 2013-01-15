@@ -1,5 +1,5 @@
 /*
-  Copyright (c)  2012  Mikael Leetmaa
+  Copyright (c)  2012-2013  Mikael Leetmaa
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -26,6 +26,7 @@ public:
     CPPUNIT_TEST_SUITE( Test_Matcher );
     CPPUNIT_TEST( testConstruction );
     CPPUNIT_TEST( testIsMatchMatchList );
+    CPPUNIT_TEST( testIsMatchWildcard );
     CPPUNIT_TEST( testIsMatchIndexListMinimal );
     CPPUNIT_TEST( testIsMatchIndexListMinimalPeriodic );
     CPPUNIT_TEST( testIsMatchIndexListComplicatedPeriodic );
@@ -35,6 +36,7 @@ public:
 
     void testConstruction();
     void testIsMatchMatchList();
+    void testIsMatchWildcard();
     void testIsMatchIndexListMinimal();
     void testIsMatchIndexListMinimalPeriodic();
     void testIsMatchIndexListComplicatedPeriodic();

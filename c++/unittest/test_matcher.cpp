@@ -1,5 +1,5 @@
 /*
-  Copyright (c)  2012  Mikael Leetmaa
+  Copyright (c)  2012-2013  Mikael Leetmaa
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -106,6 +106,65 @@ void Test_Matcher::testIsMatchMatchList()
 
     // These two are again equal.
     CPPUNIT_ASSERT( matcher.isMatch(process_match_list, index_match_list) );
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Matcher::testIsMatchWildcard()
+{
+    // Construct.
+    Matcher matcher;
+
+    // Setup two match lists to check.
+    std::vector<MinimalMatchListEntry> process_match_list;
+    MinimalMatchListEntry m;
+    m.match_type  = 3;
+    m.update_type = 2;
+    m.distance     = 1.2;
+    m.coordinate   = Coordinate(0.1,2.0,0.34);
+    process_match_list.push_back(m);
+
+    // Add a wildcard, 0.
+    m.match_type  = 0;
+    m.update_type = 4;
+    m.distance     = 1.6;
+    m.coordinate   = Coordinate(1.1,2.0,0.34);
+    process_match_list.push_back(m);
+
+    m.match_type  = 8;
+    m.update_type = 2;
+    m.distance     = 1.9;
+    m.coordinate   = Coordinate(0.1,5.2,0.34);
+    process_match_list.push_back(m);
+
+    std::vector<MinimalMatchListEntry> index_match_list;
+    m.match_type  = 3;
+    m.update_type = 2;
+    m.distance     = 1.2;
+    m.coordinate   = Coordinate(0.1,2.0,0.34);
+    index_match_list.push_back(m);
+
+    // Note that no wildcard here.
+    m.match_type  = 1;
+    m.update_type = 4;
+    m.distance     = 1.6;
+    m.coordinate   = Coordinate(1.1,2.0,0.34);
+    index_match_list.push_back(m);
+
+    m.match_type  = 8;
+    m.update_type = 2;
+    m.distance     = 1.9;
+    m.coordinate   = Coordinate(0.1,5.2,0.34);
+    index_match_list.push_back(m);
+
+    // These two are equal.
+    CPPUNIT_ASSERT( matcher.isMatch(process_match_list, index_match_list) );
+
+    // But the wildcard is only skipped in the process match list, so swapping
+    // place creates a mismatch.
+    CPPUNIT_ASSERT( !matcher.isMatch(index_match_list, process_match_list) );
+
 }
 
 
