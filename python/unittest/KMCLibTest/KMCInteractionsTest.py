@@ -1,7 +1,7 @@
 """" Module for testing KMCInteractions """
 
 
-# Copyright (c)  2012  Mikael Leetmaa
+# Copyright (c)  2012-2013  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -54,6 +54,16 @@ class KMCInteractionsTest(unittest.TestCase):
 
         # Construct the interactions object.
         kmc_interactions = KMCInteractions(interactions_list=interactions_list)
+
+        # Check the default implicit wildcard.
+        self.assertTrue( kmc_interactions.implicitWildcards() )
+
+        # Construct again with non default value.
+        kmc_interactions = KMCInteractions(interactions_list=interactions_list,
+                                           implicit_wildcards=False)
+
+        # Check the wildcard again.
+        self.assertFalse( kmc_interactions.implicitWildcards() )
 
         # Check the raw interactions stored on the object.
         stored_interactions = kmc_interactions._KMCInteractions__raw_interactions
@@ -214,6 +224,46 @@ class KMCInteractionsTest(unittest.TestCase):
         # Fails because of same types.
         self.assertRaises( Error, lambda: KMCInteractions(interactions_list=interactions_list) )
 
+    def testConstructionFailsWronWildcard(self):
+        """ Test that we fail to construct with other than bool input for the implicit wildcard flag """
+        # A first interaction.
+        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
+        types = ["A","B"]
+        local_config_0 = KMCLocalConfiguration(coordinates=coords,
+                                               types=types,
+                                               center=0)
+        types = ["B","A"]
+        local_config_1 = KMCLocalConfiguration(coordinates=coords,
+                                               types=types,
+                                               center=0)
+        rate_0_1 = 3.5
+        interaction_0 = (local_config_0, local_config_1, rate_0_1)
+
+        # A second interaction.
+        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
+        types = ["A","C"]
+        local_config_0 = KMCLocalConfiguration(coordinates=coords,
+                                               types=types,
+                                               center=0)
+        types = ["C","A"]
+        local_config_1 = KMCLocalConfiguration(coordinates=coords,
+                                               types=types,
+                                               center=0)
+        rate_0_1 = 1.5
+        interaction_1 = (local_config_0, local_config_1, rate_0_1)
+
+        interactions_list = [interaction_0, interaction_1]
+
+        # Construct and fail.
+        self.assertRaises(Error, lambda: KMCInteractions(interactions_list=interactions_list,
+                                                         implicit_wildcards=0) )
+
+        self.assertRaises(Error, lambda: KMCInteractions(interactions_list=interactions_list,
+                                                         implicit_wildcards="True") )
+
+        self.assertRaises(Error, lambda: KMCInteractions(interactions_list=interactions_list,
+                                                         implicit_wildcards=[False]) )
+
     def testBackend(self):
         """
         Test that the generated backend object is what we expect.
@@ -259,7 +309,7 @@ class KMCInteractionsTest(unittest.TestCase):
             }
 
         # Get the backend.
-        cpp_interactions = kmc_interactions._backend(possible_types)
+        cpp_interactions = kmc_interactions._backend(possible_types, 2)
 
         # Check the type.
         self.assertTrue( isinstance(cpp_interactions, Backend.Interactions) )
@@ -376,14 +426,17 @@ conf2_1 = KMCLocalConfiguration(
 interactions_list = [(conf1_0, conf2_0,    3.500000e+00),
                      (conf1_1, conf2_1,    1.500000e+00)]
 
-interactions = KMCInteractions(interactions_list=interactions_list)
+interactions = KMCInteractions(
+    interactions_list=interactions_list,
+    implicit_wildcards=True)
 """
         self.assertEqual(script, ref_script)
 
         # Get a script with another name and another number of interactions.
 
         interactions_list = [interaction_0]
-        kmc_interactions = KMCInteractions(interactions_list=interactions_list)
+        kmc_interactions = KMCInteractions(interactions_list=interactions_list,
+                                           implicit_wildcards=False)
 
         script = kmc_interactions._script(variable_name="my_kmc_interactions")
 
@@ -417,7 +470,9 @@ conf2_0 = KMCLocalConfiguration(
 
 interactions_list = [(conf1_0, conf2_0,    3.500000e+00)]
 
-my_kmc_interactions = KMCInteractions(interactions_list=interactions_list)
+my_kmc_interactions = KMCInteractions(
+    interactions_list=interactions_list,
+    implicit_wildcards=False)
 """
         self.assertEqual(script, ref_script)
 

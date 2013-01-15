@@ -211,6 +211,10 @@ void Test_Matcher::testIsMatchIndexListMinimal()
     const std::vector<int> repetitions(3, 1);
     const std::vector<bool> periodicity(3, false);
     const int basis = 2;
+    std::vector<int> basis_sites;
+    basis_sites.push_back(1);
+    basis_sites.push_back(0);
+
     LatticeMap lattice_map(basis, repetitions, periodicity);
     config.initMatchLists(lattice_map);
 
@@ -235,7 +239,7 @@ void Test_Matcher::testIsMatchIndexListMinimal()
 
         // Construct the process.
         const double barrier = 13.7;
-        Process process(config1, config2, barrier);
+        Process process(config1, config2, barrier, basis_sites);
 
         // This is a match.
         CPPUNIT_ASSERT( m.isMatch(process.minimalMatchList(), config.minimalMatchList(0)) );
@@ -264,7 +268,7 @@ void Test_Matcher::testIsMatchIndexListMinimal()
 
         // Construct the process.
         const double barrier = 13.7;
-        Process process(config1, config2, barrier);
+        Process process(config1, config2, barrier, basis_sites);
 
         // This is a match.
         CPPUNIT_ASSERT( m.isMatch(process.minimalMatchList(), config.minimalMatchList(1)) );
@@ -293,7 +297,7 @@ void Test_Matcher::testIsMatchIndexListMinimal()
 
         // Construct the process.
         const double barrier = 13.7;
-        Process process(config1, config2, barrier);
+        Process process(config1, config2, barrier, basis_sites);
 
         // Not a match.
         CPPUNIT_ASSERT( !m.isMatch(process.minimalMatchList(), config.minimalMatchList(1)) );
@@ -325,7 +329,7 @@ void Test_Matcher::testIsMatchIndexListMinimal()
 
         // Construct the process.
         const double barrier = 13.7;
-        Process process(config1, config2, barrier);
+        Process process(config1, config2, barrier, basis_sites);
 
         // Not a match.
         CPPUNIT_ASSERT( !m.isMatch(process.minimalMatchList(), config.minimalMatchList(1)) );
@@ -354,6 +358,10 @@ void Test_Matcher::testIsMatchIndexListMinimalPeriodic()
     basis[1][0] = 0.5;
     basis[1][1] = 0.5;
     basis[1][2] = 0.5;
+
+    std::vector<int> basis_sites;
+    basis_sites.push_back(1);
+    basis_sites.push_back(0);
 
     std::vector<std::string> elements;
     std::vector<std::vector<double> > coords;
@@ -398,6 +406,7 @@ void Test_Matcher::testIsMatchIndexListMinimalPeriodic()
     const std::vector<int> repetitions(3, 3);
     const std::vector<bool> periodicity(3, true);
     const int basis_size = 2;
+
     LatticeMap lattice_map(basis_size, repetitions, periodicity);
     config.initMatchLists(lattice_map);
 
@@ -465,7 +474,7 @@ void Test_Matcher::testIsMatchIndexListMinimalPeriodic()
 
         // Construct the process.
         const double barrier = 13.7;
-        Process process(config1, config2, barrier);
+        Process process(config1, config2, barrier, basis_sites);
 
         // This process should match all even numbered indices.
         for (int i = 0; i < 26; i += 2)
@@ -578,7 +587,7 @@ void Test_Matcher::testIsMatchIndexListMinimalPeriodic()
 
         // Construct the process.
         const double barrier = 13.7;
-        Process process(config1, config2, barrier);
+        Process process(config1, config2, barrier, basis_sites);
 
         // This process should match all even numbered indices.
         for (int i = 0; i < 26; i += 2)
@@ -605,6 +614,9 @@ void Test_Matcher::testIsMatchIndexListComplicatedPeriodic()
     basis[1][0] = 0.5;
     basis[1][1] = 0.5;
     basis[1][2] = 0.5;
+    std::vector<int> basis_sites;
+    basis_sites.push_back(1);
+    basis_sites.push_back(0);
 
     std::vector<std::string> elements;
     std::vector<std::vector<double> > coords;
@@ -652,6 +664,7 @@ void Test_Matcher::testIsMatchIndexListComplicatedPeriodic()
     const std::vector<int> repetitions(3, 3);
     const std::vector<bool> periodicity(3, true);
     const int basis_size = 2;
+
     LatticeMap lattice_map(basis_size, repetitions, periodicity);
     config.initMatchLists(lattice_map);
 
@@ -719,7 +732,7 @@ void Test_Matcher::testIsMatchIndexListComplicatedPeriodic()
 
         // Construct the process.
         const double barrier = 13.7;
-        Process process(config1, config2, barrier);
+        Process process(config1, config2, barrier, basis_sites);
 
         // This process should match all except the first the even numbered indices.
         CPPUNIT_ASSERT( !m.isMatch(process.minimalMatchList(), config.minimalMatchList(0)) );
@@ -835,7 +848,7 @@ void Test_Matcher::testIsMatchIndexListComplicatedPeriodic()
 
         // Construct the process.
         const double barrier = 13.7;
-        Process process(config1, config2, barrier);
+        Process process(config1, config2, barrier, basis_sites);
 
         // This process should only match the first index.
         CPPUNIT_ASSERT(  m.isMatch(process.minimalMatchList(), config.minimalMatchList(0)) );
@@ -861,6 +874,9 @@ void Test_Matcher::testCalculateMatchingProcess()
     basis[1][0] = 0.5;
     basis[1][1] = 0.5;
     basis[1][2] = 0.5;
+    std::vector<int> basis_sites;
+    basis_sites.push_back(1);
+    basis_sites.push_back(0);
 
     std::vector<std::string> elements;
     std::vector<std::vector<double> > coords;
@@ -908,6 +924,7 @@ void Test_Matcher::testCalculateMatchingProcess()
     const std::vector<int> repetitions(3, 3);
     const std::vector<bool> periodicity(3, true);
     const int basis_size = 2;
+
     LatticeMap lattice_map(basis_size, repetitions, periodicity);
 
     // Calculate the match lists.
@@ -975,7 +992,7 @@ void Test_Matcher::testCalculateMatchingProcess()
 
     // Construct the process.
     const double barrier = 13.7;
-    Process process(config1, config2, barrier);
+    Process process(config1, config2, barrier, basis_sites);
 
     // Make sure the process' available sites is empty.
     CPPUNIT_ASSERT( process.sites().empty());
@@ -1072,6 +1089,9 @@ void Test_Matcher::testCalculateMatchingInteractions()
     basis[1][0] = 0.5;
     basis[1][1] = 0.5;
     basis[1][2] = 0.5;
+    std::vector<int> basis_sites;
+    basis_sites.push_back(1);
+    basis_sites.push_back(0);
 
     std::vector<std::string> elements;
     std::vector<std::vector<double> > coords;
@@ -1120,6 +1140,7 @@ void Test_Matcher::testCalculateMatchingInteractions()
     const std::vector<int> repetitions(3, 3);
     const std::vector<bool> periodicity(3, true);
     const int basis_size = 2;
+
     LatticeMap lattice_map(basis_size, repetitions, periodicity);
 
     // Calculate the match lists.
@@ -1183,7 +1204,7 @@ void Test_Matcher::testCalculateMatchingInteractions()
 
         // Construct the process.
         const double barrier = 13.7;
-        const Process process(config1, config2, barrier);
+        const Process process(config1, config2, barrier, basis_sites);
         processes.push_back(process);
 
     }
@@ -1275,14 +1296,14 @@ void Test_Matcher::testCalculateMatchingInteractions()
 
         // Construct the process.
         const double barrier = 13.7;
-        const Process process(config1, config2, barrier);
+        const Process process(config1, config2, barrier, basis_sites);
         processes.push_back(process);
     }
 
     // ---------------------------------------------------------------------
 
     // Setup the interactions object.
-    Interactions interactions(processes);
+    Interactions interactions(processes, true);
 
     // Setup a list of indices to test. Their order should not matter.
     std::vector<int> indices;

@@ -1,7 +1,7 @@
 """ Module for the KMCInteractions """
 
 
-# Copyright (c)  2012  Mikael Leetmaa
+# Copyright (c)  2012-2013  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -12,6 +12,7 @@ import numpy
 
 from KMCLib.KMCLocalConfiguration import KMCLocalConfiguration
 from KMCLib.Utilities.CheckUtilities import checkSequence
+from KMCLib.Utilities.CheckUtilities import checkPositiveInteger
 from KMCLib.Exceptions.Error import Error
 from KMCLib.Backend import Backend
 
@@ -23,16 +24,34 @@ class KMCInteractions(object):
     """
 
     def __init__(self,
-                 interactions_list=None):
+                 interactions_list=None,
+                 implicit_wildcards=None):
         """
         Constructor for the KMCInteractions.
 
         :param interactions_list: The interactions, given as a list of lists or tuples with
-                                  two local configurations and a rate constant.
-        :type interactions_list: [(KMCLocalConfiguration, KMCLocalConfiguration, float), ...]
+                                  two local configurations, a rate constant and a list of integers
+                                  refering to the basis sites the interaction should be applicable to.
+                                  The list of basis sites is optional. If not given it will be treated
+                                  as applicable to all basis sites. To use implicit wildcards for an
+                                  interaction the list of basis sites must be of length one for that
+                                  interaction.
+        :type interactions_list: [(KMCLocalConfiguration, KMCLocalConfiguration, float, [int, ...]), ...]
+
+        :param implicit_wildcards: A flag indicating if implicit wildcards should be used in
+                                   the matching of processes with the configuration. The default
+                                   is True, i.e. to use implicit wildcards.
+        :type implicit_wildcards: bool
         """
-        # Check the interactions inpuy.
+        # Check the interactions input.
         self.__raw_interactions = self.__checkInteractionsInput(interactions_list)
+
+        # Check the implicit wildcard flag.
+        if implicit_wildcards is None:
+            implicit_wildcards = True
+        if not isinstance(implicit_wildcards, bool):
+            raise Error("The 'implicit_wildcard' flag to the KMCInteractions constructor must be given as either True or False")
+        self.__implicit_wildcards = implicit_wildcards
 
         # Set the backend to be generated at first query.
         self.__backend = None
@@ -52,9 +71,9 @@ class KMCInteractions(object):
             interaction = checkSequence(interaction)
 
             # Of correct length.
-            if len(interaction) != 3:
-                msg = "Each interaction in the list of interactions must be given as list or tuple of length == 3.\nThe failing interaction is number %i."%(i)
-                raise Error()
+            if len(interaction) != 3 and len(interaction) != 4:
+                msg = "Each interaction in the list of interactions must be given as list or tuple of length == 3 or 4.\nThe failing interaction is number %i."%(i)
+                raise Error(msg)
 
             # Check the types of the first two elements.
             c0 = interaction[0]
@@ -63,11 +82,20 @@ class KMCInteractions(object):
                 msg = "The first two elements in each interaction list or tuple must be instances of KMCLocalConfiguration.\nThe failing interaction is number %i."%(i)
                 raise Error(msg)
 
-            # Check the type of the last element.
+            # Check the type of the third element.
             rate = interaction[2]
             if not isinstance(rate, float):
                 msg = "All rate constants must be given as floating point numbers.\nThe failing interaction is number %i."%(i)
                 raise Error(msg)
+
+            # Check the fourth element if given.
+            if len(interaction) == 4:
+                sites = interaction[3]
+                sites = checkSequence(sites, msg="The fourth element in the interaction list must be a list of integers.")
+                for s in sites:
+                    checkPositiveInteger(s,
+                                         default_parameter=None,
+                                         parameter_name="entry in the interaction basis list")
 
             # Now, check that the coordinates are the same.
             if numpy.linalg.norm(c0.coordinates()-c1.coordinates()) > 1.0e-8:
@@ -82,12 +110,23 @@ class KMCInteractions(object):
         # Done with initial checking of input.
         return interactions
 
-    def _backend(self, possible_types):
+    def implicitWildcards(self):
+        """
+        Query for the implicit wildcard flag.
+
+        :returns: The implicit wildcard flag stored.
+        """
+        return self.__implicit_wildcards
+
+    def _backend(self, possible_types, n_basis):
         """
         Query for the interactions backend object.
 
         :param possible_types: A dict with the global mapping of type strings
                                to integers.
+
+        :param n_basis: The size of the configuration basis is.
+        :type n_basis: int
 
         :returns: The interactions object in C++
         """
@@ -102,13 +141,23 @@ class KMCInteractions(object):
                 cpp_config2   = interaction[1]._backend(possible_types)
                 barrier       = interaction[2]
 
+                basis_list = range(n_basis)
+                if len(interaction) == 4:
+                    basis_list = interactions[3]
+                cpp_basis = Backend.StdVectorInt(basis_list)
+
+                print cpp_basis
+
+
                 # Construct and store the C++ process.
                 cpp_processes.push_back(Backend.Process(cpp_config1,
                                                         cpp_config2,
-                                                        barrier))
+                                                        barrier,
+                                                        cpp_basis))
 
             # Construct the C++ interactions object.
-            self.__backend = Backend.Interactions(cpp_processes)
+            self.__backend = Backend.Interactions(cpp_processes,
+                                                  self.__implicit_wildcards)
 
         # Return the stored backend.
         return self.__backend
@@ -159,7 +208,14 @@ class KMCInteractions(object):
 # Interactions
 
 """
-        kmc_interactions_string = variable_name + " = KMCInteractions(interactions_list=interactions_list)\n"
+        if self.__implicit_wildcards:
+            implicit = "True"
+        else:
+            implicit = "False"
+
+        kmc_interactions_string = variable_name + " = KMCInteractions(\n" + \
+            "    interactions_list=interactions_list,\n" + \
+            "    implicit_wildcards=%s)\n"%(implicit)
 
         # Return the script.
         return configuration_script + comment_string + interactions_string + "\n" + \

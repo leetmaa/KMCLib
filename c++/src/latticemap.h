@@ -74,6 +74,11 @@ public:
                      int & cell_j,
                      int & cell_k) const;
 
+    /*! \brief Query for the basis size.
+     * \return: The basis size.
+     */
+    int nBasis() const { return n_basis_; }
+
     /*! \brief Query for the periodicity.
      * \return: The periodicity in the direction.
      */

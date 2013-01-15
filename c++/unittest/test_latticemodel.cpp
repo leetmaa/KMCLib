@@ -1,5 +1,5 @@
 /*
-  Copyright (c)  2012  Mikael Leetmaa
+  Copyright (c)  2012-2013  Mikael Leetmaa
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -53,7 +53,7 @@ void Test_LatticeModel::testConstruction()
 
     // We also need the interactions.
     const std::vector<Process> processes;
-    Interactions interactions(processes);
+    Interactions interactions(processes, true);
 
     // And a timer.
     SimulationTimer timer;
@@ -76,6 +76,11 @@ void Test_LatticeModel::testSetupAndQuery()
     basis[2][0] = 0.75;
     basis[2][1] = 0.75;
     basis[2][2] = 0.75;
+
+    std::vector<int> basis_sites;
+    basis_sites.push_back(0);
+    basis_sites.push_back(1);
+    basis_sites.push_back(2);
 
     std::vector<std::string> basis_elements(3);
     basis_elements[0] = "A";
@@ -140,7 +145,7 @@ void Test_LatticeModel::testSetupAndQuery()
         const double barrier = 1.234;
         Configuration c1(process_coordinates, process_elements1, possible_types);
         Configuration c2(process_coordinates, process_elements2, possible_types);
-        Process p(c1, c2, barrier);
+        Process p(c1, c2, barrier, basis_sites);
         // Store twize.
         processes.push_back(p);
         processes.push_back(p);
@@ -171,7 +176,7 @@ void Test_LatticeModel::testSetupAndQuery()
         const double barrier = 13.7;
         Configuration c1(process_coordinates, process_elements1, possible_types);
         Configuration c2(process_coordinates, process_elements2, possible_types);
-        Process p(c1, c2, barrier);
+        Process p(c1, c2, barrier, basis_sites);
         processes.push_back(p);
     }
 
@@ -200,11 +205,11 @@ void Test_LatticeModel::testSetupAndQuery()
         const double barrier = 13.7;
         Configuration c1(process_coordinates, process_elements1, possible_types);
         Configuration c2(process_coordinates, process_elements2, possible_types);
-        Process p(c1, c2, barrier);
+        Process p(c1, c2, barrier, basis_sites);
         processes.push_back(p);
     }
 
-    Interactions interactions(processes);
+    Interactions interactions(processes, false);
 
     // We need a timer.
     SimulationTimer timer;
@@ -300,6 +305,11 @@ void Test_LatticeModel::testSingleStepFunction()
     basis[2][1] = 0.75;
     basis[2][2] = 0.75;
 
+    std::vector<int> basis_sites;
+    basis_sites.push_back(0);
+    basis_sites.push_back(1);
+    basis_sites.push_back(2);
+
     std::vector<std::string> basis_elements(3);
     basis_elements[0] = "A";
     basis_elements[1] = "B";
@@ -372,7 +382,7 @@ void Test_LatticeModel::testSingleStepFunction()
         const double barrier = 1.234;
         Configuration c1(process_coordinates, process_elements1, possible_types);
         Configuration c2(process_coordinates, process_elements2, possible_types);
-        Process p(c1, c2, barrier);
+        Process p(c1, c2, barrier, basis_sites);
         // Store twize.
         processes.push_back(p);
         processes.push_back(p);
@@ -403,7 +413,7 @@ void Test_LatticeModel::testSingleStepFunction()
         const double barrier = 13.7;
         Configuration c1(process_coordinates, process_elements1, possible_types);
         Configuration c2(process_coordinates, process_elements2, possible_types);
-        Process p(c1, c2, barrier);
+        Process p(c1, c2, barrier, basis_sites);
         processes.push_back(p);
     }
 
@@ -432,11 +442,11 @@ void Test_LatticeModel::testSingleStepFunction()
         const double barrier = 13.7;
         Configuration c1(process_coordinates, process_elements1, possible_types);
         Configuration c2(process_coordinates, process_elements2, possible_types);
-        Process p(c1, c2, barrier);
+        Process p(c1, c2, barrier, basis_sites);
         processes.push_back(p);
     }
 
-    Interactions interactions(processes);
+    Interactions interactions(processes, true);
 
     // Get a timer.
     SimulationTimer timer;
@@ -466,6 +476,12 @@ void Test_LatticeModel::testTiming()
 
     // Setup the interactions object.
     std::vector<Process> processes;
+
+    // Get a basis sites list.
+    std::vector<int> basis_sites;
+    basis_sites.push_back(0);
+    basis_sites.push_back(1);
+    basis_sites.push_back(2);
 
     // This defines the moving directions.
     std::vector<std::vector<double> > process_coordinates(7, std::vector<double>(3, 0.0));
@@ -499,7 +515,7 @@ void Test_LatticeModel::testTiming()
         const double barrier = 10.0;
         Configuration c1(process_coordinates, process_elements1, possible_types);
         Configuration c2(process_coordinates, process_elements2, possible_types);
-        Process p(c1, c2, barrier);
+        Process p(c1, c2, barrier, basis_sites);
         // Store.
         processes.push_back(p);
     }
@@ -528,7 +544,7 @@ void Test_LatticeModel::testTiming()
         const double barrier = 10.0;
         Configuration c1(process_coordinates, process_elements1, possible_types);
         Configuration c2(process_coordinates, process_elements2, possible_types);
-        Process p(c1, c2, barrier);
+        Process p(c1, c2, barrier, basis_sites);
         // Store.
         processes.push_back(p);
     }
@@ -556,7 +572,7 @@ void Test_LatticeModel::testTiming()
         const double barrier = 10.0;
         Configuration c1(process_coordinates, process_elements1, possible_types);
         Configuration c2(process_coordinates, process_elements2, possible_types);
-        Process p(c1, c2, barrier);
+        Process p(c1, c2, barrier, basis_sites);
         // Store.
         processes.push_back(p);
     }
@@ -584,7 +600,7 @@ void Test_LatticeModel::testTiming()
         const double barrier = 10.0;
         Configuration c1(process_coordinates, process_elements1, possible_types);
         Configuration c2(process_coordinates, process_elements2, possible_types);
-        Process p(c1, c2, barrier);
+        Process p(c1, c2, barrier, basis_sites);
         // Store.
         processes.push_back(p);
     }
@@ -612,7 +628,7 @@ void Test_LatticeModel::testTiming()
         const double barrier = 10.0;
         Configuration c1(process_coordinates, process_elements1, possible_types);
         Configuration c2(process_coordinates, process_elements2, possible_types);
-        Process p(c1, c2, barrier);
+        Process p(c1, c2, barrier, basis_sites);
         // Store.
         processes.push_back(p);
     }
@@ -640,7 +656,7 @@ void Test_LatticeModel::testTiming()
         const double barrier = 10.0;
         Configuration c1(process_coordinates, process_elements1, possible_types);
         Configuration c2(process_coordinates, process_elements2, possible_types);
-        Process p(c1, c2, barrier);
+        Process p(c1, c2, barrier, basis_sites);
         // Store.
         processes.push_back(p);
     }
@@ -670,7 +686,7 @@ void Test_LatticeModel::testTiming()
         const double barrier = 15.0;
         Configuration c1(process_coordinates, process_elements1, possible_types);
         Configuration c2(process_coordinates, process_elements2, possible_types);
-        Process p(c1, c2, barrier);
+        Process p(c1, c2, barrier, basis_sites);
         // Store.
         processes.push_back(p);
     }
@@ -698,7 +714,7 @@ void Test_LatticeModel::testTiming()
         const double barrier = 15.0;
         Configuration c1(process_coordinates, process_elements1, possible_types);
         Configuration c2(process_coordinates, process_elements2, possible_types);
-        Process p(c1, c2, barrier);
+        Process p(c1, c2, barrier, basis_sites);
         // Store.
         processes.push_back(p);
     }
@@ -726,7 +742,7 @@ void Test_LatticeModel::testTiming()
         const double barrier = 15.0;
         Configuration c1(process_coordinates, process_elements1, possible_types);
         Configuration c2(process_coordinates, process_elements2, possible_types);
-        Process p(c1, c2, barrier);
+        Process p(c1, c2, barrier, basis_sites);
         // Store.
         processes.push_back(p);
     }
@@ -754,7 +770,7 @@ void Test_LatticeModel::testTiming()
         const double barrier = 15.0;
         Configuration c1(process_coordinates, process_elements1, possible_types);
         Configuration c2(process_coordinates, process_elements2, possible_types);
-        Process p(c1, c2, barrier);
+        Process p(c1, c2, barrier, basis_sites);
         // Store.
         processes.push_back(p);
     }
@@ -782,7 +798,7 @@ void Test_LatticeModel::testTiming()
         const double barrier = 15.0;
         Configuration c1(process_coordinates, process_elements1, possible_types);
         Configuration c2(process_coordinates, process_elements2, possible_types);
-        Process p(c1, c2, barrier);
+        Process p(c1, c2, barrier, basis_sites);
         // Store.
         processes.push_back(p);
     }
@@ -810,7 +826,7 @@ void Test_LatticeModel::testTiming()
         const double barrier = 15.0;
         Configuration c1(process_coordinates, process_elements1, possible_types);
         Configuration c2(process_coordinates, process_elements2, possible_types);
-        Process p(c1, c2, barrier);
+        Process p(c1, c2, barrier, basis_sites);
         // Store.
         processes.push_back(p);
     }
@@ -864,7 +880,7 @@ void Test_LatticeModel::testTiming()
     repetitions[2] = nK;
     std::vector<bool> periodicity(3, true);
     LatticeMap lattice_map(nB, repetitions, periodicity);
-    Interactions interactions(processes);
+    Interactions interactions(processes, false);
     SimulationTimer timer;
 
     // Construct the lattice model to test.

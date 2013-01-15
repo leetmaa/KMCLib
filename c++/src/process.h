@@ -39,10 +39,12 @@ public:
      *  \param second        : The second configuration, to update the local
                                configuration with if the process is selected.
      *  \param barrier       : The energy barrier in eV for performing the process.
+     *  \param basis_sites   : The basis sites where this process is applicable.
      */
     Process(const Configuration & first,
             const Configuration & second,
-            const double barrier);
+            const double barrier,
+            const std::vector<int> & basis_sites);
 
     /*! \brief Query for the rate constant.
      *         NOTE: THIS IS A DUMMY IMPLEMENTATION
@@ -93,6 +95,11 @@ public:
      */
     std::vector<int> & affectedIndices() { return affected_indices_; }
 
+    /*! \brief Query for the basis sites.
+     *  \return : The basis sites at which this process is applicable.
+     */
+    std::vector<int> & basisSites() { return basis_sites_; }
+
     /*! \brief Pick a random available process.
      *  \return : A random available process.
      */
@@ -115,6 +122,9 @@ private:
      *          the process was used to update a configuration.
      */
     std::vector<int> affected_indices_;
+
+    /// The basis sites to which this process can be applied.
+    std::vector<int> basis_sites_;
 
 };
 

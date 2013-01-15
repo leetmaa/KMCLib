@@ -525,7 +525,9 @@ conf2_1 = KMCLocalConfiguration(
 interactions_list = [(conf1_0, conf2_0,    3.500000e+00),
                      (conf1_1, conf2_1,    1.500000e+00)]
 
-interactions = KMCInteractions(interactions_list=interactions_list)
+interactions = KMCInteractions(
+    interactions_list=interactions_list,
+    implicit_wildcards=True)
 
 # -----------------------------------------------------------------------------
 # Lattice model
@@ -632,7 +634,9 @@ conf2_1 = KMCLocalConfiguration(
 interactions_list = [(conf1_0, conf2_0,    3.500000e+00),
                      (conf1_1, conf2_1,    1.500000e+00)]
 
-interactions = KMCInteractions(interactions_list=interactions_list)
+interactions = KMCInteractions(
+    interactions_list=interactions_list,
+    implicit_wildcards=True)
 
 # -----------------------------------------------------------------------------
 # Lattice model

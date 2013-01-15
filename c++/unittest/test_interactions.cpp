@@ -1,5 +1,5 @@
 /*
-  Copyright (c)  2012  Mikael Leetmaa
+  Copyright (c)  2012-2013  Mikael Leetmaa
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -21,7 +21,8 @@
 void Test_Interactions::testConstruction()
 {
     std::vector<Process> processes;
-    Interactions interactions(processes);
+    bool implicit_wildcards = false;
+    Interactions interactions(processes, implicit_wildcards);
 
     // DONE
 }
@@ -47,7 +48,7 @@ void Test_Interactions::testQuery()
         const double barrier = 1.234;
         Configuration c1(process_coordinates, process_elements1, possible_types);
         Configuration c2(process_coordinates, process_elements2, possible_types);
-        Process p(c1, c2, barrier);
+        Process p(c1, c2, barrier, std::vector<int>(1,0));
         // Store twize.
         processes.push_back(p);
         processes.push_back(p);
@@ -78,12 +79,12 @@ void Test_Interactions::testQuery()
         const double barrier = 13.7;
         Configuration c1(process_coordinates, process_elements1, possible_types);
         Configuration c2(process_coordinates, process_elements2, possible_types);
-        Process p(c1, c2, barrier);
+        Process p(c1, c2, barrier, std::vector<int>(1,0));
         processes.push_back(p);
     }
 
     // Setup the interactions object.
-    Interactions interactions(processes);
+    Interactions interactions(processes, false);
 
     // Query for the processes.
     const std::vector<Process> & queried_processes = interactions.processes();
@@ -127,12 +128,13 @@ void Test_Interactions::testUpdateAndPick()
     const double barrier = 13.7;
     Configuration c1(process_coordinates, process_elements1, possible_types);
     Configuration c2(process_coordinates, process_elements2, possible_types);
-    processes.push_back(Process(c1,c2,barrier));
-    processes.push_back(Process(c1,c2,barrier));
-    processes.push_back(Process(c1,c2,barrier+barrier));
-    processes.push_back(Process(c1,c2,barrier));
-    processes.push_back(Process(c1,c2,barrier));
-    processes.push_back(Process(c1,c2,barrier));
+    std::vector<int> sites_vector(1,0);
+    processes.push_back(Process(c1,c2,barrier,sites_vector));
+    processes.push_back(Process(c1,c2,barrier,sites_vector));
+    processes.push_back(Process(c1,c2,barrier+barrier,sites_vector));
+    processes.push_back(Process(c1,c2,barrier,sites_vector));
+    processes.push_back(Process(c1,c2,barrier,sites_vector));
+    processes.push_back(Process(c1,c2,barrier,sites_vector));
 
     // Fake a matching by adding sites to the processes.
 
@@ -155,7 +157,7 @@ void Test_Interactions::testUpdateAndPick()
     processes[5].addSite(992);
 
     // Setup the interactions object.
-    Interactions interactions(processes);
+    Interactions interactions(processes, true);
 
     // Update the probability table.
     interactions.updateProbabilityTable();

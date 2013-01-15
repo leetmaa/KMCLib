@@ -64,7 +64,8 @@ class KMCLatticeModel(object):
             # Setup the C++ objects we need.
             cpp_config       = self.__configuration._backend()
             cpp_lattice_map  = self.__configuration._latticeMap()
-            cpp_interactions = self.__interactions._backend(self.__configuration.possibleTypes())
+            cpp_interactions = self.__interactions._backend(self.__configuration.possibleTypes(),
+                                                            cpp_lattice_map.nBasis() )
 
             # Construct a timer.
             self.__cpp_timer = Backend.SimulationTimer()
@@ -87,7 +88,7 @@ class KMCLatticeModel(object):
         if not isinstance(control_parameters, KMCControlParameters):
             msg ="""
 The 'control_parameters' input to the KMCLatticeModel run funtion
-                         must be an instance of type KMCControlParameters."""
+must be an instance of type KMCControlParameters."""
             raise Error(msg)
 
         # Check the trajectory filename.

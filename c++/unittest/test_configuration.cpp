@@ -100,6 +100,10 @@ void Test_Configuration::testPerformProcess()
     basis[2][1] = 0.75;
     basis[2][2] = 0.75;
 
+    std::vector<int> basis_sites(3);
+    basis_sites[0] = 0;
+    basis_sites[1] = 1;
+    basis_sites[2] = 2;
     std::vector<std::string> basis_elements(3);
     basis_elements[0] = "A";
     basis_elements[1] = "B";
@@ -184,7 +188,7 @@ void Test_Configuration::testPerformProcess()
     const double barrier = 13.7;
     Configuration c1(process_coordinates, process_elements1, possible_types);
     Configuration c2(process_coordinates, process_elements2, possible_types);
-    Process p(c1, c2, barrier);
+    Process p(c1, c2, barrier, basis_sites);
 
     // Now, add index 1434 to the process.
     // We know by construction that these match.
@@ -232,6 +236,11 @@ void Test_Configuration::testMatchLists()
     basis[2][0] = 0.75;
     basis[2][1] = 0.75;
     basis[2][2] = 0.75;
+
+    std::vector<int> basis_sites(3);
+    basis_sites[0] = 0;
+    basis_sites[1] = 1;
+    basis_sites[2] = 2;
 
     std::vector<std::string> basis_elements(3);
     basis_elements[0] = "A";
@@ -363,7 +372,7 @@ void Test_Configuration::testMatchLists()
     const double barrier = 13.7;
     Configuration c1(process_coordinates, process_elements1, possible_types);
     Configuration c2(process_coordinates, process_elements2, possible_types);
-    Process p(c1, c2, barrier);
+    Process p(c1, c2, barrier, basis_sites);
 
     // Now, add index 1434 to the process.
     // We know by construction that these match.

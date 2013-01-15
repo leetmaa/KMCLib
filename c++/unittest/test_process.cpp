@@ -47,8 +47,9 @@ void Test_Process::testConstruction()
     const Configuration config2(coords, elements2, possible_types);
 
     // Construct the process.
+    const std::vector<int> basis_sites(1,0);
     const double barrier = 13.7;
-    Process process(config1, config2, barrier);
+    Process process(config1, config2, barrier, basis_sites);
 
     // Check that there are no listed indices by default.
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 0);
@@ -90,8 +91,9 @@ void Test_Process::testMatchList()
     const Configuration config2(coords, elements2, possible_types);
 
     // Construct the process.
+    const std::vector<int> basis_sites(1,0);
     const double barrier = 13.7;
-    Process process(config1, config2, barrier);
+    Process process(config1, config2, barrier, basis_sites);
 
     // Get the match list out.
     const std::vector<MinimalMatchListEntry> & match_list = process.minimalMatchList();
@@ -232,7 +234,8 @@ void Test_Process::testMatchListLong()
 
     // Construct the process.
     const double barrier = 13.7;
-    Process process(config1, config2, barrier);
+    const std::vector<int> basis_sites(1,0);
+    Process process(config1, config2, barrier, basis_sites);
 
     // Get the match list out.
     const std::vector<MinimalMatchListEntry> match_list = process.minimalMatchList();
@@ -330,7 +333,8 @@ void Test_Process::testAddAndRemoveSite()
 
     // Construct the process.
     const double barrier = 13.7;
-    Process process(config1, config2, barrier);
+    const std::vector<int> basis_sites(1,0);
+    Process process(config1, config2, barrier, basis_sites);
 
     // Check that there are no listed indices by default.
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 0);
@@ -459,7 +463,8 @@ void Test_Process::testAffectedIndices()
 
     // Construct the process.
     const double barrier = 13.7;
-    Process process(config1, config2, barrier);
+    const std::vector<int> basis_sites(1,0);
+    Process process(config1, config2, barrier, basis_sites);
 
     // Check that the size of the affected is correct.
     size_t one = 1;

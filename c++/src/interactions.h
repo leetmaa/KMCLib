@@ -18,6 +18,9 @@
 
 #include "process.h"
 
+// Forward declarations.
+class LatticeMap;
+
 /*! \brief Class for holding information about all interactions and possible
  *         processes in the system.
  */
@@ -27,8 +30,15 @@ public:
 
     /*! \brief Construct the interactions object from a list of processes.
      *  \param processes: The list of proceeses.
+     *  \param implicit_wildcards: A flag indicating if implicit wildcards should be added
+     *                             to the process matchlists.
      */
-    Interactions(const std::vector<Process> & processes);
+    Interactions(const std::vector<Process> & processes, const bool implicit_wildcards);
+
+    /*! \brief Update the process matchlists with implicit wildcards if needed.
+     *  \param lattice_map : The lattice map to determine wildcard positions.
+     */
+    void updateProcessMatchLists( const LatticeMap & lattice_map);
 
     /*! \brief Query for the processes.
      *  \return : The processes of the system.
@@ -77,6 +87,9 @@ private:
 
     /// The probability table.
     std::vector<std::pair<double,int> > probability_table_;
+
+    /// The flag indicating if implicit wildcards should  be used.
+    bool implicit_wildcards_;
 };
 
 

@@ -35,11 +35,42 @@ bool pairComp(const std::pair<double,int> & p1,
 
 // -----------------------------------------------------------------------------
 //
-Interactions::Interactions(const std::vector<Process> & processes) :
+Interactions::Interactions(const std::vector<Process> & processes,
+                           const bool implicit_wildcards) :
     processes_(processes),
-    probability_table_(processes.size(), std::pair<double,int>(0.0,0))
+    probability_table_(processes.size(), std::pair<double,int>(0.0,0)),
+    implicit_wildcards_(implicit_wildcards)
 {
     // NOTHING HERE YET
+}
+
+
+// -----------------------------------------------------------------------------
+//
+void Interactions::updateProcessMatchLists(const LatticeMap & lattice_map)
+{
+    // Skip if we are not using implicit wildcards.
+    if (!implicit_wildcards_)
+    {
+        return;
+    }
+
+    // NEEDS IMPLEMENTATION
+
+    // For implicit wild cards:
+
+    // Loop through each process.
+
+    // Get the match list for this process.
+
+    // Take out the basis position for the process.
+
+    // Get the corresponding lattice match list for this basis position in the
+    // first cell.
+
+    // Perform the match where we add wildcards to fill the vacancies in the
+    // process match list.
+
 }
 
 

@@ -21,10 +21,12 @@
 //
 Process::Process(const Configuration & first,
                  const Configuration & second,
-                 const double barrier) :
+                 const double barrier,
+                 const std::vector<int> & basis_sites) :
     barrier_(barrier),
     sites_(0),
-    affected_indices_(0)
+    affected_indices_(0),
+    basis_sites_(basis_sites)
 {
     // The check that the first and second configurartions match well enough
     // should be carried out in python so there is no need to do it again here.
