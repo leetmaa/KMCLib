@@ -1,5 +1,5 @@
 /*
-  Copyright (c)  2012  Mikael Leetmaa
+  Copyright (c)  2012-2013  Mikael Leetmaa
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -38,10 +38,43 @@ struct MinimalMatchListEntry {
 };
 
 
-/*! \brief 'not equal' for comparing entries.
+/*! \brief The epsilon value for comparing lattice positions.
  */
 static double epsi__ = 1.0e-5;
 
+
+/*! \brief 'equal' for comparing points. NOTE: This operator does not
+ *         compare match types.
+ */
+inline
+bool operator==(const MinimalMatchListEntry & m1,
+                const MinimalMatchListEntry & m2)
+{
+    // Check the distance.
+    if (std::fabs(m2.distance - m1.distance) > epsi__)
+    {
+        return false;
+    }
+    // Check the coordinate.
+    else if (std::fabs(m2.coordinate.x() - m1.coordinate.x()) > epsi__)
+    {
+        return false;
+    }
+    else if (std::fabs(m2.coordinate.y() - m1.coordinate.y()) > epsi__)
+    {
+        return false;
+    }
+    else if (std::fabs(m2.coordinate.z() - m1.coordinate.z()) > epsi__)
+    {
+        return false;
+    }
+    return true;
+}
+
+
+
+/*! \brief 'not equal' for comparing entries.
+ */
 inline
 bool operator!=(const MinimalMatchListEntry & m1,
                 const MinimalMatchListEntry & m2)
@@ -56,6 +89,11 @@ bool operator!=(const MinimalMatchListEntry & m1,
     {
         return true;
     }
+    else
+    {
+        return !(m1 == m2);
+    }
+    /*
     // Check the distance.
     else if (std::fabs(m2.distance - m1.distance) > epsi__)
     {
@@ -75,6 +113,7 @@ bool operator!=(const MinimalMatchListEntry & m1,
         return true;
     }
     return false;
+    */
 }
 
 

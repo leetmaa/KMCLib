@@ -1,5 +1,5 @@
 /*
-  Copyright (c)  2012  Mikael Leetmaa
+  Copyright (c)  2012-2013  Mikael Leetmaa
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -70,14 +70,15 @@ Configuration::Configuration(std::vector<std::vector<double> > const & coordinat
 
 // -----------------------------------------------------------------------------
 //
-void Configuration::initMatchLists(const LatticeMap & lattice_map)
+void Configuration::initMatchLists( const LatticeMap & lattice_map,
+                                    const int range )
 {
     // Loop over all indices.
     for (size_t i = 0; i < types_.size(); ++i)
     {
         // Calculate and store the match list.
         const int origin_index = i;
-        const std::vector<int> neighbourhood = lattice_map.neighbourIndices(origin_index);
+        const std::vector<int> neighbourhood = lattice_map.neighbourIndices(origin_index, range);
         match_lists_[i] = minimalMatchList(origin_index,
                                            neighbourhood,
                                            lattice_map);

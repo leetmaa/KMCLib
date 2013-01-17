@@ -216,7 +216,7 @@ void Test_Matcher::testIsMatchIndexListMinimal()
     basis_sites.push_back(0);
 
     LatticeMap lattice_map(basis, repetitions, periodicity);
-    config.initMatchLists(lattice_map);
+    config.initMatchLists(lattice_map, 1);
 
     // ---------------------------------------------------------------------
     // Construct a processes and test.
@@ -408,7 +408,7 @@ void Test_Matcher::testIsMatchIndexListMinimalPeriodic()
     const int basis_size = 2;
 
     LatticeMap lattice_map(basis_size, repetitions, periodicity);
-    config.initMatchLists(lattice_map);
+    config.initMatchLists(lattice_map, 1);
 
     // ---------------------------------------------------------------------
     // Construct a processes and test.
@@ -666,7 +666,7 @@ void Test_Matcher::testIsMatchIndexListComplicatedPeriodic()
     const int basis_size = 2;
 
     LatticeMap lattice_map(basis_size, repetitions, periodicity);
-    config.initMatchLists(lattice_map);
+    config.initMatchLists(lattice_map, 1);
 
     // ---------------------------------------------------------------------
     // Construct a processes and test.
@@ -928,7 +928,7 @@ void Test_Matcher::testCalculateMatchingProcess()
     LatticeMap lattice_map(basis_size, repetitions, periodicity);
 
     // Calculate the match lists.
-    config.initMatchLists(lattice_map);
+    config.initMatchLists(lattice_map, 1);
 
     // ---------------------------------------------------------------------
     // Setup a process that matches all even indexed sites except the first.
@@ -1028,7 +1028,7 @@ void Test_Matcher::testCalculateMatchingProcess()
     // Change the configuration and match.
     elements[2] = "D";
     config = Configuration(coords, elements, possible_types);
-    config.initMatchLists(lattice_map);
+    config.initMatchLists(lattice_map, 1);
 
     // Match.
     m.calculateMatching(process, config, 2);
@@ -1047,7 +1047,7 @@ void Test_Matcher::testCalculateMatchingProcess()
     // Match against a changed configuration. This removes index 4.
     elements[4] = "D";
     config = Configuration(coords, elements, possible_types);
-    config.initMatchLists(lattice_map);
+    config.initMatchLists(lattice_map, 1);
     m.calculateMatching(process, config, 4);
     CPPUNIT_ASSERT( process.sites().empty() );
     CPPUNIT_ASSERT( !process.isListed(2) );
@@ -1144,7 +1144,7 @@ void Test_Matcher::testCalculateMatchingInteractions()
     LatticeMap lattice_map(basis_size, repetitions, periodicity);
 
     // Calculate the match lists.
-    config.initMatchLists(lattice_map);
+    config.initMatchLists(lattice_map, 1);
 
     // ---------------------------------------------------------------------
     // Now the processes.
@@ -1353,7 +1353,7 @@ void Test_Matcher::testCalculateMatchingInteractions()
     // does not match any.
     elements[0] = "C";
     config = Configuration(coords, elements, possible_types);
-    config.initMatchLists(lattice_map);
+    config.initMatchLists(lattice_map, 1);
     m.calculateMatching(interactions, config, lattice_map, indices);
 
     CPPUNIT_ASSERT(  interactions.processes()[0].isListed(0) );

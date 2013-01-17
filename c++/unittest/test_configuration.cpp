@@ -1,5 +1,5 @@
 /*
-  Copyright (c)  2012  Mikael Leetmaa
+  Copyright (c)  2012-2013  Mikael Leetmaa
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -162,7 +162,7 @@ void Test_Configuration::testPerformProcess()
     LatticeMap lattice_map(nB, repetitions, periodicity);
 
     // Init the match lists.
-    configuration.initMatchLists(lattice_map);
+    configuration.initMatchLists(lattice_map, 1);
 
     // Get a process that finds a V between two B and turns one of
     // the Bs into an A.
@@ -306,7 +306,7 @@ void Test_Configuration::testMatchLists()
     CPPUNIT_ASSERT( configuration.minimalMatchList(1434).empty() );
 
     // Init the match lists.
-    configuration.initMatchLists(lattice_map);
+    configuration.initMatchLists(lattice_map, 1);
 
     // This did something.
     CPPUNIT_ASSERT( !configuration.minimalMatchList(10).empty()   );

@@ -33,6 +33,7 @@ LatticeModel::LatticeModel(Configuration & configuration,
     seedRandom(false, 2013);
 
     printf(" KMCLib: Calculating initial matching.\n");
+
     // Setup the mapping between coordinates and processes.
     calculateInitialMatching();
 
@@ -50,10 +51,10 @@ LatticeModel::LatticeModel(Configuration & configuration,
 void LatticeModel::calculateInitialMatching()
 {
     // Calculate the match lists.
-    configuration_.initMatchLists(lattice_map_);
+    configuration_.initMatchLists(lattice_map_, interactions_.maxRange());
 
     // Update the interactions matchlists.
-    interactions_.updateProcessMatchLists(lattice_map_);
+    interactions_.updateProcessMatchLists(configuration_);
 
    // Match all centeres.
     std::vector<int> indices;

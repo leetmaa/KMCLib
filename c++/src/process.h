@@ -1,5 +1,5 @@
 /*
-  Copyright (c)  2012  Mikael Leetmaa
+  Copyright (c)  2012-2013  Mikael Leetmaa
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -82,6 +82,11 @@ public:
      *  \return : The stored match list.
      */
     const std::vector<MinimalMatchListEntry> & minimalMatchList() const { return minimal_match_list_; }
+
+    /*! \brief Query for the configuration as a vector of match list entries.
+     *  \return : A reference to the stored match list.
+     */
+    std::vector<MinimalMatchListEntry> & minimalMatchList() { return minimal_match_list_; }
 
     /*! \brief Query for the latest affected indices.
      *  \return : The affected indices from the last time the process was

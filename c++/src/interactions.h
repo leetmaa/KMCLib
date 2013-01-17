@@ -19,7 +19,7 @@
 #include "process.h"
 
 // Forward declarations.
-class LatticeMap;
+class Configuration;
 
 /*! \brief Class for holding information about all interactions and possible
  *         processes in the system.
@@ -35,10 +35,15 @@ public:
      */
     Interactions(const std::vector<Process> & processes, const bool implicit_wildcards);
 
+    /*! \brief Get the max range of all processes.
+     *  \return : The max range in shells.
+     */
+    int maxRange() const;
+
     /*! \brief Update the process matchlists with implicit wildcards if needed.
      *  \param lattice_map : The lattice map to determine wildcard positions.
      */
-    void updateProcessMatchLists( const LatticeMap & lattice_map);
+    void updateProcessMatchLists( const Configuration & configuration);
 
     /*! \brief Query for the processes.
      *  \return : The processes of the system.

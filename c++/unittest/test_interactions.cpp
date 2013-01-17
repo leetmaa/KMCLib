@@ -15,6 +15,7 @@
 #include "../src/configuration.h"
 #include "../src/matchlistentry.h"
 #include "../src/random.h"
+#include "../src/latticemap.h"
 
 // -------------------------------------------------------------------------- //
 //
@@ -240,3 +241,335 @@ void Test_Interactions::testUpdateAndPick()
 
 }
 
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Interactions::testMaxRange()
+{
+    // Setup two valid processes.
+    std::vector<Process> processes;
+
+    std::vector<std::string> process_elements1(3);
+    process_elements1[0] = "A";
+    process_elements1[1] = "A";
+    process_elements1[2] = "A";
+
+    std::vector<std::string> process_elements2(3);
+    process_elements2[0] = "B";
+    process_elements2[1] = "A";
+    process_elements2[2] = "A";
+
+    std::vector<std::vector<double> > process_coordinates(3, std::vector<double>(3, 0.0));
+    process_coordinates[1][0] = -0.1;
+    process_coordinates[1][1] = -0.1;
+    process_coordinates[1][2] = -0.1;
+
+    // Possible types.
+    std::map<std::string, int> possible_types;
+    possible_types["A"] = 0;
+    possible_types["B"] = 1;
+    possible_types["V"] = 2;
+
+    const double barrier = 13.7;
+    const Configuration c1(process_coordinates, process_elements1, possible_types);
+    const Configuration c2(process_coordinates, process_elements2, possible_types);
+
+    std::vector<int> sites_vector(0);
+    processes.push_back(Process(c1,c2,barrier,sites_vector));
+    processes.push_back(Process(c1,c2,barrier,sites_vector));
+
+    // Setup the interactions object.
+    const Interactions interactions(processes, true);
+
+    // This should have the max range 1.
+    CPPUNIT_ASSERT_EQUAL( interactions.maxRange(), 1 );
+
+    // Adding a process with a -1.1 site should make the max range become 2.
+    process_coordinates[1][0] =  0.0;
+    process_coordinates[1][1] =  0.0;
+    process_coordinates[1][2] = -1.1;
+
+    const Configuration c3(process_coordinates, process_elements1, possible_types);
+    const Configuration c4(process_coordinates, process_elements2, possible_types);
+    processes.push_back(Process(c3,c4,barrier,sites_vector));
+
+    // This should have the max range 2.
+    const Interactions interactions2(processes, true);
+    CPPUNIT_ASSERT_EQUAL( interactions2.maxRange(), 2 );
+
+    // Check the same thing in y.
+    process_coordinates[1][0] =  0.0;
+    process_coordinates[1][1] = -2.1;
+    process_coordinates[1][2] =  0.0;
+
+    const Configuration c5(process_coordinates, process_elements1, possible_types);
+    const Configuration c6(process_coordinates, process_elements2, possible_types);
+    processes[2] = Process(c5,c6,barrier,sites_vector);
+
+    // This should have the max range 3.
+    const Interactions interactions3(processes, true);
+    CPPUNIT_ASSERT_EQUAL( interactions3.maxRange(), 3 );
+
+    // And in x.
+    process_coordinates[1][0] = -3.1;
+    process_coordinates[1][1] =  0.0;
+    process_coordinates[1][2] =  0.0;
+
+    const Configuration c7(process_coordinates, process_elements1, possible_types);
+    const Configuration c8(process_coordinates, process_elements2, possible_types);
+    processes[2] = Process(c7,c8,barrier,sites_vector);
+
+    // This should have the max range 4.
+    const Interactions interactions4(processes, true);
+    CPPUNIT_ASSERT_EQUAL( interactions4.maxRange(), 4 );
+
+    // And in the positive direction.
+
+    // Adding a process with a 5.1 site should make the max range become 5.
+    process_coordinates[1][0] =  0.0;
+    process_coordinates[1][1] =  0.0;
+    process_coordinates[1][2] =  5.1;
+
+    const Configuration c9(process_coordinates, process_elements1, possible_types);
+    const Configuration c10(process_coordinates, process_elements2, possible_types);
+    processes[2] = Process(c9,c10,barrier,sites_vector);
+
+    // This should have the max range 5.
+    const Interactions interactions5(processes, true);
+    CPPUNIT_ASSERT_EQUAL( interactions5.maxRange(), 5 );
+
+
+    // Check the same thing in y.
+    process_coordinates[1][0] =  0.0;
+    process_coordinates[1][1] =  2.1;
+    process_coordinates[1][2] =  0.0;
+
+    const Configuration c11(process_coordinates, process_elements1, possible_types);
+    const Configuration c12(process_coordinates, process_elements2, possible_types);
+    processes[2] = Process(c11,c12,barrier,sites_vector);
+
+    // This should have the max range 2.
+    const Interactions interactions6(processes, true);
+    CPPUNIT_ASSERT_EQUAL( interactions6.maxRange(), 2 );
+
+    // And in x.
+    process_coordinates[1][0] =  4.1;
+    process_coordinates[1][1] =  0.0;
+    process_coordinates[1][2] =  0.0;
+
+    const Configuration c13(process_coordinates, process_elements1, possible_types);
+    const Configuration c14(process_coordinates, process_elements2, possible_types);
+    processes[2] = Process(c13,c14,barrier,sites_vector);
+
+    // This should have the max range 4.
+    const Interactions interactions7(processes, true);
+    CPPUNIT_ASSERT_EQUAL( interactions7.maxRange(), 4 );
+
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Interactions::testUpdateProcessMatchLists()
+{
+    // Setup two valid processes.
+    std::vector<Process> processes;
+
+    std::vector<std::string> process_elements1(3);
+    process_elements1[0] = "A";
+    process_elements1[1] = "B";
+    process_elements1[2] = "V";
+
+    std::vector<std::string> process_elements2(3);
+    process_elements2[0] = "B";
+    process_elements2[1] = "A";
+    process_elements2[2] = "A";
+
+    std::vector<std::vector<double> > process_coordinates1(3, std::vector<double>(3, 0.0));
+    process_coordinates1[1][0] = -1.0;
+    process_coordinates1[1][1] =  0.0;
+    process_coordinates1[1][2] =  0.0;
+
+    process_coordinates1[2][0] =  0.3;
+    process_coordinates1[2][1] =  0.3;
+    process_coordinates1[2][2] =  0.3;
+
+    // Possible types.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["V"] = 3;
+
+    const double barrier = 13.7;
+    const Configuration c1(process_coordinates1, process_elements1, possible_types);
+    const Configuration c2(process_coordinates1, process_elements2, possible_types);
+
+    // Let this process be valid at site 0.
+    processes.push_back(Process(c1,c2,barrier,std::vector<int>(1,0)));
+
+    // Let this process be valid at sites 0 and 2.
+    std::vector<int> sites_vector(2,0);
+    sites_vector[1] = 2;
+    processes.push_back(Process(c1,c2,barrier,sites_vector));
+
+    std::vector<std::vector<double> > process_coordinates2(3, std::vector<double>(3, 0.0));
+
+    process_coordinates2[1][0] =  0.7;
+    process_coordinates2[1][1] =  0.7;
+    process_coordinates2[1][2] = -0.3;
+
+    process_coordinates2[2][0] =  1.0;
+    process_coordinates2[2][1] =  1.0;
+    process_coordinates2[2][2] =  1.0;
+
+    const Configuration c3(process_coordinates2, process_elements1, possible_types);
+    const Configuration c4(process_coordinates2, process_elements2, possible_types);
+
+    // Let the process be valid at site 1.
+    processes.push_back(Process(c3,c4,barrier,std::vector<int>(1,1)));
+
+    Interactions interactions(processes, true);
+
+    // Generate a corresponding configuration.
+    std::vector<std::vector<double> > config_coordinates;
+    std::vector<std::string> elements;
+    for (int i = 0; i < 5; ++i)
+    {
+        for (int j = 0; j < 5; ++j)
+        {
+            for (int k = 0; k < 5; ++k)
+            {
+                std::vector<double> coord(3);
+                coord[0] = 0.0 + i*1.0;
+                coord[1] = 0.0 + j*1.0;
+                coord[2] = 0.0 + k*1.0;
+                config_coordinates.push_back(coord);
+                elements.push_back("V");
+
+                coord[0] = 0.3 + i*1.0;
+                coord[1] = 0.3 + j*1.0;
+                coord[2] = 0.3 + k*1.0;
+                elements.push_back("B");
+                config_coordinates.push_back(coord);
+            }
+        }
+    }
+
+    // Get the config and lattice map.
+    Configuration config(config_coordinates, elements, possible_types);
+    const LatticeMap lattice_map(2, std::vector<int>(3,5), std::vector<bool>(3,true));
+
+    // Now, setup the matchlists in the configuration.
+    config.initMatchLists(lattice_map, interactions.maxRange());
+
+    // Check the process match lists before we start.
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[0].minimalMatchList().size()), 3);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[1].minimalMatchList().size()), 3);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[2].minimalMatchList().size()), 3);
+
+    // Update the interactions according to the configuration match lists.
+    interactions.updateProcessMatchLists(config);
+
+    // Check a few coordinates and match types.
+    {
+        const std::vector<MinimalMatchListEntry> & match = interactions.processes()[0].minimalMatchList();
+
+        CPPUNIT_ASSERT_EQUAL( static_cast<int>(match.size()), 6 );
+
+        // Wildcards are now added.
+        CPPUNIT_ASSERT_EQUAL( match[0].match_type,  1 );
+        CPPUNIT_ASSERT_EQUAL( match[1].match_type,  3 );
+        CPPUNIT_ASSERT_EQUAL( match[2].match_type,  0 );
+        CPPUNIT_ASSERT_EQUAL( match[3].match_type,  0 );
+        CPPUNIT_ASSERT_EQUAL( match[4].match_type,  0 );
+        CPPUNIT_ASSERT_EQUAL( match[5].match_type,  2 );
+
+        // These are not changed - but sorted.
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[0].coordinate.x(),  process_coordinates1[0][0], 1.0e-10 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[0].coordinate.y(),  process_coordinates1[0][1], 1.0e-10 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[0].coordinate.z(),  process_coordinates1[0][2], 1.0e-10 );
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[1].coordinate.x(),  process_coordinates1[2][0], 1.0e-10 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[1].coordinate.y(),  process_coordinates1[2][1], 1.0e-10 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[1].coordinate.z(),  process_coordinates1[2][2], 1.0e-10 );
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[5].coordinate.x(),  process_coordinates1[1][0], 1.0e-10 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[5].coordinate.y(),  process_coordinates1[1][1], 1.0e-10 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[5].coordinate.z(),  process_coordinates1[1][2], 1.0e-10 );
+
+        // Here are the added wildcards.
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[2].coordinate.x(), -0.7, 1.0e-10 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[2].coordinate.y(),  0.3, 1.0e-10 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[2].coordinate.z(),  0.3, 1.0e-10 );
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[3].coordinate.x(),  0.3, 1.0e-10 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[3].coordinate.y(), -0.7, 1.0e-10 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[3].coordinate.z(),  0.3, 1.0e-10 );
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[4].coordinate.x(),  0.3, 1.0e-10 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[4].coordinate.y(),  0.3, 1.0e-10 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[4].coordinate.z(), -0.7, 1.0e-10 );
+
+    }
+
+
+    {
+        // This one is not changed, since it was applicable to more than one basis site.
+        const std::vector<MinimalMatchListEntry> & match = interactions.processes()[1].minimalMatchList();
+        CPPUNIT_ASSERT_EQUAL( static_cast<int>(match.size()), 3 );
+        // Not changed - but sorted.
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[0].coordinate.x(),  process_coordinates1[0][0], 1.0e-10 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[0].coordinate.y(),  process_coordinates1[0][1], 1.0e-10 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[0].coordinate.z(),  process_coordinates1[0][2], 1.0e-10 );
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[1].coordinate.x(),  process_coordinates1[2][0], 1.0e-10 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[1].coordinate.y(),  process_coordinates1[2][1], 1.0e-10 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[1].coordinate.z(),  process_coordinates1[2][2], 1.0e-10 );
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[2].coordinate.x(),  process_coordinates1[1][0], 1.0e-10 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[2].coordinate.y(),  process_coordinates1[1][1], 1.0e-10 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[2].coordinate.z(),  process_coordinates1[1][2], 1.0e-10 );
+
+    }
+
+
+    {
+        const std::vector<MinimalMatchListEntry> & match = interactions.processes()[2].minimalMatchList();
+        CPPUNIT_ASSERT_EQUAL( static_cast<int>(match.size()), 47 );
+
+        // Not changed.
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[0].coordinate.x(),  process_coordinates2[0][0], 1.0e-10 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[0].coordinate.y(),  process_coordinates2[0][1], 1.0e-10 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[0].coordinate.z(),  process_coordinates2[0][2], 1.0e-10 );
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[13].coordinate.x(),  process_coordinates2[1][0], 1.0e-10 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[13].coordinate.y(),  process_coordinates2[1][1], 1.0e-10 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[13].coordinate.z(),  process_coordinates2[1][2], 1.0e-10 );
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[46].coordinate.x(),  process_coordinates2[2][0], 1.0e-10 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[46].coordinate.y(),  process_coordinates2[2][1], 1.0e-10 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[46].coordinate.z(),  process_coordinates2[2][2], 1.0e-10 );
+
+
+        // These are the added wildcards.
+        for (int i = 0; i < 47; ++i)
+        {
+            if (i != 0 && i != 13 && i != 46)
+            {
+                CPPUNIT_ASSERT_EQUAL( match[i].match_type, 0 );
+            }
+        }
+
+        // Check one coordinate.
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[17].coordinate.x(),-0.3, 1.0e-10 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[17].coordinate.y(),-0.3, 1.0e-10 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[17].coordinate.z(),-1.3, 1.0e-10 );
+
+        // Check another one.
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[18].coordinate.x(),-1.0, 1.0e-10 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[18].coordinate.y(),-1.0, 1.0e-10 );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( match[18].coordinate.z(), 0.0, 1.0e-10 );
+
+    }
+}

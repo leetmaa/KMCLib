@@ -1,5 +1,5 @@
 /*
-  Copyright (c)  2012  Mikael Leetmaa
+  Copyright (c)  2012-2013  Mikael Leetmaa
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -43,8 +43,9 @@ public:
 
     /*! \brief Initiate the calculation of the match lists.
      *  \param lattice_map : The lattice map needed to get coordinates wrapped.
+     *  \param range       : The number of shells to include.
      */
-    void initMatchLists(const LatticeMap & lattice_map);
+    void initMatchLists(const LatticeMap & lattice_map, const int range);
 
     /*! \brief Const query for the coordinates.
      *  \return : The coordinates of the configuration.
@@ -78,6 +79,12 @@ public:
      *  \return : The match list.
      */
     const std::vector<MinimalMatchListEntry> & minimalMatchList(const int index);
+
+    /*! \brief Return the cached match list without update.
+     *  \param index : The index to get the match list for.
+     *  \return : The match list.
+     */
+    std::vector<MinimalMatchListEntry> minimalMatchList(const int index) const { return match_lists_[index]; }
 
     /*! \brief Perform the given process.
      *  \param process : The process to perform, which will be updated with the affected
