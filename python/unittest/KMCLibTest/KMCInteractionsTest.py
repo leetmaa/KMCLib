@@ -25,12 +25,12 @@ class KMCInteractionsTest(unittest.TestCase):
     def testConstruction(self):
         """ Test that the KMCInteractions class can be constructed. """
         # A first interaction.
-        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types = ["A","B"]
+        coords = [[1.0,2.0,3.4],[12.0,13.0,-1.0],[1.1,1.2,1.3]]
+        types = ["A","*","B"]
         local_config_0 = KMCLocalConfiguration(coordinates=coords,
                                                types=types,
                                                center=0)
-        types = ["B","A"]
+        types = ["B","*","A"]
         local_config_1 = KMCLocalConfiguration(coordinates=coords,
                                                types=types,
                                                center=0)
@@ -101,7 +101,7 @@ class KMCInteractionsTest(unittest.TestCase):
                                                types=types,
                                                center=0)
         rate_0_1 = 1.5
-        interaction_1 = (local_config_0, local_config_1, rate_0_1, rate_0_1)
+        interaction_1 = (local_config_0, local_config_1, rate_0_1, rate_0_1, rate_0_1)
 
         interactions_list = [interaction_0, interaction_1]
 
@@ -113,6 +113,39 @@ class KMCInteractionsTest(unittest.TestCase):
         interactions_list = [interaction_0, interaction_1]
 
         # Fails because the interactions are not lists or tuples.
+        self.assertRaises( Error, lambda: KMCInteractions(interactions_list=interactions_list) )
+
+    def testConstructionFailWildcardMove(self):
+        """ Test for failure if wildcards change place in the move. """
+        # A first interaction.
+        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
+        types = ["*","B"]
+        local_config_0 = KMCLocalConfiguration(coordinates=coords,
+                                               types=types,
+                                               center=0)
+        types = ["B","*"]
+        local_config_1 = KMCLocalConfiguration(coordinates=coords,
+                                               types=types,
+                                               center=0)
+        rate_0_1 = 3.5
+        interaction_0 = (local_config_0, local_config_1, rate_0_1)
+
+        # A second interaction.
+        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
+        types = ["A","C"]
+        local_config_0 = KMCLocalConfiguration(coordinates=coords,
+                                               types=types,
+                                               center=0)
+        types = ["C","A"]
+        local_config_1 = KMCLocalConfiguration(coordinates=coords,
+                                               types=types,
+                                               center=0)
+        rate_0_1 = 1.5
+        interaction_1 = (local_config_0, local_config_1, rate_0_1)
+
+        interactions_list = [interaction_0, interaction_1]
+
+        # Fails because the wildcard moves from position 0 to 1 in the move.
         self.assertRaises( Error, lambda: KMCInteractions(interactions_list=interactions_list) )
 
     def testConstructionFailWrongType(self):

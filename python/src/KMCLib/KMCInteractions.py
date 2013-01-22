@@ -112,6 +112,15 @@ class KMCInteractions(object):
                 msg = "The list of types may not match for the two configurations in each interaction.\nThe failing interaction is number %i."%(i)
                 raise Error(msg)
 
+            # Check the positions of the wildcards. If these are not the same
+            # the move is invalid.
+            wildcards_0 = [i for i,t in enumerate(c0.types()) if t == "*"]
+            wildcards_1 = [i for i,t in enumerate(c1.types()) if t == "*"]
+
+            if wildcards_0 != wildcards_1:
+                msg = "Explicit wildcards must be in the same positions in both local configurations corresponding to a process.\nThe failing interaction is number %i."%(i)
+                raise Error(msg)
+
         # Done with initial checking of input.
         return interactions
 
