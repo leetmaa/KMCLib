@@ -85,7 +85,7 @@ bool operator!=(const MinimalMatchListEntry & m1,
         return false;
     }
     // Check the type.
-    else if (m2.match_type != m1.match_type && m1.match_type)
+    else if (m2.match_type != m1.match_type)
     {
         return true;
     }
@@ -93,27 +93,6 @@ bool operator!=(const MinimalMatchListEntry & m1,
     {
         return !(m1 == m2);
     }
-    /*
-    // Check the distance.
-    else if (std::fabs(m2.distance - m1.distance) > epsi__)
-    {
-        return true;
-    }
-    // Check the coordinate.
-    else if (std::fabs(m2.coordinate.x() - m1.coordinate.x()) > epsi__)
-    {
-        return true;
-    }
-    else if (std::fabs(m2.coordinate.y() - m1.coordinate.y()) > epsi__)
-    {
-        return true;
-    }
-    else if (std::fabs(m2.coordinate.z() - m1.coordinate.z()) > epsi__)
-    {
-        return true;
-    }
-    return false;
-    */
 }
 
 

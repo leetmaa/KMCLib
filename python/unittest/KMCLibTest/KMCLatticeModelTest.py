@@ -196,18 +196,27 @@ class KMCLatticeModelTest(unittest.TestCase):
                              (conf1_30, conf2_30,    1.000000e+00),
                              (conf1_31, conf2_31,    1.000000e+00)]
 
+        # No implicit wildcards.
+        interactions = KMCInteractions(interactions_list=interactions_list,
+                                       implicit_wildcards=False)
+
+        # Create the model.
+        model = KMCLatticeModel(config, interactions)
+
+        # Get the match types out.
+        match_types = [ l.match_type for l in model._backend().interactions().processes()[0].minimalMatchList() ]
+
+        # This does not have wildcards added.
+        ref_match_types = [1, 2, 2, 2, 2, 1]
+        self.assertEqual( match_types, ref_match_types )
+
+        # Create with implicit wildcards - this is default behavior.
         interactions = KMCInteractions(interactions_list=interactions_list)
 
         # Create the model.
         model = KMCLatticeModel(config, interactions)
 
-        # Setup the run paramters.
-        control_parameters = KMCControlParameters(number_of_steps=100,
-                                                  dump_interval=13)
-        model.run(control_parameters)
-
-        # Now, investigate the C++ backend object and check the process
-        # matchlists.
+        # Check the process matchlists again.
         match_types = [ l.match_type for l in model._backend().interactions().processes()[0].minimalMatchList() ]
 
         ref_match_types = [1, 2, 2, 2, 2,
@@ -216,7 +225,13 @@ class KMCLatticeModelTest(unittest.TestCase):
                            0, 0, 0, 0, 0,
                            0, 0, 0, 0, 1]
 
+        # This one has the wildcards (zeroes) added.
         self.assertEqual( match_types, ref_match_types )
+
+        # Setup the run paramters.
+        control_parameters = KMCControlParameters(number_of_steps=100,
+                                                  dump_interval=13)
+        model.run(control_parameters)
 
     def testRun2(self):
         """ Test the run of an A-B flip model. """
