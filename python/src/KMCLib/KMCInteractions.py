@@ -92,6 +92,11 @@ class KMCInteractions(object):
             if len(interaction) == 4:
                 sites = interaction[3]
                 sites = checkSequence(sites, msg="The fourth element in the interaction list must be a list of integers.")
+
+                if len(sites) == 0:
+                    msg = "The list of available sites for the interaction may not be empty."
+                    raise Error(msg)
+
                 for s in sites:
                     checkPositiveInteger(s,
                                          default_parameter=None,
@@ -143,7 +148,13 @@ class KMCInteractions(object):
 
                 basis_list = range(n_basis)
                 if len(interaction) == 4:
-                    basis_list = interaction[3]
+                    # Make sure this basis list does not contain positions
+                    # that are not in the
+                    basis_list = []
+                    for b in interaction[3]:
+                        if b < n_basis:
+                            basis_list.append(b)
+                # And construct the C++ vector.
                 cpp_basis = Backend.StdVectorInt(basis_list)
 
                 # Construct and store the C++ process.
@@ -191,7 +202,21 @@ class KMCInteractions(object):
             else:
                 indent = " "*21
 
-            interactions_string += indent + "(%s, %s, %15.6e)"%(conf1_name, conf2_name, interaction[2])
+            interactions_string += indent + "(%s, %s, %15.6e"%(conf1_name, conf2_name, interaction[2])
+
+            # Get the basis sites information.
+            if len(interaction) == 4:
+                basis_string = ",  ["
+                for j,b in enumerate(interaction[3]):
+                    if j == (len(interaction[3])-1):
+                        basis_string += "%i]"%(b)
+                    else:
+                        basis_string += "%i,"%(b)
+
+                interactions_string += basis_string
+
+            # Close the parenthesis.
+            interactions_string += ")"
 
             # If this is the last string, close.
             if (i == len(self.__raw_interactions)-1):

@@ -35,7 +35,7 @@ class KMCInteractionsTest(unittest.TestCase):
                                                types=types,
                                                center=0)
         rate_0_1 = 3.5
-        interaction_0 = (local_config_0, local_config_1, rate_0_1)
+        interaction_0 = (local_config_0, local_config_1, rate_0_1, [0,1,3])
 
         # A second interaction.
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
@@ -224,6 +224,39 @@ class KMCInteractionsTest(unittest.TestCase):
         # Fails because of same types.
         self.assertRaises( Error, lambda: KMCInteractions(interactions_list=interactions_list) )
 
+    def testConstructionFailWrongSitesList(self):
+        """ Test that the construction fails if there is a problem with the sites list. """
+        # A first interaction.
+        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
+        types = ["A","B"]
+        local_config_0 = KMCLocalConfiguration(coordinates=coords,
+                                               types=types,
+                                               center=0)
+        types = ["B","A"]
+        local_config_1 = KMCLocalConfiguration(coordinates=coords,
+                                               types=types,
+                                               center=0)
+        rate_0_1 = 3.5
+        interaction_0 = (local_config_0, local_config_1, rate_0_1, [0,1])
+
+        # A second interaction.
+        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
+        types = ["A","C"]
+        local_config_0 = KMCLocalConfiguration(coordinates=coords,
+                                               types=types,
+                                               center=0)
+        types = ["C","A"]
+        local_config_1 = KMCLocalConfiguration(coordinates=coords,
+                                               types=types,
+                                               center=0)
+        rate_0_1 = 1.5
+        interaction_1 = (local_config_0, local_config_1, rate_0_1, [])  # <- with empty list.
+
+        interactions_list = [interaction_0, interaction_1]
+
+        # Fails because of the empty sites list in interaction_1
+        self.assertRaises( Error, lambda: KMCInteractions(interactions_list=interactions_list) )
+
     def testConstructionFailsWrongWildcard(self):
         """ Test that we fail to construct with other than bool input for the implicit wildcard flag """
         # A first interaction.
@@ -336,6 +369,58 @@ class KMCInteractionsTest(unittest.TestCase):
         self.assertEqual( match_type,   5)
         self.assertEqual( update_type, 13)
 
+    def testBackendNoFailWrongBasisMatch(self):
+        """ Test for no failure when constructing backend with wrong n_basis """
+        # A first interaction.
+        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
+        types = ["A","B"]
+        local_config_0 = KMCLocalConfiguration(coordinates=coords,
+                                               types=types,
+                                               center=0)
+        types = ["B","A"]
+        local_config_1 = KMCLocalConfiguration(coordinates=coords,
+                                               types=types,
+                                               center=0)
+        rate_0_1 = 3.5
+        interaction_0 = (local_config_0, local_config_1, rate_0_1, [0,4])
+
+        # A second interaction.
+        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
+        types = ["A","C"]
+        local_config_0 = KMCLocalConfiguration(coordinates=coords,
+                                               types=types,
+                                               center=0)
+        types = ["C","A"]
+        local_config_1 = KMCLocalConfiguration(coordinates=coords,
+                                               types=types,
+                                               center=0)
+        rate_0_1 = 1.5
+        interaction_1 = (local_config_0, local_config_1, rate_0_1, [0,1])
+
+        interactions_list = [interaction_0, interaction_1]
+
+        # Construct the interactions object.
+        kmc_interactions = KMCInteractions(interactions_list=interactions_list)
+
+        # Setup a dict with the possible types.
+        possible_types = {
+            "A" : 13,
+            "D" : 2,
+            "B" : 3,
+            "J" : 4,
+            "C" : 5,
+            }
+
+        # Get the backend - The [0,4] sites list for interaction_0 is simply ignored.
+        cpp_interactions = kmc_interactions._backend(possible_types, 2)
+
+        self.assertEqual( len(cpp_interactions.processes()[0].basisSites()), 1 )
+        self.assertEqual( cpp_interactions.processes()[0].basisSites()[0], 0 )
+
+        self.assertEqual( len(cpp_interactions.processes()[1].basisSites()), 2 )
+        self.assertEqual( cpp_interactions.processes()[1].basisSites()[0], 0 )
+        self.assertEqual( cpp_interactions.processes()[1].basisSites()[1], 1 )
+
     def testScript(self):
         """ Test that the KMCInteractions can generate its own script. """
         # A first interaction.
@@ -362,7 +447,7 @@ class KMCInteractionsTest(unittest.TestCase):
                                                types=types,
                                                center=0)
         rate_0_1 = 1.5
-        interaction_1 = (local_config_0, local_config_1, rate_0_1)
+        interaction_1 = (local_config_0, local_config_1, rate_0_1, [0,1,2,3,8])
 
         interactions_list = [interaction_0, interaction_1]
 
@@ -424,7 +509,7 @@ conf2_1 = KMCLocalConfiguration(
 # Interactions
 
 interactions_list = [(conf1_0, conf2_0,    3.500000e+00),
-                     (conf1_1, conf2_1,    1.500000e+00)]
+                     (conf1_1, conf2_1,    1.500000e+00,  [0,1,2,3,8])]
 
 interactions = KMCInteractions(
     interactions_list=interactions_list,
