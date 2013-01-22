@@ -54,6 +54,9 @@ class KMCLatticeModel(object):
         # Set the backend to be generated at first query.
         self.__backend = None
 
+        # Set the verbosity level of output to minimal.
+        self.__verbosity_level = 0
+
     def _backend(self):
         """
         Function for generating the C++ backend reperesentation of this object.
@@ -107,6 +110,14 @@ must be given as string."""
         print " KMCLib: setting up the backend C++ object."
         cpp_model = self._backend()
 
+        # Print the initial matching information if above the verbosity threshold.
+        if self.__verbosity_level > 9:
+            self._printMatchInfo(cpp_model)
+
+        # Check that we have at least one available process to  run the KMC simulation.
+        if cpp_model.interactions().totalAvailableSites() == 0:
+            raise Error("No available processes. None of the processes you have defined as input match any position in the configuration. Change your initial configuration or processes to run KMC.")
+
         # Setup a trajectory object.
         if use_trajectory:
             trajectory = Trajectory(trajectory_filename=trajectory_filename,
@@ -121,25 +132,32 @@ must be given as string."""
         n_dump  = control_parameters.dumpInterval()
         print " KMCLib: Runing for %i steps, starting from time: %f\n"%(n_steps,self.__cpp_timer.simulationTime())
 
-        # Loop over the steps.
-        for s in range(n_steps):
-            step = s+1
-            # Take a step.
-            cpp_model.singleStep()
+        # Run the KMC simulation.
+        try:
+            # Loop over the steps.
+            for s in range(n_steps):
+                step = s+1
 
-            if ((step)%n_dump == 0):
-                print " KMCLib: %i steps executed. time: %f "%(step, self.__cpp_timer.simulationTime())
+                # Check if it is possible to take a step.
+                nP = cpp_model.interactions().totalAvailableSites()
+                if nP == 0:
+                    raise Error("No more available processes.")
 
-                # Perform IO using the trajectory object.
-                if use_trajectory:
-                    trajectory.append(simulation_time  = self.__cpp_timer.simulationTime(),
-                                      step             = step,
-                                      types            = self.__configuration.types())
+                # Take a step.
+                cpp_model.singleStep()
 
-        # Flush the buffers when done.
-        if use_trajectory:
-            trajectory.flush()
+                if ((step)%n_dump == 0):
+                    print " KMCLib: %i steps executed. time: %f "%(step, self.__cpp_timer.simulationTime())
 
+                    # Perform IO using the trajectory object.
+                    if use_trajectory:
+                        trajectory.append(simulation_time  = self.__cpp_timer.simulationTime(),
+                                          step             = step,
+                                          types            = self.__configuration.types())
+        finally:
+            # Flush the buffers when done.
+            if use_trajectory:
+                trajectory.flush()
 
     def _script(self, variable_name="model"):
         """
@@ -171,3 +189,19 @@ must be given as string."""
         return configuration_script + interactions_script + \
             comment_string + lattice_model_string
 
+    def __printMatchInfo(self, cpp_model):
+        """ """
+        """
+        Private routine for printing the initial matching information
+        given a C++ lattice model object.
+
+        :param cpp_model: The C++ lattice model to print the matching for.
+        """
+        cpp_processes = cpp_model.interactions().processes()
+
+        print ""
+        print " Matching Information: "
+        for i,p in enumerate(cpp_processes):
+            print ""
+            print " Process %i available on sites: "%(i), p.sites()
+        print ""

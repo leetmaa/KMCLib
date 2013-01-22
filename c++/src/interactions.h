@@ -55,6 +55,11 @@ public:
      */
     const std::vector<Process> & processes() const { return processes_; }
 
+    /*! \brief Const query for the number of available sites in the whole system.
+     *  \return : The number of available sites in the whole system.
+     */
+    int totalAvailableSites() const;
+
     /*! \brief Const query for the probability table.
      *  \return : A handle to the present probability table.
      */

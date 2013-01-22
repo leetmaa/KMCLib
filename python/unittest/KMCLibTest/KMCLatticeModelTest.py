@@ -109,7 +109,7 @@ class KMCLatticeModelTest(unittest.TestCase):
         self.assertTrue(model._KMCLatticeModel__configuration == config)
 
 
-    def testRun(self):
+    def testRunImplicitWildcards(self):
         """ Test that ta valid model can run for a few steps. """
         # Setup a unitcell.
         unit_cell = KMCUnitCell(cell_vectors=numpy.array([[1.0,0.0,0.0],
@@ -133,57 +133,58 @@ class KMCLatticeModelTest(unittest.TestCase):
                                   types=types,
                                   possible_types=["A","B"])
 
-        # Generate the interactions.
-
+        # Generate the interactions with a distance so large that we get a
+        # layer of implicite wildcards in the C++ matchlists.
         coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
                        [  -1.000000e+00,   0.000000e+00,   0.000000e+00],
                        [   1.000000e+00,   0.000000e+00,   0.000000e+00],
                        [   0.000000e+00,  -1.000000e+00,   0.000000e+00],
-                       [   0.000000e+00,   1.000000e+00,   0.000000e+00]]
+                       [   0.000000e+00,   1.000000e+00,   0.000000e+00],
+                       [   2.000000e+00,   2.000000e+00,   0.000000e+00]]
 
-        types = ['A', 'B', 'B', 'B', 'B']
+        types = ['A', 'B', 'B', 'B', 'B', 'A']
 
         conf1_28 = KMCLocalConfiguration(
             coordinates=coordinates,
             types=types)
 
-        types = ['B', 'A', 'B', 'B', 'B']
+        types = ['B', 'A', 'B', 'B', 'B', 'A']
 
         conf2_28 = KMCLocalConfiguration(
             coordinates=coordinates,
             types=types)
 
-        types = ['A', 'B', 'B', 'B', 'B']
+        types = ['A', 'B', 'B', 'B', 'B', 'B']
 
         conf1_29 = KMCLocalConfiguration(
             coordinates=coordinates,
             types=types)
 
-        types = ['B', 'B', 'A', 'B', 'B']
+        types = ['B', 'B', 'A', 'B', 'B', 'B']
 
         conf2_29 = KMCLocalConfiguration(
             coordinates=coordinates,
             types=types)
 
-        types = ['A', 'B', 'B', 'B', 'B']
+        types = ['A', 'B', 'B', 'B', 'B', 'B']
 
         conf1_30 = KMCLocalConfiguration(
             coordinates=coordinates,
             types=types)
 
-        types = ['B', 'B', 'B', 'A', 'B']
+        types = ['B', 'B', 'B', 'A', 'B', 'B']
 
         conf2_30 = KMCLocalConfiguration(
             coordinates=coordinates,
             types=types)
 
-        types = ['A', 'B', 'B', 'B', 'B']
+        types = ['A', 'B', 'B', 'B', 'B', 'B']
 
         conf1_31 = KMCLocalConfiguration(
             coordinates=coordinates,
             types=types)
 
-        types = ['B', 'B', 'B', 'B', 'A']
+        types = ['B', 'B', 'B', 'B', 'A', 'B']
 
         conf2_31 = KMCLocalConfiguration(
             coordinates=coordinates,
@@ -204,6 +205,18 @@ class KMCLatticeModelTest(unittest.TestCase):
         control_parameters = KMCControlParameters(number_of_steps=100,
                                                   dump_interval=13)
         model.run(control_parameters)
+
+        # Now, investigate the C++ backend object and check the process
+        # matchlists.
+        match_types = [ l.match_type for l in model._backend().interactions().processes()[0].minimalMatchList() ]
+
+        ref_match_types = [1, 2, 2, 2, 2,
+                           0, 0, 0, 0, 0,
+                           0, 0, 0, 0, 0,
+                           0, 0, 0, 0, 0,
+                           0, 0, 0, 0, 1]
+
+        self.assertEqual( match_types, ref_match_types )
 
     def testRun2(self):
         """ Test the run of an A-B flip model. """

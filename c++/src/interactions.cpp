@@ -138,6 +138,19 @@ void Interactions::updateProcessMatchLists(const Configuration & configuration)
     }
 }
 
+// -----------------------------------------------------------------------------
+//
+int Interactions::totalAvailableSites() const
+{
+    // Loop through and sum all available sites on all processes.
+    size_t sum = 0;
+    for (size_t i = 0; i < processes_.size(); ++i)
+    {
+        sum += processes_[i].sites().size();
+    }
+    return static_cast<int>(sum);
+}
+
 
 // -----------------------------------------------------------------------------
 //
@@ -173,19 +186,6 @@ int Interactions::pickProcessIndex() const
     // or the O(1) algorithm described in J.Chem.Phys. 128, 205101, (2008)
     // but it is typically the re-matching after an event that sets the
     // limit in terms of scaling with the number of processes.
-
-    // ML:
-    size_t sum = 0;
-    for (size_t i = 0; i < processes_.size(); ++i)
-    {
-        sum += processes_[i].sites().size();
-    }
-    if (sum == 0)
-    {
-        // Should be a graceful callback.
-        printf("ERROR - no more available processes.\n");
-        exit(8);
-    }
 
     // Get a random number between 0.0 and the total imcremented rate.
     const double rnd = randomDouble01() * totalRate();
