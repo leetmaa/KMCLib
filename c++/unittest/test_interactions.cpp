@@ -100,9 +100,26 @@ void Test_Interactions::testQuery()
     CPPUNIT_ASSERT_EQUAL( queried_processes[2].minimalMatchList()[2].match_type, 1 );
     CPPUNIT_ASSERT_EQUAL( queried_processes[2].minimalMatchList()[2].update_type, 1 );
 
+    // Query for the total number of available sites. This is zero since no sites are added to
+    // the processes.
+    CPPUNIT_ASSERT_EQUAL( interactions.totalAvailableSites(), 0 );
+
+    // Add sites to the processes and see that we get the correct number out.
+    interactions.processes()[0].addSite(12);
+    interactions.processes()[0].addSite(143);
+    interactions.processes()[0].addSite(1654);
+    interactions.processes()[0].addSite(177777);
+
+    interactions.processes()[1].addSite(12);
+    interactions.processes()[1].addSite(143);
+
+    interactions.processes()[2].addSite(1654);
+    interactions.processes()[2].addSite(177777);
+    interactions.processes()[2].addSite(177777);
+
+    CPPUNIT_ASSERT_EQUAL( interactions.totalAvailableSites(), 9 );
 
 }
-
 
 // -------------------------------------------------------------------------- //
 //
