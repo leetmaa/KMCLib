@@ -10,10 +10,10 @@
 #include "test_configuration.h"
 
 // Include the files to test.
-#include "../src/configuration.h"
+#include "configuration.h"
 
-#include "../src/latticemap.h"
-#include "../src/process.h"
+#include "latticemap.h"
+#include "process.h"
 
 // -------------------------------------------------------------------------- //
 //

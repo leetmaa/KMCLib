@@ -10,7 +10,7 @@
 #include "test_matchlistentry.h"
 
 // Include the files to test.
-#include "../src/matchlistentry.h"
+#include "matchlistentry.h"
 
 
 // -------------------------------------------------------------------------- //

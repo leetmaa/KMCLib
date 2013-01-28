@@ -10,14 +10,14 @@
 #include "test_latticemodel.h"
 
 // Include the files to test.
-#include "../src/latticemodel.h"
+#include "latticemodel.h"
 
 // Other inclusions.
-#include "../src/configuration.h"
-#include "../src/latticemap.h"
-#include "../src/interactions.h"
-#include "../src/random.h"
-#include "../src/simulationtimer.h"
+#include "configuration.h"
+#include "latticemap.h"
+#include "interactions.h"
+#include "random.h"
+#include "simulationtimer.h"
 
 #include <ctime>
 

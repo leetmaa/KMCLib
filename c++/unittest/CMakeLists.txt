@@ -9,6 +9,7 @@ file( GLOB CppSources test_* )
 
 # Compiler flags.
 add_definitions( -Wno-deprecated-declarations )
+include_directories( ${KMCLib_SOURCE_DIR}/src )
 
 # Compile the the unittest source.
 add_library( unittest ${CppSources} )

@@ -10,13 +10,13 @@
 #include "test_matcher.h"
 
 // Include the file to test.
-#include "../src/matcher.h"
+#include "matcher.h"
 
-#include "../src/matchlistentry.h"
-#include "../src/configuration.h"
-#include "../src/latticemap.h"
-#include "../src/process.h"
-#include "../src/interactions.h"
+#include "matchlistentry.h"
+#include "configuration.h"
+#include "latticemap.h"
+#include "process.h"
+#include "interactions.h"
 
 // -------------------------------------------------------------------------- //
 //

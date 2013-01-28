@@ -1,5 +1,5 @@
 /*
-  Copyright (c)  2012  Mikael Leetmaa
+  Copyright (c)  2012-2013  Mikael Leetmaa
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -10,10 +10,10 @@
 #include "test_latticemap.h"
 
 // Include the files to test.
-#include "../src/latticemap.h"
+#include "latticemap.h"
 
-#include "../src/coordinate.h"
-#include "../src/configuration.h"
+#include "coordinate.h"
+#include "configuration.h"
 
 #include <algorithm>
 

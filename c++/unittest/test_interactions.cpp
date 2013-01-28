@@ -10,12 +10,12 @@
 #include "test_interactions.h"
 
 // Include the files to test.
-#include "../src/interactions.h"
+#include "interactions.h"
 
-#include "../src/configuration.h"
-#include "../src/matchlistentry.h"
-#include "../src/random.h"
-#include "../src/latticemap.h"
+#include "configuration.h"
+#include "matchlistentry.h"
+#include "random.h"
+#include "latticemap.h"
 
 // -------------------------------------------------------------------------- //
 //
