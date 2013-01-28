@@ -18,6 +18,11 @@
 #include "../src/simulationtimer.h"
 %}
 
+#pragma SWIG nowarn=503
+#pragma SWIG nowarn=509
+#pragma SWIG nowarn=314
+#pragma SWIG nowarn=389
+
 %include "std_string.i"
 %include "std_vector.i"
 %include "std_map.i"
