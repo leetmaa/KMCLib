@@ -8,15 +8,18 @@
 
 %module(directors="1") Backend
 %{
-#include "../src/latticemodel.h"
-#include "../src/latticemap.h"
-#include "../src/configuration.h"
-#include "../src/interactions.h"
-#include "../src/process.h"
-#include "../src/coordinate.h"
-#include "../src/matchlistentry.h"
-#include "../src/simulationtimer.h"
+#include "latticemodel.h"
+#include "latticemap.h"
+#include "configuration.h"
+#include "interactions.h"
+#include "process.h"
+#include "coordinate.h"
+#include "matchlistentry.h"
+#include "simulationtimer.h"
+#include "ratecalculator.h"
 %}
+
+%feature("director") SimpleDummyBaseClass;
 
 #pragma SWIG nowarn=503
 #pragma SWIG nowarn=509
@@ -37,14 +40,16 @@
 %template(StdVectorStdVectorDouble) std::vector<std::vector<double> >;
 %template(StdMapStringInt) std::map<std::string,int>;
 
-%include "../src/latticemodel.h"
-%include "../src/latticemap.h"
-%include "../src/configuration.h"
-%include "../src/interactions.h"
-%include "../src/process.h"
-%include "../src/coordinate.h"
-%include "../src/matchlistentry.h"
-%include "../src/simulationtimer.h"
+%include "latticemodel.h"
+%include "latticemap.h"
+%include "configuration.h"
+%include "interactions.h"
+%include "process.h"
+%include "coordinate.h"
+%include "matchlistentry.h"
+%include "simulationtimer.h"
+%include "ratecalculator.h"
+
 
 %extend Coordinate
 {

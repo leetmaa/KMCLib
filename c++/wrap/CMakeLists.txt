@@ -12,6 +12,7 @@ include(${SWIG_USE_FILE})
 # Add the inclusion paths.
 include_directories(${PYTHON_INCLUDE_PATH})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories( ${KMCLib_SOURCE_DIR}/src )
 
 # Set the flags.
 set(CMAKE_SWIG_FLAGS "")
@@ -21,7 +22,6 @@ set_source_files_properties(backend.i PROPERTIES CPLUSPLUS ON)
 set_source_files_properties(backend.i PROPERTIES SWIG_FLAGS "")
 
 # Set the flag to ignore error from SWIG auto generated code.
-add_definitions( -Wno-maybe-uninitialized)
 add_definitions( -Wno-uninitialized )
 
 # Add the target.
