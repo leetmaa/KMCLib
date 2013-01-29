@@ -31,7 +31,7 @@ RateCalculator::~RateCalculator()
 
 // -----------------------------------------------------------------------------
 //
-double RateCalculator::rate() const
+double RateCalculator::backendRateCallback() const
 {
     // NEEDS IMPLEMENTATION
     return 123.456;
@@ -47,6 +47,6 @@ double RateCalculator::rate() const
 std::string callWhoAmI(const SimpleDummyBaseClass & obj) { return obj.whoAmI(); }
 
 /// Dummy/test function for calling the RateCalculator from C++.
-double getRate(const RateCalculator & rc) { return rc.rate(); }
+double getRate(const RateCalculator & rc) { return rc.backendRateCallback(); }
 
 // -----------------------------------------------------------------------------

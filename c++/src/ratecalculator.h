@@ -33,7 +33,7 @@ public:
 
     /*! \brief NEEDS IMPLEMENTATION
      */
-    virtual double rate() const;
+    virtual double backendRateCallback() const;
 
 protected:
 

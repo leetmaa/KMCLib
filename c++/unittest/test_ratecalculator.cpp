@@ -27,6 +27,6 @@ void Test_RateCalculator::testRate()
 {
     // NEEDS IMPLEMENTATION
     RateCalculator r;
-    r.rate();
+    r.backendRateCallback();
 }
 
