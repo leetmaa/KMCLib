@@ -38,19 +38,18 @@ public:
                                coordinates around an active site.
      *  \param second        : The second configuration, to update the local
                                configuration with if the process is selected.
-     *  \param barrier       : The energy barrier in eV for performing the process.
+     *  \param rate          : The rate in Hz associated with the process.
      *  \param basis_sites   : The basis sites where this process is applicable.
      */
     Process(const Configuration & first,
             const Configuration & second,
-            const double barrier,
+            const double rate,
             const std::vector<int> & basis_sites);
 
     /*! \brief Query for the rate constant.
-     *         NOTE: THIS IS A DUMMY IMPLEMENTATION
      *  \return : The rate constant of the process.
      */
-    double rateConstant() const { return 1.0 / barrier_; } // NEEDS IMPLEMENTATION
+    double rateConstant() const { return rate_; }
 
     /*! \brief Query for the number of listed possible sites for this process.
      *  \return : The number of listed indices.
@@ -114,8 +113,8 @@ protected:
 
 private:
 
-    /// The barrier in eV.
-    double barrier_;
+    /// The rate in Hz.
+    double rate_;
 
     /// The available sites for this process.
     std::vector<int> sites_;

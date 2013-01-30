@@ -238,8 +238,8 @@ void Test_Matcher::testIsMatchIndexListMinimal()
         const Configuration config2(process_coords, elements2, possible_types);
 
         // Construct the process.
-        const double barrier = 13.7;
-        Process process(config1, config2, barrier, basis_sites);
+        const double rate = 13.7;
+        Process process(config1, config2, rate, basis_sites);
 
         // This is a match.
         CPPUNIT_ASSERT( m.isMatch(process.minimalMatchList(), config.minimalMatchList(0)) );
@@ -267,8 +267,8 @@ void Test_Matcher::testIsMatchIndexListMinimal()
         const Configuration config2(process_coords, elements2, possible_types);
 
         // Construct the process.
-        const double barrier = 13.7;
-        Process process(config1, config2, barrier, basis_sites);
+        const double rate = 13.7;
+        Process process(config1, config2, rate, basis_sites);
 
         // This is a match.
         CPPUNIT_ASSERT( m.isMatch(process.minimalMatchList(), config.minimalMatchList(1)) );
@@ -296,8 +296,8 @@ void Test_Matcher::testIsMatchIndexListMinimal()
         const Configuration config2(process_coords, elements2, possible_types);
 
         // Construct the process.
-        const double barrier = 13.7;
-        Process process(config1, config2, barrier, basis_sites);
+        const double rate = 13.7;
+        Process process(config1, config2, rate, basis_sites);
 
         // Not a match.
         CPPUNIT_ASSERT( !m.isMatch(process.minimalMatchList(), config.minimalMatchList(1)) );
@@ -328,8 +328,8 @@ void Test_Matcher::testIsMatchIndexListMinimal()
         const Configuration config2(process_coords, elements2, possible_types);
 
         // Construct the process.
-        const double barrier = 13.7;
-        Process process(config1, config2, barrier, basis_sites);
+        const double rate = 13.7;
+        Process process(config1, config2, rate, basis_sites);
 
         // Not a match.
         CPPUNIT_ASSERT( !m.isMatch(process.minimalMatchList(), config.minimalMatchList(1)) );
@@ -473,8 +473,8 @@ void Test_Matcher::testIsMatchIndexListMinimalPeriodic()
         const Configuration config2(process_coords, elements2, possible_types);
 
         // Construct the process.
-        const double barrier = 13.7;
-        Process process(config1, config2, barrier, basis_sites);
+        const double rate = 13.7;
+        Process process(config1, config2, rate, basis_sites);
 
         // This process should match all even numbered indices.
         for (int i = 0; i < 26; i += 2)
@@ -586,8 +586,8 @@ void Test_Matcher::testIsMatchIndexListMinimalPeriodic()
         const Configuration config2(process_coords, elements2, possible_types);
 
         // Construct the process.
-        const double barrier = 13.7;
-        Process process(config1, config2, barrier, basis_sites);
+        const double rate = 13.7;
+        Process process(config1, config2, rate, basis_sites);
 
         // This process should match all even numbered indices.
         for (int i = 0; i < 26; i += 2)
@@ -731,8 +731,8 @@ void Test_Matcher::testIsMatchIndexListComplicatedPeriodic()
         const Configuration config2(process_coords, elements2, possible_types);
 
         // Construct the process.
-        const double barrier = 13.7;
-        Process process(config1, config2, barrier, basis_sites);
+        const double rate = 13.7;
+        Process process(config1, config2, rate, basis_sites);
 
         // This process should match all except the first the even numbered indices.
         CPPUNIT_ASSERT( !m.isMatch(process.minimalMatchList(), config.minimalMatchList(0)) );
@@ -847,8 +847,8 @@ void Test_Matcher::testIsMatchIndexListComplicatedPeriodic()
         const Configuration config2(process_coords, elements2, possible_types);
 
         // Construct the process.
-        const double barrier = 13.7;
-        Process process(config1, config2, barrier, basis_sites);
+        const double rate = 13.7;
+        Process process(config1, config2, rate, basis_sites);
 
         // This process should only match the first index.
         CPPUNIT_ASSERT(  m.isMatch(process.minimalMatchList(), config.minimalMatchList(0)) );
@@ -991,8 +991,8 @@ void Test_Matcher::testCalculateMatchingProcess()
     const Configuration config2(process_coords, elements2, possible_types);
 
     // Construct the process.
-    const double barrier = 13.7;
-    Process process(config1, config2, barrier, basis_sites);
+    const double rate = 13.7;
+    Process process(config1, config2, rate, basis_sites);
 
     // Make sure the process' available sites is empty.
     CPPUNIT_ASSERT( process.sites().empty());
@@ -1203,8 +1203,8 @@ void Test_Matcher::testCalculateMatchingInteractions()
         const Configuration config2(process_coords, elements2, possible_types);
 
         // Construct the process.
-        const double barrier = 13.7;
-        const Process process(config1, config2, barrier, basis_sites);
+        const double rate = 13.7;
+        const Process process(config1, config2, rate, basis_sites);
         processes.push_back(process);
 
     }
@@ -1295,8 +1295,8 @@ void Test_Matcher::testCalculateMatchingInteractions()
         const Configuration config2(process_coords, elements2, possible_types);
 
         // Construct the process.
-        const double barrier = 13.7;
-        const Process process(config1, config2, barrier, basis_sites);
+        const double rate = 13.7;
+        const Process process(config1, config2, rate, basis_sites);
         processes.push_back(process);
     }
 

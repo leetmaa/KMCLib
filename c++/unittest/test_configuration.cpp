@@ -185,10 +185,10 @@ void Test_Configuration::testPerformProcess()
     process_coordinates[2][1] =  0.25;
     process_coordinates[2][2] =  0.25;
 
-    const double barrier = 13.7;
+    const double rate = 13.7;
     Configuration c1(process_coordinates, process_elements1, possible_types);
     Configuration c2(process_coordinates, process_elements2, possible_types);
-    Process p(c1, c2, barrier, basis_sites);
+    Process p(c1, c2, rate, basis_sites);
 
     // Now, add index 1434 to the process.
     // We know by construction that these match.
@@ -369,10 +369,10 @@ void Test_Configuration::testMatchLists()
     process_coordinates[2][1] =  0.25;
     process_coordinates[2][2] =  0.25;
 
-    const double barrier = 13.7;
+    const double rate = 13.7;
     Configuration c1(process_coordinates, process_elements1, possible_types);
     Configuration c2(process_coordinates, process_elements2, possible_types);
-    Process p(c1, c2, barrier, basis_sites);
+    Process p(c1, c2, rate, basis_sites);
 
     // Now, add index 1434 to the process.
     // We know by construction that these match.

@@ -87,7 +87,7 @@ public:
     const std::vector<std::pair<double,int> > & probabilityTable() const { return probability_table_; }
 
     /*! \brief Recalculate the table of process probabilities based on the
-     *         number of available sites for each process and their barriers.
+     *         number of available sites for each process and their rates.
      */
     void updateProbabilityTable();
 

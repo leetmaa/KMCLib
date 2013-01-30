@@ -21,9 +21,9 @@
 //
 Process::Process(const Configuration & first,
                  const Configuration & second,
-                 const double barrier,
+                 const double rate,
                  const std::vector<int> & basis_sites) :
-    barrier_(barrier),
+    rate_(rate),
     sites_(0),
     affected_indices_(0),
     basis_sites_(basis_sites)

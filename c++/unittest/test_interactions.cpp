@@ -53,10 +53,10 @@ void Test_Interactions::testQuery()
         const std::vector<std::string> process_elements1(1,"B");
         const std::vector<std::string> process_elements2(1,"V");
         const std::vector<std::vector<double> > process_coordinates(1, std::vector<double>(3, 0.0));
-        const double barrier = 1.234;
+        const double rate = 1.234;
         Configuration c1(process_coordinates, process_elements1, possible_types);
         Configuration c2(process_coordinates, process_elements2, possible_types);
-        Process p(c1, c2, barrier, std::vector<int>(1,0));
+        Process p(c1, c2, rate, std::vector<int>(1,0));
         // Store twize.
         processes.push_back(p);
         processes.push_back(p);
@@ -84,10 +84,10 @@ void Test_Interactions::testQuery()
         process_coordinates[2][1] =  0.25;
         process_coordinates[2][2] =  0.25;
 
-        const double barrier = 13.7;
+        const double rate = 13.7;
         Configuration c1(process_coordinates, process_elements1, possible_types);
         Configuration c2(process_coordinates, process_elements2, possible_types);
-        Process p(c1, c2, barrier, std::vector<int>(1,0));
+        Process p(c1, c2, rate, std::vector<int>(1,0));
         processes.push_back(p);
     }
 
@@ -156,16 +156,16 @@ void Test_Interactions::testUpdateAndPick()
     possible_types["B"] = 1;
     possible_types["V"] = 2;
 
-    const double barrier = 13.7;
+    const double rate = 1.0/13.7;
     Configuration c1(process_coordinates, process_elements1, possible_types);
     Configuration c2(process_coordinates, process_elements2, possible_types);
     std::vector<int> sites_vector(1,0);
-    processes.push_back(Process(c1,c2,barrier,sites_vector));
-    processes.push_back(Process(c1,c2,barrier,sites_vector));
-    processes.push_back(Process(c1,c2,barrier+barrier,sites_vector));
-    processes.push_back(Process(c1,c2,barrier,sites_vector));
-    processes.push_back(Process(c1,c2,barrier,sites_vector));
-    processes.push_back(Process(c1,c2,barrier,sites_vector));
+    processes.push_back(Process(c1,c2,rate,sites_vector));
+    processes.push_back(Process(c1,c2,rate,sites_vector));
+    processes.push_back(Process(c1,c2,rate/2.0,sites_vector));
+    processes.push_back(Process(c1,c2,rate,sites_vector));
+    processes.push_back(Process(c1,c2,rate,sites_vector));
+    processes.push_back(Process(c1,c2,rate,sites_vector));
 
     // Fake a matching by adding sites to the processes.
 
@@ -200,12 +200,12 @@ void Test_Interactions::testUpdateAndPick()
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(probability_table.size()),
                           static_cast<int>(processes.size()) );
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[0].first,  3.0/barrier, 1.0e-14 );
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[1].first,  5.0/barrier, 1.0e-14 );
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[2].first,  7.0/barrier, 1.0e-14 );
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[3].first,  7.0/barrier, 1.0e-14 );
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[4].first,  7.0/barrier, 1.0e-14 );
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[5].first,  8.0/barrier, 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[0].first,  3.0 * rate, 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[1].first,  5.0 * rate, 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[2].first,  7.0 * rate, 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[3].first,  7.0 * rate, 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[4].first,  7.0 * rate, 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[5].first,  8.0 * rate, 1.0e-14 );
 
     CPPUNIT_ASSERT_EQUAL( probability_table[0].second, 3 );
     CPPUNIT_ASSERT_EQUAL( probability_table[1].second, 2 );
@@ -221,7 +221,7 @@ void Test_Interactions::testUpdateAndPick()
 
     // Pick processes from this table with enough statistics should give
     // the distribution proportional to the number of available sites,
-    // but with the double barrier for the third process should halve
+    // but with the double rate for the third process should halve
     // this entry.
     std::vector<int> picked(6,0);
     const int n_loop = 1000000;
@@ -300,13 +300,13 @@ void Test_Interactions::testMaxRange()
     possible_types["B"] = 1;
     possible_types["V"] = 2;
 
-    const double barrier = 13.7;
+    const double rate = 13.7;
     const Configuration c1(process_coordinates, process_elements1, possible_types);
     const Configuration c2(process_coordinates, process_elements2, possible_types);
 
     std::vector<int> sites_vector(0);
-    processes.push_back(Process(c1,c2,barrier,sites_vector));
-    processes.push_back(Process(c1,c2,barrier,sites_vector));
+    processes.push_back(Process(c1,c2,rate,sites_vector));
+    processes.push_back(Process(c1,c2,rate,sites_vector));
 
     // Setup the interactions object.
     const Interactions interactions(processes, true);
@@ -321,7 +321,7 @@ void Test_Interactions::testMaxRange()
 
     const Configuration c3(process_coordinates, process_elements1, possible_types);
     const Configuration c4(process_coordinates, process_elements2, possible_types);
-    processes.push_back(Process(c3,c4,barrier,sites_vector));
+    processes.push_back(Process(c3,c4,rate,sites_vector));
 
     // This should have the max range 2.
     const Interactions interactions2(processes, true);
@@ -334,7 +334,7 @@ void Test_Interactions::testMaxRange()
 
     const Configuration c5(process_coordinates, process_elements1, possible_types);
     const Configuration c6(process_coordinates, process_elements2, possible_types);
-    processes[2] = Process(c5,c6,barrier,sites_vector);
+    processes[2] = Process(c5,c6,rate,sites_vector);
 
     // This should have the max range 3.
     const Interactions interactions3(processes, true);
@@ -347,7 +347,7 @@ void Test_Interactions::testMaxRange()
 
     const Configuration c7(process_coordinates, process_elements1, possible_types);
     const Configuration c8(process_coordinates, process_elements2, possible_types);
-    processes[2] = Process(c7,c8,barrier,sites_vector);
+    processes[2] = Process(c7,c8,rate,sites_vector);
 
     // This should have the max range 4.
     const Interactions interactions4(processes, true);
@@ -362,7 +362,7 @@ void Test_Interactions::testMaxRange()
 
     const Configuration c9(process_coordinates, process_elements1, possible_types);
     const Configuration c10(process_coordinates, process_elements2, possible_types);
-    processes[2] = Process(c9,c10,barrier,sites_vector);
+    processes[2] = Process(c9,c10,rate,sites_vector);
 
     // This should have the max range 5.
     const Interactions interactions5(processes, true);
@@ -376,7 +376,7 @@ void Test_Interactions::testMaxRange()
 
     const Configuration c11(process_coordinates, process_elements1, possible_types);
     const Configuration c12(process_coordinates, process_elements2, possible_types);
-    processes[2] = Process(c11,c12,barrier,sites_vector);
+    processes[2] = Process(c11,c12,rate,sites_vector);
 
     // This should have the max range 2.
     const Interactions interactions6(processes, true);
@@ -389,7 +389,7 @@ void Test_Interactions::testMaxRange()
 
     const Configuration c13(process_coordinates, process_elements1, possible_types);
     const Configuration c14(process_coordinates, process_elements2, possible_types);
-    processes[2] = Process(c13,c14,barrier,sites_vector);
+    processes[2] = Process(c13,c14,rate,sites_vector);
 
     // This should have the max range 4.
     const Interactions interactions7(processes, true);
@@ -431,17 +431,17 @@ void Test_Interactions::testUpdateProcessMatchLists()
     possible_types["B"] = 2;
     possible_types["V"] = 3;
 
-    const double barrier = 13.7;
+    const double rate = 13.7;
     const Configuration c1(process_coordinates1, process_elements1, possible_types);
     const Configuration c2(process_coordinates1, process_elements2, possible_types);
 
     // Let this process be valid at site 0.
-    processes.push_back(Process(c1,c2,barrier,std::vector<int>(1,0)));
+    processes.push_back(Process(c1,c2,rate,std::vector<int>(1,0)));
 
     // Let this process be valid at sites 0 and 2.
     std::vector<int> sites_vector(2,0);
     sites_vector[1] = 2;
-    processes.push_back(Process(c1,c2,barrier,sites_vector));
+    processes.push_back(Process(c1,c2,rate,sites_vector));
 
     std::vector<std::vector<double> > process_coordinates2(3, std::vector<double>(3, 0.0));
 
@@ -457,7 +457,7 @@ void Test_Interactions::testUpdateProcessMatchLists()
     const Configuration c4(process_coordinates2, process_elements2, possible_types);
 
     // Let the process be valid at site 1.
-    processes.push_back(Process(c3,c4,barrier,std::vector<int>(1,1)));
+    processes.push_back(Process(c3,c4,rate,std::vector<int>(1,1)));
 
     Interactions interactions(processes, true);
 

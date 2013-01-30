@@ -280,8 +280,8 @@ class KMCLatticeModelTest(unittest.TestCase):
             coordinates=coordinates,
             types=types)
 
-        interactions_list = [(conf1_0, conf2_0,    1.0/4.0),
-                             (conf1_1, conf2_1,    1.0/1.0)]
+        interactions_list = [(conf1_0, conf2_0,    4.0),
+                             (conf1_1, conf2_1,    1.0)]
 
         interactions = KMCInteractions(interactions_list=interactions_list)
 
