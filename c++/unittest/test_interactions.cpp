@@ -16,14 +16,21 @@
 #include "matchlistentry.h"
 #include "random.h"
 #include "latticemap.h"
+#include "ratecalculator.h"
 
 // -------------------------------------------------------------------------- //
 //
 void Test_Interactions::testConstruction()
 {
-    std::vector<Process> processes;
-    bool implicit_wildcards = false;
+    const std::vector<Process> processes;
+    const bool implicit_wildcards = false;
     Interactions interactions(processes, implicit_wildcards);
+    CPPUNIT_ASSERT( !interactions.customRates() );
+
+    // Construct with a rate calculator.
+    const RateCalculator rc;
+    Interactions interactions2(processes, implicit_wildcards, rc);
+    CPPUNIT_ASSERT( interactions2.customRates() );
 
     // DONE
 }
@@ -118,6 +125,12 @@ void Test_Interactions::testQuery()
     interactions.processes()[2].addSite(177777);
 
     CPPUNIT_ASSERT_EQUAL( interactions.totalAvailableSites(), 9 );
+
+    // Query for the rate calculator.
+    const RateCalculator & rc = interactions.rateCalculator();
+
+    // NEEDS IMPLEMENTATION
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( rc.rate(), -1.0, 1.0e-12 );
 
 }
 

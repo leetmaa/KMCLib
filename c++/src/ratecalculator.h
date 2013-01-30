@@ -35,6 +35,10 @@ public:
      */
     virtual double backendRateCallback() const;
 
+    /*! \brief NEEDS IMPLEMENTATION
+     */
+    virtual double rate() const { return -1.0; }
+
 protected:
 
 private:

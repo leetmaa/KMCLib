@@ -16,7 +16,7 @@
 //
 void Test_RateCalculator::testConstruction()
 {
-    // NEEDS IMPLEMENTATION
+    // We can construct this base class.
     RateCalculator r;
 }
 

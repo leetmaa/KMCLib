@@ -15,6 +15,7 @@
 #include "interactions.h"
 #include "random.h"
 #include "configuration.h"
+#include "ratecalculator.h"
 
 // -----------------------------------------------------------------------------
 // Function for comparing two entries in the probability list.
@@ -39,7 +40,25 @@ Interactions::Interactions(const std::vector<Process> & processes,
                            const bool implicit_wildcards) :
     processes_(processes),
     probability_table_(processes.size(), std::pair<double,int>(0.0,0)),
-    implicit_wildcards_(implicit_wildcards)
+    implicit_wildcards_(implicit_wildcards),
+    custom_rates_(false),
+    rate_calculator_placeholder_(RateCalculator()),
+    rate_calculator_(rate_calculator_placeholder_)
+{
+    // NOTHING HERE YET
+}
+
+
+// -----------------------------------------------------------------------------
+//
+Interactions::Interactions(const std::vector<Process> & processes,
+                           const bool implicit_wildcards,
+                           const RateCalculator & rate_calculator) :
+    processes_(processes),
+    probability_table_(processes.size(), std::pair<double,int>(0.0,0)),
+    implicit_wildcards_(implicit_wildcards),
+    custom_rates_(true),
+    rate_calculator_(rate_calculator)
 {
     // NOTHING HERE YET
 }

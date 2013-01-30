@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "process.h"
+#include "ratecalculator.h"
 
 // Forward declarations.
 class Configuration;
@@ -35,10 +36,25 @@ public:
      */
     Interactions(const std::vector<Process> & processes, const bool implicit_wildcards);
 
+    /*! \brief Construct the interactions object from a list of processes.
+     *  \param processes: The list of proceeses.
+     *  \param implicit_wildcards: A flag indicating if implicit wildcards should be added
+     *                             to the process matchlists.
+     *  \param rate_calculator: The custom rate calculator to use for updating the rates.
+     */
+    Interactions(const std::vector<Process> & processes,
+                 const bool implicit_wildcards,
+                 const RateCalculator & rate_calculator);
+
     /*! \brief Get the max range of all processes.
      *  \return : The max range in shells.
      */
     int maxRange() const;
+
+    /*! \brief Query for the custom rates flag.
+     *  \return : The custom rates flag, (true) if we use custom rates.
+     */
+    bool customRates() const { return custom_rates_; }
 
     /*! \brief Update the process matchlists with implicit wildcards if needed.
      *  \param lattice_map : The lattice map to determine wildcard positions.
@@ -54,6 +70,11 @@ public:
      *  \return : A handle to the processes of the system.
      */
     const std::vector<Process> & processes() const { return processes_; }
+
+    /*! \brief Const query for the rate calculator reference.
+     *  \return : A handle to the rate calculator in use.
+     */
+    const RateCalculator & rateCalculator() const { return rate_calculator_; }
 
     /*! \brief Const query for the number of available sites in the whole system.
      *  \return : The number of available sites in the whole system.
@@ -100,6 +121,16 @@ private:
 
     /// The flag indicating if implicit wildcards should  be used.
     bool implicit_wildcards_;
+
+    /// The flag indicating if custom rates should be used.
+    bool custom_rates_;
+
+    /// A rate calculator placeholder if non is given on construction.
+    RateCalculator rate_calculator_placeholder_;
+
+    /// A reference to the rate calculator to use.
+    const RateCalculator & rate_calculator_;
+
 };
 
 

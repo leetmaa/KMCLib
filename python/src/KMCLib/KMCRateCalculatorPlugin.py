@@ -1,4 +1,4 @@
-""" Module for the KMCRateCalculator API class """
+""" Module for the KMCRateCalculatorPlugin class """
 
 
 # Copyright (c)  2013  Mikael Leetmaa
@@ -12,7 +12,7 @@ from KMCLib.Backend import Backend
 from KMCLib.Exceptions.Error import Error
 
 
-class KMCRateCalculator(Backend.RateCalculator):
+class KMCRateCalculatorPlugin(Backend.RateCalculator):
     """
     Class for providing an interface to easily extend and customize
     the behaviour of the calculation of individual rates in the KMC simulation.
@@ -26,8 +26,9 @@ class KMCRateCalculator(Backend.RateCalculator):
         Backend.RateCalculator.__init__(self)
 
         # Call the custom setup.
-        self.intialize()
+        self.initialize()
 
+    # NEEDS IMPLEMENTATION
     def backendRateCallback(self):
         """
         Function called from C++ to get the rate.
@@ -58,6 +59,7 @@ class KMCRateCalculator(Backend.RateCalculator):
         """
         pass
 
+    # NEEDS IMPLEMENTATION
     def rate(self):
         """
         Called from the base class to get the rate for a particular

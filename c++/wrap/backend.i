@@ -20,6 +20,7 @@
 %}
 
 %feature("director") SimpleDummyBaseClass;
+%feature("director") RateCalculator;
 
 #pragma SWIG nowarn=503
 #pragma SWIG nowarn=509
