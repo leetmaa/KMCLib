@@ -69,17 +69,17 @@ Process::Process(const Configuration & first,
     std::sort(minimal_match_list_.begin(), minimal_match_list_.end());
 }
 
+
 // -----------------------------------------------------------------------------
-//
-bool Process::isListed(const int index) const
+// DUMMY
+void Process::printMyType() const
 {
-    // Search in the list to find out if it is added.
-    return std::find(sites_.begin(), sites_.end(), index) != sites_.end();
+    printf("type: Process\n");
 }
 
 // -----------------------------------------------------------------------------
 //
-void Process::addSite(const int index)
+void Process::addSite(const int index, const double rate)
 {
     sites_.push_back(index);
 }
@@ -99,7 +99,6 @@ void Process::removeSite(const int index)
     sites_.pop_back();
 }
 
-
 // -----------------------------------------------------------------------------
 //
 int Process::pickSite() const
@@ -109,4 +108,11 @@ int Process::pickSite() const
     return sites_[rnd];
 }
 
+// -----------------------------------------------------------------------------
+//
+bool Process::isListed(const int index) const
+{
+    // Search in the list to find out if it is added.
+    return std::find(sites_.begin(), sites_.end(), index) != sites_.end();
+}
 

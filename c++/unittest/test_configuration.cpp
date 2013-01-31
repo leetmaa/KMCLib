@@ -192,7 +192,7 @@ void Test_Configuration::testPerformProcess()
 
     // Now, add index 1434 to the process.
     // We know by construction that these match.
-    p.addSite(1434);
+    p.addSite(1434, 0.0);
 
     // For site 1434
     // 350 changes from 1 to 0
@@ -376,7 +376,7 @@ void Test_Configuration::testMatchLists()
 
     // Now, add index 1434 to the process.
     // We know by construction that these match.
-    p.addSite(1434);
+    p.addSite(1434, 0.0);
 
     // For site 1434
     // 350 changes from 1 to 0

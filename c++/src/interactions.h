@@ -17,7 +17,9 @@
 #include <vector>
 
 #include "process.h"
+#include "customrateprocess.h"
 #include "ratecalculator.h"
+
 
 // Forward declarations.
 class Configuration;
@@ -42,7 +44,7 @@ public:
      *                             to the process matchlists.
      *  \param rate_calculator: The custom rate calculator to use for updating the rates.
      */
-    Interactions(const std::vector<Process> & processes,
+    Interactions(const std::vector<CustomRateProcess> & processes,
                  const bool implicit_wildcards,
                  const RateCalculator & rate_calculator);
 
@@ -64,12 +66,12 @@ public:
     /*! \brief Query for the processes.
      *  \return : The processes of the system.
      */
-    std::vector<Process> & processes() { return processes_; }
+    std::vector<Process*> & processes() { return process_pointers_; }
 
     /*! \brief Const query for the processes.
      *  \return : A handle to the processes of the system.
      */
-    const std::vector<Process> & processes() const { return processes_; }
+    const std::vector<Process*> & processes() const { return process_pointers_; }
 
     /*! \brief Const query for the rate calculator reference.
      *  \return : A handle to the rate calculator in use.
@@ -107,7 +109,7 @@ public:
      *  \return : A reference to a possible available process picked according
      *            to its probability.
      */
-    Process & pickProcess();
+    Process* pickProcess();
 
 protected:
 
@@ -115,6 +117,12 @@ private:
 
     /// The processes.
     std::vector<Process> processes_;
+
+    /// The process vector of processes with individual rates.
+    std::vector<CustomRateProcess> custom_rate_processes_;
+
+    /// Pointers to the processes we use.
+    std::vector<Process*> process_pointers_;
 
     /// The probability table.
     std::vector<std::pair<double,int> > probability_table_;

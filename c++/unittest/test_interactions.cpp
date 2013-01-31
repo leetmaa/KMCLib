@@ -22,16 +22,20 @@
 //
 void Test_Interactions::testConstruction()
 {
-    const std::vector<Process> processes;
+    std::vector<Process> processes;
+    processes.push_back(Process());
+    processes.push_back(Process());
     const bool implicit_wildcards = false;
     Interactions interactions(processes, implicit_wildcards);
     CPPUNIT_ASSERT( !interactions.customRates() );
 
     // Construct with a rate calculator.
     const RateCalculator rc;
-    Interactions interactions2(processes, implicit_wildcards, rc);
+    std::vector<CustomRateProcess> processes2;
+    processes2.push_back(CustomRateProcess());
+    processes2.push_back(CustomRateProcess());
+    Interactions interactions2(processes2, implicit_wildcards, rc);
     CPPUNIT_ASSERT( interactions2.customRates() );
-
     // DONE
 }
 
@@ -95,34 +99,34 @@ void Test_Interactions::testQuery()
     Interactions interactions(processes, false);
 
     // Query for the processes.
-    const std::vector<Process> & queried_processes = interactions.processes();
+    const std::vector<Process*> & queried_processes = interactions.processes();
 
     // Check the length of the list of processes.
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(queried_processes.size()), 3 );
 
     // Get the types in the queried processes and check.
-    CPPUNIT_ASSERT_EQUAL( queried_processes[0].minimalMatchList()[0].match_type, 1 );
-    CPPUNIT_ASSERT_EQUAL( queried_processes[0].minimalMatchList()[0].update_type, 2 );
+    CPPUNIT_ASSERT_EQUAL( queried_processes[0]->minimalMatchList()[0].match_type, 1 );
+    CPPUNIT_ASSERT_EQUAL( queried_processes[0]->minimalMatchList()[0].update_type, 2 );
 
-    CPPUNIT_ASSERT_EQUAL( queried_processes[2].minimalMatchList()[2].match_type, 1 );
-    CPPUNIT_ASSERT_EQUAL( queried_processes[2].minimalMatchList()[2].update_type, 1 );
+    CPPUNIT_ASSERT_EQUAL( queried_processes[2]->minimalMatchList()[2].match_type, 1 );
+    CPPUNIT_ASSERT_EQUAL( queried_processes[2]->minimalMatchList()[2].update_type, 1 );
 
     // Query for the total number of available sites. This is zero since no sites are added to
     // the processes.
     CPPUNIT_ASSERT_EQUAL( interactions.totalAvailableSites(), 0 );
 
     // Add sites to the processes and see that we get the correct number out.
-    interactions.processes()[0].addSite(12);
-    interactions.processes()[0].addSite(143);
-    interactions.processes()[0].addSite(1654);
-    interactions.processes()[0].addSite(177777);
+    interactions.processes()[0]->addSite(12);
+    interactions.processes()[0]->addSite(143);
+    interactions.processes()[0]->addSite(1654);
+    interactions.processes()[0]->addSite(177777);
 
-    interactions.processes()[1].addSite(12);
-    interactions.processes()[1].addSite(143);
+    interactions.processes()[1]->addSite(12);
+    interactions.processes()[1]->addSite(143);
 
-    interactions.processes()[2].addSite(1654);
-    interactions.processes()[2].addSite(177777);
-    interactions.processes()[2].addSite(177777);
+    interactions.processes()[2]->addSite(1654);
+    interactions.processes()[2]->addSite(177777);
+    interactions.processes()[2]->addSite(177777);
 
     CPPUNIT_ASSERT_EQUAL( interactions.totalAvailableSites(), 9 );
 
@@ -263,10 +267,10 @@ void Test_Interactions::testUpdateAndPick()
     // a seed reset inbetween gives a reference to the same object.
     seedRandom(false, 87);
     const int p = interactions.pickProcessIndex();
-    const Process & proc1 = interactions.processes()[p];
+    const Process & proc1 = (*interactions.processes()[p]);
 
     seedRandom(false, 87);
-    const Process & proc2 = interactions.pickProcess();
+    const Process & proc2 = (*interactions.pickProcess());
     CPPUNIT_ASSERT_EQUAL( &proc1, &proc2 );
 
 }
@@ -494,16 +498,16 @@ void Test_Interactions::testUpdateProcessMatchLists()
     config.initMatchLists(lattice_map, interactions.maxRange());
 
     // Check the process match lists before we start.
-    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[0].minimalMatchList().size()), 3);
-    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[1].minimalMatchList().size()), 3);
-    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[2].minimalMatchList().size()), 3);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[0]->minimalMatchList().size()), 3);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[1]->minimalMatchList().size()), 3);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[2]->minimalMatchList().size()), 3);
 
     // Update the interactions according to the configuration match lists.
     interactions.updateProcessMatchLists(config);
 
     // Check a few coordinates and match types.
     {
-        const std::vector<MinimalMatchListEntry> & match = interactions.processes()[0].minimalMatchList();
+        const std::vector<MinimalMatchListEntry> & match = interactions.processes()[0]->minimalMatchList();
 
         CPPUNIT_ASSERT_EQUAL( static_cast<int>(match.size()), 6 );
 
@@ -546,7 +550,7 @@ void Test_Interactions::testUpdateProcessMatchLists()
 
     {
         // This one is not changed, since it was applicable to more than one basis site.
-        const std::vector<MinimalMatchListEntry> & match = interactions.processes()[1].minimalMatchList();
+        const std::vector<MinimalMatchListEntry> & match = interactions.processes()[1]->minimalMatchList();
         CPPUNIT_ASSERT_EQUAL( static_cast<int>(match.size()), 3 );
         // Not changed - but sorted.
         CPPUNIT_ASSERT_DOUBLES_EQUAL( match[0].coordinate.x(),  process_coordinates1[0][0], 1.0e-10 );
@@ -565,7 +569,7 @@ void Test_Interactions::testUpdateProcessMatchLists()
 
 
     {
-        const std::vector<MinimalMatchListEntry> & match = interactions.processes()[2].minimalMatchList();
+        const std::vector<MinimalMatchListEntry> & match = interactions.processes()[2]->minimalMatchList();
         CPPUNIT_ASSERT_EQUAL( static_cast<int>(match.size()), 47 );
 
         // Not changed.

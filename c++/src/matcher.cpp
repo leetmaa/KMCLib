@@ -52,7 +52,7 @@ void Matcher::calculateMatching(Interactions & interactions,
         // Match against all processes.
         for (size_t j = 0; j < interactions.processes().size(); ++j)
         {
-            Process & process = interactions.processes()[j];
+            Process & process = (*interactions.processes()[j]);
 
             // Check if the basis site is listed.
             const std::vector<int> & process_basis_sites = process.basisSites();

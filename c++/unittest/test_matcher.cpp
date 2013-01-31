@@ -1319,34 +1319,34 @@ void Test_Matcher::testCalculateMatchingInteractions()
     m.calculateMatching(interactions, config, lattice_map, indices);
 
     // The first process should match all even indices except the first.
-    CPPUNIT_ASSERT( !interactions.processes()[0].isListed(0) );
-    CPPUNIT_ASSERT(  interactions.processes()[0].isListed(2) );
-    CPPUNIT_ASSERT( !interactions.processes()[0].isListed(3) );
-    CPPUNIT_ASSERT(  interactions.processes()[0].isListed(4) );
-    CPPUNIT_ASSERT( !interactions.processes()[0].isListed(9) );
-    CPPUNIT_ASSERT(  interactions.processes()[0].isListed(14) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(0) );
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(2) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(3) );
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(4) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(9) );
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(14) );
 
     // The second process should match the first index only.
-    CPPUNIT_ASSERT(  interactions.processes()[1].isListed(0) );
-    CPPUNIT_ASSERT( !interactions.processes()[1].isListed(2) );
-    CPPUNIT_ASSERT( !interactions.processes()[1].isListed(3) );
-    CPPUNIT_ASSERT( !interactions.processes()[1].isListed(4) );
-    CPPUNIT_ASSERT( !interactions.processes()[1].isListed(5) );
+    CPPUNIT_ASSERT(  interactions.processes()[1]->isListed(0) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(2) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(3) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(4) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(5) );
 
     // Call the matching function again does not change any thing.
     m.calculateMatching(interactions, config, lattice_map, indices);
 
-    CPPUNIT_ASSERT( !interactions.processes()[0].isListed(0) );
-    CPPUNIT_ASSERT(  interactions.processes()[0].isListed(2) );
-    CPPUNIT_ASSERT( !interactions.processes()[0].isListed(3) );
-    CPPUNIT_ASSERT(  interactions.processes()[0].isListed(4) );
-    CPPUNIT_ASSERT( !interactions.processes()[0].isListed(9) );
-    CPPUNIT_ASSERT(  interactions.processes()[0].isListed(14) );
-    CPPUNIT_ASSERT(  interactions.processes()[1].isListed(0) );
-    CPPUNIT_ASSERT( !interactions.processes()[1].isListed(2) );
-    CPPUNIT_ASSERT( !interactions.processes()[1].isListed(3) );
-    CPPUNIT_ASSERT( !interactions.processes()[1].isListed(4) );
-    CPPUNIT_ASSERT( !interactions.processes()[1].isListed(5) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(0) );
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(2) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(3) );
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(4) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(9) );
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(14) );
+    CPPUNIT_ASSERT(  interactions.processes()[1]->isListed(0) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(2) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(3) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(4) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(5) );
 
     // Change the configuration such that the first proces
     // match with the first (0:th) index, and the second process
@@ -1356,13 +1356,13 @@ void Test_Matcher::testCalculateMatchingInteractions()
     config.initMatchLists(lattice_map, 1);
     m.calculateMatching(interactions, config, lattice_map, indices);
 
-    CPPUNIT_ASSERT(  interactions.processes()[0].isListed(0) );
-    CPPUNIT_ASSERT(  interactions.processes()[0].isListed(2) );
-    CPPUNIT_ASSERT( !interactions.processes()[0].isListed(3) );
-    CPPUNIT_ASSERT(  interactions.processes()[0].isListed(4) );
-    CPPUNIT_ASSERT( !interactions.processes()[0].isListed(9) );
-    CPPUNIT_ASSERT(  interactions.processes()[0].isListed(14) );
-    CPPUNIT_ASSERT( interactions.processes()[1].sites().empty() );
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(0) );
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(2) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(3) );
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(4) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(9) );
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(14) );
+    CPPUNIT_ASSERT( interactions.processes()[1]->sites().empty() );
 
 }
 

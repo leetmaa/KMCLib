@@ -29,7 +29,7 @@ public:
 
     /*! \brief Default constructor needed for use in std::vector SWIG wrapping.
      */
-    Process() {};
+    Process() {}
 
     /*! \brief Constructor for the process. Note that the configurations given
                to the process are local configurations and no periodic boundaries
@@ -46,8 +46,36 @@ public:
             const double rate,
             const std::vector<int> & basis_sites);
 
-    /*! \brief Query for the rate constant.
-     *  \return : The rate constant of the process.
+    /*! \brief Virtual destructor needed for use as base class.
+     */
+    virtual ~Process() {}
+
+    // ML: dummy
+    virtual void printMyType() const;
+
+    /*! \brief Query for the total rate.
+     *  \return : The total rate of the process.
+     */
+    virtual double totalRate() const { return rate_ * sites_.size(); }
+
+    /*! \brief Add the index to the list of available sites.
+     *  \param index : The index to add.
+     *  \param rate  : Dummy argument needed for common interface.
+     */
+    virtual void addSite(const int index, const double rate=0.0);
+
+    /*! \brief Remove the index from the list of available sites.
+     *  \param index : The index to remove.
+     */
+    virtual void removeSite(const int index);
+
+    /*! \brief Pick a random available process.
+     *  \return : A random available process.
+     */
+    virtual int pickSite() const;
+
+    /*! \brief Query for the rate constant associated with the process.
+     *  \return : The rate constant part of the of rate for the process.
      */
     double rateConstant() const { return rate_; }
 
@@ -62,16 +90,7 @@ public:
      */
     bool isListed(const int index) const;
 
-    /*! \brief Add the index to the list of available sites.
-     *  \param index : The index to add.
-     */
-    void addSite(const int index);
-
-    /*! \brief Remove the index from the list of available sites.
-     *  \param index : The index to remove.
-     */
-    void removeSite(const int index);
-
+    // ML: when is this used?
     /*! \brief Query for the available sites for this process.
      *  \return : The available sites.
      */
@@ -104,14 +123,7 @@ public:
      */
     const std::vector<int> & basisSites() const { return basis_sites_; }
 
-    /*! \brief Pick a random available process.
-     *  \return : A random available process.
-     */
-    int pickSite() const;
-
 protected:
-
-private:
 
     /// The rate in Hz.
     double rate_;
@@ -129,6 +141,8 @@ private:
 
     /// The basis sites to which this process can be applied.
     std::vector<int> basis_sites_;
+
+private:
 
 };
 

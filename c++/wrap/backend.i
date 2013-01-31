@@ -13,6 +13,7 @@
 #include "configuration.h"
 #include "interactions.h"
 #include "process.h"
+#include "customrateprocess.h"
 #include "coordinate.h"
 #include "matchlistentry.h"
 #include "simulationtimer.h"
@@ -36,6 +37,8 @@
 %template(StdVectorInt) std::vector<int>;
 %template(StdVectorBool) std::vector<bool>;
 %template(StdVectorProcess) std::vector<Process>;
+%template(SteVectorProcessPtr) std::vector<Process*>;
+%template(StdVectorCustomRateProcess) std::vector<CustomRateProcess>;
 %template(StdVectorCoordinate) std::vector<Coordinate>;
 %template(StdVectorMinimalMatchListEntry) std::vector<MinimalMatchListEntry>;
 %template(StdVectorStdVectorDouble) std::vector<std::vector<double> >;
@@ -46,6 +49,7 @@
 %include "configuration.h"
 %include "interactions.h"
 %include "process.h"
+%include "customrateprocess.h"
 %include "coordinate.h"
 %include "matchlistentry.h"
 %include "simulationtimer.h"

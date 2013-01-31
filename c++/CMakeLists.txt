@@ -7,11 +7,15 @@
 cmake_minimum_required(VERSION 2.8)
 project(KMCLib)
 
-# To use verbose output
+# To use verbose output.
 set( CMAKE_VERBOSE_MAKEFILE off )
 
 # Setup general compiler options.
 add_definitions(-std=c++0x -O3 -fPIC -Wall -Wextra -Werror -pedantic)
+
+# Add the extara flags for the TIMEPROF target
+# (use with "cmake -DCMAKE_BUILD_TYPE=TIMEPROF ..")
+set(CMAKE_CXX_FLAGS_TIMEPROF "-g -pg")
 
 # Compile the source.
 add_subdirectory(src)

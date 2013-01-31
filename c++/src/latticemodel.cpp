@@ -75,7 +75,7 @@ void LatticeModel::calculateInitialMatching()
 void LatticeModel::singleStep()
 {
     // Select a process.
-    Process & process = interactions_.pickProcess();
+    Process & process = (*interactions_.pickProcess());
 
     // Select a site.
     const int site_index = process.pickSite();

@@ -181,8 +181,15 @@ the KMCRateCalculatorPlugin class itself. """
         """
         if self.__backend is None:
 
+            # Setup the correct type of backend process objects
+            # depending on the presence of a rate calculator.
+
+            if self.__rate_calculator is not None:
+                cpp_processes = Backend.StdVectorCustomRateProcess()
+            else:
+                cpp_processes = Backend.StdVectorProcess()
+
             # For each interaction.
-            cpp_processes = Backend.StdVectorProcess()
             for interaction in self.__raw_interactions:
 
                 # Get the corresponding C++ objects.
@@ -198,14 +205,22 @@ the KMCRateCalculatorPlugin class itself. """
                     for b in interaction[3]:
                         if b < n_basis:
                             basis_list.append(b)
-                # And construct the C++ vector.
+
+                # And construct the C++ entry.
                 cpp_basis = Backend.StdVectorInt(basis_list)
 
                 # Construct and store the C++ process.
-                cpp_processes.push_back(Backend.Process(cpp_config1,
-                                                        cpp_config2,
-                                                        barrier,
-                                                        cpp_basis))
+                if self.__rate_calculator is not None:
+                    cpp_processes.push_back(Backend.CustomRateProcess(cpp_config1,
+                                                                      cpp_config2,
+                                                                      barrier,
+                                                                      cpp_basis))
+                else:
+                    cpp_processes.push_back(Backend.Process(cpp_config1,
+                                                            cpp_config2,
+                                                            barrier,
+                                                            cpp_basis))
+
 
             # Construct the C++ interactions object.
             if self.__rate_calculator is not None:

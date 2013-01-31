@@ -39,28 +39,50 @@ bool pairComp(const std::pair<double,int> & p1,
 Interactions::Interactions(const std::vector<Process> & processes,
                            const bool implicit_wildcards) :
     processes_(processes),
+    custom_rate_processes_(0),
+    process_pointers_(processes.size(), NULL),
     probability_table_(processes.size(), std::pair<double,int>(0.0,0)),
     implicit_wildcards_(implicit_wildcards),
     custom_rates_(false),
     rate_calculator_placeholder_(RateCalculator()),
     rate_calculator_(rate_calculator_placeholder_)
 {
-    // NOTHING HERE YET
+    // Point the process pointers to the right places.
+    printf("ML: type ref Process\n");
+    for (size_t i = 0; i < processes_.size(); ++i)
+    {
+        process_pointers_[i] = &processes_[i];
+        process_pointers_[i]->printMyType();
+    }
+
+    // DONE
 }
 
 
 // -----------------------------------------------------------------------------
 //
-Interactions::Interactions(const std::vector<Process> & processes,
+Interactions::Interactions(const std::vector<CustomRateProcess> & processes,
                            const bool implicit_wildcards,
                            const RateCalculator & rate_calculator) :
-    processes_(processes),
+    processes_(0),
+    custom_rate_processes_(processes),
+    process_pointers_(processes.size(), NULL),
     probability_table_(processes.size(), std::pair<double,int>(0.0,0)),
     implicit_wildcards_(implicit_wildcards),
     custom_rates_(true),
     rate_calculator_(rate_calculator)
 {
-    // NOTHING HERE YET
+    // Point the process pointers to the right places.
+    printf("ML: type ref CustomRateProcess\n");
+    for (size_t i = 0; i < custom_rate_processes_.size(); ++i)
+    {
+        process_pointers_[i] = &custom_rate_processes_[i];
+        process_pointers_[i]->printMyType();
+    }
+
+    printf("out of the loop\n");
+
+    // DONE
 }
 
 
@@ -71,10 +93,10 @@ int Interactions::maxRange() const
     // Loop through all processes and find the largest range in each of them.
     int max_range = 1;
 
-    std::vector<Process>::const_iterator it1 = processes_.begin();
-    for ( ; it1 != processes_.end(); ++it1 )
+    std::vector<Process*>::const_iterator it1 = process_pointers_.begin();
+    for ( ; it1 != process_pointers_.end(); ++it1 )
     {
-        const std::vector<MinimalMatchListEntry> & list = (*it1).minimalMatchList();
+        const std::vector<MinimalMatchListEntry> & list = (**it1).minimalMatchList();
         std::vector<MinimalMatchListEntry>::const_iterator it2 = list.begin();
 
         // Get the largest coordinate out.
@@ -114,9 +136,9 @@ void Interactions::updateProcessMatchLists(const Configuration & configuration)
     }
 
     // Loop through each process.
-    for (size_t i = 0; i < processes_.size(); ++i)
+    for (size_t i = 0; i < process_pointers_.size(); ++i)
     {
-        Process & p = processes_[i];
+        Process & p = (*process_pointers_[i]);
 
        // Skip this process unless the size of basis sites is one.
         if ( p.basisSites().size() != 1 )
@@ -163,9 +185,9 @@ int Interactions::totalAvailableSites() const
 {
     // Loop through and sum all available sites on all processes.
     size_t sum = 0;
-    for (size_t i = 0; i < processes_.size(); ++i)
+    for (size_t i = 0; i < process_pointers_.size(); ++i)
     {
-        sum += processes_[i].sites().size();
+        sum += process_pointers_[i]->sites().size();
     }
     return static_cast<int>(sum);
 }
@@ -176,16 +198,16 @@ int Interactions::totalAvailableSites() const
 void Interactions::updateProbabilityTable()
 {
     // Loop over all processes.
-    std::vector<Process>::const_iterator it1 = processes_.begin();
+    std::vector<Process*>::const_iterator it1 = process_pointers_.begin();
     std::vector<std::pair<double,int> >::iterator it2 = probability_table_.begin();
-    const std::vector<Process>::const_iterator end = processes_.end();
+    const std::vector<Process*>::const_iterator end = process_pointers_.end();
 
     double previous_rate = 0.0;
     for ( ; it1 != end; ++it1, ++it2 )
     {
         // Find out its total probability.
-        const int n_sites = (*it1).nSites();
-        const double total_rate = n_sites * (*it1).rateConstant();
+        const int n_sites = (**it1).nSites();
+        const double total_rate = (**it1).totalRate();
         // Store the probability with the process number in a table.
         (*it2).first = total_rate + previous_rate;
         previous_rate += total_rate;
@@ -227,9 +249,9 @@ int Interactions::pickProcessIndex() const
 
 // -----------------------------------------------------------------------------
 //
-Process & Interactions::pickProcess()
+Process* Interactions::pickProcess()
 {
     const int index = pickProcessIndex();
-    return processes_[index];
+    return process_pointers_[index];
 }
 

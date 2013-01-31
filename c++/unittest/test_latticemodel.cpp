@@ -219,19 +219,19 @@ void Test_LatticeModel::testSetupAndQuery()
 
     // Get the interactions out and check that they are setup as expected.
     const Interactions ret_interactions = lattice_model.interactions();
-    const std::vector<Process> ret_processes = ret_interactions.processes();
+    const std::vector<Process*> ret_processes = ret_interactions.processes();
 
     // Check the number of processes.
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(ret_processes.size()), 4);
 
     // Check the number of listed sites at each process.
-    CPPUNIT_ASSERT_EQUAL( static_cast<int>(ret_interactions.processes()[0].sites().size()), nI*nJ*nK*nB*2/3 );
-    CPPUNIT_ASSERT_EQUAL( static_cast<int>(ret_interactions.processes()[1].sites().size()), nI*nJ*nK*nB*2/3 );
-    CPPUNIT_ASSERT_EQUAL( static_cast<int>(ret_interactions.processes()[2].sites().size()), nI*nJ*nK*nB/3 );
-    CPPUNIT_ASSERT_EQUAL( static_cast<int>(ret_interactions.processes()[3].sites().size()), 0 );
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(ret_interactions.processes()[0]->sites().size()), nI*nJ*nK*nB*2/3 );
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(ret_interactions.processes()[1]->sites().size()), nI*nJ*nK*nB*2/3 );
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(ret_interactions.processes()[2]->sites().size()), nI*nJ*nK*nB/3 );
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(ret_interactions.processes()[3]->sites().size()), 0 );
 
     // Check the first process.
-    const Process & p0 = ret_processes[0];
+    const Process & p0 = (*ret_processes[0]);
 
     // Check that all "B" sites are listed,
     // and that all "V" and "A" sites are not.
@@ -243,7 +243,7 @@ void Test_LatticeModel::testSetupAndQuery()
     }
 
     // Check the second process.
-    const Process & p1 = ret_processes[1];
+    const Process & p1 = (*ret_processes[1]);
 
     // This process is identical to the first.
     for (int i = 0; i < nI*nJ*nK*nB; i += nB)
@@ -254,7 +254,7 @@ void Test_LatticeModel::testSetupAndQuery()
     }
 
     // Check the third process has all "A" sites listed.
-    const Process & p2 = ret_processes[2];
+    const Process & p2 = (*ret_processes[2]);
 
     // This process is identical to the first.
     for (int i = 0; i < nI*nJ*nK*nB; i += nB)
@@ -265,7 +265,7 @@ void Test_LatticeModel::testSetupAndQuery()
     }
 
     // Check the last process has no sites listed.
-    const Process & p3 = ret_processes[3];
+    const Process & p3 = (*ret_processes[3]);
     CPPUNIT_ASSERT( p3.sites().empty() );
 
     // Introduce a few different typed sites.
@@ -283,10 +283,10 @@ void Test_LatticeModel::testSetupAndQuery()
     // Get the interactions out and check.
     const Interactions ret_interactions_2 = lattice_model_2.interactions();
 
-    CPPUNIT_ASSERT_EQUAL( static_cast<int>(ret_interactions_2.processes()[0].sites().size()), (nI*nJ*nK*nB*2/3)-1);
-    CPPUNIT_ASSERT_EQUAL( static_cast<int>(ret_interactions_2.processes()[1].sites().size()), (nI*nJ*nK*nB*2/3)-1);
-    CPPUNIT_ASSERT_EQUAL( static_cast<int>(ret_interactions_2.processes()[2].sites().size()), (nI*nJ*nK*nB/3)-4);
-    CPPUNIT_ASSERT_EQUAL( static_cast<int>(ret_interactions_2.processes()[3].sites().size()), 3 );
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(ret_interactions_2.processes()[0]->sites().size()), (nI*nJ*nK*nB*2/3)-1);
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(ret_interactions_2.processes()[1]->sites().size()), (nI*nJ*nK*nB*2/3)-1);
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(ret_interactions_2.processes()[2]->sites().size()), (nI*nJ*nK*nB/3)-4);
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(ret_interactions_2.processes()[3]->sites().size()), 3 );
 
     // DONE
 }
