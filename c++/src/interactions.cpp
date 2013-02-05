@@ -81,8 +81,6 @@ Interactions::Interactions(const std::vector<CustomRateProcess> & processes,
         process_pointers_[i]->printMyType();
     }
 
-    printf("out of the loop\n");
-
     // DONE
 }
 
@@ -255,10 +253,7 @@ Process* Interactions::pickProcess()
     const int index = pickProcessIndex();
 
     // Update the process internal probablility table if needed.
-    if (use_custom_rates_)
-    {
-        custom_rate_processes_[index].updateRateTable();
-    }
+    process_pointers_[index]->updateRateTable();
 
     return process_pointers_[index];
 }

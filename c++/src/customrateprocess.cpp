@@ -119,3 +119,4 @@ void CustomRateProcess::updateRateTable()
 
     // DONE
 }
+

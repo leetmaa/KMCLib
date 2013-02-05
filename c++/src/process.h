@@ -74,6 +74,11 @@ public:
      */
     virtual int pickSite() const;
 
+    /*! \brief Interface function for inherited classes.
+     *         This function does nothing if not overloaded.
+     */
+    virtual void updateRateTable() {}
+
     /*! \brief Query for the rate constant associated with the process.
      *  \return : The rate constant part of the of rate for the process.
      */

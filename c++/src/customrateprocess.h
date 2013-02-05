@@ -72,7 +72,7 @@ public:
 
     /*! \brief Update the rate table prior to drawing a rate.
      */
-    void updateRateTable();
+    virtual void updateRateTable();
 
 protected:
 

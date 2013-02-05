@@ -24,6 +24,30 @@ class Configuration;
 class Process;
 class LatticeMap;
 
+/// A minimal struct for representing an add task.
+struct AddTask
+{
+    int index;
+    int process;
+    double rate;
+};
+
+/// A minimal struct for representing an update task.
+struct UpdateTask
+{
+    int index;
+    int process;
+    double rate;
+};
+
+/// A minimal struct for representing a remove task.
+struct RemoveTask
+{
+    int index;
+    int process;
+};
+
+
 /*! \brief Class for matching local geometries.
  */
 class Matcher {
@@ -46,6 +70,21 @@ public:
                            Configuration & configuration,
                            const LatticeMap & lattice_map,
                            const std::vector<int> & indices) const;
+
+    // ML
+    void matchIndicesWithProcesses(const std::vector<std::pair<int,int> > & index_process_to_match,
+                                   Interactions  & interactions,
+                                   Configuration & configuration,
+                                   std::vector<RemoveTask> & remove_tasks,
+                                   std::vector<UpdateTask> & update_tasks,
+                                   std::vector<AddTask> & add_tasks) const;
+
+    // ML
+    void updateProcesses(const std::vector<RemoveTask> & to_remove,
+                         const std::vector<UpdateTask> & to_update,
+                         const std::vector<AddTask>    & to_add,
+                         Interactions & interactions) const;
+
 
     /*! \brief Calculate/update the matching of a provided index and process.
      *  \param process       : The process to check against and update if needed.

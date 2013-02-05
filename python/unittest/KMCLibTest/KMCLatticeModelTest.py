@@ -22,6 +22,9 @@ from KMCLib.KMCLattice  import KMCLattice
 # Import from the module we test.
 from KMCLib.KMCLatticeModel import KMCLatticeModel
 
+# Test helpers.
+from TestUtilities.Plugins.CustomRateCalculator.CustomRateCalculator import CustomRateCalculator
+
 # Implement the test.
 class KMCLatticeModelTest(unittest.TestCase):
     """ Class for testing the KMCLatticeModel class. """
@@ -284,6 +287,105 @@ class KMCLatticeModelTest(unittest.TestCase):
                              (conf1_1, conf2_1,    1.0)]
 
         interactions = KMCInteractions(interactions_list=interactions_list)
+
+        # Setup the model.
+        ab_flip_model = KMCLatticeModel(configuration, interactions)
+
+        # Run the model with a trajectory file.
+        name = os.path.abspath(os.path.dirname(__file__))
+        name = os.path.join(name, "TestUtilities", "Scratch")
+        trajectory_filename = os.path.join(name, "ab_flip_traj.py")
+        self.__files_to_remove.append(trajectory_filename)
+
+        # The control parameters.
+        control_parameters = KMCControlParameters(number_of_steps=3000,
+                                                  dump_interval=1000)
+
+        # Run the model for 2000 steps.
+        ab_flip_model.run(control_parameters,
+                          trajectory_filename=trajectory_filename)
+
+        # Read the first last frames from the trajectory file and check that
+        # the fraction of A is close to 20% in the last, and 0 in the first.
+        global_dict = {}
+        local_dict  = {}
+        execfile(trajectory_filename, global_dict, local_dict)
+
+        # Count the first frame.
+        elem = local_dict["types"][0]
+        nA = len([ ee for ee in elem if ee == "A" ])
+        nB = len([ ee for ee in elem if ee == "B" ])
+        self.assertEqual(nA, 0)
+        self.assertEqual(nB, 100)
+
+        # Count the last frame.
+        elem = local_dict["types"][-1]
+        nA = len([ ee for ee in elem if ee == "A" ])
+        nB = len([ ee for ee in elem if ee == "B" ])
+
+        # Note that the average should be 20.0% over a long run.
+        # It is pure luck that it is exact at this particular
+        # step with the presently used random number seed.
+        self.assertAlmostEqual(20.0, nA * 100.0 / (nA + nB), 3.0 )
+
+    # FIXME: NEEDS IMPLEMENTATION
+    def notestCustomRatesRun(self):
+        """ Test the run of an A-B flip model with custom rates. """
+        # Cell.
+        cell_vectors = [[   1.000000e+00,   0.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   1.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   0.000000e+00,   1.000000e+00]]
+
+        basis_points = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+
+        unit_cell = KMCUnitCell(
+            cell_vectors=cell_vectors,
+            basis_points=basis_points)
+
+        # Lattice.
+        lattice = KMCLattice(
+            unit_cell=unit_cell,
+            repetitions=(10,10,1),
+            periodic=(True, True, False))
+
+        # Configuration.
+        types = ['B']*100
+        possible_types = ['A','B']
+        configuration = KMCConfiguration(
+            lattice=lattice,
+            types=types,
+            possible_types=possible_types)
+
+        # Interactions.
+        coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+        types = ['A']
+        conf1_0 = KMCLocalConfiguration(
+            coordinates=coordinates,
+            types=types)
+
+        conf2_1 = KMCLocalConfiguration(
+            coordinates=coordinates,
+            types=types)
+
+        types = ['B']
+        conf2_0 = KMCLocalConfiguration(
+            coordinates=coordinates,
+            types=types)
+
+        conf1_1 = KMCLocalConfiguration(
+            coordinates=coordinates,
+            types=types)
+
+        interactions_list = [(conf1_0, conf2_0,    4.0),
+                             (conf1_1, conf2_1,    1.0)]
+
+
+        # Custom rates.
+        rate_calculator = CustomRateCalculator
+
+        interactions = KMCInteractions(interactions_list=interactions_list,
+                                       implicit_wildcards=True,
+                                       rate_calculator=rate_calculator)
 
         # Setup the model.
         ab_flip_model = KMCLatticeModel(configuration, interactions)

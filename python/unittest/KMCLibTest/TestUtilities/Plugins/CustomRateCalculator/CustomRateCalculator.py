@@ -16,7 +16,8 @@ class CustomRateCalculator(KMCRateCalculatorPlugin):
     # NEEDS IMPLEMENTATION
     def rate(self):
         """ Overloaded API rate function. """
-        return 13.45
+        print "RATE function called in python. XXXXXXX"
+        return 136666.45
 
     def useAdditiveRate(self):
         """ Overloaded API function to provide a flag for additive rates. """

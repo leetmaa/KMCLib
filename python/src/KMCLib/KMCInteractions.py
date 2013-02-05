@@ -46,7 +46,7 @@ class KMCInteractions(object):
                                    is True, i.e. to use implicit wildcards.
         :type implicit_wildcards:  bool
 
-        :param rate_calculator:    An instance of a class inheriting from the
+        :param rate_calculator:    A class inheriting from the
                                    KMCRateCalculatorPlugin interface. If not given
                                    the rates specified for each process will be used unmodified.
         """
