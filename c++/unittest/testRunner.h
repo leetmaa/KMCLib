@@ -12,6 +12,7 @@
 #include "test_configuration.h"
 #include "test_latticemap.h"
 #include "test_process.h"
+#include "test_customrateprocess.h"
 #include "test_interactions.h"
 #include "test_coordinate.h"
 #include "test_matchlistentry.h"
@@ -26,6 +27,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( Test_LatticeModel );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_Configuration );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_LatticeMap );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_Process );
+CPPUNIT_TEST_SUITE_REGISTRATION( Test_CustomRateProcess );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_Interactions );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_Coordinate );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_MatchListEntry );
