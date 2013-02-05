@@ -27,7 +27,7 @@ void Test_Interactions::testConstruction()
     processes.push_back(Process());
     const bool implicit_wildcards = false;
     Interactions interactions(processes, implicit_wildcards);
-    CPPUNIT_ASSERT( !interactions.customRates() );
+    CPPUNIT_ASSERT( !interactions.useCustomRates() );
 
     // Construct with a rate calculator.
     const RateCalculator rc;
@@ -35,7 +35,7 @@ void Test_Interactions::testConstruction()
     processes2.push_back(CustomRateProcess());
     processes2.push_back(CustomRateProcess());
     Interactions interactions2(processes2, implicit_wildcards, rc);
-    CPPUNIT_ASSERT( interactions2.customRates() );
+    CPPUNIT_ASSERT( interactions2.useCustomRates() );
     // DONE
 }
 
@@ -142,7 +142,7 @@ void Test_Interactions::testQuery()
 //
 void Test_Interactions::testUpdateAndPick()
 {
-    // Setup two valid processes.
+    // Setup a list of processes.
     std::vector<Process> processes;
 
     // Setup a vector of dummy processes.
@@ -273,6 +273,187 @@ void Test_Interactions::testUpdateAndPick()
     const Process & proc2 = (*interactions.pickProcess());
     CPPUNIT_ASSERT_EQUAL( &proc1, &proc2 );
 
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Interactions::testUpdateAndPickCustom()
+{
+    // Setup a list of custom rate processes.
+    std::vector<CustomRateProcess> processes;
+
+    // Setup a vector of dummy processes.
+    std::vector<std::string> process_elements1(1);
+    process_elements1[0] = "A";
+
+    std::vector<std::string> process_elements2(1);
+    process_elements2[0] = "B";
+
+    std::vector<std::vector<double> > process_coordinates(1, std::vector<double>(3, 0.0));
+
+    // Possible types.
+    std::map<std::string, int> possible_types;
+    possible_types["A"] = 0;
+    possible_types["B"] = 1;
+    possible_types["V"] = 2;
+
+    const double rate = 1.0/13.7;
+    Configuration c1(process_coordinates, process_elements1, possible_types);
+    Configuration c2(process_coordinates, process_elements2, possible_types);
+    std::vector<int> sites_vector(1,0);
+    processes.push_back(CustomRateProcess(c1,c2,rate,sites_vector));
+    processes.push_back(CustomRateProcess(c1,c2,rate,sites_vector));
+    processes.push_back(CustomRateProcess(c1,c2,rate/2.0,sites_vector));
+    processes.push_back(CustomRateProcess(c1,c2,rate,sites_vector));
+    processes.push_back(CustomRateProcess(c1,c2,rate,sites_vector));
+    processes.push_back(CustomRateProcess(c1,c2,rate,sites_vector));
+
+    // Fake a matching by adding sites to the processes.
+
+    // First process, 3 sites, total rate 12
+    processes[0].addSite(12,  4.0);
+    processes[0].addSite(123, 7.0);
+    processes[0].addSite(332, 1.0);
+
+    // Second process, 2 sites, total rate 4
+    processes[1].addSite(19, 1.0);
+    processes[1].addSite(12, 3.0);
+
+    // Third process, 4 sites, total rate  3
+    processes[2].addSite(19,  1.0/4.0);
+    processes[2].addSite(12,  5.0/4.0);
+    processes[2].addSite(234, 2.0/4.0);
+    processes[2].addSite(991, 4.0/4.0);
+
+    // The sixth process, one site, total rate 12.
+    processes[5].addSite(992, 12.0);
+
+    // Setup the interactions object.
+    RateCalculator rc;
+    Interactions interactions(processes, true, rc);
+
+    // Update the probability table.
+    interactions.updateProbabilityTable();
+
+    // Check the values of the probability table.
+    const std::vector<std::pair<double, int> > & probability_table = \
+        interactions.probabilityTable();
+
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(probability_table.size()),
+                          static_cast<int>(processes.size()) );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[0].first,  12.0, 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[1].first,  16.0, 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[2].first,  19.0, 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[3].first,  19.0, 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[4].first,  19.0, 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[5].first,  31.0, 1.0e-14 );
+
+    CPPUNIT_ASSERT_EQUAL( probability_table[0].second, 3 );
+    CPPUNIT_ASSERT_EQUAL( probability_table[1].second, 2 );
+    CPPUNIT_ASSERT_EQUAL( probability_table[2].second, 4 );
+    CPPUNIT_ASSERT_EQUAL( probability_table[3].second, 0 );
+    CPPUNIT_ASSERT_EQUAL( probability_table[4].second, 0 );
+    CPPUNIT_ASSERT_EQUAL( probability_table[5].second, 1 );
+
+
+    // Make sure to seed the random number generator before we test any
+    // random dependent stuff.
+    seedRandom(false, 131);
+
+    // Pick processes from this table with enough statistics should give
+    // the distribution proportional to the number of available sites,
+    // but with the double rate for the third process should halve
+    // this entry.
+    std::vector<int> picked(6,0);
+    const int n_loop = 1000000;
+    for (int i = 0; i < n_loop; ++i)
+    {
+        const int p = interactions.pickProcessIndex();
+
+        // Make sure the picked process is not negative or too large.
+        CPPUNIT_ASSERT( p >= 0 );
+        CPPUNIT_ASSERT( p < static_cast<int>(probability_table.size()) );
+        ++picked[p];
+    }
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0*picked[0]/n_loop,
+                                  12.0/31.0,
+                                  1.0e-2 );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0*picked[1]/n_loop,
+                                  4.0/31.0,
+                                  1.0e-2 );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0*picked[2]/n_loop,
+                                  3.0/31.0,
+                                  1.0e-2 );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0*picked[3]/n_loop,
+                                  0.0/31.0,
+                                  1.0e-2 );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0*picked[4]/n_loop,
+                                  0.0/31.0,
+                                  1.0e-2 );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0*picked[5]/n_loop,
+                                  12.0/31.0,
+                                  1.0e-2 );
+
+    // Check that picking the process twice with two different access methods and
+    // a seed reset inbetween gives a reference to the same object.
+    seedRandom(false, 87);
+    const int p = interactions.pickProcessIndex();
+    const Process & proc1 = (*interactions.processes()[p]);
+
+    seedRandom(false, 87);
+    const Process & proc2 = (*interactions.pickProcess());
+    CPPUNIT_ASSERT_EQUAL( &proc1, &proc2 );
+
+    // Alter the total rate in one of the processes and re-run the picking.
+    interactions.processes()[5]->removeSite(992);
+    interactions.processes()[5]->addSite(992, 24.0);
+
+    // Update the probability table.
+    interactions.updateProbabilityTable();
+    std::vector<int> picked2(6,0);
+    for (int i = 0; i < n_loop; ++i)
+    {
+        const int p = interactions.pickProcessIndex();
+
+        // Make sure the picked process is not negative or too large.
+        CPPUNIT_ASSERT( p >= 0 );
+        CPPUNIT_ASSERT( p < static_cast<int>(probability_table.size()) );
+        ++picked2[p];
+    }
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0*picked2[0]/n_loop,
+                                  12.0/43.0,
+                                  1.0e-2 );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0*picked2[1]/n_loop,
+                                  4.0/43.0,
+                                  1.0e-2 );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0*picked2[2]/n_loop,
+                                  3.0/43.0,
+                                  1.0e-2 );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0*picked2[3]/n_loop,
+                                  0.0/43.0,
+                                  1.0e-2 );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0*picked2[4]/n_loop,
+                                  0.0/43.0,
+                                  1.0e-2 );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0*picked2[5]/n_loop,
+                                  24.0/43.0,
+                                  1.0e-2 );
+
+    // DONE
 }
 
 

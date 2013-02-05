@@ -267,6 +267,9 @@ void Test_CustomRateProcess::testTotalRate()
 //
 void Test_CustomRateProcess::testAddAndRemoveSite()
 {
+    // FIXME: NEEDS IMPLEMENTATION
+    // Test that the individual sites rates are added and removed correctly.
+
     // Setup a valid possible types map.
     std::map<std::string,int> possible_types;
     possible_types["A"] = 1;
@@ -347,16 +350,14 @@ void Test_CustomRateProcess::testAddAndRemoveSite()
 //
 void Test_CustomRateProcess::testPickSite()
 {
-    // FIXME: NEEDS IMPLEMENTATION
-    return;
-
     // Default construct a process.
     CustomRateProcess process;
 
     // Add sites.
-    process.addSite(12,  4.00);
     process.addSite(199, 2.00);
+    process.addSite(12,  5.00);
     process.addSite(19,  3.00);
+    process.updateRateTable();
 
     // Get the cite.
     int counter12  = 0;
@@ -389,9 +390,9 @@ void Test_CustomRateProcess::testPickSite()
     }
 
     // Test.
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0 * n_loop / (4 * n_loop) , 1.0 * counter12 / n_loop,  1.0e-2);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0 * n_loop / (2 * n_loop) , 1.0 * counter19 / n_loop,  1.0e-2);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0 * n_loop / (3 * n_loop) , 1.0 * counter199 / n_loop, 1.0e-2);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0/2.0 , 1.0 * counter12  / n_loop,  1.0e-2);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 3.0/10.0, 1.0 * counter19  / n_loop,  1.0e-2);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.0/10.0, 1.0 * counter199 / n_loop,  1.0e-2);
 
 }
 

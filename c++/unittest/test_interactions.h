@@ -27,6 +27,7 @@ public:
     CPPUNIT_TEST( testConstruction );
     CPPUNIT_TEST( testQuery );
     CPPUNIT_TEST( testUpdateAndPick );
+    CPPUNIT_TEST( testUpdateAndPickCustom );
     CPPUNIT_TEST( testMaxRange );
     CPPUNIT_TEST( testUpdateProcessMatchLists );
     CPPUNIT_TEST_SUITE_END();
@@ -34,6 +35,7 @@ public:
     void testConstruction();
     void testQuery();
     void testUpdateAndPick();
+    void testUpdateAndPickCustom();
     void testMaxRange();
     void testUpdateProcessMatchLists();
 

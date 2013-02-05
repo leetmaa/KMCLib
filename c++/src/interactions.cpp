@@ -17,6 +17,7 @@
 #include "configuration.h"
 #include "ratecalculator.h"
 
+
 // -----------------------------------------------------------------------------
 // Function for comparing two entries in the probability list.
 bool pairComp(const std::pair<double,int> & p1,
@@ -43,7 +44,7 @@ Interactions::Interactions(const std::vector<Process> & processes,
     process_pointers_(processes.size(), NULL),
     probability_table_(processes.size(), std::pair<double,int>(0.0,0)),
     implicit_wildcards_(implicit_wildcards),
-    custom_rates_(false),
+    use_custom_rates_(false),
     rate_calculator_placeholder_(RateCalculator()),
     rate_calculator_(rate_calculator_placeholder_)
 {
@@ -69,7 +70,7 @@ Interactions::Interactions(const std::vector<CustomRateProcess> & processes,
     process_pointers_(processes.size(), NULL),
     probability_table_(processes.size(), std::pair<double,int>(0.0,0)),
     implicit_wildcards_(implicit_wildcards),
-    custom_rates_(true),
+    use_custom_rates_(true),
     rate_calculator_(rate_calculator)
 {
     // Point the process pointers to the right places.
@@ -252,6 +253,12 @@ int Interactions::pickProcessIndex() const
 Process* Interactions::pickProcess()
 {
     const int index = pickProcessIndex();
+
+    // Update the process internal probablility table if needed.
+    if (use_custom_rates_)
+    {
+        custom_rate_processes_[index].updateRateTable();
+    }
+
     return process_pointers_[index];
 }
-

@@ -56,7 +56,7 @@ public:
     /*! \brief Query for the custom rates flag.
      *  \return : The custom rates flag, (true) if we use custom rates.
      */
-    bool customRates() const { return custom_rates_; }
+    bool useCustomRates() const { return use_custom_rates_; }
 
     /*! \brief Update the process matchlists with implicit wildcards if needed.
      *  \param lattice_map : The lattice map to determine wildcard positions.
@@ -131,7 +131,7 @@ private:
     bool implicit_wildcards_;
 
     /// The flag indicating if custom rates should be used.
-    bool custom_rates_;
+    bool use_custom_rates_;
 
     /// A rate calculator placeholder if non is given on construction.
     RateCalculator rate_calculator_placeholder_;
