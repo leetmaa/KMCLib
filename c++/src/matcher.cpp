@@ -257,9 +257,22 @@ void Matcher::updateRates(std::vector<RateTask> & tasks,
                           const Interactions    & interactions,
                           const Configuration   & configuration) const
 {
-    // NEEDS IMPLEMENTATION
-
     // Use the backendCallBack function on the RateCalculator stored on the
     // interactions object, to get an updated rate for each process.
-}
 
+    const RateCalculator & rc = interactions.rateCalculator();
+    for (size_t i = 0; i < tasks.size(); ++i)
+    {
+        // NEEDS IMPLEMENTATION
+
+        // We should send:
+        // Local geometry before process.
+        // Local geometry after process.
+        // Rate constant associated with the process.
+        //
+        // We should get back:
+        // The updated rate of the process at this index.
+
+        tasks[i].rate = rc.backendRateCallback();
+    }
+}

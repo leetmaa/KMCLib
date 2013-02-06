@@ -34,7 +34,7 @@ RateCalculator::~RateCalculator()
 double RateCalculator::backendRateCallback() const
 {
     // NEEDS IMPLEMENTATION
-    return 123.456;
+    return -1.0;
 }
 
 
