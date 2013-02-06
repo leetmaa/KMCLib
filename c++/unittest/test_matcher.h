@@ -31,6 +31,7 @@ public:
     CPPUNIT_TEST( testIsMatchIndexListMinimalPeriodic );
     CPPUNIT_TEST( testIsMatchIndexListComplicatedPeriodic );
     CPPUNIT_TEST( testCalculateMatchingProcess );
+    CPPUNIT_TEST( testUpdateProcesses );
     CPPUNIT_TEST( testCalculateMatchingInteractions );
     CPPUNIT_TEST_SUITE_END();
 
@@ -41,6 +42,7 @@ public:
     void testIsMatchIndexListMinimalPeriodic();
     void testIsMatchIndexListComplicatedPeriodic();
     void testCalculateMatchingProcess();
+    void testUpdateProcesses();
     void testCalculateMatchingInteractions();
 
 };

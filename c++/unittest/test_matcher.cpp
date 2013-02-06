@@ -992,38 +992,64 @@ void Test_Matcher::testCalculateMatchingProcess()
 
     // Construct the process.
     const double rate = 13.7;
+
     Process process(config1, config2, rate, basis_sites);
 
+    // Put the process in a vector.
+    std::vector<Process> processes(1, process);
+
+    // Create an interactions object.
+    Interactions  interactions(processes, false);
+
     // Make sure the process' available sites is empty.
-    CPPUNIT_ASSERT( process.sites().empty());
+    CPPUNIT_ASSERT( interactions.processes()[0]->sites().empty());
+
+    // Match the index and process.
+    std::vector<std::pair<int,int> > match_pairs(1,std::pair<int,int>(0,0));
+
+    std::vector<RemoveTask> rt;
+    std::vector<UpdateTask> ut;
+    std::vector<AddTask>    at;
 
     // Call the matching function.
-    m.calculateMatching(process, config, 0);
+    m.matchIndicesWithProcesses(match_pairs, interactions, config, rt, ut, at);
+    m.updateProcesses(rt, ut, at, interactions);
 
     // Check that the process' available sites is still empty.
-    CPPUNIT_ASSERT( process.sites().empty());
+    CPPUNIT_ASSERT( interactions.processes()[0]->sites().empty());
 
-    // Call the matching function.
-    m.calculateMatching(process, config, 2);
+    // Call the matching function again, now with another matching index.
+    match_pairs = std::vector<std::pair<int,int> >(1, std::pair<int,int>(2,0));
+    m.matchIndicesWithProcesses(match_pairs, interactions, config, rt, ut, at);
+    m.updateProcesses(rt, ut, at, interactions);
 
     // Check that the index was added.
-    CPPUNIT_ASSERT_EQUAL( static_cast<int>(process.sites().size()), 1 );
-    CPPUNIT_ASSERT( process.isListed(2) );
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(interactions.processes()[0]->sites().size()), 1 );
+    CPPUNIT_ASSERT( interactions.processes()[0]->isListed(2) );
 
     // Match again.
-    m.calculateMatching(process, config, 2);
+    rt = std::vector<RemoveTask>(0);
+    ut = std::vector<UpdateTask>(0);
+    at = std::vector<AddTask>(0);
+    m.matchIndicesWithProcesses(match_pairs, interactions, config, rt, ut, at);
+    m.updateProcesses(rt, ut, at, interactions);
 
     // This should not have changed the availability of the index.
-    CPPUNIT_ASSERT_EQUAL( static_cast<int>(process.sites().size()), 1 );
-    CPPUNIT_ASSERT( process.isListed(2) );
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(interactions.processes()[0]->sites().size()), 1 );
+    CPPUNIT_ASSERT( interactions.processes()[0]->isListed(2) );
 
     // Match another index.
-    m.calculateMatching(process, config, 4);
+    rt = std::vector<RemoveTask>(0);
+    ut = std::vector<UpdateTask>(0);
+    at = std::vector<AddTask>(0);
+    match_pairs = std::vector<std::pair<int,int> >(1,std::pair<int,int>(4,0));
+    m.matchIndicesWithProcesses(match_pairs, interactions, config, rt, ut, at);
+    m.updateProcesses(rt, ut, at, interactions);
 
-    // This should not have changed the availability of the index.
-    CPPUNIT_ASSERT_EQUAL( static_cast<int>(process.sites().size()), 2 );
-    CPPUNIT_ASSERT( process.isListed(2) );
-    CPPUNIT_ASSERT( process.isListed(4) );
+    // This should not have changed the availability of the first index.
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(interactions.processes()[0]->sites().size()), 2 );
+    CPPUNIT_ASSERT( interactions.processes()[0]->isListed(2) );
+    CPPUNIT_ASSERT( interactions.processes()[0]->isListed(4) );
 
     // Change the configuration and match.
     elements[2] = "D";
@@ -1031,45 +1057,139 @@ void Test_Matcher::testCalculateMatchingProcess()
     config.initMatchLists(lattice_map, 1);
 
     // Match.
-    m.calculateMatching(process, config, 2);
+    rt = std::vector<RemoveTask>(0);
+    ut = std::vector<UpdateTask>(0);
+    at = std::vector<AddTask>(0);
+    match_pairs = std::vector<std::pair<int,int> >(1,std::pair<int,int>(2,0));
+    m.matchIndicesWithProcesses(match_pairs, interactions, config, rt, ut, at);
+    m.updateProcesses(rt, ut, at, interactions);
 
     // Now index 2 should be removed but 4 still there.
-    CPPUNIT_ASSERT_EQUAL( static_cast<int>(process.sites().size()), 1 );
-    CPPUNIT_ASSERT( !process.isListed(2) );
-    CPPUNIT_ASSERT(  process.isListed(4) );
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(interactions.processes()[0]->sites().size()), 1 );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(2) );
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(4) );
 
     // Match again - this should not change any thing.
-    m.calculateMatching(process, config, 2);
-    CPPUNIT_ASSERT_EQUAL( static_cast<int>(process.sites().size()), 1 );
-    CPPUNIT_ASSERT( !process.isListed(2) );
-    CPPUNIT_ASSERT(  process.isListed(4) );
+    rt = std::vector<RemoveTask>(0);
+    ut = std::vector<UpdateTask>(0);
+    at = std::vector<AddTask>(0);
+    match_pairs = std::vector<std::pair<int,int> >(1,std::pair<int,int>(2,0));
+    m.matchIndicesWithProcesses(match_pairs, interactions, config, rt, ut, at);
+    m.updateProcesses(rt, ut, at, interactions);
+
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(interactions.processes()[0]->sites().size()), 1 );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(2) );
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(4) );
 
     // Match against a changed configuration. This removes index 4.
     elements[4] = "D";
     config = Configuration(coords, elements, possible_types);
     config.initMatchLists(lattice_map, 1);
-    m.calculateMatching(process, config, 4);
-    CPPUNIT_ASSERT( process.sites().empty() );
-    CPPUNIT_ASSERT( !process.isListed(2) );
-    CPPUNIT_ASSERT( !process.isListed(4) );
+
+    // Match.
+    rt = std::vector<RemoveTask>(0);
+    ut = std::vector<UpdateTask>(0);
+    at = std::vector<AddTask>(0);
+    match_pairs = std::vector<std::pair<int,int> >(1,std::pair<int,int>(4,0));
+    m.matchIndicesWithProcesses(match_pairs, interactions, config, rt, ut, at);
+    m.updateProcesses(rt, ut, at, interactions);
+
+    CPPUNIT_ASSERT( interactions.processes()[0]->sites().empty() );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(2) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(4) );
+
+}
 
 
+// -------------------------------------------------------------------------- //
+//
+void Test_Matcher::testUpdateProcesses()
+{
+    Matcher m;
 
-    /*
-    for( ; it1 != process_match_list.end(); ++it1, ++it2)
+    // Setup a list of processes and give it to an interactions object.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["C"] = 1;
+    possible_types["B"] = 2;
+    possible_types["D"] = 3;
+
+    std::vector<std::string> elements1;
+    elements1.push_back("C");
+    elements1.push_back("B");
+    std::vector<std::string> elements2;
+    elements2.push_back("D");
+    elements2.push_back("B");
+    std::vector<std::vector<double> > process_coords(2,std::vector<double>(3,0.0));
+    process_coords[1][0] =  0.5;
+    process_coords[1][1] =  0.5;
+    process_coords[1][2] =  0.5;
+
+    const Configuration config1(process_coords, elements1, possible_types);
+    const Configuration config2(process_coords, elements2, possible_types);
+    const double rate = 13.7;
+    std::vector<int> basis_sites;
+    basis_sites.push_back(1);
+    basis_sites.push_back(0);
+
     {
-        printf("              process  config\n");
-        printf("MatchType   : %i %i\n",(*it1).matchType(), (*it2).matchType());
-        printf("Distance    : %20.10e %20.10e\n", (*it1).distance(), (*it2).distance());
+        CustomRateProcess process(config1, config2, rate, basis_sites);
 
-        printf("Coordinate x: %20.10e %20.10e\n", (*it1).coordinate().x(), (*it2).coordinate().x());
-        printf("Coordinate y: %20.10e %20.10e\n", (*it1).coordinate().y(), (*it2).coordinate().y());
-        printf("Coordinate z: %20.10e %20.10e\n", (*it1).coordinate().z(), (*it2).coordinate().z());
+        // Set up the interactions.
+        std::vector<CustomRateProcess> processes(4, process);
+        Interactions interactions(processes, false, RateCalculator());
+
+        // Populate the processes with indices.
+        interactions.processes()[0]->addSite(0, 1.1);
+        interactions.processes()[0]->addSite(1, 2.2);
+        interactions.processes()[0]->addSite(2, 3.3);
+
+        interactions.processes()[1]->addSite(0, 11.0);
+        interactions.processes()[1]->addSite(1, 1.0);
+
+        interactions.processes()[2]->addSite(0, 13.7);
+
+        // Setup a couple of valid add, remove and update tasks.
+        std::vector<RemoveTask> rt;
+        std::vector<AddTask> at;
+        std::vector<UpdateTask> ut;
+
+        RemoveTask rt1;
+        rt1.index   = 1;
+        rt1.process = 0;
+        rt.push_back(rt1);
+
+        RemoveTask rt2;
+        rt2.index   = 0;
+        rt2.process = 1;
+        rt.push_back(rt2);
+
+        AddTask at1;
+        at1.index   = 4;
+        at1.process = 2;
+        at1.rate    = 123.456;
+        at.push_back(at1);
+
+        UpdateTask ut1;
+        ut1.index   = 0;
+        ut1.process = 2;
+        ut1.rate    = 99.0;
+        ut.push_back(ut1);
+
+        // Perform the tasks.
+        m.updateProcesses(rt, ut, at, interactions);
+
+        // Check the result of the tasks.
+        CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(0) );
+        CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(1) );
+        CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(2) );
+        CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(0) );
+        CPPUNIT_ASSERT(  interactions.processes()[1]->isListed(1) );
+        CPPUNIT_ASSERT(  interactions.processes()[2]->isListed(0) );
+        CPPUNIT_ASSERT(  interactions.processes()[2]->isListed(4) );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( interactions.processes()[2]->totalRate(), 123.456 + 99.0, 1.0e-12 );
 
     }
-    //*/
-
-    // NEEDS IMPLEMENTATION
 }
 
 
@@ -1134,7 +1254,6 @@ void Test_Matcher::testCalculateMatchingInteractions()
     // Construct the configuration.
     Configuration config(coords, elements, possible_types);
 
-
     // ---------------------------------------------------------------------
     // Setup a periodic cooresponding lattice map.
     const std::vector<int> repetitions(3, 3);
@@ -1148,7 +1267,6 @@ void Test_Matcher::testCalculateMatchingInteractions()
 
     // ---------------------------------------------------------------------
     // Now the processes.
-
     {
         // Setup the two configurations.
         std::vector<std::string> elements1;

@@ -37,122 +37,91 @@ void Matcher::calculateMatching(Interactions & interactions,
                                 const std::vector<int> & indices) const
 {
     // PERFORMME:
-    // Any changes here should be timed using realistic test systems.
+    // Changes here should be timed using realistic test systems.
 
-    if (! interactions.useCustomRates())
+    // -------------------------------------------------
+    // Build the list of indices and processes to match.
+    // -------------------------------------------------
+
+    // Filter out index - process combination that are certain never
+    // to match.
+    std::vector<std::pair<int,int> > index_process_to_match;
+    for(size_t i = 0; i < indices.size(); ++i)
     {
-        // Loop through all provided indices.
-        for(size_t i = 0; i < indices.size(); ++i)
+        // Get the index.
+        const int index = indices[i];
+        const int basis_site = lattice_map.basisSiteFromIndex(index);
+
+        // For each process, check if we should try to match.
+        for (size_t j = 0; j < interactions.processes().size(); ++j)
         {
-            // This is the index in the configuration which should
-            // be compared against all possible processes stored in the
-            // interactions object.
-            const int index = indices[i];
-
-            // Get the basis site.
-            const int basis_site = lattice_map.basisSiteFromIndex(index);
-
-            // Match against all processes.
-            for (size_t j = 0; j < interactions.processes().size(); ++j)
+            // Check if the basis site is listed.
+            const std::vector<int> & process_basis_sites = (*interactions.processes()[j]).basisSites();
+            if ( std::find(process_basis_sites.begin(), process_basis_sites.end(), basis_site) != process_basis_sites.end() )
             {
-                Process & process = (*interactions.processes()[j]);
-
-                // Check if the basis site is listed.
-                const std::vector<int> & process_basis_sites = process.basisSites();
-                if ( std::find(process_basis_sites.begin(), process_basis_sites.end(), basis_site) != process_basis_sites.end() )
-                {
-                    calculateMatching(process, configuration, index);
-                }
+                // This is a potential match.
+                index_process_to_match.push_back(std::pair<int,int>(index,j));
             }
         }
     }
-    else
+
+    // ----------------------------
+    // Generate the lists of tasks.
+    // ----------------------------
+
+    // IN PARALLEL:
+    // Split the index_process_to_match vector up on each process.
+    // const std::vecctor<int> my_index_process_to_match = splitOverProcesses(index_process_to_match);
+    const std::vector<std::pair<int,int> > local_index_process_to_match = index_process_to_match;
+
+    std::vector<RemoveTask> remove_tasks;
+    std::vector<UpdateTask> update_tasks;
+    std::vector<AddTask>    add_tasks;
+
+    matchIndicesWithProcesses(local_index_process_to_match,
+                              interactions,
+                              configuration,
+                              remove_tasks,
+                              update_tasks,
+                              add_tasks);
+
+    // IN PARALLEL:
+    // Broadcast the lists of tasks.
+    // broadcastOverProcesses(remove_tasks);
+    // broadcastOverProcesses(update_tasks);
+    // broadcastOverProcesses(add_tasks);
+
+    // ------------------------
+    // Calculate the new rates.
+    // ------------------------
+
+    // Calculate the rates.
+    if (interactions.useCustomRates())
     {
-        // Custom rates with call to the RateCalculator for getting the
-        // updated rates.
-
-        // NEEDS IMPLEMENTATION - This is a prototype.
-
-        // -------------------------------------------------
-        // Build the list of indices and processes to match.
-        // -------------------------------------------------
-
-        // Filter out index - process combination that are certain never
-        // to match.
-
-        std::vector<std::pair<int,int> > index_process_to_match;
-        for(size_t i = 0; i < indices.size(); ++i)
-        {
-            // Get the index.
-            const int index = indices[i];
-            const int basis_site = lattice_map.basisSiteFromIndex(index);
-
-            // For each process, check if we should try to match.
-            for (size_t j = 0; j < interactions.processes().size(); ++j)
-            {
-                // Check if the basis site is listed.
-                const std::vector<int> & process_basis_sites = (*interactions.processes()[j]).basisSites();
-                if ( std::find(process_basis_sites.begin(), process_basis_sites.end(), basis_site) != process_basis_sites.end() )
-                {
-                    // This is a potential match.
-                    index_process_to_match.push_back(std::pair<int,int>(i,j));
-                }
-            }
-        }
-
-        // ----------------------------
-        // Generate the lists of tasks.
-        // ----------------------------
-
-        // IN PARALLEL:
-        // Split the index_process_to_match vector up on each process.
-
-        std::vector<RemoveTask> remove_tasks;
-        std::vector<UpdateTask> update_tasks;
-        std::vector<AddTask>    add_tasks;
-
-        matchIndicesWithProcesses(index_process_to_match,
-                                  interactions,
-                                  configuration,
-                                  remove_tasks,
-                                  update_tasks,
-                                  add_tasks);
-
-        // IN PARALLEL:
-        // Broadcast the lists of tasks.
-
-
-        // ------------------------
-        // Calculate the new rates.
-        // ------------------------
-
         // IN PARALLEL:
         // Split the update and add tasks amongst processes.
+        // std::vector<RateTask> local_add_tasks = splitOverProcesses(add_tasks);
+        // std::vector<RateTask> local_update_tasks = splitOverProcesses(update_tasks);
 
-        // Calculate the rates.
-//        updateRates(add_tasks,    interactions, configuration);
-//        updateRates(update_tasks, interactions, configuration);
+        // updateRates(add_tasks,    interactions, configuration);
+        // updateRates(update_tasks, interactions, configuration);
 
         // IN PARALLEL:
-        // Broadcast the add and update tasks.
-
-
-        // ---------------------
-        // Update the processes.
-        // ---------------------
-
-        updateProcesses(remove_tasks,
-                        update_tasks,
-                        add_tasks,
-                        interactions);
-
-        // DONE
-
-        // const RateCalculator & rc = interactions.rateCalculator();
-        // const double rate = rc.backendRateCallback();
-        // printf("This is the rate we got from python %f\n", rate);
-        // exit(8);
+        // Collect the updated tasks.
+        // collectOverProcesses(local_add_tasks, add_tasks);
+        // collectOverProcesses(local_update_tasks, update_tasks);
     }
+
+    // ---------------------
+    // Update the processes.
+    // ---------------------
+
+    updateProcesses(remove_tasks,
+                    update_tasks,
+                    add_tasks,
+                    interactions);
+
+    // DONE
 }
 
 // -----------------------------------------------------------------------------
@@ -195,7 +164,6 @@ void Matcher::matchIndicesWithProcesses(const std::vector<std::pair<int,int> > &
         }
 
         // If match and previous match - update the rate.
-        /* // ML
         else if (is_match && in_list)
         {
             UpdateTask t;
@@ -204,7 +172,6 @@ void Matcher::matchIndicesWithProcesses(const std::vector<std::pair<int,int> > &
             t.rate    = process.rateConstant();
             update_tasks.push_back(t);
         }
-        */
 
         // If match and not previous match - add.
         else if (is_match && !in_list)
@@ -219,39 +186,6 @@ void Matcher::matchIndicesWithProcesses(const std::vector<std::pair<int,int> > &
 
     // DONE
 }
-
-// -----------------------------------------------------------------------------
-//
-void Matcher::calculateMatching(Process & process,
-                                Configuration & configuration,
-                                const int index) const
-{
-    // Check in the indices list of this process to see if we have
-    // a previous match.
-    const bool in_list = process.isListed(index);
-
-    // Get the match lists out.
-    const std::vector<MinimalMatchListEntry> & process_match_list = process.minimalMatchList();
-
-    // This gets the updated match list.
-    const std::vector<MinimalMatchListEntry> & index_match_list   = configuration.minimalMatchList(index);
-
-    // Check the match.
-    const bool is_match = isMatch(process_match_list,
-                                  index_match_list);
-
-    // If match and not previous match - add to the list.
-    if (is_match && !in_list)
-    {
-        process.addSite(index);
-    }
-    // If no match and previous match - remove from the list.
-    else if (!is_match && in_list)
-    {
-        process.removeSite(index);
-    }
-}
-
 
 // -----------------------------------------------------------------------------
 //
