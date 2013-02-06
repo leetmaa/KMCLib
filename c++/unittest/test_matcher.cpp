@@ -1008,8 +1008,8 @@ void Test_Matcher::testCalculateMatchingProcess()
     std::vector<std::pair<int,int> > match_pairs(1,std::pair<int,int>(0,0));
 
     std::vector<RemoveTask> rt;
-    std::vector<UpdateTask> ut;
-    std::vector<AddTask>    at;
+    std::vector<RateTask>   ut;
+    std::vector<RateTask>   at;
 
     // Call the matching function.
     m.matchIndicesWithProcesses(match_pairs, interactions, config, rt, ut, at);
@@ -1029,8 +1029,8 @@ void Test_Matcher::testCalculateMatchingProcess()
 
     // Match again.
     rt = std::vector<RemoveTask>(0);
-    ut = std::vector<UpdateTask>(0);
-    at = std::vector<AddTask>(0);
+    ut = std::vector<RateTask>(0);
+    at = std::vector<RateTask>(0);
     m.matchIndicesWithProcesses(match_pairs, interactions, config, rt, ut, at);
     m.updateProcesses(rt, ut, at, interactions);
 
@@ -1040,8 +1040,8 @@ void Test_Matcher::testCalculateMatchingProcess()
 
     // Match another index.
     rt = std::vector<RemoveTask>(0);
-    ut = std::vector<UpdateTask>(0);
-    at = std::vector<AddTask>(0);
+    ut = std::vector<RateTask>(0);
+    at = std::vector<RateTask>(0);
     match_pairs = std::vector<std::pair<int,int> >(1,std::pair<int,int>(4,0));
     m.matchIndicesWithProcesses(match_pairs, interactions, config, rt, ut, at);
     m.updateProcesses(rt, ut, at, interactions);
@@ -1058,8 +1058,8 @@ void Test_Matcher::testCalculateMatchingProcess()
 
     // Match.
     rt = std::vector<RemoveTask>(0);
-    ut = std::vector<UpdateTask>(0);
-    at = std::vector<AddTask>(0);
+    ut = std::vector<RateTask>(0);
+    at = std::vector<RateTask>(0);
     match_pairs = std::vector<std::pair<int,int> >(1,std::pair<int,int>(2,0));
     m.matchIndicesWithProcesses(match_pairs, interactions, config, rt, ut, at);
     m.updateProcesses(rt, ut, at, interactions);
@@ -1071,8 +1071,8 @@ void Test_Matcher::testCalculateMatchingProcess()
 
     // Match again - this should not change any thing.
     rt = std::vector<RemoveTask>(0);
-    ut = std::vector<UpdateTask>(0);
-    at = std::vector<AddTask>(0);
+    ut = std::vector<RateTask>(0);
+    at = std::vector<RateTask>(0);
     match_pairs = std::vector<std::pair<int,int> >(1,std::pair<int,int>(2,0));
     m.matchIndicesWithProcesses(match_pairs, interactions, config, rt, ut, at);
     m.updateProcesses(rt, ut, at, interactions);
@@ -1088,8 +1088,8 @@ void Test_Matcher::testCalculateMatchingProcess()
 
     // Match.
     rt = std::vector<RemoveTask>(0);
-    ut = std::vector<UpdateTask>(0);
-    at = std::vector<AddTask>(0);
+    ut = std::vector<RateTask>(0);
+    at = std::vector<RateTask>(0);
     match_pairs = std::vector<std::pair<int,int> >(1,std::pair<int,int>(4,0));
     m.matchIndicesWithProcesses(match_pairs, interactions, config, rt, ut, at);
     m.updateProcesses(rt, ut, at, interactions);
@@ -1151,8 +1151,8 @@ void Test_Matcher::testUpdateProcesses()
 
         // Setup a couple of valid add, remove and update tasks.
         std::vector<RemoveTask> rt;
-        std::vector<AddTask> at;
-        std::vector<UpdateTask> ut;
+        std::vector<RateTask> at;
+        std::vector<RateTask> ut;
 
         RemoveTask rt1;
         rt1.index   = 1;
@@ -1164,13 +1164,13 @@ void Test_Matcher::testUpdateProcesses()
         rt2.process = 1;
         rt.push_back(rt2);
 
-        AddTask at1;
+        RateTask at1;
         at1.index   = 4;
         at1.process = 2;
         at1.rate    = 123.456;
         at.push_back(at1);
 
-        UpdateTask ut1;
+        RateTask ut1;
         ut1.index   = 0;
         ut1.process = 2;
         ut1.rate    = 99.0;

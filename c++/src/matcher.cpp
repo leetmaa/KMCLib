@@ -75,8 +75,8 @@ void Matcher::calculateMatching(Interactions & interactions,
     const std::vector<std::pair<int,int> > local_index_process_to_match = index_process_to_match;
 
     std::vector<RemoveTask> remove_tasks;
-    std::vector<UpdateTask> update_tasks;
-    std::vector<AddTask>    add_tasks;
+    std::vector<RateTask>   update_tasks;
+    std::vector<RateTask>   add_tasks;
 
     matchIndicesWithProcesses(local_index_process_to_match,
                               interactions,
@@ -103,8 +103,8 @@ void Matcher::calculateMatching(Interactions & interactions,
         // std::vector<RateTask> local_add_tasks = splitOverProcesses(add_tasks);
         // std::vector<RateTask> local_update_tasks = splitOverProcesses(update_tasks);
 
-        // updateRates(add_tasks,    interactions, configuration);
-        // updateRates(update_tasks, interactions, configuration);
+        updateRates(add_tasks,    interactions, configuration);
+        updateRates(update_tasks, interactions, configuration);
 
         // IN PARALLEL:
         // Collect the updated tasks.
@@ -130,8 +130,8 @@ void Matcher::matchIndicesWithProcesses(const std::vector<std::pair<int,int> > &
                                         Interactions  & interactions,
                                         Configuration & configuration,
                                         std::vector<RemoveTask> & remove_tasks,
-                                        std::vector<UpdateTask> & update_tasks,
-                                        std::vector<AddTask>    & add_tasks) const
+                                        std::vector<RateTask>   & update_tasks,
+                                        std::vector<RateTask>   & add_tasks) const
 {
     // Loop over pairs to match.
     for (size_t i = 0; i < index_process_to_match.size(); ++i)
@@ -166,7 +166,7 @@ void Matcher::matchIndicesWithProcesses(const std::vector<std::pair<int,int> > &
         // If match and previous match - update the rate.
         else if (is_match && in_list)
         {
-            UpdateTask t;
+            RateTask t;
             t.index   = index;
             t.process = p_idx;
             t.rate    = process.rateConstant();
@@ -176,7 +176,7 @@ void Matcher::matchIndicesWithProcesses(const std::vector<std::pair<int,int> > &
         // If match and not previous match - add.
         else if (is_match && !in_list)
         {
-            AddTask t;
+            RateTask t;
             t.index   = index;
             t.process = p_idx;
             t.rate    = process.rateConstant();
@@ -218,8 +218,8 @@ bool Matcher::isMatch(const std::vector<MinimalMatchListEntry> & process_match_l
 // -----------------------------------------------------------------------------
 //
 void Matcher::updateProcesses(const std::vector<RemoveTask> & remove_tasks,
-                              const std::vector<UpdateTask> & update_tasks,
-                              const std::vector<AddTask>    & add_tasks,
+                              const std::vector<RateTask>   & update_tasks,
+                              const std::vector<RateTask>   & add_tasks,
                               Interactions & interactions) const
 {
     // Remove.
@@ -249,3 +249,17 @@ void Matcher::updateProcesses(const std::vector<RemoveTask> & remove_tasks,
         interactions.processes()[p_idx]->addSite(index, rate);
     }
 }
+
+
+// -----------------------------------------------------------------------------
+//
+void Matcher::updateRates(std::vector<RateTask> & tasks,
+                          const Interactions    & interactions,
+                          const Configuration   & configuration) const
+{
+    // NEEDS IMPLEMENTATION
+
+    // Use the backendCallBack function on the RateCalculator stored on the
+    // interactions object, to get an updated rate for each process.
+}
+
