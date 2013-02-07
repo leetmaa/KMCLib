@@ -35,11 +35,13 @@ public:
                                configuration with if the process is selected.
      *  \param rate          : The rate in Hz associated with the process.
      *  \param basis_sites   : The basis sites where this process is applicable.
+     *  \param cutoff        : The cutoff distance in primitive cell fractional units.
      */
     CustomRateProcess(const Configuration & first,
                       const Configuration & second,
                       const double rate,
-                      const std::vector<int> & basis_sites);
+                      const std::vector<int> & basis_sites,
+                      const double cutoff);
 
     /*! \brief Virtual destructor needed for inheritance.
      */

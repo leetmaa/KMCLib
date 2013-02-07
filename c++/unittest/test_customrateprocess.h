@@ -30,6 +30,7 @@ public:
     CPPUNIT_TEST( testAddAndRemoveSite );
     CPPUNIT_TEST( testPickSite );
     CPPUNIT_TEST( testAffectedIndices );
+    CPPUNIT_TEST( testCutoffAndRange );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstruction();
@@ -38,6 +39,7 @@ public:
     void testAddAndRemoveSite();
     void testPickSite();
     void testAffectedIndices();
+    void testCutoffAndRange();
 
 };
 

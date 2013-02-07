@@ -434,3 +434,38 @@ void Test_Configuration::testMatchLists()
     }
 }
 
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Configuration::testTypeNameQuery()
+{
+    // Setup coordinates.
+    const std::vector<std::vector<double> > coords(1, std::vector<double>(3, 0.0));
+
+    // Setup elements.
+    const std::vector<std::string> elements(1, "A");
+
+    // Setup the mapping from element to integer.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["D"] = 3;
+    possible_types["H"] = 4;
+    possible_types["J"] = 5;
+    possible_types["G"] = 6;
+
+    // Construct the configuration.
+    const Configuration config(coords, elements, possible_types);
+
+    // Query for the type names.
+    CPPUNIT_ASSERT_EQUAL( config.typeName(0), std::string("*") );
+    CPPUNIT_ASSERT_EQUAL( config.typeName(1), std::string("A") );
+    CPPUNIT_ASSERT_EQUAL( config.typeName(2), std::string("B") );
+    CPPUNIT_ASSERT_EQUAL( config.typeName(3), std::string("D") );
+    CPPUNIT_ASSERT_EQUAL( config.typeName(4), std::string("H") );
+    CPPUNIT_ASSERT_EQUAL( config.typeName(5), std::string("J") );
+    CPPUNIT_ASSERT_EQUAL( config.typeName(6), std::string("G") );
+
+    // DONE
+}

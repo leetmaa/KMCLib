@@ -23,7 +23,9 @@ Process::Process(const Configuration & first,
                  const Configuration & second,
                  const double rate,
                  const std::vector<int> & basis_sites) :
+    range_(1),
     rate_(rate),
+    cutoff_(0.0),
     sites_(0),
     affected_indices_(0),
     basis_sites_(basis_sites)
@@ -47,6 +49,26 @@ Process::Process(const Configuration & first,
         // Calculate the distance.
         const Coordinate coordinate = coords[i];
         const double distance = coordinate.distance(origin);
+
+        // Save the cutoff.
+        if (distance > cutoff_)
+        {
+            cutoff_ = distance;
+        }
+
+        // Calculate the range based on the coordinates, such that all
+        // needed coordinates are guarranteed to be included.
+        const double x = coordinate.x();
+        const int cmp_x = static_cast<int>( ( x < 0.0 ) ? (-1.0*x)+0.99999 : x );
+        range_ = std::max(cmp_x, range_);
+
+        const double y = coordinate.y();
+        const int cmp_y = static_cast<int>( ( y < 0.0 ) ? (-1.0*y)+0.99999 : y );
+        range_ = std::max(cmp_y, range_);
+
+        const double z = coordinate.z();
+        const int cmp_z = static_cast<int>( ( z < 0.0 ) ? (-1.0*z)+0.99999 : z );
+        range_ = std::max(cmp_z, range_);
 
         // Set up the match list.
         MinimalMatchListEntry m;

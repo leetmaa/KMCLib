@@ -33,6 +33,8 @@ public:
     CPPUNIT_TEST( testCalculateMatchingProcess );
     CPPUNIT_TEST( testUpdateProcesses );
     CPPUNIT_TEST( testCalculateMatchingInteractions );
+    CPPUNIT_TEST( testUpdateRates );
+    CPPUNIT_TEST( testUpdateSingleRate );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstruction();
@@ -44,6 +46,8 @@ public:
     void testCalculateMatchingProcess();
     void testUpdateProcesses();
     void testCalculateMatchingInteractions();
+    void testUpdateRates();
+    void testUpdateSingleRate();
 
 };
 

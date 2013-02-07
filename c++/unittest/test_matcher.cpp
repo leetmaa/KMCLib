@@ -1133,7 +1133,7 @@ void Test_Matcher::testUpdateProcesses()
     basis_sites.push_back(0);
 
     {
-        CustomRateProcess process(config1, config2, rate, basis_sites);
+        CustomRateProcess process(config1, config2, rate, basis_sites, 1.0);
 
         // Set up the interactions.
         std::vector<CustomRateProcess> processes(4, process);
@@ -1484,3 +1484,18 @@ void Test_Matcher::testCalculateMatchingInteractions()
 
 }
 
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Matcher::testUpdateRates()
+{
+    // NEEDS IMPLEMENTATION
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Matcher::testUpdateSingleRate()
+{
+    // NEEDS IMPLEMENTATION
+}

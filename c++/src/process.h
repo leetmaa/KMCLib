@@ -128,10 +128,26 @@ public:
      */
     const std::vector<int> & basisSites() const { return basis_sites_; }
 
+    /*! \brief Query for the cutoff distance.
+     *  \return : The cutoff radius for the process.
+     */
+    double cutoff() const { return cutoff_; }
+
+    /*! \brief Query for the range.
+     *  \return : The range for the process in number of cells.
+     */
+    int range() const { return range_; }
+
 protected:
+
+    /// The range in primitive cells.
+    int range_;
 
     /// The rate in Hz.
     double rate_;
+
+    /// The cutoff radius primitive unit-cell fractional units.
+    double cutoff_;
 
     /// The available sites for this process.
     std::vector<int> sites_;

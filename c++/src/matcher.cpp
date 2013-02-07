@@ -260,19 +260,82 @@ void Matcher::updateRates(std::vector<RateTask> & tasks,
     // Use the backendCallBack function on the RateCalculator stored on the
     // interactions object, to get an updated rate for each process.
 
-    const RateCalculator & rc = interactions.rateCalculator();
+    const RateCalculator & rate_calculator = interactions.rateCalculator();
     for (size_t i = 0; i < tasks.size(); ++i)
     {
-        // NEEDS IMPLEMENTATION
+        // Get the rate process to use.
+        const Process & process = (*interactions.processes()[tasks[i].process]);
 
-        // We should send:
-        // Local geometry before process.
-        // Local geometry after process.
-        // Rate constant associated with the process.
-        //
-        // We should get back:
-        // The updated rate of the process at this index.
+        // Get the coordinate index.
+        const int index = tasks[i].index;
 
-        tasks[i].rate = rc.backendRateCallback();
+        // Send this information to the updateSingleRate function.
+        tasks[i].rate = updateSingleRate(index, process, configuration, rate_calculator);
     }
+}
+
+
+// -----------------------------------------------------------------------------
+//
+double Matcher::updateSingleRate(const int index,
+                                 const Process        & process,
+                                 const Configuration  & configuration,
+                                 const RateCalculator & rate_calculator) const
+{
+    // Get the match lists.
+    const std::vector<MinimalMatchListEntry> & process_match_list = process.minimalMatchList();
+    const std::vector<MinimalMatchListEntry> & config_match_list  = configuration.minimalMatchList(index);
+
+    // We will also need the elements.
+    const std::vector<std::string> & elements = configuration.elements();
+
+    // Geometry within cutoff and the type list before the process.
+    std::vector<Coordinate> geometry;
+    std::vector<std::string> types_before;
+
+    // Get cutoff distance from the process.
+    const double cutoff = process.cutoff();
+
+    std::vector<MinimalMatchListEntry>::const_iterator it1 = config_match_list.begin();
+
+    while ( (*it1).distance <= cutoff )
+    {
+        ++it1;
+
+        const Coordinate & coord   = (*it1).coordinate;
+        const int idx              = (*it1).index;
+        const std::string type_str = elements[idx];
+
+        geometry.push_back(coord);
+        types_before.push_back(type_str);
+    }
+
+    // Types after the process.
+    std::vector<std::string> types_after = types_before;
+
+    // Rewind the config match list iterator.
+    it1 = config_match_list.begin();
+
+    // Get the iterators to the process match list and types after.
+    std::vector<MinimalMatchListEntry>::const_iterator it2 = process_match_list.begin();
+    std::vector<std::string>::iterator it3 = types_after.begin();
+
+    const std::vector<MinimalMatchListEntry>::const_iterator end = process_match_list.end();
+
+    // Loop over the process match list and update the types_after vector.
+    for ( ; it2 != end; ++it1, ++it2, ++it3 )
+    {
+        const int update_type = (*it2).update_type;
+        const int match_type  = (*it1).match_type;
+
+        // Set the type after process. NOTE: The > 0 is needed for handling wildcards.
+        if ( match_type != update_type  && update_type > 0)
+        {
+            (*it3) = configuration.typeName(update_type);
+        }
+    }
+
+    // Calculate the rate using the provided rate calculator.
+    return 1.0; // FIXME
+    //return rate_calculator.backendRateCallback(geometry, types_before, types_after, process.rateConstant());
 }

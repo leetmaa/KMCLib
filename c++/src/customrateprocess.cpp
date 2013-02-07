@@ -22,9 +22,19 @@
 CustomRateProcess::CustomRateProcess(const Configuration & first,
                                      const Configuration & second,
                                      const double rate,
-                                     const std::vector<int> & basis_sites) :
+                                     const std::vector<int> & basis_sites,
+                                     const double cutoff) :
     Process(first, second, rate, basis_sites)
 {
+    // Save the cutoff if it is larger than what we have allready.
+    if (cutoff > cutoff_)
+    {
+        cutoff_ = cutoff;
+    }
+
+    // Update the range such that all distances withing the cutoff are
+    // guarranteed to be included.
+    range_ = static_cast<int>(cutoff_);
 }
 
 

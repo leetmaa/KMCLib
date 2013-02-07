@@ -51,7 +51,7 @@ void Test_CustomRateProcess::testConstruction()
     basis_sites[1] = 23;
     basis_sites[2] = 11;
     const double rate = 13.7;
-    CustomRateProcess process(config1, config2, rate, basis_sites);
+    CustomRateProcess process(config1, config2, rate, basis_sites, 1.0);
 
     // Check that there are no listed indices by default.
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 0);
@@ -146,7 +146,7 @@ void Test_CustomRateProcess::testMatchListLong()
     // Construct the process.
     const double rate = 13.7;
     const std::vector<int> basis_sites(1,0);
-    CustomRateProcess process(config1, config2, rate, basis_sites);
+    CustomRateProcess process(config1, config2, rate, basis_sites, 1.0);
 
     // Get the match list out.
     const std::vector<MinimalMatchListEntry> match_list = process.minimalMatchList();
@@ -245,7 +245,7 @@ void Test_CustomRateProcess::testTotalRate()
     // Construct the process.
     const double rate = 13.7;
     const std::vector<int> basis_sites(1,0);
-    CustomRateProcess process(config1, config2, rate, basis_sites);
+    CustomRateProcess process(config1, config2, rate, basis_sites, 1.0);
 
     // Get the total rate.
     const double total_rate_0 = process.totalRate();
@@ -267,7 +267,6 @@ void Test_CustomRateProcess::testTotalRate()
 //
 void Test_CustomRateProcess::testAddAndRemoveSite()
 {
-    // FIXME: NEEDS IMPLEMENTATION
     // Test that the individual sites rates are added and removed correctly.
 
     // Setup a valid possible types map.
@@ -298,16 +297,33 @@ void Test_CustomRateProcess::testAddAndRemoveSite()
     // Construct the process.
     const double rate = 13.7;
     const std::vector<int> basis_sites(1,0);
-    CustomRateProcess process(config1, config2, rate, basis_sites);
+    CustomRateProcess process(config1, config2, rate, basis_sites, 1.0);
 
     // Check that there are no listed indices by default.
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 0);
 
+    // Check the rate constant.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(process.rateConstant(), rate, 1.0e-12);
+
+    // Chek the total rate.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(process.totalRate(), 0.0, 1.0e-12);
+
     // Add a few indices.
-    process.addSite(1234,  1.2);
-    process.addSite(3,    2.34);
-    process.addSite(11,   3.45);
-    process.addSite(-123, 4.56);
+    seedRandom(true, 1);
+    const double r0 = randomDouble01()*10.0;
+    const double r1 = randomDouble01()*10.0;
+    const double r2 = randomDouble01()*10.0;
+    const double r3 = randomDouble01()*10.0;
+
+    process.addSite(1234,  r0);
+    process.addSite(3,     r1);
+    process.addSite(11,    r2);
+    process.addSite(-123,  r3);
+
+    // Check the total rate again.
+    const double rtot0 = r0 + r1 + r2 + r3;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(process.totalRate(), rtot0, 1.0e-12);
+
 
     // Check that these indices are now there.
     CPPUNIT_ASSERT( process.isListed(1234) );
@@ -327,6 +343,9 @@ void Test_CustomRateProcess::testAddAndRemoveSite()
     CPPUNIT_ASSERT( process.isListed(-123) );
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 2);
 
+    const double rtot1 = r0 + r3;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(process.totalRate(), rtot1, 1.0e-12);
+
     // Remove the remaining two indices.
     process.removeSite(-123);
     process.removeSite(1234);
@@ -338,9 +357,8 @@ void Test_CustomRateProcess::testAddAndRemoveSite()
     CPPUNIT_ASSERT( !process.isListed(-123) );
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 0);
 
-    // This will crash since it is illegal.
-    // process.removeSite(-123);
-    // process.removeSite(1234);
+    const double rtot2 = 0.0;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(process.totalRate(), rtot2, 1.0e-12);
 
     // DONE
 }
@@ -429,7 +447,7 @@ void Test_CustomRateProcess::testAffectedIndices()
     // Construct the process.
     const double rate = 13.7;
     const std::vector<int> basis_sites(1,0);
-    CustomRateProcess process(config1, config2, rate, basis_sites);
+    CustomRateProcess process(config1, config2, rate, basis_sites, 1.0);
 
     // Check that the size of the affected is correct.
     size_t one = 1;
@@ -440,5 +458,54 @@ void Test_CustomRateProcess::testAffectedIndices()
 
     // And access.
     CPPUNIT_ASSERT_EQUAL( process.affectedIndices()[1], 123 );
+
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_CustomRateProcess::testCutoffAndRange()
+{
+    // Setup a valid possible types map.
+    std::map<std::string,int> possible_types;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["C"] = 0;
+
+    // Setup the two configurations.
+    std::vector<std::string> elements1;
+    elements1.push_back("A");
+    elements1.push_back("B");
+
+    std::vector<std::string> elements2;
+    elements2.push_back("C");
+    elements2.push_back("B");
+
+    // Setup coordinates.
+    std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
+    coords[1][0] =  1.0;
+    coords[1][1] =  1.3;
+    coords[1][2] = -4.4;
+
+    // The configurations.
+    const Configuration config1(coords, elements1, possible_types);
+    const Configuration config2(coords, elements2, possible_types);
+
+    // Construct the process.
+    const double rate = 13.7;
+    const std::vector<int> basis_sites(1,0);
+    CustomRateProcess process(config1, config2, rate, basis_sites, 1.0);
+
+    // Test that the cutoff is set by the base class to the longest distance.
+    const double d = std::sqrt(std::pow(1.0,2) + std::pow(1.3,2) + std::pow(-4.4,2));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( process.cutoff(), d, 1.0e-12 );
+    CPPUNIT_ASSERT_EQUAL( process.range(), static_cast<int>(process.cutoff()) );
+
+    // Get a new process with longer cutoff.
+    CustomRateProcess process1(config1, config2, rate, basis_sites, 124.0);
+
+    // Check that the cutoff was set accordingly.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( process1.cutoff(), 124.0, 1.0e-12 );
+    CPPUNIT_ASSERT_EQUAL( process.range(), static_cast<int>(process.cutoff()) );
 
 }

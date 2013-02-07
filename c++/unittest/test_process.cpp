@@ -486,3 +486,49 @@ void Test_Process::testAffectedIndices()
     CPPUNIT_ASSERT_EQUAL( process.affectedIndices()[1], 123 );
 
 }
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Process::testCutoffAndRange()
+{
+    // Setup a valid possible types map.
+    std::map<std::string,int> possible_types;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["C"] = 0;
+
+    // Setup the two configurations.
+    std::vector<std::string> elements1;
+    elements1.push_back("A");
+    elements1.push_back("B");
+
+    std::vector<std::string> elements2;
+    elements2.push_back("C");
+    elements2.push_back("B");
+
+    // Setup coordinates.
+    std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
+    coords[1][0] =  1.0;
+    coords[1][1] =  1.3;
+    coords[1][2] = -4.4;
+
+    // The configurations.
+    const Configuration config1(coords, elements1, possible_types);
+    const Configuration config2(coords, elements2, possible_types);
+
+    // Construct the process.
+    const double rate = 13.7;
+    const std::vector<int> basis_sites(1,0);
+    Process process(config1, config2, rate, basis_sites);
+
+    // Test that the cutoff is set to the longest distance.
+    const double d = std::sqrt(std::pow(1.0,2) + std::pow(1.3,2) + std::pow(-4.4,2));
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( process.cutoff(), d, 1.0e-12 );
+
+    // Test that the range is set by the largest index. (-4.4)
+    CPPUNIT_ASSERT_EQUAL( process.range(), 5 );
+
+}
+
+

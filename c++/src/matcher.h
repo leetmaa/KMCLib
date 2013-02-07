@@ -23,6 +23,7 @@ class Interactions;
 class Configuration;
 class Process;
 class LatticeMap;
+class RateCalculator;
 
 /// A minimal struct for representing a task with a rate.
 struct RateTask
@@ -104,6 +105,17 @@ public:
                          const std::vector<RateTask>   & to_add,
                          Interactions & interactions) const;
 
+    /*! \brief Calculate the rate for a single process using the rate calculator.
+     *  \param index           : The index to perform the process at.
+     *  \param process         : The process to perform.
+     *  \param configuration   : The configuration the index is referring to.
+     *  \param rate_calculator : The rate calculator to use.
+     *  \returns : The calculated rate for the process at the given index.
+     */
+    double updateSingleRate(const int index,
+                            const Process        & process,
+                            const Configuration  & configuration,
+                            const RateCalculator & rate_calculator) const;
 
     /*! \brief Calculate/update the matching of a provided index and process.
      *  \param process       : The process to check against and update if needed.

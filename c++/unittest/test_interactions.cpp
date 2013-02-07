@@ -132,8 +132,6 @@ void Test_Interactions::testQuery()
 
     // Query for the rate calculator.
     const RateCalculator & rc = interactions.rateCalculator();
-
-    // NEEDS IMPLEMENTATION
     CPPUNIT_ASSERT_DOUBLES_EQUAL( rc.rate(), -1.0, 1.0e-12 );
 
 }
@@ -302,12 +300,12 @@ void Test_Interactions::testUpdateAndPickCustom()
     Configuration c1(process_coordinates, process_elements1, possible_types);
     Configuration c2(process_coordinates, process_elements2, possible_types);
     std::vector<int> sites_vector(1,0);
-    processes.push_back(CustomRateProcess(c1,c2,rate,sites_vector));
-    processes.push_back(CustomRateProcess(c1,c2,rate,sites_vector));
-    processes.push_back(CustomRateProcess(c1,c2,rate/2.0,sites_vector));
-    processes.push_back(CustomRateProcess(c1,c2,rate,sites_vector));
-    processes.push_back(CustomRateProcess(c1,c2,rate,sites_vector));
-    processes.push_back(CustomRateProcess(c1,c2,rate,sites_vector));
+    processes.push_back(CustomRateProcess(c1,c2,rate,sites_vector, 1.0));
+    processes.push_back(CustomRateProcess(c1,c2,rate,sites_vector, 1.0));
+    processes.push_back(CustomRateProcess(c1,c2,rate/2.0,sites_vector, 1.0));
+    processes.push_back(CustomRateProcess(c1,c2,rate,sites_vector, 1.0));
+    processes.push_back(CustomRateProcess(c1,c2,rate,sites_vector, 1.0));
+    processes.push_back(CustomRateProcess(c1,c2,rate,sites_vector, 1.0));
 
     // Fake a matching by adding sites to the processes.
 

@@ -95,28 +95,7 @@ int Interactions::maxRange() const
     std::vector<Process*>::const_iterator it1 = process_pointers_.begin();
     for ( ; it1 != process_pointers_.end(); ++it1 )
     {
-        const std::vector<MinimalMatchListEntry> & list = (**it1).minimalMatchList();
-        std::vector<MinimalMatchListEntry>::const_iterator it2 = list.begin();
-
-        // Get the largest coordinate out.
-        for ( ; it2 != list.end(); ++it2 )
-        {
-            // Check the distance in x y and z. If the distance is say -1.5 this means
-            // we need to go out to 2 shells to get the position included. Therfore the
-            // logics for the negative values.
-
-            const double x = (*it2).coordinate.x();
-            const int cmp_x = static_cast<int>( ( x < 0.0 ) ? (-1.0*x)+0.99999 : x );
-            max_range = std::max(cmp_x, max_range);
-
-            const double y = (*it2).coordinate.y();
-            const int cmp_y = static_cast<int>( ( y < 0.0 ) ? (-1.0*y)+0.99999 : y );
-            max_range = std::max(cmp_y, max_range);
-
-            const double z = (*it2).coordinate.z();
-            const int cmp_z = static_cast<int>( ( z < 0.0 ) ? (-1.0*z)+0.99999 : z );
-            max_range = std::max(cmp_z, max_range);
-        }
+        max_range = std::max( max_range, (**it1).range() );
     }
 
     // Return.
