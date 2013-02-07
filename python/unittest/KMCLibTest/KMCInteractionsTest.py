@@ -507,9 +507,9 @@ class KMCInteractionsTest(unittest.TestCase):
 
         # Set the rate function on the custom rates calculator for testing.
         ref_rnd = numpy.random.uniform(0.0,1.0)
-        def testRate():
+        def testRateFunction(coords, types_before, types_after, rate_const):
             return ref_rnd
-        kmc_interactions._KMCInteractions__rate_calculator.rate = testRate
+        kmc_interactions._KMCInteractions__rate_calculator.rate = testRateFunction
 
         # Setup a dict with the possible types.
         possible_types = {
@@ -525,13 +525,27 @@ class KMCInteractionsTest(unittest.TestCase):
 
         # Get the rate calculator reference out of the C++ object and
         # check that a call from C++ calls the Python extension.
-        self.assertAlmostEqual( cpp_interactions.rateCalculator().rate(), ref_rnd, 12 )
-        self.assertAlmostEqual( kmc_interactions._KMCInteractions__rate_calculator.rate(), ref_rnd, 12 )
+        cpp_coords = Backend.StdVectorCoordinate()
+        cpp_types1 = Backend.StdVectorString()
+        cpp_types2 = Backend.StdVectorString()
+        rate_constant = 543.2211
+
+        self.assertAlmostEqual( cpp_interactions.rateCalculator().backendRateCallback(cpp_coords,
+                                                                                      cpp_types1,
+                                                                                      cpp_types2,
+                                                                                      rate_constant), ref_rnd, 12 )
+        self.assertAlmostEqual( kmc_interactions._KMCInteractions__rate_calculator.backendRateCallback(cpp_coords,
+                                                                                                       cpp_types1,
+                                                                                                       cpp_types2,
+                                                                                                       rate_constant), ref_rnd, 12 )
 
         # Construct a C++ RateCalculator object directly and check that this object
-        # returns the rate -1.0.
+        # returns the rate given to it.
         cpp_rate_calculator = Backend.RateCalculator()
-        self.assertAlmostEqual( cpp_rate_calculator.rate(), -1.0, 12 )
+        self.assertAlmostEqual( cpp_rate_calculator.backendRateCallback(cpp_coords,
+                                                                        cpp_types1,
+                                                                        cpp_types2,
+                                                                        rate_constant), rate_constant, 12 )
 
 
     def testBackendNoFailWrongBasisMatch(self):

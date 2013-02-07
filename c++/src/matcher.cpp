@@ -336,6 +336,5 @@ double Matcher::updateSingleRate(const int index,
     }
 
     // Calculate the rate using the provided rate calculator.
-    return 1.0; // FIXME
-    //return rate_calculator.backendRateCallback(geometry, types_before, types_after, process.rateConstant());
+    return rate_calculator.backendRateCallback(geometry, types_before, types_after, process.rateConstant());
 }

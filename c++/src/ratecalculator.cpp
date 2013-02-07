@@ -28,25 +28,22 @@ RateCalculator::~RateCalculator()
 {
 }
 
-
-// -----------------------------------------------------------------------------
-//
-double RateCalculator::backendRateCallback() const
-{
-    // NEEDS IMPLEMENTATION
-    return -1.0;
-}
-
-
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 // PROTOTYPE AND TEST CODE FOLLOW
 // -----------------------------------------------------------------------------
 
-/// Dummy/test function for calling the objects whoAmI function from C++.
+/// Dummy/test function for calling the objects whoAmI function from Python via C++.
 std::string callWhoAmI(const SimpleDummyBaseClass & obj) { return obj.whoAmI(); }
 
-/// Dummy/test function for calling the RateCalculator from C++.
-double getRate(const RateCalculator & rc) { return rc.backendRateCallback(); }
+/// Dummy/test function for calling the RateCalculator's backend callback from Python via C++.
+double getRate(const RateCalculator & rc,
+               const std::vector<Coordinate> & geometry,
+               const std::vector<std::string> & types_before,
+               const std::vector<std::string> & types_after,
+               const double rate_constant) { return rc.backendRateCallback(geometry,
+                                                                           types_before,
+                                                                           types_after,
+                                                                           rate_constant); }
 
 // -----------------------------------------------------------------------------

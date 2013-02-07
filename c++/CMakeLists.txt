@@ -12,6 +12,7 @@ set( CMAKE_VERBOSE_MAKEFILE off )
 
 # Setup general compiler options.
 add_definitions(-std=c++0x -O3 -fPIC -Wall -Wextra -Werror -pedantic)
+add_definitions( -Wno-unused-parameter )
 
 # Add the extara flags for the TIMEPROF target
 # (use with "cmake -DCMAKE_BUILD_TYPE=TIMEPROF ..")

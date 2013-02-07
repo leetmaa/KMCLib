@@ -211,10 +211,12 @@ the KMCRateCalculatorPlugin class itself. """
 
                 # Construct and store the C++ process.
                 if self.__rate_calculator is not None:
+                    cutoff = 1.0 # FIXME
                     cpp_processes.push_back(Backend.CustomRateProcess(cpp_config1,
                                                                       cpp_config2,
                                                                       barrier,
-                                                                      cpp_basis))
+                                                                      cpp_basis,
+                                                                      cutoff)) # FIXME
                 else:
                     cpp_processes.push_back(Backend.Process(cpp_config1,
                                                             cpp_config2,

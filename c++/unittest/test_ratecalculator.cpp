@@ -12,6 +12,8 @@
 // Include the files to test.
 #include "ratecalculator.h"
 
+#include "random.h"
+
 // -------------------------------------------------------------------------- //
 //
 void Test_RateCalculator::testConstruction()
@@ -23,10 +25,25 @@ void Test_RateCalculator::testConstruction()
 
 // -------------------------------------------------------------------------- //
 //
-void Test_RateCalculator::testRate()
+void Test_RateCalculator::testRateCallback()
 {
-    // NEEDS IMPLEMENTATION
+    // Get a rate calculator.
     RateCalculator r;
-    r.backendRateCallback();
+
+    // Setup input needed to call the callback function.
+    const std::vector<Coordinate> geometry;
+    const std::vector<std::string> types_before;
+    const std::vector<std::string> types_after;
+    const double rate_constant = randomDouble01();
+
+    const double rate0 = r.backendRateCallback(geometry,
+                                               types_before,
+                                               types_after,
+                                               rate_constant);
+
+    // We test that the interface in C++ only returns the rate constant again.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( rate_constant, rate0, 1.0e-12 );
+
+    // DONE
 }
 

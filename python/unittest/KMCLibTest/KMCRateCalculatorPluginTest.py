@@ -58,7 +58,7 @@ class KMCRateCalculatorPluginTest(unittest.TestCase):
                 # Save something on the class here.
                 self._times_called = 0
             # Overload the rate function.
-            def rate(self):
+            def rate(self, coords, types_befpre, types_after, rate_constant):
                 # Do some simple counting and return the random number.
                 self._times_called += 1
                 rnd = numpy.random.uniform(0.0,1.0)
@@ -72,11 +72,35 @@ class KMCRateCalculatorPluginTest(unittest.TestCase):
         calculator = RateCalc()
 
         # Send it to C++ to get the rate out, call it 4 times.
+        cpp_coords = Backend.StdVectorCoordinate()
+        cpp_coords.push_back(Backend.Coordinate(1.0,2.9,3.4))
+        cpp_types1 = Backend.StdVectorString()
+        cpp_types1.push_back("A")
+        cpp_types2 = Backend.StdVectorString()
+        cpp_types2.push_back("B")
+        rate_constant = 3.1415927
+
         ret_randoms = []
-        ret_randoms.append(Backend.getRate(calculator))
-        ret_randoms.append(Backend.getRate(calculator))
-        ret_randoms.append(Backend.getRate(calculator))
-        ret_randoms.append(Backend.getRate(calculator))
+        ret_randoms.append(Backend.getRate(calculator,
+                                           cpp_coords,
+                                           cpp_types1,
+                                           cpp_types2,
+                                           rate_constant))
+        ret_randoms.append(Backend.getRate(calculator,
+                                           cpp_coords,
+                                           cpp_types1,
+                                           cpp_types2,
+                                           rate_constant))
+        ret_randoms.append(Backend.getRate(calculator,
+                                           cpp_coords,
+                                           cpp_types1,
+                                           cpp_types2,
+                                           rate_constant))
+        ret_randoms.append(Backend.getRate(calculator,
+                                           cpp_coords,
+                                           cpp_types1,
+                                           cpp_types2,
+                                           rate_constant))
 
         # Check that it was called 4 times.
         self.assertEqual( calculator._times_called, 4 )

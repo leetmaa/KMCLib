@@ -13,8 +13,10 @@
 #ifndef __RATECALCULATOR__
 #define __RATECALCULATOR__
 
-
+#include <vector>
 #include <string>
+
+#include "coordinate.h"
 
 /*! \brief Class for defining the interface for making a custom Python
  *         rate calculator function called from within the inner C++ loop.
@@ -33,11 +35,10 @@ public:
 
     /*! \brief NEEDS IMPLEMENTATION
      */
-    virtual double backendRateCallback() const;
-
-    /*! \brief NEEDS IMPLEMENTATION
-     */
-    virtual double rate() const { return -1.0; }
+    virtual double backendRateCallback(const std::vector<Coordinate> & geometry,
+                                       const std::vector<std::string> & types_before,
+                                       const std::vector<std::string> & types_after,
+                                       const double rate_constant) const { return rate_constant; }
 
 protected:
 
@@ -80,7 +81,11 @@ std::string callWhoAmI(const SimpleDummyBaseClass & obj);
 
 
 /// Dummy/test function for calling the RateCalculator from C++.
-double getRate(const RateCalculator & rc);
+double getRate(const RateCalculator & rc,
+               const std::vector<Coordinate> & geometry,
+               const std::vector<std::string> & types_before,
+               const std::vector<std::string> & types_after,
+               const double rate_constant);
 
 
 #endif // __RATECALCULATOR__

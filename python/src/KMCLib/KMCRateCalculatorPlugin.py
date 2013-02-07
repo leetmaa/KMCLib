@@ -8,9 +8,10 @@
 #
 
 
+import numpy
+
 from KMCLib.Backend import Backend
 from KMCLib.Exceptions.Error import Error
-
 
 class KMCRateCalculatorPlugin(Backend.RateCalculator):
     """
@@ -28,29 +29,18 @@ class KMCRateCalculatorPlugin(Backend.RateCalculator):
         # Call the custom setup.
         self.initialize()
 
-    # NEEDS IMPLEMENTATION
-    def backendRateCallback(self):
+    def backendRateCallback(self, cpp_coords, types_before, types_after, rate_constant):
         """
-        Function called from C++ to get the rate.
+        Function called from C++ to get the rate. It function recieves
+        the data from C++ and parse it to a Python friendly format to send it
+        forward to the custom rate function.
         """
-        # This function should recieve the data from
-        # C++ and parse it to a Python friendly format.
-
-        # NEEDS IMPLEMENTATION
-        cpp_rate = 1.0
-
-        # Translate data types if needed.
-        rate = cpp_rate
-        custom_rate = self.rate()
-
-        # Call the custom rate function.
-        if self.useAdditiveRate():
-            rate += custom_rate
-        else:
-            rate = custom_rate
-
-        # Return the rate.
-        return rate
+        # Call and return the custom rate.
+        # numpy.array([ [c.x(), c.y(), c.z()] for c in cpp_coords ]) # FIXME - slow, used direct memory.
+        return self.rate(cpp_coords,
+                         types_before,
+                         types_after,
+                         rate_constant)
 
     def initialize(self):
         """
@@ -59,24 +49,23 @@ class KMCRateCalculatorPlugin(Backend.RateCalculator):
         """
         pass
 
-    # NEEDS IMPLEMENTATION
-    def rate(self):
+    def rate(self, coords, types_before, types_after, rate_constant):
         """
         Called from the base class to get the rate for a particular
         local geometry. This function must be overloaded.
+
+        :param coords: The coordinates of the configuration as a Nx3 numpy array
+                       in fractional units of the primitive cell.
+
+        :param types_before: The types before the process, as tuple of strings.
+
+        :param types_after: The types after the process, as tuple of strings.
+
+        :param rate_constant: The rate constant associated with the process
+                              to either update or replace.
+
+        :returns: The custom rate of the process. Note that the returned rate must
+                  not be negative or zero.
         """
         raise Error("The rate(self,...) API function in the 'KMCRateCalculator' base class must be overloaded when using a custom rate calculator.")
-
-    def useAdditiveRate(self):
-        """
-        Called from the base class to determine if the custom rate should
-        be added to the rate defined on the process (return True, default),
-        or if the rate should be determined completely from the custom
-        rate (return False).
-
-        :returns: The flag indicaing if the rate should be added (True) or
-                  if the rate rate represents the full rate (False). The default
-                  is True.
-        """
-        return True
 
