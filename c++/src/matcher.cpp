@@ -292,7 +292,7 @@ double Matcher::updateSingleRate(const int index,
     const double cutoff = process.cutoff();
     std::vector<MinimalMatchListEntry>::const_iterator it1 = config_match_list.begin();
     int len = 0;
-    while ( (*it1).distance <= cutoff )
+    while ( (*it1).distance <= cutoff && it1 != config_match_list.end())
     {
         ++it1;
         ++len;

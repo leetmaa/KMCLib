@@ -17,6 +17,11 @@
 #include "latticemap.h"
 #include "process.h"
 #include "interactions.h"
+#include "random.h"
+
+
+
+
 
 // -------------------------------------------------------------------------- //
 //
@@ -1494,8 +1499,122 @@ void Test_Matcher::testUpdateRates()
 
 
 // -------------------------------------------------------------------------- //
+// This proxy class is part of the UpdateSingleRate test below.
+class CustomRateCalculator : public RateCalculator {
+public:
+    virtual ~CustomRateCalculator() {}
+    virtual double backendRateCallback(const std::vector<double> geometry,
+                                       const int len,
+                                       const std::vector<std::string> & types_before,
+                                       const std::vector<std::string> & types_after,
+                                       const double rate_constant) const
+        {
+            // Test the geometry.
+            CPPUNIT_ASSERT_DOUBLES_EQUAL( geometry[0], 0.0, 1.0e-12 );
+            CPPUNIT_ASSERT_DOUBLES_EQUAL( geometry[1], 0.0, 1.0e-12 );
+            CPPUNIT_ASSERT_DOUBLES_EQUAL( geometry[2], 0.0, 1.0e-12 );
+            CPPUNIT_ASSERT_DOUBLES_EQUAL( geometry[3],-0.5, 1.0e-12 );
+            CPPUNIT_ASSERT_DOUBLES_EQUAL( geometry[4],-0.3, 1.0e-12 );
+            CPPUNIT_ASSERT_DOUBLES_EQUAL( geometry[5],-0.1, 1.0e-12 );
+
+            // Test the length.
+            CPPUNIT_ASSERT_EQUAL(len, 2);
+
+            // Test the types before.
+            CPPUNIT_ASSERT_EQUAL(static_cast<int>(types_before.size()), 2);
+            CPPUNIT_ASSERT_EQUAL(std::string("B"), types_before[0]);
+            CPPUNIT_ASSERT_EQUAL(std::string("A"), types_before[1]);
+
+            // Test the types after.
+            CPPUNIT_ASSERT_EQUAL(static_cast<int>(types_after.size()), 2);
+            CPPUNIT_ASSERT_EQUAL(std::string("C"), types_after[0]);
+            CPPUNIT_ASSERT_EQUAL(std::string("A"), types_after[1]);
+
+            // Return.
+            return std::pow(rate_constant,3.14159);
+        }
+};
+
+// -------------------------------------------------------------------------- //
 //
 void Test_Matcher::testUpdateSingleRate()
 {
-    // NEEDS IMPLEMENTATION
+    // Setup a valid configuration.
+    std::vector<std::vector<double> > coords(2, std::vector<double>(3, 0.0));
+
+    // One cell with two atoms.
+    coords[0][0] = 0.0;
+    coords[0][1] = 0.0;
+    coords[0][2] = 0.0;
+    coords[1][0] = 0.5;
+    coords[1][1] = 0.3;
+    coords[1][2] = 0.1;
+
+    // Setup elements.
+    std::vector<std::string> elements(2);
+    elements[0] = "A";
+    elements[1] = "B";
+
+    // Setup the mapping from element to integer.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["C"] = 3;
+    possible_types["D"] = 4;
+    possible_types["E"] = 5;
+    possible_types["F"] = 6;
+
+    // Construct the configuration.
+    Configuration config(coords, elements, possible_types);
+
+    // Setup a non periodic cooresponding lattice map.
+    const std::vector<int> repetitions(3, 1);
+    const std::vector<bool> periodicity(3, false);
+    const int basis = 2;
+    std::vector<int> basis_sites;
+    basis_sites.push_back(1);
+    basis_sites.push_back(0);
+
+    LatticeMap lattice_map(basis, repetitions, periodicity);
+    config.initMatchLists(lattice_map, 1);
+
+    // Construct a process that should match the second index.
+
+    // Setup the two configurations.
+    std::vector<std::string> elements1;
+    elements1.push_back("B");
+    elements1.push_back("A");
+    std::vector<std::string> elements2;
+    elements2.push_back("C");
+    elements2.push_back("A");
+    // Setup coordinates.
+    std::vector<std::vector<double> > process_coords(2,std::vector<double>(3,0.0));
+    process_coords[1][0] =  -0.5;
+    process_coords[1][1] =  -0.5;
+    process_coords[1][2] =  -0.5;
+    // The configurations.
+    const Configuration config1(process_coords, elements1, possible_types);
+    const Configuration config2(process_coords, elements2, possible_types);
+
+    // Construct the process with a random rate.
+    seedRandom(19, true);
+    const double rate = 13.7*randomDouble01();
+    Process process(config1, config2, rate, basis_sites);
+
+    // Put the process in a vector.
+    std::vector<Process> processes(1, process);
+
+    // Create an interactions object.
+    Interactions  interactions(processes, false);
+
+    // Get the matcher to test and a custom rate calculator.
+    const Matcher m;
+    const CustomRateCalculator crc;
+    const int index = 1;
+    const double ret_rate = m.updateSingleRate(index, *interactions.processes()[0], config, crc);
+
+    // Test against the known reference.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(ret_rate, std::pow(rate, 3.14159), 1.0e-12);
+
 }
