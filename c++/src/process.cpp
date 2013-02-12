@@ -93,13 +93,6 @@ Process::Process(const Configuration & first,
 
 
 // -----------------------------------------------------------------------------
-// DUMMY
-void Process::printMyType() const
-{
-    printf("type: Process\n");
-}
-
-// -----------------------------------------------------------------------------
 //
 void Process::addSite(const int index, const double rate)
 {

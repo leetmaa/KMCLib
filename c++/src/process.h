@@ -50,9 +50,6 @@ public:
      */
     virtual ~Process() {}
 
-    // ML: dummy
-    virtual void printMyType() const;
-
     /*! \brief Query for the total rate.
      *  \return : The total rate of the process.
      */
@@ -95,8 +92,8 @@ public:
      */
     bool isListed(const int index) const;
 
-    // ML: when is this used?
     /*! \brief Query for the available sites for this process.
+     *         Convenient when testing other functionality of the class.
      *  \return : The available sites.
      */
     const std::vector<int> & sites() const { return sites_; }

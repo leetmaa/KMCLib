@@ -20,7 +20,6 @@
 #include "configuration.h"
 #include "latticemap.h"
 
-
 // -----------------------------------------------------------------------------
 //
 Matcher::Matcher()
@@ -289,25 +288,38 @@ double Matcher::updateSingleRate(const int index,
     // We will also need the elements.
     const std::vector<std::string> & elements = configuration.elements();
 
-    // Geometry within cutoff and the type list before the process.
-    std::vector<Coordinate> geometry;
-    std::vector<std::string> types_before;
-
     // Get cutoff distance from the process.
     const double cutoff = process.cutoff();
-
     std::vector<MinimalMatchListEntry>::const_iterator it1 = config_match_list.begin();
-
+    int len = 0;
     while ( (*it1).distance <= cutoff )
     {
         ++it1;
+        ++len;
+    }
+    const std::vector<MinimalMatchListEntry>::const_iterator new_end = it1;
 
+    // Allocate memory for the numpy geometry and copy the data over.
+    std::vector<double> numpy_geo(len*3);
+    std::vector<double>::iterator it_geo = numpy_geo.begin();
+    std::vector<std::string> types_before;
+
+    it1 = config_match_list.begin();
+    for ( ; it1 != new_end; ++it1 )
+    {
         const Coordinate & coord   = (*it1).coordinate;
-        const int idx              = (*it1).index;
-        const std::string type_str = elements[idx];
 
-        geometry.push_back(coord);
-        types_before.push_back(type_str);
+        (*it_geo) = coord.x();
+        ++it_geo;
+
+        (*it_geo) = coord.y();
+        ++it_geo;
+
+        (*it_geo) = coord.z();
+        ++it_geo;
+
+        const int idx = (*it1).index;
+        types_before.push_back(elements[idx]);
     }
 
     // Types after the process.
@@ -319,7 +331,6 @@ double Matcher::updateSingleRate(const int index,
     // Get the iterators to the process match list and types after.
     std::vector<MinimalMatchListEntry>::const_iterator it2 = process_match_list.begin();
     std::vector<std::string>::iterator it3 = types_after.begin();
-
     const std::vector<MinimalMatchListEntry>::const_iterator end = process_match_list.end();
 
     // Loop over the process match list and update the types_after vector.
@@ -336,5 +347,9 @@ double Matcher::updateSingleRate(const int index,
     }
 
     // Calculate the rate using the provided rate calculator.
-    return rate_calculator.backendRateCallback(geometry, types_before, types_after, process.rateConstant());
+    return rate_calculator.backendRateCallback(numpy_geo,
+                                               len,
+                                               types_before,
+                                               types_after,
+                                               process.rateConstant());
 }

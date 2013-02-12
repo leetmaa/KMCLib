@@ -47,9 +47,6 @@ public:
      */
     virtual ~CustomRateProcess() {}
 
-    // ML: dummy
-    virtual void printMyType() const;
-
     /*! \brief Query for the total rate.
      *  \return : The total rate of the process.
      */

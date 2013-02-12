@@ -39,13 +39,6 @@ CustomRateProcess::CustomRateProcess(const Configuration & first,
 
 
 // -----------------------------------------------------------------------------
-// DUMMY
-void CustomRateProcess::printMyType() const
-{
-    printf("type: CustomRateProcess\n");
-}
-
-// -----------------------------------------------------------------------------
 //
 double CustomRateProcess::totalRate() const
 {

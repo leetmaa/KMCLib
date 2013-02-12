@@ -49,11 +49,9 @@ Interactions::Interactions(const std::vector<Process> & processes,
     rate_calculator_(rate_calculator_placeholder_)
 {
     // Point the process pointers to the right places.
-    printf("ML: type ref Process\n");
     for (size_t i = 0; i < processes_.size(); ++i)
     {
         process_pointers_[i] = &processes_[i];
-        process_pointers_[i]->printMyType();
     }
 
     // DONE
@@ -74,11 +72,9 @@ Interactions::Interactions(const std::vector<CustomRateProcess> & processes,
     rate_calculator_(rate_calculator)
 {
     // Point the process pointers to the right places.
-    printf("ML: type ref CustomRateProcess\n");
     for (size_t i = 0; i < custom_rate_processes_.size(); ++i)
     {
         process_pointers_[i] = &custom_rate_processes_[i];
-        process_pointers_[i]->printMyType();
     }
 
     // DONE
@@ -157,6 +153,7 @@ void Interactions::updateProcessMatchLists(const Configuration & configuration)
     }
 }
 
+
 // -----------------------------------------------------------------------------
 //
 int Interactions::totalAvailableSites() const
@@ -165,7 +162,7 @@ int Interactions::totalAvailableSites() const
     size_t sum = 0;
     for (size_t i = 0; i < process_pointers_.size(); ++i)
     {
-        sum += process_pointers_[i]->sites().size();
+        sum += process_pointers_[i]->nSites();
     }
     return static_cast<int>(sum);
 }

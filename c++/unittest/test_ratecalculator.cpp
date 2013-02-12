@@ -31,12 +31,13 @@ void Test_RateCalculator::testRateCallback()
     RateCalculator r;
 
     // Setup input needed to call the callback function.
-    const std::vector<Coordinate> geometry;
+    const std::vector<double> geometry(12, 1.0);
     const std::vector<std::string> types_before;
     const std::vector<std::string> types_after;
     const double rate_constant = randomDouble01();
 
     const double rate0 = r.backendRateCallback(geometry,
+                                               geometry.size()/3,
                                                types_before,
                                                types_after,
                                                rate_constant);

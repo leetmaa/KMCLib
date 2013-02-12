@@ -29,15 +29,15 @@ class KMCRateCalculatorPlugin(Backend.RateCalculator):
         # Call the custom setup.
         self.initialize()
 
-    def backendRateCallback(self, cpp_coords, types_before, types_after, rate_constant):
+    def backendRateCallback(self, cpp_coords, coords_len, types_before, types_after, rate_constant):
         """
         Function called from C++ to get the rate. It function recieves
         the data from C++ and parse it to a Python friendly format to send it
         forward to the custom rate function.
         """
         # Call and return the custom rate.
-        # numpy.array([ [c.x(), c.y(), c.z()] for c in cpp_coords ]) # FIXME - slow, used direct memory.
-        return self.rate(cpp_coords,
+        # PERFORMME: Consider creating the numpy array in C++ if possible.
+        return self.rate(numpy.array(cpp_coords).reshape(coords_len,3),
                          types_before,
                          types_after,
                          rate_constant)

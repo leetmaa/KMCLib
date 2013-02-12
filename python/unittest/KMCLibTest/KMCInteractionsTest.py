@@ -525,16 +525,18 @@ class KMCInteractionsTest(unittest.TestCase):
 
         # Get the rate calculator reference out of the C++ object and
         # check that a call from C++ calls the Python extension.
-        cpp_coords = Backend.StdVectorCoordinate()
+        cpp_coords = Backend.StdVectorDouble()
         cpp_types1 = Backend.StdVectorString()
         cpp_types2 = Backend.StdVectorString()
         rate_constant = 543.2211
 
         self.assertAlmostEqual( cpp_interactions.rateCalculator().backendRateCallback(cpp_coords,
+                                                                                      cpp_coords.size()/3,
                                                                                       cpp_types1,
                                                                                       cpp_types2,
                                                                                       rate_constant), ref_rnd, 12 )
         self.assertAlmostEqual( kmc_interactions._KMCInteractions__rate_calculator.backendRateCallback(cpp_coords,
+                                                                                                       cpp_coords.size()/3,
                                                                                                        cpp_types1,
                                                                                                        cpp_types2,
                                                                                                        rate_constant), ref_rnd, 12 )
@@ -543,6 +545,7 @@ class KMCInteractionsTest(unittest.TestCase):
         # returns the rate given to it.
         cpp_rate_calculator = Backend.RateCalculator()
         self.assertAlmostEqual( cpp_rate_calculator.backendRateCallback(cpp_coords,
+                                                                        cpp_coords.size()/3,
                                                                         cpp_types1,
                                                                         cpp_types2,
                                                                         rate_constant), rate_constant, 12 )
