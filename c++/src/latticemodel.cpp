@@ -32,17 +32,11 @@ LatticeModel::LatticeModel(Configuration & configuration,
     // ML: Temporarily init the random number generator here.
     seedRandom(false, 2013);
 
-    printf(" KMCLib: Calculating initial matching.\n");
-
     // Setup the mapping between coordinates and processes.
     calculateInitialMatching();
 
-    printf(" KMCLib: Update the probability table.\n");
-
     // Initialize the interactions table here.
     interactions_.updateProbabilityTable();
-
-    printf(" KMCLib: Setup done.\n");
 }
 
 

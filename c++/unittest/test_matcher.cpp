@@ -1489,12 +1489,120 @@ void Test_Matcher::testCalculateMatchingInteractions()
 
 }
 
+// -------------------------------------------------------------------------- //
+// This proxy class is part needed for the UpdateRates test below.
+class CustRateCalc : public RateCalculator {
+public:
+    virtual ~CustRateCalc() {}
+    virtual double backendRateCallback(const std::vector<double> geometry,
+                                       const int len,
+                                       const std::vector<std::string> & types_before,
+                                       const std::vector<std::string> & types_after,
+                                       const double rate_constant) const
+        {
+            // Return.
+            return std::sqrt(rate_constant);
+        }
+};
 
 // -------------------------------------------------------------------------- //
 //
 void Test_Matcher::testUpdateRates()
 {
-    // NEEDS IMPLEMENTATION
+    // Generate a list of tasks to run.
+    std::vector<RateTask> tasks;
+
+    seedRandom(3452321, true);
+    //const double ref_rate1 = randomDouble01();
+    //const double ref_rate2 = randomDouble01();
+    const double ref_rate1 = 2.0;
+    const double ref_rate2 = 3.0;
+
+    RateTask t1;
+    t1.index   = 0;
+    t1.process = 0;
+    t1.rate    = 0.0;
+    tasks.push_back(t1);
+
+    RateTask t2;
+    t2.index   = 1;
+    t2.process = 3;
+    t2.rate    = 0.0;
+    tasks.push_back(t2);
+
+    // Here is the matcher to test.
+    Matcher m;
+
+    // Setup a list of processes and give it to an interactions object.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["C"] = 1;
+    possible_types["B"] = 2;
+    possible_types["D"] = 3;
+    possible_types["A"] = 4;
+
+    std::vector<std::string> elements1;
+    elements1.push_back("C");
+    elements1.push_back("B");
+    std::vector<std::string> elements2;
+    elements2.push_back("D");
+    elements2.push_back("B");
+    std::vector<std::vector<double> > process_coords(2,std::vector<double>(3,0.0));
+    process_coords[1][0] =  0.5;
+    process_coords[1][1] =  0.5;
+    process_coords[1][2] =  0.5;
+
+    const Configuration config1(process_coords, elements1, possible_types);
+    const Configuration config2(process_coords, elements2, possible_types);
+
+    // Here is the process.
+    std::vector<int> basis_sites;
+    basis_sites.push_back(0);
+    CustomRateProcess process1(config1, config2, ref_rate1, basis_sites, 1.0);
+    CustomRateProcess process2(config1, config2, ref_rate2, basis_sites, 1.0);
+
+    // Set up the interactions object.
+    std::vector<CustomRateProcess> processes(4, process1);
+    processes[3] = process2;
+    CustRateCalc rate_calculator;
+    Interactions interactions(processes, false, rate_calculator );
+
+    // Setup a valid configuration.
+    std::vector<std::vector<double> > coords(2, std::vector<double>(3, 0.0));
+
+    // One cell with two atoms.
+    coords[0][0] = 0.0;
+    coords[0][1] = 0.0;
+    coords[0][2] = 0.0;
+    coords[1][0] = 0.5;
+    coords[1][1] = 0.3;
+    coords[1][2] = 0.1;
+
+    // Setup elements.
+    std::vector<std::string> elements(2);
+    elements[0] = "A";
+    elements[1] = "B";
+
+    // Construct the configuration.
+    Configuration config(coords, elements, possible_types);
+
+    // Setup a cooresponding lattice map.
+    const std::vector<int> repetitions(3, 1);
+    const std::vector<bool> periodicity(3, false);
+    const int basis = 2;
+
+    LatticeMap lattice_map(basis, repetitions, periodicity);
+    config.initMatchLists(lattice_map, 1);
+
+    // Send the interactions object down for update
+    // together with the processes and a configuration.
+    m.updateRates(tasks, interactions, config);
+
+    // Check that the rates were correctly updated.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( tasks[0].rate, std::sqrt(ref_rate1), 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( tasks[1].rate, std::sqrt(ref_rate2), 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( tasks[2].rate, 0.0,                  1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( tasks[3].rate, 0.0,                  1.0e-12 );
 }
 
 
@@ -1577,7 +1685,7 @@ void Test_Matcher::testUpdateSingleRate()
     basis_sites.push_back(0);
 
     LatticeMap lattice_map(basis, repetitions, periodicity);
-    config.initMatchLists(lattice_map, 1);
+    config.initMatchLists(lattice_map, 13);
 
     // Construct a process that should match the second index.
 
@@ -1600,13 +1708,13 @@ void Test_Matcher::testUpdateSingleRate()
     // Construct the process with a random rate.
     seedRandom(19, true);
     const double rate = 13.7*randomDouble01();
-    Process process(config1, config2, rate, basis_sites);
+    CustomRateProcess process(config1, config2, rate, basis_sites, 12.0);
 
     // Put the process in a vector.
-    std::vector<Process> processes(1, process);
+    std::vector<CustomRateProcess> processes(1, process);
 
     // Create an interactions object.
-    Interactions  interactions(processes, false);
+    Interactions interactions(processes, false, CustomRateCalculator());
 
     // Get the matcher to test and a custom rate calculator.
     const Matcher m;
