@@ -184,38 +184,36 @@ const std::vector<MinimalMatchListEntry> & Configuration::minimalMatchList(const
         }
     }
     else {
-    // Periodic b-c
+        // The general case fore wrapping all directions.
+        // Periodic b-c
+        // Periodic a-c
+        // Periodic a
+        // Periodic b
+        // Periodic c
 
-    // Periodic a-c
+        // Loop, calculate and add to the return list.
+        for ( ; it_index != end; ++it_index, ++it_match_list)
+        {
+            // Center.
+            Coordinate c = coordinates_[(*it_index)] - center;
 
-    // Periodic a
+            // Wrap with coorect periodicity.
+            lattice_map.wrap(c);
 
-    // Periodic b
+            const double distance = c.distanceToOrigin();
 
-    // Periodic c
+            // Get the type.
+            const int match_type = types_[(*it_index)];
 
-    // Loop, calculate and add to the return list.
-    for ( ; it_index != end; ++it_index, ++it_match_list)
-    {
-        // Center.
-        Coordinate c = coordinates_[(*it_index)] - center;
-
-        // Wrap with coorect periodicity.
-        lattice_map.wrap(c);
-
-        const double distance = c.distanceToOrigin();
-
-        // Get the type.
-        const int match_type = types_[(*it_index)];
-
-        // Save in the match list.
-        (*it_match_list).match_type  = match_type;
-        (*it_match_list).update_type = -1;
-        (*it_match_list).distance    = distance;
-        (*it_match_list).coordinate  = c;
-        (*it_match_list).index       = (*it_index);
+            // Save in the match list.
+            (*it_match_list).match_type  = match_type;
+            (*it_match_list).update_type = -1;
+            (*it_match_list).distance    = distance;
+            (*it_match_list).coordinate  = c;
+            (*it_match_list).index       = (*it_index);
+        }
     }
-    } // FIXME
+
     // Sort and return.
     std::sort(tmp_minimal_match_list__.begin(), tmp_minimal_match_list__.end());
     return tmp_minimal_match_list__;
