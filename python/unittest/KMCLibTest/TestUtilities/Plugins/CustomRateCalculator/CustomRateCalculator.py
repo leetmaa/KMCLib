@@ -15,6 +15,7 @@ class CustomRateCalculator(KMCRateCalculatorPlugin):
 
     def rate(self, coords, types_before, types_after, rate_constant):
         """ Overloaded API rate function. """
-        print "RATE function called in python. XXXXXXX"
-        return 136666.45
-
+        if types_before[0] == "B":
+            return 3.0
+        else:
+            return 1.0

@@ -328,8 +328,7 @@ class KMCLatticeModelTest(unittest.TestCase):
         # step with the presently used random number seed.
         self.assertAlmostEqual(20.0, nA * 100.0 / (nA + nB), 3.0 )
 
-    # FIXME: NEEDS IMPLEMENTATION
-    def notestCustomRatesRun(self):
+    def testCustomRatesRun(self):
         """ Test the run of an A-B flip model with custom rates. """
         # Cell.
         cell_vectors = [[   1.000000e+00,   0.000000e+00,   0.000000e+00],
@@ -379,13 +378,12 @@ class KMCLatticeModelTest(unittest.TestCase):
         interactions_list = [(conf1_0, conf2_0,    4.0),
                              (conf1_1, conf2_1,    1.0)]
 
+        interactions = KMCInteractions(interactions_list=interactions_list,
+                                       implicit_wildcards=True)
 
         # Custom rates.
         rate_calculator = CustomRateCalculator
-
-        interactions = KMCInteractions(interactions_list=interactions_list,
-                                       implicit_wildcards=True,
-                                       rate_calculator=rate_calculator)
+        interactions.setRateCalculator(rate_calculator)
 
         # Setup the model.
         ab_flip_model = KMCLatticeModel(configuration, interactions)
@@ -422,10 +420,11 @@ class KMCLatticeModelTest(unittest.TestCase):
         nA = len([ ee for ee in elem if ee == "A" ])
         nB = len([ ee for ee in elem if ee == "B" ])
 
-        # Note that the average should be 20.0% over a long run.
-        # It is pure luck that it is exact at this particular
-        # step with the presently used random number seed.
-        self.assertAlmostEqual(20.0, nA * 100.0 / (nA + nB), 3.0 )
+        # Note that the average over a long simulation should be
+        # 75% A using the modified rate function. In this particular
+        # step the A population is 74%.
+        value = 1.0 * nA / (nA + nB)
+        self.assertAlmostEqual(0.74, value, 2)
 
     def testBackend(self):
         """ Test that the backend object is correctly constructed. """
