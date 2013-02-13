@@ -25,11 +25,11 @@ public:
 
     CPPUNIT_TEST_SUITE( Test_RateCalculator );
     CPPUNIT_TEST( testConstruction );
-    CPPUNIT_TEST( testRate );
+    CPPUNIT_TEST( testRateCallback );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstruction();
-    void testRate();
+    void testRateCallback();
 
 };
 

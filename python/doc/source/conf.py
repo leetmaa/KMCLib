@@ -41,7 +41,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'KMCLib'
-copyright = u'2012, Mikael Leetmaa'
+copyright = u'2013, Mikael Leetmaa'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -82,7 +82,7 @@ exclude_patterns = []
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
-
+highlight_language = 'python'
 # These are builtin styles.
 # ['monokai', 'manni', 'rrt', 'perldoc', 'borland', 'colorful', 'default',
 #  'murphy', 'vs', 'trac', 'tango', 'fruity', 'autumn', 'bw', 'emacs', 'vim',
@@ -97,8 +97,8 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-#html_theme = 'default'
-html_theme = 'sphinxdoc'
+html_theme = 'default'
+#html_theme = 'sphinxdoc'
 #html_theme = 'nature'
 #html_theme = 'traditional'
 #html_theme = 'haiku'
@@ -168,7 +168,7 @@ html_static_path = ['_static']
 #html_split_index = False
 
 # If true, links to the reST sources are added to the pages.
-#html_show_sourcelink = True
+html_show_sourcelink = False
 
 # If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
 #html_show_sphinx = True
@@ -269,7 +269,7 @@ texinfo_documents = [
 epub_title = u'KMCLib'
 epub_author = u'Mikael Leetmaa'
 epub_publisher = u'Mikael Leetmaa'
-epub_copyright = u'2012, Mikael Leetmaa'
+epub_copyright = u'2013, Mikael Leetmaa'
 
 # The language of the text. It defaults to the language option
 # or en if the language is not set.
@@ -310,7 +310,7 @@ epub_copyright = u'2012, Mikael Leetmaa'
 intersphinx_mapping = {'http://docs.python.org/': None}
 
 def skip(app, what, name, obj, skip, options):
-    print app, what, name, obj, skip, options
+    #print app, what, name, obj, skip, options
     if skip:
         return True
     elif name == '__weakref__':

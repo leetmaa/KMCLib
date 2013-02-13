@@ -9,14 +9,18 @@
 
 
 import unittest
-
+import numpy
 
 from KMCLib.KMCLocalConfiguration import KMCLocalConfiguration
+from KMCLib.KMCRateCalculatorPlugin import KMCRateCalculatorPlugin
 from KMCLib.Exceptions.Error import Error
 from KMCLib.Backend import Backend
 
 # Import the module to test.
 from KMCLib.KMCInteractions import KMCInteractions
+
+# Import the test helpers.
+from TestUtilities.Plugins.CustomRateCalculator.CustomRateCalculator import CustomRateCalculator
 
 # Implementing the tests.
 class KMCInteractionsTest(unittest.TestCase):
@@ -70,6 +74,63 @@ class KMCInteractionsTest(unittest.TestCase):
 
         # Checks that the address is the same.
         self.assertTrue(stored_interactions == interactions_list)
+
+    def testConstructionWithCustomRates(self):
+        """ Test construction with custom rates. """
+        # A first interaction.
+        coords = [[1.0,2.0,3.4],[12.0,13.0,-1.0],[1.1,1.2,1.3]]
+        types = ["A","*","B"]
+        local_config_0 = KMCLocalConfiguration(coordinates=coords,
+                                               types=types,
+                                               center=0)
+        types = ["B","*","A"]
+        local_config_1 = KMCLocalConfiguration(coordinates=coords,
+                                               types=types,
+                                               center=0)
+        rate_0_1 = 3.5
+        interaction_0 = (local_config_0, local_config_1, rate_0_1, [0,1,3])
+
+        # A second interaction.
+        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
+        types = ["A","C"]
+        local_config_0 = KMCLocalConfiguration(coordinates=coords,
+                                               types=types,
+                                               center=0)
+        types = ["C","A"]
+        local_config_1 = KMCLocalConfiguration(coordinates=coords,
+                                               types=types,
+                                               center=0)
+        rate_0_1 = 1.5
+        interaction_1 = (local_config_0, local_config_1, rate_0_1)
+
+        interactions_list = [interaction_0, interaction_1]
+
+        # Test that it fails with the wrong rate calculator.
+        interactions = KMCInteractions(interactions_list=interactions_list,
+                                       implicit_wildcards=True)
+
+        # Test that it fails if the rate calculator is of wrong type.
+        self.assertRaises( Error, lambda : interactions.setRateCalculator(rate_calculator="CustomRateCalculator") )
+
+        # Test that it fails if the rate calculator is of wrong class.
+        self.assertRaises( Error, lambda : interactions.setRateCalculator(rate_calculator=Error) )
+
+        # Test that it fails if the rate calculator is instantiated.
+        self.assertRaises( Error, lambda : interactions.setRateCalculator(rate_calculator=CustomRateCalculator()) )
+
+        # Test that it fails if the rate calculator is the base class.
+        self.assertRaises( Error, lambda : interactions.setRateCalculator(rate_calculator=KMCRateCalculatorPlugin) )
+
+        # Construct the interactions object with a custom rate calculator class.
+        kmc_interactions = KMCInteractions(interactions_list=interactions_list,
+                                           implicit_wildcards=True)
+        kmc_interactions.setRateCalculator(rate_calculator=CustomRateCalculator)
+
+        # Test the stored name.
+        self.assertEqual(kmc_interactions._KMCInteractions__rate_calculator_str, "CustomRateCalculator")
+
+        # Test the stored rate calculator.
+        self.assertTrue(isinstance(kmc_interactions._KMCInteractions__rate_calculator, CustomRateCalculator) )
 
     def testConstructionFailNoList(self):
         """ Test that the construction fails if the interactions list is not a list. """
@@ -401,6 +462,90 @@ class KMCInteractionsTest(unittest.TestCase):
         # Match type should be "C" -> 5 and update type "A" -> 13
         self.assertEqual( match_type,   5)
         self.assertEqual( update_type, 13)
+
+    def testBackendWithCustomRates(self):
+        """ Test that we can construct the backend object with custom rates. """
+        # A first interaction.
+        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
+        types = ["A","B"]
+        local_config_0 = KMCLocalConfiguration(coordinates=coords,
+                                               types=types,
+                                               center=0)
+        types = ["B","A"]
+        local_config_1 = KMCLocalConfiguration(coordinates=coords,
+                                               types=types,
+                                               center=0)
+        rate_0_1 = 3.5
+        interaction_0 = (local_config_0, local_config_1, rate_0_1)
+
+        # A second interaction.
+        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
+        types = ["A","C"]
+        local_config_0 = KMCLocalConfiguration(coordinates=coords,
+                                               types=types,
+                                               center=0)
+        types = ["C","A"]
+        local_config_1 = KMCLocalConfiguration(coordinates=coords,
+                                               types=types,
+                                               center=0)
+        rate_0_1 = 1.5
+        interaction_1 = (local_config_0, local_config_1, rate_0_1)
+
+        interactions_list = [interaction_0, interaction_1]
+
+        # Set the custom rates class to use.
+        custom_rates_class = CustomRateCalculator
+
+        # Construct the interactions object.
+        kmc_interactions = KMCInteractions(interactions_list=interactions_list,
+                                           implicit_wildcards=False)
+        kmc_interactions.setRateCalculator(rate_calculator=custom_rates_class)
+
+        # Set the rate function on the custom rates calculator for testing.
+        ref_rnd = numpy.random.uniform(0.0,1.0)
+        def testRateFunction(coords, types_before, types_after, rate_const):
+            return ref_rnd
+        kmc_interactions._KMCInteractions__rate_calculator.rate = testRateFunction
+
+        # Setup a dict with the possible types.
+        possible_types = {
+            "A" : 13,
+            "D" : 2,
+            "B" : 3,
+            "J" : 4,
+            "C" : 5,
+            }
+
+        # Construct the backend.
+        cpp_interactions = kmc_interactions._backend(possible_types, 2)
+
+        # Get the rate calculator reference out of the C++ object and
+        # check that a call from C++ calls the Python extension.
+        cpp_coords = Backend.StdVectorDouble()
+        cpp_types1 = Backend.StdVectorString()
+        cpp_types2 = Backend.StdVectorString()
+        rate_constant = 543.2211
+
+        self.assertAlmostEqual( cpp_interactions.rateCalculator().backendRateCallback(cpp_coords,
+                                                                                      cpp_coords.size()/3,
+                                                                                      cpp_types1,
+                                                                                      cpp_types2,
+                                                                                      rate_constant), ref_rnd, 12 )
+        self.assertAlmostEqual( kmc_interactions._KMCInteractions__rate_calculator.backendRateCallback(cpp_coords,
+                                                                                                       cpp_coords.size()/3,
+                                                                                                       cpp_types1,
+                                                                                                       cpp_types2,
+                                                                                                       rate_constant), ref_rnd, 12 )
+
+        # Construct a C++ RateCalculator object directly and check that this object
+        # returns the rate given to it.
+        cpp_rate_calculator = Backend.RateCalculator()
+        self.assertAlmostEqual( cpp_rate_calculator.backendRateCallback(cpp_coords,
+                                                                        cpp_coords.size()/3,
+                                                                        cpp_types1,
+                                                                        cpp_types2,
+                                                                        rate_constant), rate_constant, 12 )
+
 
     def testBackendNoFailWrongBasisMatch(self):
         """ Test for no failure when constructing backend with wrong n_basis """

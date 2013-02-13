@@ -29,7 +29,7 @@ public:
 
     /*! \brief Default constructor needed for use in std::vector SWIG wrapping.
      */
-    Process() {};
+    Process() {}
 
     /*! \brief Constructor for the process. Note that the configurations given
                to the process are local configurations and no periodic boundaries
@@ -38,19 +38,48 @@ public:
                                coordinates around an active site.
      *  \param second        : The second configuration, to update the local
                                configuration with if the process is selected.
-     *  \param barrier       : The energy barrier in eV for performing the process.
+     *  \param rate          : The rate in Hz associated with the process.
      *  \param basis_sites   : The basis sites where this process is applicable.
      */
     Process(const Configuration & first,
             const Configuration & second,
-            const double barrier,
+            const double rate,
             const std::vector<int> & basis_sites);
 
-    /*! \brief Query for the rate constant.
-     *         NOTE: THIS IS A DUMMY IMPLEMENTATION
-     *  \return : The rate constant of the process.
+    /*! \brief Virtual destructor needed for use as base class.
      */
-    double rateConstant() const { return 1.0 / barrier_; } // NEEDS IMPLEMENTATION
+    virtual ~Process() {}
+
+    /*! \brief Query for the total rate.
+     *  \return : The total rate of the process.
+     */
+    virtual double totalRate() const { return rate_ * sites_.size(); }
+
+    /*! \brief Add the index to the list of available sites.
+     *  \param index : The index to add.
+     *  \param rate  : Dummy argument needed for common interface.
+     */
+    virtual void addSite(const int index, const double rate=0.0);
+
+    /*! \brief Remove the index from the list of available sites.
+     *  \param index : The index to remove.
+     */
+    virtual void removeSite(const int index);
+
+    /*! \brief Pick a random available process.
+     *  \return : A random available process.
+     */
+    virtual int pickSite() const;
+
+    /*! \brief Interface function for inherited classes.
+     *         This function does nothing if not overloaded.
+     */
+    virtual void updateRateTable() {}
+
+    /*! \brief Query for the rate constant associated with the process.
+     *  \return : The rate constant part of the of rate for the process.
+     */
+    double rateConstant() const { return rate_; }
 
     /*! \brief Query for the number of listed possible sites for this process.
      *  \return : The number of listed indices.
@@ -63,17 +92,8 @@ public:
      */
     bool isListed(const int index) const;
 
-    /*! \brief Add the index to the list of available sites.
-     *  \param index : The index to add.
-     */
-    void addSite(const int index);
-
-    /*! \brief Remove the index from the list of available sites.
-     *  \param index : The index to remove.
-     */
-    void removeSite(const int index);
-
     /*! \brief Query for the available sites for this process.
+     *         Convenient when testing other functionality of the class.
      *  \return : The available sites.
      */
     const std::vector<int> & sites() const { return sites_; }
@@ -105,17 +125,26 @@ public:
      */
     const std::vector<int> & basisSites() const { return basis_sites_; }
 
-    /*! \brief Pick a random available process.
-     *  \return : A random available process.
+    /*! \brief Query for the cutoff distance.
+     *  \return : The cutoff radius for the process.
      */
-    int pickSite() const;
+    double cutoff() const { return cutoff_; }
+
+    /*! \brief Query for the range.
+     *  \return : The range for the process in number of cells.
+     */
+    int range() const { return range_; }
 
 protected:
 
-private:
+    /// The range in primitive cells.
+    int range_;
 
-    /// The barrier in eV.
-    double barrier_;
+    /// The rate in Hz.
+    double rate_;
+
+    /// The cutoff radius primitive unit-cell fractional units.
+    double cutoff_;
 
     /// The available sites for this process.
     std::vector<int> sites_;
@@ -130,6 +159,8 @@ private:
 
     /// The basis sites to which this process can be applied.
     std::vector<int> basis_sites_;
+
+private:
 
 };
 

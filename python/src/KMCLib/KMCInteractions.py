@@ -9,10 +9,12 @@
 
 
 import numpy
+import inspect
 
 from KMCLib.KMCLocalConfiguration import KMCLocalConfiguration
 from KMCLib.Utilities.CheckUtilities import checkSequence
 from KMCLib.Utilities.CheckUtilities import checkPositiveInteger
+from KMCLib.KMCRateCalculatorPlugin import KMCRateCalculatorPlugin
 from KMCLib.Exceptions.Error import Error
 from KMCLib.Backend import Backend
 
@@ -36,12 +38,12 @@ class KMCInteractions(object):
                                   as applicable to all basis sites. To use implicit wildcards for an
                                   interaction the list of basis sites must be of length one for that
                                   interaction.
-        :type interactions_list: [(KMCLocalConfiguration, KMCLocalConfiguration, float, [int, ...]), ...]
+        :type interactions_list:  [(KMCLocalConfiguration, KMCLocalConfiguration, float, [int, ...]), ...]
 
         :param implicit_wildcards: A flag indicating if implicit wildcards should be used in
                                    the matching of processes with the configuration. The default
                                    is True, i.e. to use implicit wildcards.
-        :type implicit_wildcards: bool
+        :type implicit_wildcards:  bool
         """
         # Check the interactions input.
         self.__raw_interactions = self.__checkInteractionsInput(interactions_list)
@@ -55,6 +57,48 @@ class KMCInteractions(object):
 
         # Set the backend to be generated at first query.
         self.__backend = None
+
+        # Set the rate calculator.
+        self.__rate_calculator = None
+
+    def setRateCalculator(self,
+                          rate_calculator=None):
+        """
+        Set the rate calculator of the class. The rate calculator must be
+        set before the backend is generated to take effect.
+
+        :param rate_calculator:    A class inheriting from the
+                                   KMCRateCalculatorPlugin interface. If not given
+                                   the rates specified for each process will be used unmodified.
+
+        """
+        # Check the rate calculator.
+        if rate_calculator is not None:
+
+            # Check if this is a class.
+            if not inspect.isclass(rate_calculator):
+                msg = """
+The 'rate_calculator' input to the KMCInteractions constructor must
+be a class (not instantiated) inheriting from the KMCRateCalculatorPlugin. """
+                raise Error(msg)
+
+            # Save the class name for use in scripting.
+            self.__rate_calculator_str = str(rate_calculator).replace("'>","").split('.')[-1]
+            # Instantiate.
+            rate_calculator = rate_calculator()
+            if not isinstance(rate_calculator, KMCRateCalculatorPlugin):
+                msg = """
+The 'rate_calculator' input to the KMCInteractions constructor must
+be a class inheriting from the KMCRateCalculatorPlugin. """
+                raise Error(msg)
+            elif rate_calculator.__class__ == KMCRateCalculatorPlugin().__class__:
+                msg = """
+The 'rate_calculator' input to the KMCInteractions constructor must
+be inheriting from the KMCRateCalculatorPlugin class. It may not be
+the KMCRateCalculatorPlugin class itself. """
+                raise Error(msg)
+        # All tests passed. Save the instantiated rate calculator on the class.
+        self.__rate_calculator = rate_calculator
 
     def __checkInteractionsInput(self, interactions):
         """ """
@@ -146,8 +190,15 @@ class KMCInteractions(object):
         """
         if self.__backend is None:
 
+            # Setup the correct type of backend process objects
+            # depending on the presence of a rate calculator.
+
+            if self.__rate_calculator is not None:
+                cpp_processes = Backend.StdVectorCustomRateProcess()
+            else:
+                cpp_processes = Backend.StdVectorProcess()
+
             # For each interaction.
-            cpp_processes = Backend.StdVectorProcess()
             for interaction in self.__raw_interactions:
 
                 # Get the corresponding C++ objects.
@@ -163,18 +214,37 @@ class KMCInteractions(object):
                     for b in interaction[3]:
                         if b < n_basis:
                             basis_list.append(b)
-                # And construct the C++ vector.
+
+                # And construct the C++ entry.
                 cpp_basis = Backend.StdVectorInt(basis_list)
 
                 # Construct and store the C++ process.
-                cpp_processes.push_back(Backend.Process(cpp_config1,
-                                                        cpp_config2,
-                                                        barrier,
-                                                        cpp_basis))
+                if self.__rate_calculator is not None:
+
+                    # Set the cutoff correctly.
+                    cutoff = self.__rate_calculator.cutoff()
+                    if cutoff is None:
+                        cutoff = 1.0
+
+                    cpp_processes.push_back(Backend.CustomRateProcess(cpp_config1,
+                                                                      cpp_config2,
+                                                                      barrier,
+                                                                      cpp_basis,
+                                                                      cutoff))
+                else:
+                    cpp_processes.push_back(Backend.Process(cpp_config1,
+                                                            cpp_config2,
+                                                            barrier,
+                                                            cpp_basis))
 
             # Construct the C++ interactions object.
-            self.__backend = Backend.Interactions(cpp_processes,
-                                                  self.__implicit_wildcards)
+            if self.__rate_calculator is not None:
+                self.__backend = Backend.Interactions(cpp_processes,
+                                                      self.__implicit_wildcards,
+                                                      self.__rate_calculator)
+            else:
+                self.__backend = Backend.Interactions(cpp_processes,
+                                                      self.__implicit_wildcards)
 
         # Return the stored backend.
         return self.__backend

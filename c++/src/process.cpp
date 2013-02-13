@@ -21,9 +21,11 @@
 //
 Process::Process(const Configuration & first,
                  const Configuration & second,
-                 const double barrier,
+                 const double rate,
                  const std::vector<int> & basis_sites) :
-    barrier_(barrier),
+    range_(1),
+    rate_(rate),
+    cutoff_(0.0),
     sites_(0),
     affected_indices_(0),
     basis_sites_(basis_sites)
@@ -48,6 +50,26 @@ Process::Process(const Configuration & first,
         const Coordinate coordinate = coords[i];
         const double distance = coordinate.distance(origin);
 
+        // Save the cutoff.
+        if (distance > cutoff_)
+        {
+            cutoff_ = distance;
+        }
+
+        // Calculate the range based on the coordinates, such that all
+        // needed coordinates are guarranteed to be included.
+        const double x = coordinate.x();
+        const int cmp_x = static_cast<int>( ( x < 0.0 ) ? (-1.0*x)+0.99999 : x );
+        range_ = std::max(cmp_x, range_);
+
+        const double y = coordinate.y();
+        const int cmp_y = static_cast<int>( ( y < 0.0 ) ? (-1.0*y)+0.99999 : y );
+        range_ = std::max(cmp_y, range_);
+
+        const double z = coordinate.z();
+        const int cmp_z = static_cast<int>( ( z < 0.0 ) ? (-1.0*z)+0.99999 : z );
+        range_ = std::max(cmp_z, range_);
+
         // Set up the match list.
         MinimalMatchListEntry m;
         m.match_type  = first_type;
@@ -69,17 +91,10 @@ Process::Process(const Configuration & first,
     std::sort(minimal_match_list_.begin(), minimal_match_list_.end());
 }
 
-// -----------------------------------------------------------------------------
-//
-bool Process::isListed(const int index) const
-{
-    // Search in the list to find out if it is added.
-    return std::find(sites_.begin(), sites_.end(), index) != sites_.end();
-}
 
 // -----------------------------------------------------------------------------
 //
-void Process::addSite(const int index)
+void Process::addSite(const int index, const double rate)
 {
     sites_.push_back(index);
 }
@@ -99,7 +114,6 @@ void Process::removeSite(const int index)
     sites_.pop_back();
 }
 
-
 // -----------------------------------------------------------------------------
 //
 int Process::pickSite() const
@@ -109,4 +123,11 @@ int Process::pickSite() const
     return sites_[rnd];
 }
 
+// -----------------------------------------------------------------------------
+//
+bool Process::isListed(const int index) const
+{
+    // Search in the list to find out if it is added.
+    return std::find(sites_.begin(), sites_.end(), index) != sites_.end();
+}
 

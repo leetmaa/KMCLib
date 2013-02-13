@@ -84,11 +84,9 @@ def checkCoordinateList(coordinates, varname="coordinates"):
 
     :param coordinates: The object to test. To pass the test this must be
                         an Nx3 array of floating point numbers.
-
     :param varname: The name of the variable. Defaults to "coordinates"
     :type varname: string
-
-   :returns:           A valid Nx3 numpy array of numbers.
+    :returns:           A valid Nx3 numpy array of numbers.
     """
     # Check that it is a sequence.
     coordinates = checkSequence(coordinates, "The %s must be given as a list of lists with dimensions Nx3"%(varname))

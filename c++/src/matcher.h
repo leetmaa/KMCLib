@@ -23,6 +23,24 @@ class Interactions;
 class Configuration;
 class Process;
 class LatticeMap;
+class RateCalculator;
+
+/// A minimal struct for representing a task with a rate.
+struct RateTask
+{
+    int index;
+    int process;
+    double rate;
+};
+
+
+/// A minimal struct for representing a remove task.
+struct RemoveTask
+{
+    int index;
+    int process;
+};
+
 
 /*! \brief Class for matching local geometries.
  */
@@ -47,12 +65,64 @@ public:
                            const LatticeMap & lattice_map,
                            const std::vector<int> & indices) const;
 
+
+    /*! \brief Calculate the matching for a list of match tasks (pairs of indices and processes).
+     *  \param index_process_to_match : The list of indices and process numbers to match.
+     *  \param interactions           : The interactions to get the processes from.
+     *  \param configuration          : The configuration which the index refers to.
+     *  \param remove_tasks (out)     : A vector that will be filled with tasks for removal after match.
+     *  \param update_tasks (out)     : A vector that will be filled with tasks for update after match.
+     *  \param add_tasks    (out)     : A vector that will be filled with tasks for adding after match.
+     */
+    void matchIndicesWithProcesses(const std::vector<std::pair<int,int> > & index_process_to_match,
+                                   Interactions  & interactions,
+                                   Configuration & configuration,
+                                   std::vector<RemoveTask> & remove_tasks,
+                                   std::vector<RateTask>   & update_tasks,
+                                   std::vector<RateTask>   & add_tasks) const;
+
+
+    /*! \brief Update the rates of the rate tasks by calling the
+     *         backend call-back function of the RateCalculator stored
+     *         on the interactions object.
+     *  \param tasks         : A vector with tasks to update.
+     *  \param interactions  : The interactions to get the rate calculator from.
+     *  \param configuration : The configuration to use.
+     */
+    void updateRates(std::vector<RateTask> & tasks,
+                     const Interactions    & interactions,
+                     const Configuration   & configuration) const;
+
+
+    /*! \brief Update the processes with the given tasks.
+     *  \param remove_tasks  : A vector with remove tasks for updating the processes.
+     *  \param update_tasks  : A vector with update tasks for updating the processes.
+     *  \param add_tasks     : A vector with add tasks for updating the processes.
+     *  \param interactions  : The interactions to get the processes from.
+     */
+    void updateProcesses(const std::vector<RemoveTask> & to_remove,
+                         const std::vector<RateTask>   & to_update,
+                         const std::vector<RateTask>   & to_add,
+                         Interactions & interactions) const;
+
+    /*! \brief Calculate the rate for a single process using the rate calculator.
+     *  \param index           : The index to perform the process at.
+     *  \param process         : The process to perform.
+     *  \param configuration   : The configuration the index is referring to.
+     *  \param rate_calculator : The rate calculator to use.
+     *  \returns : The calculated rate for the process at the given index.
+     */
+    double updateSingleRate(const int index,
+                            const Process        & process,
+                            const Configuration  & configuration,
+                            const RateCalculator & rate_calculator) const;
+
     /*! \brief Calculate/update the matching of a provided index and process.
      *  \param process       : The process to check against and update if needed.
      *  \param configuration : The configuration which the index refers to.
      *  \param index         : The configuration index for which the neighbourhood should
      *                         be matched against the process.
-      */
+     */
     void calculateMatching(Process & process,
                            Configuration & configuration,
                            const int index) const;

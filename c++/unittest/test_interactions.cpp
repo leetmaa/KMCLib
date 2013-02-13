@@ -16,15 +16,26 @@
 #include "matchlistentry.h"
 #include "random.h"
 #include "latticemap.h"
+#include "ratecalculator.h"
 
 // -------------------------------------------------------------------------- //
 //
 void Test_Interactions::testConstruction()
 {
     std::vector<Process> processes;
-    bool implicit_wildcards = false;
+    processes.push_back(Process());
+    processes.push_back(Process());
+    const bool implicit_wildcards = false;
     Interactions interactions(processes, implicit_wildcards);
+    CPPUNIT_ASSERT( !interactions.useCustomRates() );
 
+    // Construct with a rate calculator.
+    const RateCalculator rc;
+    std::vector<CustomRateProcess> processes2;
+    processes2.push_back(CustomRateProcess());
+    processes2.push_back(CustomRateProcess());
+    Interactions interactions2(processes2, implicit_wildcards, rc);
+    CPPUNIT_ASSERT( interactions2.useCustomRates() );
     // DONE
 }
 
@@ -46,10 +57,10 @@ void Test_Interactions::testQuery()
         const std::vector<std::string> process_elements1(1,"B");
         const std::vector<std::string> process_elements2(1,"V");
         const std::vector<std::vector<double> > process_coordinates(1, std::vector<double>(3, 0.0));
-        const double barrier = 1.234;
+        const double rate = 1.234;
         Configuration c1(process_coordinates, process_elements1, possible_types);
         Configuration c2(process_coordinates, process_elements2, possible_types);
-        Process p(c1, c2, barrier, std::vector<int>(1,0));
+        Process p(c1, c2, rate, std::vector<int>(1,0));
         // Store twize.
         processes.push_back(p);
         processes.push_back(p);
@@ -77,10 +88,10 @@ void Test_Interactions::testQuery()
         process_coordinates[2][1] =  0.25;
         process_coordinates[2][2] =  0.25;
 
-        const double barrier = 13.7;
+        const double rate = 13.7;
         Configuration c1(process_coordinates, process_elements1, possible_types);
         Configuration c2(process_coordinates, process_elements2, possible_types);
-        Process p(c1, c2, barrier, std::vector<int>(1,0));
+        Process p(c1, c2, rate, std::vector<int>(1,0));
         processes.push_back(p);
     }
 
@@ -88,36 +99,40 @@ void Test_Interactions::testQuery()
     Interactions interactions(processes, false);
 
     // Query for the processes.
-    const std::vector<Process> & queried_processes = interactions.processes();
+    const std::vector<Process*> & queried_processes = interactions.processes();
 
     // Check the length of the list of processes.
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(queried_processes.size()), 3 );
 
     // Get the types in the queried processes and check.
-    CPPUNIT_ASSERT_EQUAL( queried_processes[0].minimalMatchList()[0].match_type, 1 );
-    CPPUNIT_ASSERT_EQUAL( queried_processes[0].minimalMatchList()[0].update_type, 2 );
+    CPPUNIT_ASSERT_EQUAL( queried_processes[0]->minimalMatchList()[0].match_type, 1 );
+    CPPUNIT_ASSERT_EQUAL( queried_processes[0]->minimalMatchList()[0].update_type, 2 );
 
-    CPPUNIT_ASSERT_EQUAL( queried_processes[2].minimalMatchList()[2].match_type, 1 );
-    CPPUNIT_ASSERT_EQUAL( queried_processes[2].minimalMatchList()[2].update_type, 1 );
+    CPPUNIT_ASSERT_EQUAL( queried_processes[2]->minimalMatchList()[2].match_type, 1 );
+    CPPUNIT_ASSERT_EQUAL( queried_processes[2]->minimalMatchList()[2].update_type, 1 );
 
     // Query for the total number of available sites. This is zero since no sites are added to
     // the processes.
     CPPUNIT_ASSERT_EQUAL( interactions.totalAvailableSites(), 0 );
 
     // Add sites to the processes and see that we get the correct number out.
-    interactions.processes()[0].addSite(12);
-    interactions.processes()[0].addSite(143);
-    interactions.processes()[0].addSite(1654);
-    interactions.processes()[0].addSite(177777);
+    interactions.processes()[0]->addSite(12);
+    interactions.processes()[0]->addSite(143);
+    interactions.processes()[0]->addSite(1654);
+    interactions.processes()[0]->addSite(177777);
 
-    interactions.processes()[1].addSite(12);
-    interactions.processes()[1].addSite(143);
+    interactions.processes()[1]->addSite(12);
+    interactions.processes()[1]->addSite(143);
 
-    interactions.processes()[2].addSite(1654);
-    interactions.processes()[2].addSite(177777);
-    interactions.processes()[2].addSite(177777);
+    interactions.processes()[2]->addSite(1654);
+    interactions.processes()[2]->addSite(177777);
+    interactions.processes()[2]->addSite(177777);
 
     CPPUNIT_ASSERT_EQUAL( interactions.totalAvailableSites(), 9 );
+
+    // Query for the rate calculator.
+    const RateCalculator & rc = interactions.rateCalculator();
+    CPPUNIT_ASSERT( &rc != NULL );
 
 }
 
@@ -125,7 +140,7 @@ void Test_Interactions::testQuery()
 //
 void Test_Interactions::testUpdateAndPick()
 {
-    // Setup two valid processes.
+    // Setup a list of processes.
     std::vector<Process> processes;
 
     // Setup a vector of dummy processes.
@@ -143,16 +158,16 @@ void Test_Interactions::testUpdateAndPick()
     possible_types["B"] = 1;
     possible_types["V"] = 2;
 
-    const double barrier = 13.7;
+    const double rate = 1.0/13.7;
     Configuration c1(process_coordinates, process_elements1, possible_types);
     Configuration c2(process_coordinates, process_elements2, possible_types);
     std::vector<int> sites_vector(1,0);
-    processes.push_back(Process(c1,c2,barrier,sites_vector));
-    processes.push_back(Process(c1,c2,barrier,sites_vector));
-    processes.push_back(Process(c1,c2,barrier+barrier,sites_vector));
-    processes.push_back(Process(c1,c2,barrier,sites_vector));
-    processes.push_back(Process(c1,c2,barrier,sites_vector));
-    processes.push_back(Process(c1,c2,barrier,sites_vector));
+    processes.push_back(Process(c1,c2,rate,sites_vector));
+    processes.push_back(Process(c1,c2,rate,sites_vector));
+    processes.push_back(Process(c1,c2,rate/2.0,sites_vector));
+    processes.push_back(Process(c1,c2,rate,sites_vector));
+    processes.push_back(Process(c1,c2,rate,sites_vector));
+    processes.push_back(Process(c1,c2,rate,sites_vector));
 
     // Fake a matching by adding sites to the processes.
 
@@ -187,12 +202,12 @@ void Test_Interactions::testUpdateAndPick()
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(probability_table.size()),
                           static_cast<int>(processes.size()) );
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[0].first,  3.0/barrier, 1.0e-14 );
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[1].first,  5.0/barrier, 1.0e-14 );
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[2].first,  7.0/barrier, 1.0e-14 );
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[3].first,  7.0/barrier, 1.0e-14 );
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[4].first,  7.0/barrier, 1.0e-14 );
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[5].first,  8.0/barrier, 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[0].first,  3.0 * rate, 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[1].first,  5.0 * rate, 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[2].first,  7.0 * rate, 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[3].first,  7.0 * rate, 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[4].first,  7.0 * rate, 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[5].first,  8.0 * rate, 1.0e-14 );
 
     CPPUNIT_ASSERT_EQUAL( probability_table[0].second, 3 );
     CPPUNIT_ASSERT_EQUAL( probability_table[1].second, 2 );
@@ -208,7 +223,7 @@ void Test_Interactions::testUpdateAndPick()
 
     // Pick processes from this table with enough statistics should give
     // the distribution proportional to the number of available sites,
-    // but with the double barrier for the third process should halve
+    // but with the double rate for the third process should halve
     // this entry.
     std::vector<int> picked(6,0);
     const int n_loop = 1000000;
@@ -250,12 +265,193 @@ void Test_Interactions::testUpdateAndPick()
     // a seed reset inbetween gives a reference to the same object.
     seedRandom(false, 87);
     const int p = interactions.pickProcessIndex();
-    const Process & proc1 = interactions.processes()[p];
+    const Process & proc1 = (*interactions.processes()[p]);
 
     seedRandom(false, 87);
-    const Process & proc2 = interactions.pickProcess();
+    const Process & proc2 = (*interactions.pickProcess());
     CPPUNIT_ASSERT_EQUAL( &proc1, &proc2 );
 
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Interactions::testUpdateAndPickCustom()
+{
+    // Setup a list of custom rate processes.
+    std::vector<CustomRateProcess> processes;
+
+    // Setup a vector of dummy processes.
+    std::vector<std::string> process_elements1(1);
+    process_elements1[0] = "A";
+
+    std::vector<std::string> process_elements2(1);
+    process_elements2[0] = "B";
+
+    std::vector<std::vector<double> > process_coordinates(1, std::vector<double>(3, 0.0));
+
+    // Possible types.
+    std::map<std::string, int> possible_types;
+    possible_types["A"] = 0;
+    possible_types["B"] = 1;
+    possible_types["V"] = 2;
+
+    const double rate = 1.0/13.7;
+    Configuration c1(process_coordinates, process_elements1, possible_types);
+    Configuration c2(process_coordinates, process_elements2, possible_types);
+    std::vector<int> sites_vector(1,0);
+    processes.push_back(CustomRateProcess(c1,c2,rate,sites_vector, 1.0));
+    processes.push_back(CustomRateProcess(c1,c2,rate,sites_vector, 1.0));
+    processes.push_back(CustomRateProcess(c1,c2,rate/2.0,sites_vector, 1.0));
+    processes.push_back(CustomRateProcess(c1,c2,rate,sites_vector, 1.0));
+    processes.push_back(CustomRateProcess(c1,c2,rate,sites_vector, 1.0));
+    processes.push_back(CustomRateProcess(c1,c2,rate,sites_vector, 1.0));
+
+    // Fake a matching by adding sites to the processes.
+
+    // First process, 3 sites, total rate 12
+    processes[0].addSite(12,  4.0);
+    processes[0].addSite(123, 7.0);
+    processes[0].addSite(332, 1.0);
+
+    // Second process, 2 sites, total rate 4
+    processes[1].addSite(19, 1.0);
+    processes[1].addSite(12, 3.0);
+
+    // Third process, 4 sites, total rate  3
+    processes[2].addSite(19,  1.0/4.0);
+    processes[2].addSite(12,  5.0/4.0);
+    processes[2].addSite(234, 2.0/4.0);
+    processes[2].addSite(991, 4.0/4.0);
+
+    // The sixth process, one site, total rate 12.
+    processes[5].addSite(992, 12.0);
+
+    // Setup the interactions object.
+    RateCalculator rc;
+    Interactions interactions(processes, true, rc);
+
+    // Update the probability table.
+    interactions.updateProbabilityTable();
+
+    // Check the values of the probability table.
+    const std::vector<std::pair<double, int> > & probability_table = \
+        interactions.probabilityTable();
+
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(probability_table.size()),
+                          static_cast<int>(processes.size()) );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[0].first,  12.0, 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[1].first,  16.0, 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[2].first,  19.0, 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[3].first,  19.0, 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[4].first,  19.0, 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( probability_table[5].first,  31.0, 1.0e-14 );
+
+    CPPUNIT_ASSERT_EQUAL( probability_table[0].second, 3 );
+    CPPUNIT_ASSERT_EQUAL( probability_table[1].second, 2 );
+    CPPUNIT_ASSERT_EQUAL( probability_table[2].second, 4 );
+    CPPUNIT_ASSERT_EQUAL( probability_table[3].second, 0 );
+    CPPUNIT_ASSERT_EQUAL( probability_table[4].second, 0 );
+    CPPUNIT_ASSERT_EQUAL( probability_table[5].second, 1 );
+
+
+    // Make sure to seed the random number generator before we test any
+    // random dependent stuff.
+    seedRandom(false, 131);
+
+    // Pick processes from this table with enough statistics should give
+    // the distribution proportional to the number of available sites,
+    // but with the double rate for the third process should halve
+    // this entry.
+    std::vector<int> picked(6,0);
+    const int n_loop = 1000000;
+    for (int i = 0; i < n_loop; ++i)
+    {
+        const int p = interactions.pickProcessIndex();
+
+        // Make sure the picked process is not negative or too large.
+        CPPUNIT_ASSERT( p >= 0 );
+        CPPUNIT_ASSERT( p < static_cast<int>(probability_table.size()) );
+        ++picked[p];
+    }
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0*picked[0]/n_loop,
+                                  12.0/31.0,
+                                  1.0e-2 );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0*picked[1]/n_loop,
+                                  4.0/31.0,
+                                  1.0e-2 );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0*picked[2]/n_loop,
+                                  3.0/31.0,
+                                  1.0e-2 );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0*picked[3]/n_loop,
+                                  0.0/31.0,
+                                  1.0e-2 );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0*picked[4]/n_loop,
+                                  0.0/31.0,
+                                  1.0e-2 );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0*picked[5]/n_loop,
+                                  12.0/31.0,
+                                  1.0e-2 );
+
+    // Check that picking the process twice with two different access methods and
+    // a seed reset inbetween gives a reference to the same object.
+    seedRandom(false, 87);
+    const int p = interactions.pickProcessIndex();
+    const Process & proc1 = (*interactions.processes()[p]);
+
+    seedRandom(false, 87);
+    const Process & proc2 = (*interactions.pickProcess());
+    CPPUNIT_ASSERT_EQUAL( &proc1, &proc2 );
+
+    // Alter the total rate in one of the processes and re-run the picking.
+    interactions.processes()[5]->removeSite(992);
+    interactions.processes()[5]->addSite(992, 24.0);
+
+    // Update the probability table.
+    interactions.updateProbabilityTable();
+    std::vector<int> picked2(6,0);
+    for (int i = 0; i < n_loop; ++i)
+    {
+        const int p = interactions.pickProcessIndex();
+
+        // Make sure the picked process is not negative or too large.
+        CPPUNIT_ASSERT( p >= 0 );
+        CPPUNIT_ASSERT( p < static_cast<int>(probability_table.size()) );
+        ++picked2[p];
+    }
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0*picked2[0]/n_loop,
+                                  12.0/43.0,
+                                  1.0e-2 );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0*picked2[1]/n_loop,
+                                  4.0/43.0,
+                                  1.0e-2 );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0*picked2[2]/n_loop,
+                                  3.0/43.0,
+                                  1.0e-2 );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0*picked2[3]/n_loop,
+                                  0.0/43.0,
+                                  1.0e-2 );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0*picked2[4]/n_loop,
+                                  0.0/43.0,
+                                  1.0e-2 );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0*picked2[5]/n_loop,
+                                  24.0/43.0,
+                                  1.0e-2 );
+
+    // DONE
 }
 
 
@@ -287,13 +483,13 @@ void Test_Interactions::testMaxRange()
     possible_types["B"] = 1;
     possible_types["V"] = 2;
 
-    const double barrier = 13.7;
+    const double rate = 13.7;
     const Configuration c1(process_coordinates, process_elements1, possible_types);
     const Configuration c2(process_coordinates, process_elements2, possible_types);
 
     std::vector<int> sites_vector(0);
-    processes.push_back(Process(c1,c2,barrier,sites_vector));
-    processes.push_back(Process(c1,c2,barrier,sites_vector));
+    processes.push_back(Process(c1,c2,rate,sites_vector));
+    processes.push_back(Process(c1,c2,rate,sites_vector));
 
     // Setup the interactions object.
     const Interactions interactions(processes, true);
@@ -308,7 +504,7 @@ void Test_Interactions::testMaxRange()
 
     const Configuration c3(process_coordinates, process_elements1, possible_types);
     const Configuration c4(process_coordinates, process_elements2, possible_types);
-    processes.push_back(Process(c3,c4,barrier,sites_vector));
+    processes.push_back(Process(c3,c4,rate,sites_vector));
 
     // This should have the max range 2.
     const Interactions interactions2(processes, true);
@@ -321,7 +517,7 @@ void Test_Interactions::testMaxRange()
 
     const Configuration c5(process_coordinates, process_elements1, possible_types);
     const Configuration c6(process_coordinates, process_elements2, possible_types);
-    processes[2] = Process(c5,c6,barrier,sites_vector);
+    processes[2] = Process(c5,c6,rate,sites_vector);
 
     // This should have the max range 3.
     const Interactions interactions3(processes, true);
@@ -334,7 +530,7 @@ void Test_Interactions::testMaxRange()
 
     const Configuration c7(process_coordinates, process_elements1, possible_types);
     const Configuration c8(process_coordinates, process_elements2, possible_types);
-    processes[2] = Process(c7,c8,barrier,sites_vector);
+    processes[2] = Process(c7,c8,rate,sites_vector);
 
     // This should have the max range 4.
     const Interactions interactions4(processes, true);
@@ -349,7 +545,7 @@ void Test_Interactions::testMaxRange()
 
     const Configuration c9(process_coordinates, process_elements1, possible_types);
     const Configuration c10(process_coordinates, process_elements2, possible_types);
-    processes[2] = Process(c9,c10,barrier,sites_vector);
+    processes[2] = Process(c9,c10,rate,sites_vector);
 
     // This should have the max range 5.
     const Interactions interactions5(processes, true);
@@ -363,7 +559,7 @@ void Test_Interactions::testMaxRange()
 
     const Configuration c11(process_coordinates, process_elements1, possible_types);
     const Configuration c12(process_coordinates, process_elements2, possible_types);
-    processes[2] = Process(c11,c12,barrier,sites_vector);
+    processes[2] = Process(c11,c12,rate,sites_vector);
 
     // This should have the max range 2.
     const Interactions interactions6(processes, true);
@@ -376,7 +572,7 @@ void Test_Interactions::testMaxRange()
 
     const Configuration c13(process_coordinates, process_elements1, possible_types);
     const Configuration c14(process_coordinates, process_elements2, possible_types);
-    processes[2] = Process(c13,c14,barrier,sites_vector);
+    processes[2] = Process(c13,c14,rate,sites_vector);
 
     // This should have the max range 4.
     const Interactions interactions7(processes, true);
@@ -418,17 +614,17 @@ void Test_Interactions::testUpdateProcessMatchLists()
     possible_types["B"] = 2;
     possible_types["V"] = 3;
 
-    const double barrier = 13.7;
+    const double rate = 13.7;
     const Configuration c1(process_coordinates1, process_elements1, possible_types);
     const Configuration c2(process_coordinates1, process_elements2, possible_types);
 
     // Let this process be valid at site 0.
-    processes.push_back(Process(c1,c2,barrier,std::vector<int>(1,0)));
+    processes.push_back(Process(c1,c2,rate,std::vector<int>(1,0)));
 
     // Let this process be valid at sites 0 and 2.
     std::vector<int> sites_vector(2,0);
     sites_vector[1] = 2;
-    processes.push_back(Process(c1,c2,barrier,sites_vector));
+    processes.push_back(Process(c1,c2,rate,sites_vector));
 
     std::vector<std::vector<double> > process_coordinates2(3, std::vector<double>(3, 0.0));
 
@@ -444,7 +640,7 @@ void Test_Interactions::testUpdateProcessMatchLists()
     const Configuration c4(process_coordinates2, process_elements2, possible_types);
 
     // Let the process be valid at site 1.
-    processes.push_back(Process(c3,c4,barrier,std::vector<int>(1,1)));
+    processes.push_back(Process(c3,c4,rate,std::vector<int>(1,1)));
 
     Interactions interactions(processes, true);
 
@@ -481,16 +677,16 @@ void Test_Interactions::testUpdateProcessMatchLists()
     config.initMatchLists(lattice_map, interactions.maxRange());
 
     // Check the process match lists before we start.
-    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[0].minimalMatchList().size()), 3);
-    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[1].minimalMatchList().size()), 3);
-    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[2].minimalMatchList().size()), 3);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[0]->minimalMatchList().size()), 3);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[1]->minimalMatchList().size()), 3);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[2]->minimalMatchList().size()), 3);
 
     // Update the interactions according to the configuration match lists.
     interactions.updateProcessMatchLists(config);
 
     // Check a few coordinates and match types.
     {
-        const std::vector<MinimalMatchListEntry> & match = interactions.processes()[0].minimalMatchList();
+        const std::vector<MinimalMatchListEntry> & match = interactions.processes()[0]->minimalMatchList();
 
         CPPUNIT_ASSERT_EQUAL( static_cast<int>(match.size()), 6 );
 
@@ -533,7 +729,7 @@ void Test_Interactions::testUpdateProcessMatchLists()
 
     {
         // This one is not changed, since it was applicable to more than one basis site.
-        const std::vector<MinimalMatchListEntry> & match = interactions.processes()[1].minimalMatchList();
+        const std::vector<MinimalMatchListEntry> & match = interactions.processes()[1]->minimalMatchList();
         CPPUNIT_ASSERT_EQUAL( static_cast<int>(match.size()), 3 );
         // Not changed - but sorted.
         CPPUNIT_ASSERT_DOUBLES_EQUAL( match[0].coordinate.x(),  process_coordinates1[0][0], 1.0e-10 );
@@ -552,7 +748,7 @@ void Test_Interactions::testUpdateProcessMatchLists()
 
 
     {
-        const std::vector<MinimalMatchListEntry> & match = interactions.processes()[2].minimalMatchList();
+        const std::vector<MinimalMatchListEntry> & match = interactions.processes()[2]->minimalMatchList();
         CPPUNIT_ASSERT_EQUAL( static_cast<int>(match.size()), 47 );
 
         // Not changed.

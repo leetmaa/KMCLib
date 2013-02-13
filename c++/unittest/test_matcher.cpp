@@ -17,6 +17,11 @@
 #include "latticemap.h"
 #include "process.h"
 #include "interactions.h"
+#include "random.h"
+
+
+
+
 
 // -------------------------------------------------------------------------- //
 //
@@ -238,8 +243,8 @@ void Test_Matcher::testIsMatchIndexListMinimal()
         const Configuration config2(process_coords, elements2, possible_types);
 
         // Construct the process.
-        const double barrier = 13.7;
-        Process process(config1, config2, barrier, basis_sites);
+        const double rate = 13.7;
+        Process process(config1, config2, rate, basis_sites);
 
         // This is a match.
         CPPUNIT_ASSERT( m.isMatch(process.minimalMatchList(), config.minimalMatchList(0)) );
@@ -267,8 +272,8 @@ void Test_Matcher::testIsMatchIndexListMinimal()
         const Configuration config2(process_coords, elements2, possible_types);
 
         // Construct the process.
-        const double barrier = 13.7;
-        Process process(config1, config2, barrier, basis_sites);
+        const double rate = 13.7;
+        Process process(config1, config2, rate, basis_sites);
 
         // This is a match.
         CPPUNIT_ASSERT( m.isMatch(process.minimalMatchList(), config.minimalMatchList(1)) );
@@ -296,8 +301,8 @@ void Test_Matcher::testIsMatchIndexListMinimal()
         const Configuration config2(process_coords, elements2, possible_types);
 
         // Construct the process.
-        const double barrier = 13.7;
-        Process process(config1, config2, barrier, basis_sites);
+        const double rate = 13.7;
+        Process process(config1, config2, rate, basis_sites);
 
         // Not a match.
         CPPUNIT_ASSERT( !m.isMatch(process.minimalMatchList(), config.minimalMatchList(1)) );
@@ -328,8 +333,8 @@ void Test_Matcher::testIsMatchIndexListMinimal()
         const Configuration config2(process_coords, elements2, possible_types);
 
         // Construct the process.
-        const double barrier = 13.7;
-        Process process(config1, config2, barrier, basis_sites);
+        const double rate = 13.7;
+        Process process(config1, config2, rate, basis_sites);
 
         // Not a match.
         CPPUNIT_ASSERT( !m.isMatch(process.minimalMatchList(), config.minimalMatchList(1)) );
@@ -473,8 +478,8 @@ void Test_Matcher::testIsMatchIndexListMinimalPeriodic()
         const Configuration config2(process_coords, elements2, possible_types);
 
         // Construct the process.
-        const double barrier = 13.7;
-        Process process(config1, config2, barrier, basis_sites);
+        const double rate = 13.7;
+        Process process(config1, config2, rate, basis_sites);
 
         // This process should match all even numbered indices.
         for (int i = 0; i < 26; i += 2)
@@ -586,8 +591,8 @@ void Test_Matcher::testIsMatchIndexListMinimalPeriodic()
         const Configuration config2(process_coords, elements2, possible_types);
 
         // Construct the process.
-        const double barrier = 13.7;
-        Process process(config1, config2, barrier, basis_sites);
+        const double rate = 13.7;
+        Process process(config1, config2, rate, basis_sites);
 
         // This process should match all even numbered indices.
         for (int i = 0; i < 26; i += 2)
@@ -731,8 +736,8 @@ void Test_Matcher::testIsMatchIndexListComplicatedPeriodic()
         const Configuration config2(process_coords, elements2, possible_types);
 
         // Construct the process.
-        const double barrier = 13.7;
-        Process process(config1, config2, barrier, basis_sites);
+        const double rate = 13.7;
+        Process process(config1, config2, rate, basis_sites);
 
         // This process should match all except the first the even numbered indices.
         CPPUNIT_ASSERT( !m.isMatch(process.minimalMatchList(), config.minimalMatchList(0)) );
@@ -847,8 +852,8 @@ void Test_Matcher::testIsMatchIndexListComplicatedPeriodic()
         const Configuration config2(process_coords, elements2, possible_types);
 
         // Construct the process.
-        const double barrier = 13.7;
-        Process process(config1, config2, barrier, basis_sites);
+        const double rate = 13.7;
+        Process process(config1, config2, rate, basis_sites);
 
         // This process should only match the first index.
         CPPUNIT_ASSERT(  m.isMatch(process.minimalMatchList(), config.minimalMatchList(0)) );
@@ -991,39 +996,65 @@ void Test_Matcher::testCalculateMatchingProcess()
     const Configuration config2(process_coords, elements2, possible_types);
 
     // Construct the process.
-    const double barrier = 13.7;
-    Process process(config1, config2, barrier, basis_sites);
+    const double rate = 13.7;
+
+    Process process(config1, config2, rate, basis_sites);
+
+    // Put the process in a vector.
+    std::vector<Process> processes(1, process);
+
+    // Create an interactions object.
+    Interactions  interactions(processes, false);
 
     // Make sure the process' available sites is empty.
-    CPPUNIT_ASSERT( process.sites().empty());
+    CPPUNIT_ASSERT( interactions.processes()[0]->sites().empty());
+
+    // Match the index and process.
+    std::vector<std::pair<int,int> > match_pairs(1,std::pair<int,int>(0,0));
+
+    std::vector<RemoveTask> rt;
+    std::vector<RateTask>   ut;
+    std::vector<RateTask>   at;
 
     // Call the matching function.
-    m.calculateMatching(process, config, 0);
+    m.matchIndicesWithProcesses(match_pairs, interactions, config, rt, ut, at);
+    m.updateProcesses(rt, ut, at, interactions);
 
     // Check that the process' available sites is still empty.
-    CPPUNIT_ASSERT( process.sites().empty());
+    CPPUNIT_ASSERT( interactions.processes()[0]->sites().empty());
 
-    // Call the matching function.
-    m.calculateMatching(process, config, 2);
+    // Call the matching function again, now with another matching index.
+    match_pairs = std::vector<std::pair<int,int> >(1, std::pair<int,int>(2,0));
+    m.matchIndicesWithProcesses(match_pairs, interactions, config, rt, ut, at);
+    m.updateProcesses(rt, ut, at, interactions);
 
     // Check that the index was added.
-    CPPUNIT_ASSERT_EQUAL( static_cast<int>(process.sites().size()), 1 );
-    CPPUNIT_ASSERT( process.isListed(2) );
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(interactions.processes()[0]->sites().size()), 1 );
+    CPPUNIT_ASSERT( interactions.processes()[0]->isListed(2) );
 
     // Match again.
-    m.calculateMatching(process, config, 2);
+    rt = std::vector<RemoveTask>(0);
+    ut = std::vector<RateTask>(0);
+    at = std::vector<RateTask>(0);
+    m.matchIndicesWithProcesses(match_pairs, interactions, config, rt, ut, at);
+    m.updateProcesses(rt, ut, at, interactions);
 
     // This should not have changed the availability of the index.
-    CPPUNIT_ASSERT_EQUAL( static_cast<int>(process.sites().size()), 1 );
-    CPPUNIT_ASSERT( process.isListed(2) );
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(interactions.processes()[0]->sites().size()), 1 );
+    CPPUNIT_ASSERT( interactions.processes()[0]->isListed(2) );
 
     // Match another index.
-    m.calculateMatching(process, config, 4);
+    rt = std::vector<RemoveTask>(0);
+    ut = std::vector<RateTask>(0);
+    at = std::vector<RateTask>(0);
+    match_pairs = std::vector<std::pair<int,int> >(1,std::pair<int,int>(4,0));
+    m.matchIndicesWithProcesses(match_pairs, interactions, config, rt, ut, at);
+    m.updateProcesses(rt, ut, at, interactions);
 
-    // This should not have changed the availability of the index.
-    CPPUNIT_ASSERT_EQUAL( static_cast<int>(process.sites().size()), 2 );
-    CPPUNIT_ASSERT( process.isListed(2) );
-    CPPUNIT_ASSERT( process.isListed(4) );
+    // This should not have changed the availability of the first index.
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(interactions.processes()[0]->sites().size()), 2 );
+    CPPUNIT_ASSERT( interactions.processes()[0]->isListed(2) );
+    CPPUNIT_ASSERT( interactions.processes()[0]->isListed(4) );
 
     // Change the configuration and match.
     elements[2] = "D";
@@ -1031,45 +1062,139 @@ void Test_Matcher::testCalculateMatchingProcess()
     config.initMatchLists(lattice_map, 1);
 
     // Match.
-    m.calculateMatching(process, config, 2);
+    rt = std::vector<RemoveTask>(0);
+    ut = std::vector<RateTask>(0);
+    at = std::vector<RateTask>(0);
+    match_pairs = std::vector<std::pair<int,int> >(1,std::pair<int,int>(2,0));
+    m.matchIndicesWithProcesses(match_pairs, interactions, config, rt, ut, at);
+    m.updateProcesses(rt, ut, at, interactions);
 
     // Now index 2 should be removed but 4 still there.
-    CPPUNIT_ASSERT_EQUAL( static_cast<int>(process.sites().size()), 1 );
-    CPPUNIT_ASSERT( !process.isListed(2) );
-    CPPUNIT_ASSERT(  process.isListed(4) );
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(interactions.processes()[0]->sites().size()), 1 );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(2) );
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(4) );
 
     // Match again - this should not change any thing.
-    m.calculateMatching(process, config, 2);
-    CPPUNIT_ASSERT_EQUAL( static_cast<int>(process.sites().size()), 1 );
-    CPPUNIT_ASSERT( !process.isListed(2) );
-    CPPUNIT_ASSERT(  process.isListed(4) );
+    rt = std::vector<RemoveTask>(0);
+    ut = std::vector<RateTask>(0);
+    at = std::vector<RateTask>(0);
+    match_pairs = std::vector<std::pair<int,int> >(1,std::pair<int,int>(2,0));
+    m.matchIndicesWithProcesses(match_pairs, interactions, config, rt, ut, at);
+    m.updateProcesses(rt, ut, at, interactions);
+
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(interactions.processes()[0]->sites().size()), 1 );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(2) );
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(4) );
 
     // Match against a changed configuration. This removes index 4.
     elements[4] = "D";
     config = Configuration(coords, elements, possible_types);
     config.initMatchLists(lattice_map, 1);
-    m.calculateMatching(process, config, 4);
-    CPPUNIT_ASSERT( process.sites().empty() );
-    CPPUNIT_ASSERT( !process.isListed(2) );
-    CPPUNIT_ASSERT( !process.isListed(4) );
+
+    // Match.
+    rt = std::vector<RemoveTask>(0);
+    ut = std::vector<RateTask>(0);
+    at = std::vector<RateTask>(0);
+    match_pairs = std::vector<std::pair<int,int> >(1,std::pair<int,int>(4,0));
+    m.matchIndicesWithProcesses(match_pairs, interactions, config, rt, ut, at);
+    m.updateProcesses(rt, ut, at, interactions);
+
+    CPPUNIT_ASSERT( interactions.processes()[0]->sites().empty() );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(2) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(4) );
+
+}
 
 
+// -------------------------------------------------------------------------- //
+//
+void Test_Matcher::testUpdateProcesses()
+{
+    Matcher m;
 
-    /*
-    for( ; it1 != process_match_list.end(); ++it1, ++it2)
+    // Setup a list of processes and give it to an interactions object.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["C"] = 1;
+    possible_types["B"] = 2;
+    possible_types["D"] = 3;
+
+    std::vector<std::string> elements1;
+    elements1.push_back("C");
+    elements1.push_back("B");
+    std::vector<std::string> elements2;
+    elements2.push_back("D");
+    elements2.push_back("B");
+    std::vector<std::vector<double> > process_coords(2,std::vector<double>(3,0.0));
+    process_coords[1][0] =  0.5;
+    process_coords[1][1] =  0.5;
+    process_coords[1][2] =  0.5;
+
+    const Configuration config1(process_coords, elements1, possible_types);
+    const Configuration config2(process_coords, elements2, possible_types);
+    const double rate = 13.7;
+    std::vector<int> basis_sites;
+    basis_sites.push_back(1);
+    basis_sites.push_back(0);
+
     {
-        printf("              process  config\n");
-        printf("MatchType   : %i %i\n",(*it1).matchType(), (*it2).matchType());
-        printf("Distance    : %20.10e %20.10e\n", (*it1).distance(), (*it2).distance());
+        CustomRateProcess process(config1, config2, rate, basis_sites, 1.0);
 
-        printf("Coordinate x: %20.10e %20.10e\n", (*it1).coordinate().x(), (*it2).coordinate().x());
-        printf("Coordinate y: %20.10e %20.10e\n", (*it1).coordinate().y(), (*it2).coordinate().y());
-        printf("Coordinate z: %20.10e %20.10e\n", (*it1).coordinate().z(), (*it2).coordinate().z());
+        // Set up the interactions.
+        std::vector<CustomRateProcess> processes(4, process);
+        Interactions interactions(processes, false, RateCalculator());
+
+        // Populate the processes with indices.
+        interactions.processes()[0]->addSite(0, 1.1);
+        interactions.processes()[0]->addSite(1, 2.2);
+        interactions.processes()[0]->addSite(2, 3.3);
+
+        interactions.processes()[1]->addSite(0, 11.0);
+        interactions.processes()[1]->addSite(1, 1.0);
+
+        interactions.processes()[2]->addSite(0, 13.7);
+
+        // Setup a couple of valid add, remove and update tasks.
+        std::vector<RemoveTask> rt;
+        std::vector<RateTask> at;
+        std::vector<RateTask> ut;
+
+        RemoveTask rt1;
+        rt1.index   = 1;
+        rt1.process = 0;
+        rt.push_back(rt1);
+
+        RemoveTask rt2;
+        rt2.index   = 0;
+        rt2.process = 1;
+        rt.push_back(rt2);
+
+        RateTask at1;
+        at1.index   = 4;
+        at1.process = 2;
+        at1.rate    = 123.456;
+        at.push_back(at1);
+
+        RateTask ut1;
+        ut1.index   = 0;
+        ut1.process = 2;
+        ut1.rate    = 99.0;
+        ut.push_back(ut1);
+
+        // Perform the tasks.
+        m.updateProcesses(rt, ut, at, interactions);
+
+        // Check the result of the tasks.
+        CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(0) );
+        CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(1) );
+        CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(2) );
+        CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(0) );
+        CPPUNIT_ASSERT(  interactions.processes()[1]->isListed(1) );
+        CPPUNIT_ASSERT(  interactions.processes()[2]->isListed(0) );
+        CPPUNIT_ASSERT(  interactions.processes()[2]->isListed(4) );
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( interactions.processes()[2]->totalRate(), 123.456 + 99.0, 1.0e-12 );
 
     }
-    //*/
-
-    // NEEDS IMPLEMENTATION
 }
 
 
@@ -1134,7 +1259,6 @@ void Test_Matcher::testCalculateMatchingInteractions()
     // Construct the configuration.
     Configuration config(coords, elements, possible_types);
 
-
     // ---------------------------------------------------------------------
     // Setup a periodic cooresponding lattice map.
     const std::vector<int> repetitions(3, 3);
@@ -1148,7 +1272,6 @@ void Test_Matcher::testCalculateMatchingInteractions()
 
     // ---------------------------------------------------------------------
     // Now the processes.
-
     {
         // Setup the two configurations.
         std::vector<std::string> elements1;
@@ -1203,8 +1326,8 @@ void Test_Matcher::testCalculateMatchingInteractions()
         const Configuration config2(process_coords, elements2, possible_types);
 
         // Construct the process.
-        const double barrier = 13.7;
-        const Process process(config1, config2, barrier, basis_sites);
+        const double rate = 13.7;
+        const Process process(config1, config2, rate, basis_sites);
         processes.push_back(process);
 
     }
@@ -1295,8 +1418,8 @@ void Test_Matcher::testCalculateMatchingInteractions()
         const Configuration config2(process_coords, elements2, possible_types);
 
         // Construct the process.
-        const double barrier = 13.7;
-        const Process process(config1, config2, barrier, basis_sites);
+        const double rate = 13.7;
+        const Process process(config1, config2, rate, basis_sites);
         processes.push_back(process);
     }
 
@@ -1319,34 +1442,34 @@ void Test_Matcher::testCalculateMatchingInteractions()
     m.calculateMatching(interactions, config, lattice_map, indices);
 
     // The first process should match all even indices except the first.
-    CPPUNIT_ASSERT( !interactions.processes()[0].isListed(0) );
-    CPPUNIT_ASSERT(  interactions.processes()[0].isListed(2) );
-    CPPUNIT_ASSERT( !interactions.processes()[0].isListed(3) );
-    CPPUNIT_ASSERT(  interactions.processes()[0].isListed(4) );
-    CPPUNIT_ASSERT( !interactions.processes()[0].isListed(9) );
-    CPPUNIT_ASSERT(  interactions.processes()[0].isListed(14) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(0) );
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(2) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(3) );
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(4) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(9) );
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(14) );
 
     // The second process should match the first index only.
-    CPPUNIT_ASSERT(  interactions.processes()[1].isListed(0) );
-    CPPUNIT_ASSERT( !interactions.processes()[1].isListed(2) );
-    CPPUNIT_ASSERT( !interactions.processes()[1].isListed(3) );
-    CPPUNIT_ASSERT( !interactions.processes()[1].isListed(4) );
-    CPPUNIT_ASSERT( !interactions.processes()[1].isListed(5) );
+    CPPUNIT_ASSERT(  interactions.processes()[1]->isListed(0) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(2) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(3) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(4) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(5) );
 
     // Call the matching function again does not change any thing.
     m.calculateMatching(interactions, config, lattice_map, indices);
 
-    CPPUNIT_ASSERT( !interactions.processes()[0].isListed(0) );
-    CPPUNIT_ASSERT(  interactions.processes()[0].isListed(2) );
-    CPPUNIT_ASSERT( !interactions.processes()[0].isListed(3) );
-    CPPUNIT_ASSERT(  interactions.processes()[0].isListed(4) );
-    CPPUNIT_ASSERT( !interactions.processes()[0].isListed(9) );
-    CPPUNIT_ASSERT(  interactions.processes()[0].isListed(14) );
-    CPPUNIT_ASSERT(  interactions.processes()[1].isListed(0) );
-    CPPUNIT_ASSERT( !interactions.processes()[1].isListed(2) );
-    CPPUNIT_ASSERT( !interactions.processes()[1].isListed(3) );
-    CPPUNIT_ASSERT( !interactions.processes()[1].isListed(4) );
-    CPPUNIT_ASSERT( !interactions.processes()[1].isListed(5) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(0) );
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(2) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(3) );
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(4) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(9) );
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(14) );
+    CPPUNIT_ASSERT(  interactions.processes()[1]->isListed(0) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(2) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(3) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(4) );
+    CPPUNIT_ASSERT( !interactions.processes()[1]->isListed(5) );
 
     // Change the configuration such that the first proces
     // match with the first (0:th) index, and the second process
@@ -1356,13 +1479,250 @@ void Test_Matcher::testCalculateMatchingInteractions()
     config.initMatchLists(lattice_map, 1);
     m.calculateMatching(interactions, config, lattice_map, indices);
 
-    CPPUNIT_ASSERT(  interactions.processes()[0].isListed(0) );
-    CPPUNIT_ASSERT(  interactions.processes()[0].isListed(2) );
-    CPPUNIT_ASSERT( !interactions.processes()[0].isListed(3) );
-    CPPUNIT_ASSERT(  interactions.processes()[0].isListed(4) );
-    CPPUNIT_ASSERT( !interactions.processes()[0].isListed(9) );
-    CPPUNIT_ASSERT(  interactions.processes()[0].isListed(14) );
-    CPPUNIT_ASSERT( interactions.processes()[1].sites().empty() );
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(0) );
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(2) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(3) );
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(4) );
+    CPPUNIT_ASSERT( !interactions.processes()[0]->isListed(9) );
+    CPPUNIT_ASSERT(  interactions.processes()[0]->isListed(14) );
+    CPPUNIT_ASSERT( interactions.processes()[1]->sites().empty() );
 
 }
 
+// -------------------------------------------------------------------------- //
+// This proxy class is part needed for the UpdateRates test below.
+class CustRateCalc : public RateCalculator {
+public:
+    virtual ~CustRateCalc() {}
+    virtual double backendRateCallback(const std::vector<double> geometry,
+                                       const int len,
+                                       const std::vector<std::string> & types_before,
+                                       const std::vector<std::string> & types_after,
+                                       const double rate_constant) const
+        {
+            // Return.
+            return std::sqrt(rate_constant);
+        }
+};
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Matcher::testUpdateRates()
+{
+    // Generate a list of tasks to run.
+    std::vector<RateTask> tasks;
+
+    seedRandom(3452321, true);
+    //const double ref_rate1 = randomDouble01();
+    //const double ref_rate2 = randomDouble01();
+    const double ref_rate1 = 2.0;
+    const double ref_rate2 = 3.0;
+
+    RateTask t1;
+    t1.index   = 0;
+    t1.process = 0;
+    t1.rate    = 0.0;
+    tasks.push_back(t1);
+
+    RateTask t2;
+    t2.index   = 1;
+    t2.process = 3;
+    t2.rate    = 0.0;
+    tasks.push_back(t2);
+
+    // Here is the matcher to test.
+    Matcher m;
+
+    // Setup a list of processes and give it to an interactions object.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["C"] = 1;
+    possible_types["B"] = 2;
+    possible_types["D"] = 3;
+    possible_types["A"] = 4;
+
+    std::vector<std::string> elements1;
+    elements1.push_back("C");
+    elements1.push_back("B");
+    std::vector<std::string> elements2;
+    elements2.push_back("D");
+    elements2.push_back("B");
+    std::vector<std::vector<double> > process_coords(2,std::vector<double>(3,0.0));
+    process_coords[1][0] =  0.5;
+    process_coords[1][1] =  0.5;
+    process_coords[1][2] =  0.5;
+
+    const Configuration config1(process_coords, elements1, possible_types);
+    const Configuration config2(process_coords, elements2, possible_types);
+
+    // Here is the process.
+    std::vector<int> basis_sites;
+    basis_sites.push_back(0);
+    CustomRateProcess process1(config1, config2, ref_rate1, basis_sites, 1.0);
+    CustomRateProcess process2(config1, config2, ref_rate2, basis_sites, 1.0);
+
+    // Set up the interactions object.
+    std::vector<CustomRateProcess> processes(4, process1);
+    processes[3] = process2;
+    CustRateCalc rate_calculator;
+    Interactions interactions(processes, false, rate_calculator );
+
+    // Setup a valid configuration.
+    std::vector<std::vector<double> > coords(2, std::vector<double>(3, 0.0));
+
+    // One cell with two atoms.
+    coords[0][0] = 0.0;
+    coords[0][1] = 0.0;
+    coords[0][2] = 0.0;
+    coords[1][0] = 0.5;
+    coords[1][1] = 0.3;
+    coords[1][2] = 0.1;
+
+    // Setup elements.
+    std::vector<std::string> elements(2);
+    elements[0] = "A";
+    elements[1] = "B";
+
+    // Construct the configuration.
+    Configuration config(coords, elements, possible_types);
+
+    // Setup a cooresponding lattice map.
+    const std::vector<int> repetitions(3, 1);
+    const std::vector<bool> periodicity(3, false);
+    const int basis = 2;
+
+    LatticeMap lattice_map(basis, repetitions, periodicity);
+    config.initMatchLists(lattice_map, 1);
+
+    // Send the interactions object down for update
+    // together with the processes and a configuration.
+    m.updateRates(tasks, interactions, config);
+
+    // Check that the rates were correctly updated.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( tasks[0].rate, std::sqrt(ref_rate1), 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( tasks[1].rate, std::sqrt(ref_rate2), 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( tasks[2].rate, 0.0,                  1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( tasks[3].rate, 0.0,                  1.0e-12 );
+}
+
+
+// -------------------------------------------------------------------------- //
+// This proxy class is part of the UpdateSingleRate test below.
+class CustomRateCalculator : public RateCalculator {
+public:
+    virtual ~CustomRateCalculator() {}
+    virtual double backendRateCallback(const std::vector<double> geometry,
+                                       const int len,
+                                       const std::vector<std::string> & types_before,
+                                       const std::vector<std::string> & types_after,
+                                       const double rate_constant) const
+        {
+            // Test the geometry.
+            CPPUNIT_ASSERT_DOUBLES_EQUAL( geometry[0], 0.0, 1.0e-12 );
+            CPPUNIT_ASSERT_DOUBLES_EQUAL( geometry[1], 0.0, 1.0e-12 );
+            CPPUNIT_ASSERT_DOUBLES_EQUAL( geometry[2], 0.0, 1.0e-12 );
+            CPPUNIT_ASSERT_DOUBLES_EQUAL( geometry[3],-0.5, 1.0e-12 );
+            CPPUNIT_ASSERT_DOUBLES_EQUAL( geometry[4],-0.3, 1.0e-12 );
+            CPPUNIT_ASSERT_DOUBLES_EQUAL( geometry[5],-0.1, 1.0e-12 );
+
+            // Test the length.
+            CPPUNIT_ASSERT_EQUAL(len, 2);
+
+            // Test the types before.
+            CPPUNIT_ASSERT_EQUAL(static_cast<int>(types_before.size()), 2);
+            CPPUNIT_ASSERT_EQUAL(std::string("B"), types_before[0]);
+            CPPUNIT_ASSERT_EQUAL(std::string("A"), types_before[1]);
+
+            // Test the types after.
+            CPPUNIT_ASSERT_EQUAL(static_cast<int>(types_after.size()), 2);
+            CPPUNIT_ASSERT_EQUAL(std::string("C"), types_after[0]);
+            CPPUNIT_ASSERT_EQUAL(std::string("A"), types_after[1]);
+
+            // Return.
+            return std::pow(rate_constant,3.14159);
+        }
+};
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Matcher::testUpdateSingleRate()
+{
+    // Setup a valid configuration.
+    std::vector<std::vector<double> > coords(2, std::vector<double>(3, 0.0));
+
+    // One cell with two atoms.
+    coords[0][0] = 0.0;
+    coords[0][1] = 0.0;
+    coords[0][2] = 0.0;
+    coords[1][0] = 0.5;
+    coords[1][1] = 0.3;
+    coords[1][2] = 0.1;
+
+    // Setup elements.
+    std::vector<std::string> elements(2);
+    elements[0] = "A";
+    elements[1] = "B";
+
+    // Setup the mapping from element to integer.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["C"] = 3;
+    possible_types["D"] = 4;
+    possible_types["E"] = 5;
+    possible_types["F"] = 6;
+
+    // Construct the configuration.
+    Configuration config(coords, elements, possible_types);
+
+    // Setup a non periodic cooresponding lattice map.
+    const std::vector<int> repetitions(3, 1);
+    const std::vector<bool> periodicity(3, false);
+    const int basis = 2;
+    std::vector<int> basis_sites;
+    basis_sites.push_back(1);
+    basis_sites.push_back(0);
+
+    LatticeMap lattice_map(basis, repetitions, periodicity);
+    config.initMatchLists(lattice_map, 13);
+
+    // Construct a process that should match the second index.
+
+    // Setup the two configurations.
+    std::vector<std::string> elements1;
+    elements1.push_back("B");
+    elements1.push_back("A");
+    std::vector<std::string> elements2;
+    elements2.push_back("C");
+    elements2.push_back("A");
+    // Setup coordinates.
+    std::vector<std::vector<double> > process_coords(2,std::vector<double>(3,0.0));
+    process_coords[1][0] =  -0.5;
+    process_coords[1][1] =  -0.5;
+    process_coords[1][2] =  -0.5;
+    // The configurations.
+    const Configuration config1(process_coords, elements1, possible_types);
+    const Configuration config2(process_coords, elements2, possible_types);
+
+    // Construct the process with a random rate.
+    seedRandom(19, true);
+    const double rate = 13.7*randomDouble01();
+    CustomRateProcess process(config1, config2, rate, basis_sites, 12.0);
+
+    // Put the process in a vector.
+    std::vector<CustomRateProcess> processes(1, process);
+
+    // Create an interactions object.
+    Interactions interactions(processes, false, CustomRateCalculator());
+
+    // Get the matcher to test and a custom rate calculator.
+    const Matcher m;
+    const CustomRateCalculator crc;
+    const int index = 1;
+    const double ret_rate = m.updateSingleRate(index, *interactions.processes()[0], config, crc);
+
+    // Test against the known reference.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(ret_rate, std::pow(rate, 3.14159), 1.0e-12);
+
+}

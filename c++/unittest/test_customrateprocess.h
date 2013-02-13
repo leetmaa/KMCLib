@@ -6,8 +6,8 @@
 */
 
 
-#ifndef __TEST_PROCESS__
-#define __TEST_PROCESS__
+#ifndef __TEST_CUSTOMRATEPROCESS__
+#define __TEST_CUSTOMRATEPROCESS__
 
 #include <iostream>
 #include <string>
@@ -19,14 +19,14 @@
 
 #include <cppunit/extensions/HelperMacros.h>
 
-class Test_Process : public CppUnit::TestCase {
+class Test_CustomRateProcess : public CppUnit::TestCase {
 
 public:
 
-    CPPUNIT_TEST_SUITE( Test_Process );
+    CPPUNIT_TEST_SUITE( Test_CustomRateProcess );
     CPPUNIT_TEST( testConstruction );
-    CPPUNIT_TEST( testMatchList );
     CPPUNIT_TEST( testMatchListLong );
+    CPPUNIT_TEST( testTotalRate );
     CPPUNIT_TEST( testAddAndRemoveSite );
     CPPUNIT_TEST( testPickSite );
     CPPUNIT_TEST( testAffectedIndices );
@@ -34,8 +34,8 @@ public:
     CPPUNIT_TEST_SUITE_END();
 
     void testConstruction();
-    void testMatchList();
     void testMatchListLong();
+    void testTotalRate();
     void testAddAndRemoveSite();
     void testPickSite();
     void testAffectedIndices();

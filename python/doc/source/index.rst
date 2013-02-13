@@ -11,6 +11,10 @@ Contents:
 .. toctree::
    :maxdepth: 4
 
+   intro
+   algorithm
+   usage
+   plugins
    api
    non_api
 

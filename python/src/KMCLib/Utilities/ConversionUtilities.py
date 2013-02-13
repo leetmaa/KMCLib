@@ -35,7 +35,7 @@ def numpy2DArrayToStdVectorStdVectorDouble(array):
     """
     Convert a 2D numpy array to a std::vector<std::vector<double> > representation.
 
-    :param array The array to convert.
+    :param array: The array to convert.
 
     :returns: A corresponding std::vector<std::vector<double> > object.
     """
@@ -56,6 +56,4 @@ def numpy2DArrayToStdVectorStdVectorDouble(array):
 
     # Done.
     return cpp_2D_vector
-
-
 

@@ -94,6 +94,13 @@ public:
     void performProcess(Process & process,
                         const int site_index);
 
+    /*! \brief Query for the type name.
+     *  \param type: The type integer to get the name for.
+     *  \return : The string representation of the type integer.
+     */
+    const std::string & typeName(const int type) const { return type_names_[type]; }
+
+
 protected:
 
 private:

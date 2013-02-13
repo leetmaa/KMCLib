@@ -86,6 +86,12 @@ class KMCLatticeModel(object):
             trajectory_filename=None):
         """
         Run the KMC lattice model simulation with specified parameters.
+
+        :param control_paramters:   An instance of KMCControlParameters specifying
+                                    number of steps to run etc.
+
+        :param trajectory_filename: The filename of the trajectory. If not given
+                                    no trajectory will be saved.
         """
         # Check the input.
         if not isinstance(control_parameters, KMCControlParameters):
@@ -100,7 +106,7 @@ must be an instance of type KMCControlParameters."""
             use_trajectory = False
             msg =""" KMCLib: WARNING: No trajectory filename given -> no trajectory will be saved."""
             print msg
-        elif not (isinstance(trajectory_filename, str)):
+        elif not isinstance(trajectory_filename, str):
             msg = """
 The 'trajectory_filename' input to the KMCLattice model run function
 must be given as string."""

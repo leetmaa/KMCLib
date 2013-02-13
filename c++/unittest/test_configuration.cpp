@@ -185,14 +185,14 @@ void Test_Configuration::testPerformProcess()
     process_coordinates[2][1] =  0.25;
     process_coordinates[2][2] =  0.25;
 
-    const double barrier = 13.7;
+    const double rate = 13.7;
     Configuration c1(process_coordinates, process_elements1, possible_types);
     Configuration c2(process_coordinates, process_elements2, possible_types);
-    Process p(c1, c2, barrier, basis_sites);
+    Process p(c1, c2, rate, basis_sites);
 
     // Now, add index 1434 to the process.
     // We know by construction that these match.
-    p.addSite(1434);
+    p.addSite(1434, 0.0);
 
     // For site 1434
     // 350 changes from 1 to 0
@@ -369,14 +369,14 @@ void Test_Configuration::testMatchLists()
     process_coordinates[2][1] =  0.25;
     process_coordinates[2][2] =  0.25;
 
-    const double barrier = 13.7;
+    const double rate = 13.7;
     Configuration c1(process_coordinates, process_elements1, possible_types);
     Configuration c2(process_coordinates, process_elements2, possible_types);
-    Process p(c1, c2, barrier, basis_sites);
+    Process p(c1, c2, rate, basis_sites);
 
     // Now, add index 1434 to the process.
     // We know by construction that these match.
-    p.addSite(1434);
+    p.addSite(1434, 0.0);
 
     // For site 1434
     // 350 changes from 1 to 0
@@ -434,3 +434,38 @@ void Test_Configuration::testMatchLists()
     }
 }
 
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Configuration::testTypeNameQuery()
+{
+    // Setup coordinates.
+    const std::vector<std::vector<double> > coords(1, std::vector<double>(3, 0.0));
+
+    // Setup elements.
+    const std::vector<std::string> elements(1, "A");
+
+    // Setup the mapping from element to integer.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["D"] = 3;
+    possible_types["H"] = 4;
+    possible_types["J"] = 5;
+    possible_types["G"] = 6;
+
+    // Construct the configuration.
+    const Configuration config(coords, elements, possible_types);
+
+    // Query for the type names.
+    CPPUNIT_ASSERT_EQUAL( config.typeName(0), std::string("*") );
+    CPPUNIT_ASSERT_EQUAL( config.typeName(1), std::string("A") );
+    CPPUNIT_ASSERT_EQUAL( config.typeName(2), std::string("B") );
+    CPPUNIT_ASSERT_EQUAL( config.typeName(3), std::string("D") );
+    CPPUNIT_ASSERT_EQUAL( config.typeName(4), std::string("H") );
+    CPPUNIT_ASSERT_EQUAL( config.typeName(5), std::string("J") );
+    CPPUNIT_ASSERT_EQUAL( config.typeName(6), std::string("G") );
+
+    // DONE
+}

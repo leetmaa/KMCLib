@@ -1,11 +1,17 @@
 /*
-  Copyright (c)  2012  Mikael Leetmaa
+  Copyright (c)  2012-2013  Mikael Leetmaa
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 */
 
+// Get rid of the warning messages from compiling the auto generated code.
+#pragma SWIG nowarn=503
+#pragma SWIG nowarn=509
+#pragma SWIG nowarn=314
+#pragma SWIG nowarn=389
 
+// Define the content of our modeule.
 %module(directors="1") Backend
 %{
 #include "latticemodel.h"
@@ -13,44 +19,59 @@
 #include "configuration.h"
 #include "interactions.h"
 #include "process.h"
+#include "customrateprocess.h"
 #include "coordinate.h"
 #include "matchlistentry.h"
 #include "simulationtimer.h"
 #include "ratecalculator.h"
 %}
 
+// Use directors on the RateCalculator for using the python callback.
 %feature("director") SimpleDummyBaseClass;
+%feature("director") RateCalculator;
 
-#pragma SWIG nowarn=503
-#pragma SWIG nowarn=509
-#pragma SWIG nowarn=314
-#pragma SWIG nowarn=389
+// Exception handling for overloaded RateCalculators in Python.
+%feature("director:except") {
+    if ($error != NULL) {
+        throw Swig::DirectorMethodException();
+    }
+}
+%exception {
+    try { $action }
+    catch (Swig::DirectorException &e) { SWIG_fail; }
+}
 
-%include "std_string.i"
+// Include SWIG files for the std containers.
 %include "std_vector.i"
 %include "std_map.i"
+%include "std_string.i"
 
+ // Define the templates to use in Python.
 %template(StdVectorString) std::vector<std::string>;
 %template(StdVectorDouble) std::vector<double>;
 %template(StdVectorInt) std::vector<int>;
 %template(StdVectorBool) std::vector<bool>;
 %template(StdVectorProcess) std::vector<Process>;
+%template(SteVectorProcessPtr) std::vector<Process*>;
+%template(StdVectorCustomRateProcess) std::vector<CustomRateProcess>;
 %template(StdVectorCoordinate) std::vector<Coordinate>;
 %template(StdVectorMinimalMatchListEntry) std::vector<MinimalMatchListEntry>;
 %template(StdVectorStdVectorDouble) std::vector<std::vector<double> >;
 %template(StdMapStringInt) std::map<std::string,int>;
 
+// Include the definitions.
 %include "latticemodel.h"
 %include "latticemap.h"
 %include "configuration.h"
 %include "interactions.h"
 %include "process.h"
+%include "customrateprocess.h"
 %include "coordinate.h"
 %include "matchlistentry.h"
 %include "simulationtimer.h"
 %include "ratecalculator.h"
 
-
+// This extends the Coordinate class with python indexing support.
 %extend Coordinate
 {
     double __getitem__(unsigned int i)
@@ -72,6 +93,5 @@
         }
         (*self)[i] = value;
     };
-
 };
 

@@ -28,25 +28,39 @@ RateCalculator::~RateCalculator()
 {
 }
 
-
-// -----------------------------------------------------------------------------
-//
-double RateCalculator::rate() const
-{
-    // NEEDS IMPLEMENTATION
-    return 123.456;
-}
-
-
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 // PROTOTYPE AND TEST CODE FOLLOW
 // -----------------------------------------------------------------------------
 
-/// Dummy/test function for calling the objects whoAmI function from C++.
+/// Dummy/test function for calling the objects whoAmI function from Python via C++.
 std::string callWhoAmI(const SimpleDummyBaseClass & obj) { return obj.whoAmI(); }
 
-/// Dummy/test function for calling the RateCalculator from C++.
-double getRate(const RateCalculator & rc) { return rc.rate(); }
+/// Dummy/test function for calling the RateCalculator's backend callback from Python via C++.
+double getRate(const RateCalculator & rc,
+               const std::vector<Coordinate> & geometry,
+               const std::vector<std::string> & types_before,
+               const std::vector<std::string> & types_after,
+               const double rate_constant)
+{
+    // Translate to row major contiguous memoery layout.
+    std::vector<double> py_geo(geometry.size()*3);
+
+    // Fill with values.
+    for (size_t i = 0; i < geometry.size(); ++i)
+    {
+        py_geo[3*i]   = geometry[i].x();
+        py_geo[3*i+1] = geometry[i].y();
+        py_geo[3*i+2] = geometry[i].z();
+    }
+
+   const double rate = rc.backendRateCallback(py_geo,
+                                              geometry.size(),
+                                              types_before,
+                                              types_after,
+                                              rate_constant);
+   return rate;
+
+}
 
 // -----------------------------------------------------------------------------
