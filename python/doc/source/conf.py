@@ -82,7 +82,7 @@ exclude_patterns = []
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = 'sphinx'
-
+highlight_language = 'python'
 # These are builtin styles.
 # ['monokai', 'manni', 'rrt', 'perldoc', 'borland', 'colorful', 'default',
 #  'murphy', 'vs', 'trac', 'tango', 'fruity', 'autumn', 'bw', 'emacs', 'vim',

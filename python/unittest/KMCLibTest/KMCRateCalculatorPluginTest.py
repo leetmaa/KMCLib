@@ -46,6 +46,12 @@ class KMCRateCalculatorPluginTest(unittest.TestCase):
         self.assertTrue( hasattr(calculator, "_variable") )
         self.assertEqual( calculator._variable, 123 )
 
+    def testCutoff(self):
+        """ Test that the base class has the cutoff function. """
+        rc = KMCRateCalculatorPlugin()
+        self.assertTrue(hasattr(rc, "cutoff"))
+        self.assertTrue(rc.cutoff() is None)
+
     def testUsage(self):
         """ Test that the KMCRateCalculatorPlugin can be used in a simulation. """
         # To get the random numbers returned.

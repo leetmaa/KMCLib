@@ -1,8 +1,8 @@
-API code
+Other API Code
 =======================
 These are the objects you get when importing with::
 
-      from KMCLib import *
+ from KMCLib import *
 
 
 It defineds the KMCLib API for setting up and running a KMC simulation. These interfaces should remain constant over time once we have a first official release out.

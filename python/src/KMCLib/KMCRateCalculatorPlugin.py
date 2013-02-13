@@ -69,3 +69,14 @@ class KMCRateCalculatorPlugin(Backend.RateCalculator):
         """
         raise Error("The rate(self,...) API function in the 'KMCRateCalculator' base class must be overloaded when using a custom rate calculator.")
 
+    def cutoff(self):
+        """
+        To determine the radial cutoff of the geometry around the central
+        lattice site to cut out and send down to the rustom rate function.
+        If not implemented by derrived classes the default is to use
+        the cutoff of the largetst process local geometry.
+        :returns: The desiered cutoff in primitive cell internal coordinates.
+        """
+        # Returning None results in default behaviour.
+        return None
+

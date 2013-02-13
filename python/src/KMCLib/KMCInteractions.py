@@ -27,8 +27,7 @@ class KMCInteractions(object):
 
     def __init__(self,
                  interactions_list=None,
-                 implicit_wildcards=None,
-                 rate_calculator=None):
+                 implicit_wildcards=None):
         """
         Constructor for the KMCInteractions.
 
@@ -45,10 +44,6 @@ class KMCInteractions(object):
                                    the matching of processes with the configuration. The default
                                    is True, i.e. to use implicit wildcards.
         :type implicit_wildcards:  bool
-
-        :param rate_calculator:    A class inheriting from the
-                                   KMCRateCalculatorPlugin interface. If not given
-                                   the rates specified for each process will be used unmodified.
         """
         # Check the interactions input.
         self.__raw_interactions = self.__checkInteractionsInput(interactions_list)
@@ -60,6 +55,23 @@ class KMCInteractions(object):
             raise Error("The 'implicit_wildcard' flag to the KMCInteractions constructor must be given as either True or False")
         self.__implicit_wildcards = implicit_wildcards
 
+        # Set the backend to be generated at first query.
+        self.__backend = None
+
+        # Set the rate calculator.
+        self.__rate_calculator = None
+
+    def setRateCalculator(self,
+                          rate_calculator=None):
+        """
+        Set the rate calculator of the class. The rate calculator must be
+        set before the backend is generated to take effect.
+
+        :param rate_calculator:    A class inheriting from the
+                                   KMCRateCalculatorPlugin interface. If not given
+                                   the rates specified for each process will be used unmodified.
+
+        """
         # Check the rate calculator.
         if rate_calculator is not None:
 
@@ -87,9 +99,6 @@ the KMCRateCalculatorPlugin class itself. """
                 raise Error(msg)
         # All tests passed. Save the instantiated rate calculator on the class.
         self.__rate_calculator = rate_calculator
-
-        # Set the backend to be generated at first query.
-        self.__backend = None
 
     def __checkInteractionsInput(self, interactions):
         """ """
@@ -211,18 +220,22 @@ the KMCRateCalculatorPlugin class itself. """
 
                 # Construct and store the C++ process.
                 if self.__rate_calculator is not None:
-                    cutoff = 1.0 # FIXME
+
+                    # Set the cutoff correctly.
+                    cutoff = self.__rate_calculator.cutoff()
+                    if cutoff is None:
+                        cutoff = 1.0
+
                     cpp_processes.push_back(Backend.CustomRateProcess(cpp_config1,
                                                                       cpp_config2,
                                                                       barrier,
                                                                       cpp_basis,
-                                                                      cutoff)) # FIXME
+                                                                      cutoff))
                 else:
                     cpp_processes.push_back(Backend.Process(cpp_config1,
                                                             cpp_config2,
                                                             barrier,
                                                             cpp_basis))
-
 
             # Construct the C++ interactions object.
             if self.__rate_calculator is not None:

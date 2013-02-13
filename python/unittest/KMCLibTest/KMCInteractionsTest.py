@@ -105,30 +105,26 @@ class KMCInteractionsTest(unittest.TestCase):
 
         interactions_list = [interaction_0, interaction_1]
 
+        # Test that it fails with the wrong rate calculator.
+        interactions = KMCInteractions(interactions_list=interactions_list,
+                                       implicit_wildcards=True)
+
         # Test that it fails if the rate calculator is of wrong type.
-        self.assertRaises( Error, lambda : KMCInteractions(interactions_list=interactions_list,
-                                                           implicit_wildcards=True,
-                                                           rate_calculator="CustomRateCalculator") )
+        self.assertRaises( Error, lambda : interactions.setRateCalculator(rate_calculator="CustomRateCalculator") )
 
         # Test that it fails if the rate calculator is of wrong class.
-        self.assertRaises( Error, lambda : KMCInteractions(interactions_list=interactions_list,
-                                                           implicit_wildcards=True,
-                                                           rate_calculator=Error) )
+        self.assertRaises( Error, lambda : interactions.setRateCalculator(rate_calculator=Error) )
 
         # Test that it fails if the rate calculator is instantiated.
-        self.assertRaises( Error, lambda : KMCInteractions(interactions_list=interactions_list,
-                                                           implicit_wildcards=True,
-                                                           rate_calculator=CustomRateCalculator()) )
+        self.assertRaises( Error, lambda : interactions.setRateCalculator(rate_calculator=CustomRateCalculator()) )
 
         # Test that it fails if the rate calculator is the base class.
-        self.assertRaises( Error, lambda : KMCInteractions(interactions_list=interactions_list,
-                                                           implicit_wildcards=True,
-                                                           rate_calculator=KMCRateCalculatorPlugin) )
+        self.assertRaises( Error, lambda : interactions.setRateCalculator(rate_calculator=KMCRateCalculatorPlugin) )
 
         # Construct the interactions object with a custom rate calculator class.
         kmc_interactions = KMCInteractions(interactions_list=interactions_list,
-                                           implicit_wildcards=True,
-                                           rate_calculator=CustomRateCalculator)
+                                           implicit_wildcards=True)
+        kmc_interactions.setRateCalculator(rate_calculator=CustomRateCalculator)
 
         # Test the stored name.
         self.assertEqual(kmc_interactions._KMCInteractions__rate_calculator_str, "CustomRateCalculator")
@@ -502,8 +498,8 @@ class KMCInteractionsTest(unittest.TestCase):
 
         # Construct the interactions object.
         kmc_interactions = KMCInteractions(interactions_list=interactions_list,
-                                           implicit_wildcards=False,
-                                           rate_calculator=custom_rates_class)
+                                           implicit_wildcards=False)
+        kmc_interactions.setRateCalculator(rate_calculator=custom_rates_class)
 
         # Set the rate function on the custom rates calculator for testing.
         ref_rnd = numpy.random.uniform(0.0,1.0)
