@@ -74,17 +74,16 @@ public:
                                                                 const std::vector<int> & indices,
                                                                 const LatticeMap & lattice_map) const;
 
-    /*! \brief Update and return the cached match list for the given central index.
-     *  \param index : The index to get the match list for.
-     *  \return : The match list.
+    /*! \brief Update the cached match list for the given index.
+     *  \param index : The index to update the match list for.
      */
-    const std::vector<MinimalMatchListEntry> & minimalMatchList(const int index);
+    void updateMatchList(const int index);
 
     /*! \brief Return the cached match list without update.
      *  \param index : The index to get the match list for.
      *  \return : The match list.
      */
-    std::vector<MinimalMatchListEntry> minimalMatchList(const int index) const { return match_lists_[index]; }
+    const std::vector<MinimalMatchListEntry> & minimalMatchList(const int index) const { return match_lists_[index]; }
 
     /*! \brief Perform the given process.
      *  \param process : The process to perform, which will be updated with the affected
@@ -99,7 +98,6 @@ public:
      *  \return : The string representation of the type integer.
      */
     const std::string & typeName(const int type) const { return type_names_[type]; }
-
 
 protected:
 

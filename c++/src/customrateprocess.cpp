@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <cstdio>
+#include <numeric>
 
 #include "customrateprocess.h"
 #include "random.h"
@@ -43,13 +44,7 @@ CustomRateProcess::CustomRateProcess(const Configuration & first,
 double CustomRateProcess::totalRate() const
 {
     // Sum all individual rates.
-    double sum = 0.0;
-    for (size_t i = 0; i < site_rates_.size(); ++i)
-    {
-        sum += site_rates_[i];
-    }
-
-    return sum;
+    return std::accumulate(site_rates_.begin(),site_rates_.end(), 0.0);
 }
 
 // -----------------------------------------------------------------------------

@@ -15,6 +15,7 @@ from KMCLib.KMCInteractions import KMCInteractions
 from KMCLib.KMCControlParameters import KMCControlParameters
 from KMCLib.Exceptions.Error import Error
 from KMCLib.Utilities.Trajectory.Trajectory import Trajectory
+from KMCLib.Utilities.PrintUtilities import prettyPrint
 
 class KMCLatticeModel(object):
     """
@@ -105,7 +106,8 @@ must be an instance of type KMCControlParameters."""
         if trajectory_filename is None:
             use_trajectory = False
             msg =""" KMCLib: WARNING: No trajectory filename given -> no trajectory will be saved."""
-            print msg
+            prettyPrint(msg)
+
         elif not isinstance(trajectory_filename, str):
             msg = """
 The 'trajectory_filename' input to the KMCLattice model run function
@@ -113,7 +115,7 @@ must be given as string."""
             raise Error(msg)
 
         # Construct the C++ lattice model.
-        print " KMCLib: setting up the backend C++ object."
+        prettyPrint(" KMCLib: setting up the backend C++ object.")
         cpp_model = self._backend()
 
         # Print the initial matching information if above the verbosity threshold.
@@ -136,7 +138,7 @@ must be given as string."""
         # Get the needed parameters.
         n_steps = control_parameters.numberOfSteps()
         n_dump  = control_parameters.dumpInterval()
-        print " KMCLib: Runing for %i steps, starting from time: %f\n"%(n_steps,self.__cpp_timer.simulationTime())
+        prettyPrint(" KMCLib: Runing for %i steps, starting from time: %f\n"%(n_steps,self.__cpp_timer.simulationTime()))
 
         # Run the KMC simulation.
         try:
@@ -153,7 +155,7 @@ must be given as string."""
                 cpp_model.singleStep()
 
                 if ((step)%n_dump == 0):
-                    print " KMCLib: %i steps executed. time: %f "%(step, self.__cpp_timer.simulationTime())
+                    prettyPrint(" KMCLib: %i steps executed. time: %f "%(step, self.__cpp_timer.simulationTime()))
 
                     # Perform IO using the trajectory object.
                     if use_trajectory:
@@ -164,6 +166,7 @@ must be given as string."""
             # Flush the buffers when done.
             if use_trajectory:
                 trajectory.flush()
+
 
     def _script(self, variable_name="model"):
         """
@@ -205,9 +208,10 @@ must be given as string."""
         """
         cpp_processes = cpp_model.interactions().processes()
 
-        print ""
-        print " Matching Information: "
+        prettyPrint("")
+        prettyPrint(" Matching Information: ")
         for i,p in enumerate(cpp_processes):
-            print ""
-            print " Process %i available on sites: "%(i), p.sites()
-        print ""
+            prettyPrint("")
+            prettyPrint(" Process %i available on sites: "%(i), p.sites())
+        prettyPrint("")
+

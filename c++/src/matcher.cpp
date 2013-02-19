@@ -1,5 +1,5 @@
 /*
-  Copyright (c)  2012  Mikael Leetmaa
+  Copyright (c)  2012-2013  Mikael Leetmaa
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -20,6 +20,9 @@
 #include "configuration.h"
 #include "latticemap.h"
 
+#include "mpicommons.h"
+#include "mpiroutines.h"
+
 // -----------------------------------------------------------------------------
 //
 Matcher::Matcher()
@@ -35,20 +38,16 @@ void Matcher::calculateMatching(Interactions & interactions,
                                 const LatticeMap & lattice_map,
                                 const std::vector<int> & indices) const
 {
-    // PERFORMME:
-    // Changes here should be timed using realistic test systems.
-
-    // -------------------------------------------------
     // Build the list of indices and processes to match.
-    // -------------------------------------------------
 
-    // Filter out index - process combination that are certain never
-    // to match.
     std::vector<std::pair<int,int> > index_process_to_match;
     for(size_t i = 0; i < indices.size(); ++i)
     {
         // Get the index.
         const int index = indices[i];
+        bool use_index = false;
+
+        // Get the basis site.
         const int basis_site = lattice_map.basisSiteFromIndex(index);
 
         // For each process, check if we should try to match.
@@ -60,60 +59,68 @@ void Matcher::calculateMatching(Interactions & interactions,
             {
                 // This is a potential match.
                 index_process_to_match.push_back(std::pair<int,int>(index,j));
+                use_index = true;
             }
+        }
+
+        // Update the configuration match list for this index if it will be used.
+        if (use_index)
+        {
+            configuration.updateMatchList(index);
         }
     }
 
-    // ----------------------------
     // Generate the lists of tasks.
-    // ----------------------------
-
-    // IN PARALLEL:
-    // Split the index_process_to_match vector up on each process.
-    // const std::vecctor<int> my_index_process_to_match = splitOverProcesses(index_process_to_match);
-    const std::vector<std::pair<int,int> > local_index_process_to_match = index_process_to_match;
 
     std::vector<RemoveTask> remove_tasks;
     std::vector<RateTask>   update_tasks;
     std::vector<RateTask>   add_tasks;
 
-    matchIndicesWithProcesses(local_index_process_to_match,
+    matchIndicesWithProcesses(index_process_to_match,
                               interactions,
                               configuration,
                               remove_tasks,
                               update_tasks,
                               add_tasks);
 
-    // IN PARALLEL:
-    // Broadcast the lists of tasks.
-    // broadcastOverProcesses(remove_tasks);
-    // broadcastOverProcesses(update_tasks);
-    // broadcastOverProcesses(add_tasks);
-
-    // ------------------------
     // Calculate the new rates.
-    // ------------------------
 
-    // Calculate the rates.
     if (interactions.useCustomRates())
     {
-        // IN PARALLEL:
-        // Split the update and add tasks amongst processes.
-        // std::vector<RateTask> local_add_tasks = splitOverProcesses(add_tasks);
-        // std::vector<RateTask> local_update_tasks = splitOverProcesses(update_tasks);
+        // Split up the add tasks.
+        std::vector<RateTask> local_add_tasks = splitOverProcesses(add_tasks);
+        std::vector<double> local_add_tasks_rates(local_add_tasks.size(), 0.0);
 
-        updateRates(add_tasks,    interactions, configuration);
-        updateRates(update_tasks, interactions, configuration);
+        // Update.
+        updateRates(local_add_tasks_rates, local_add_tasks, interactions, configuration);
 
-        // IN PARALLEL:
-        // Collect the updated tasks.
-        // collectOverProcesses(local_add_tasks, add_tasks);
-        // collectOverProcesses(local_update_tasks, update_tasks);
+        // Split up the update tasks.
+        std::vector<RateTask> local_update_tasks = splitOverProcesses(update_tasks);
+        std::vector<double> local_update_tasks_rates(local_update_tasks.size(), 0.0);
+
+        // Update.
+        updateRates(local_update_tasks_rates, local_update_tasks, interactions, configuration);
+
+        // Join the results.
+        const std::vector<double> add_tasks_rates = joinOverProcesses(local_add_tasks_rates);
+
+        // Copy over the add tasks rates to the global tasks list.
+        for (size_t i = 0; i < add_tasks.size(); ++i)
+        {
+            add_tasks[i].rate = add_tasks_rates[i];
+        }
+
+        // Join the results.
+        const std::vector<double> update_tasks_rates = joinOverProcesses(local_update_tasks_rates);
+
+        // Copy over the update tasks rates to the global tasks list.
+        for (size_t i = 0; i < update_tasks.size(); ++i)
+        {
+            update_tasks[i].rate = update_tasks_rates[i];
+        }
     }
 
-    // ---------------------
     // Update the processes.
-    // ---------------------
 
     updateProcesses(remove_tasks,
                     update_tasks,
@@ -126,18 +133,26 @@ void Matcher::calculateMatching(Interactions & interactions,
 // -----------------------------------------------------------------------------
 //
 void Matcher::matchIndicesWithProcesses(const std::vector<std::pair<int,int> > & index_process_to_match,
-                                        Interactions  & interactions,
-                                        Configuration & configuration,
+                                        const Interactions  & interactions,
+                                        const Configuration & configuration,
                                         std::vector<RemoveTask> & remove_tasks,
                                         std::vector<RateTask>   & update_tasks,
                                         std::vector<RateTask>   & add_tasks) const
 {
+    // Setup local variables for running in parallel.
+    std::vector< std::pair<int,int> > local_index_process_to_match = \
+        splitOverProcesses(index_process_to_match);
+
+    // These are the local task types to fill with matching restults.
+    const int n_local_tasks = local_index_process_to_match.size();
+    std::vector<int> local_task_types(n_local_tasks, 0);
+
     // Loop over pairs to match.
-    for (size_t i = 0; i < index_process_to_match.size(); ++i)
+    for (size_t i = 0; i < local_index_process_to_match.size(); ++i)
     {
         // Get the process and index to match.
-        const int index = index_process_to_match[i].first;
-        const int p_idx = index_process_to_match[i].second;
+        const int index = local_index_process_to_match[i].first;
+        const int p_idx = local_index_process_to_match[i].second;
         Process & process = (*interactions.processes()[p_idx]);
 
         // Perform the matching.
@@ -149,12 +164,37 @@ void Matcher::matchIndicesWithProcesses(const std::vector<std::pair<int,int> > &
         const bool is_match = isMatch(process_match_list,
                                       index_match_list);
 
-        // -------------------------------------------------------------
         // Determine what to do with this pair of processes and indices.
-        // -------------------------------------------------------------
+        if (!is_match && in_list)
+        {
+            // If no match and previous match - remove.
+            local_task_types[i] = 1;
+        }
+        else if (is_match && in_list)
+        {
+            // If match and previous match - update the rate.
+            local_task_types[i] = 2;
+        }
+        else if (is_match && !in_list)
+        {
+            // If match and not previous match - add.
+            local_task_types[i] = 3;
+        }
+    }
+
+    // Join the result - parallel.
+    const std::vector<int> task_types = joinOverProcesses(local_task_types);
+
+    // Loop again (not in parallel) and add the tasks to the taks vectors.
+    const size_t n_tasks = index_process_to_match.size();
+    for (size_t i = 0; i < n_tasks; ++i)
+    {
+        const int index = index_process_to_match[i].first;
+        const int p_idx = index_process_to_match[i].second;
+        const Process & process = (*interactions.processes()[p_idx]);
 
         // If no match and previous match - remove.
-        if (!is_match && in_list)
+        if (task_types[i] == 1)
         {
             RemoveTask t;
             t.index   = index;
@@ -163,7 +203,7 @@ void Matcher::matchIndicesWithProcesses(const std::vector<std::pair<int,int> > &
         }
 
         // If match and previous match - update the rate.
-        else if (is_match && in_list)
+        else if (task_types[i] == 2)
         {
             RateTask t;
             t.index   = index;
@@ -173,7 +213,7 @@ void Matcher::matchIndicesWithProcesses(const std::vector<std::pair<int,int> > &
         }
 
         // If match and not previous match - add.
-        else if (is_match && !in_list)
+        else if (task_types[i] == 3)
         {
             RateTask t;
             t.index   = index;
@@ -221,6 +261,8 @@ void Matcher::updateProcesses(const std::vector<RemoveTask> & remove_tasks,
                               const std::vector<RateTask>   & add_tasks,
                               Interactions & interactions) const
 {
+    // This could perhaps be OpenMP parallelized.
+
     // Remove.
     for (size_t i = 0; i < remove_tasks.size(); ++i)
     {
@@ -252,14 +294,16 @@ void Matcher::updateProcesses(const std::vector<RemoveTask> & remove_tasks,
 
 // -----------------------------------------------------------------------------
 //
-void Matcher::updateRates(std::vector<RateTask> & tasks,
-                          const Interactions    & interactions,
-                          const Configuration   & configuration) const
+void Matcher::updateRates(std::vector<double>         & new_rates,
+                          const std::vector<RateTask> & tasks,
+                          const Interactions          & interactions,
+                          const Configuration         & configuration) const
 {
     // Use the backendCallBack function on the RateCalculator stored on the
     // interactions object, to get an updated rate for each process.
 
     const RateCalculator & rate_calculator = interactions.rateCalculator();
+
     for (size_t i = 0; i < tasks.size(); ++i)
     {
         // Get the rate process to use.
@@ -269,7 +313,7 @@ void Matcher::updateRates(std::vector<RateTask> & tasks,
         const int index = tasks[i].index;
 
         // Send this information to the updateSingleRate function.
-        tasks[i].rate = updateSingleRate(index, process, configuration, rate_calculator);
+        new_rates[i] = updateSingleRate(index, process, configuration, rate_calculator);
     }
 }
 
@@ -347,9 +391,10 @@ double Matcher::updateSingleRate(const int index,
     }
 
     // Calculate the rate using the provided rate calculator.
+    const double rate_constant = process.rateConstant();
     return rate_calculator.backendRateCallback(numpy_geo,
                                                len,
                                                types_before,
                                                types_after,
-                                               process.rateConstant());
+                                               rate_constant);
 }

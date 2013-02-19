@@ -38,3 +38,11 @@ Error
    :members:
    :special-members:
 
+
+Trajectory
+--------------
+
+.. autoclass:: KMCLib.Utilities.Trajectory.Trajectory
+   :members:
+   :special-members:
+
