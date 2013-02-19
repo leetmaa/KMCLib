@@ -61,6 +61,13 @@ class KMCInteractions(object):
         # Set the rate calculator.
         self.__rate_calculator = None
 
+    def rateCalculator(self):
+        """
+        Query for the rate calculator.
+        :returns: The stored rate calculator.
+        """
+        return self.__rate_calculator
+
     def setRateCalculator(self,
                           rate_calculator=None):
         """

@@ -11,9 +11,21 @@ from KMCRateCalculatorPlugin import KMCRateCalculatorPlugin
 from Utilities.SaveAndReadUtilities import KMCInteractionsFromScript
 from Utilities.SaveAndReadUtilities import KMCConfigurationFromScript
 
-
 __all__ = ['KMCLocalConfiguration', 'KMCInteractions', 'KMCConfiguration',
            'KMCLattice', 'KMCLatticeModel', 'KMCUnitCell',
            'KMCControlParameters', 'KMCInteractionsFromScript',
            'KMCConfigurationFromScript', 'KMCRateCalculatorPlugin']
+
+# Trick to intialize and finalize MPI only once.
+from Backend import Backend
+
+# Init MPI.
+Backend.MPICommons.init()
+
+# Make sure to finalize MPI on exit.
+def killme():
+    Backend.MPICommons.finalize()
+
+import atexit
+atexit.register(killme)
 

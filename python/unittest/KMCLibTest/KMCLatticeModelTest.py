@@ -24,6 +24,7 @@ from KMCLib.KMCLatticeModel import KMCLatticeModel
 
 # Test helpers.
 from TestUtilities.Plugins.CustomRateCalculator.CustomRateCalculator import CustomRateCalculator
+from KMCLib.Backend.Backend import MPICommons
 
 # Implement the test.
 class KMCLatticeModelTest(unittest.TestCase):
@@ -36,7 +37,9 @@ class KMCLatticeModelTest(unittest.TestCase):
     def tearDown(self):
         """ The tearDown method for test fixtures. """
         for f in self.__files_to_remove:
-            os.remove(f)
+            if MPICommons.isMaster():
+                os.remove(f)
+            MPICommons.barrier()
 
     def testConstruction(self):
         """ Test the construction of the lattice model """
@@ -121,15 +124,20 @@ class KMCLatticeModelTest(unittest.TestCase):
                                 basis_points=[[0.0,0.0,0.0]])
         # And a lattice.
         lattice = KMCLattice(unit_cell=unit_cell,
-                             repetitions=(128,128,1),
+                             repetitions=(10,10,1),
                              periodic=(True,True,False))
 
-        # Generate the stating configuration types with a 5%
-        # random concentration of type A.
-        types = ["B"]*(128*128)
-        for i in range(len(types)):
-            if (numpy.random.uniform(0.0,1.0) < 0.05):
-                types[i] = "A"
+        # Set the stating configuration types.
+        types = ['B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B',
+                 'B', 'B', 'B', 'B', 'B', 'A', 'B', 'B', 'B', 'B',
+                 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B',
+                 'B', 'A', 'B', 'B', 'B', 'B', 'B', 'A', 'B', 'B',
+                 'B', 'B', 'B', 'B', 'B', 'B', 'A', 'B', 'B', 'B',
+                 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B',
+                 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B',
+                 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B',
+                 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'A', 'B', 'B',
+                 'A', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'B', 'A']
 
         # Setup the configuration.
         config = KMCConfiguration(lattice=lattice,
@@ -232,8 +240,8 @@ class KMCLatticeModelTest(unittest.TestCase):
         self.assertEqual( match_types, ref_match_types )
 
         # Setup the run paramters.
-        control_parameters = KMCControlParameters(number_of_steps=100,
-                                                  dump_interval=13)
+        control_parameters = KMCControlParameters(number_of_steps=10,
+                                                  dump_interval=1)
         model.run(control_parameters)
 
     def testRun2(self):

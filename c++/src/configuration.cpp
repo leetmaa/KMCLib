@@ -88,7 +88,7 @@ void Configuration::initMatchLists( const LatticeMap & lattice_map,
 
 // -----------------------------------------------------------------------------
 //
-const std::vector<MinimalMatchListEntry> & Configuration::minimalMatchList(const int index)
+void Configuration::updateMatchList(const int index)
 {
     // Update the match list's types information.
     std::vector<MinimalMatchListEntry>::iterator it1   = match_lists_[index].begin();
@@ -98,9 +98,6 @@ const std::vector<MinimalMatchListEntry> & Configuration::minimalMatchList(const
     {
         (*it1).match_type = types_[(*it1).index];
     }
-
-    // Return.
-    return match_lists_[index];
 }
 
 

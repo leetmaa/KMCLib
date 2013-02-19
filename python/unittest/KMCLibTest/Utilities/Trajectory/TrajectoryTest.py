@@ -16,6 +16,7 @@ import sys
 # Import from the module we test.
 from KMCLib.Utilities.Trajectory.Trajectory import Trajectory
 
+from KMCLib.Backend.Backend import MPICommons
 
 # Implement the test.
 class TrajectoryTest(unittest.TestCase):
@@ -24,11 +25,18 @@ class TrajectoryTest(unittest.TestCase):
     def setUp(self):
         """ The setUp method for test fixtures. """
         self.__files_to_remove = []
+        # Make sure to start simultaneously.
+        MPICommons.barrier()
 
     def tearDown(self):
         """ The tearDown method for test fixtures. """
+        # Make sure to stop simultaneously.
+        MPICommons.barrier()
         for f in self.__files_to_remove:
-            os.remove(f)
+            # Make sure only master delets files, while slaves wait.
+            if MPICommons.isMaster():
+                os.remove(f)
+            MPICommons.barrier()
 
     def testConstruction(self):
         """ Test the Trajectory object can be constructed. """
@@ -142,10 +150,16 @@ class TrajectoryTest(unittest.TestCase):
                  ["A", "B", "C", "D", "E", "F", "G", "H"],
                  ["1", "2", "4", "5", "6", "5" ,"43", "243r2424"]]
 
+        # Needed to prevent test failure.
+        MPICommons.barrier()
+
         # Check that the time is zero before we start.
         self.assertAlmostEqual( t._Trajectory__time_last_dump, 0.0, 10 )
 
         t._Trajectory__writeToFile(times, steps, types)
+
+        # Needed to prevent test failure.
+        MPICommons.barrier()
 
         # Check that the time stamp was updated.
         self.assertTrue( 1357651850 < t._Trajectory__time_last_dump )
@@ -163,6 +177,10 @@ class TrajectoryTest(unittest.TestCase):
                       'Names', 'now', 'this', 'one', 'is', 'longer', 'still'],
                      ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'],
                      ['1', '2', '4', '5', '6', '5', '43', '243r2424']]
+
+        # Needed to prevent test failure.
+        MPICommons.barrier()
+
         self.assertEqual( ret_types, ref_types )
 
         # Check the steps.
@@ -199,6 +217,10 @@ class TrajectoryTest(unittest.TestCase):
                       'Names', 'now', 'this', 'one', 'is', 'longer', 'still'],
                      ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'],
                      ['1', '2', '4', '5', '6', '5', '43', '243r2424']]
+
+        # Needed to prevent test failure.
+        MPICommons.barrier()
+
         self.assertEqual( ret_types, ref_types )
 
         # Check the steps.
@@ -240,6 +262,9 @@ class TrajectoryTest(unittest.TestCase):
         local_dict  = {}
         execfile(trajectory_filename, global_dict, local_dict)
 
+        # Needed to prevent test failure.
+        MPICommons.barrier()
+
         # Check the types.
         ret_types = local_dict['types']
         ref_types = [["A", "A", "A", "A", "A", "A"]]
@@ -262,6 +287,9 @@ class TrajectoryTest(unittest.TestCase):
         global_dict = {}
         local_dict  = {}
         execfile(trajectory_filename, global_dict, local_dict)
+
+        # Needed to prevent test failure.
+        MPICommons.barrier()
 
         # Check.
         ret_types = local_dict['types']
@@ -288,6 +316,10 @@ class TrajectoryTest(unittest.TestCase):
         ref_types = [["A","A","A","A","A","A"],
                      ["B","B","B","B","B","B"],
                      ["C","C","C","C","C","C"]]
+
+        # Needed to prevent test failure.
+        MPICommons.barrier()
+
         self.assertEqual( ret_types, ref_types )
 
         # Check the steps.
@@ -319,6 +351,10 @@ class TrajectoryTest(unittest.TestCase):
         ref_types = [["A","A","A","A","A","A"],
                      ["B","B","B","B","B","B"],
                      ["C","C","C","C","C","C"]]
+
+        # Needed to prevent test failure.
+        MPICommons.barrier()
+
         self.assertEqual( ret_types, ref_types )
 
         # Append.
@@ -342,6 +378,10 @@ class TrajectoryTest(unittest.TestCase):
                      ["A","A","A","A","A","B"],
                      ["A","A","A","A","A","B"],
                      ["A","A","A","A","A","B"]]
+
+        # Needed to prevent test failure.
+        MPICommons.barrier()
+
         self.assertEqual( ret_types, ref_types )
 
     def testFlush(self):
