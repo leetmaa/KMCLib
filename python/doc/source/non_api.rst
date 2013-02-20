@@ -31,6 +31,13 @@ SaveAndReadUtilities
    :members:
 
 
+PrintUtilities
+---------------------
+
+.. automodule:: KMCLib.Utilities.PrintUtilities
+   :members:
+
+
 Error
 --------------
 
@@ -40,9 +47,9 @@ Error
 
 
 Trajectory
---------------
+---------------------
 
-.. autoclass:: KMCLib.Utilities.Trajectory.Trajectory
+.. autoclass:: KMCLib.Utilities.Trajectory.Trajectory.Trajectory
    :members:
    :special-members:
 

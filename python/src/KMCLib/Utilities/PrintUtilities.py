@@ -16,9 +16,11 @@ from KMCLib.Backend.Backend import MPICommons
 def prettyPrint(msg, output=None):
     """
     Utility function for printing an output string to screen.
+
     :param msg: The message to print.
-    :param out: The stream to write to. Defaults to sys.stdout.
     :type msg: str
+
+    :param out: The stream to write to. Defaults to sys.stdout.
     """
     # Set the default.
     if output is None:

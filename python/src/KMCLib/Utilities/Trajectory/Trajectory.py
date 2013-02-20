@@ -96,6 +96,7 @@ class Trajectory(object):
         """
         Append the types and time information to the trajectory.
         The trajectory if flushed to file if the flush time limit has passed.
+        Or if the buffer memory size limit is exceeded.
 
         :param simulation_time: The current time of the simulation.
         :type simulation_time: float

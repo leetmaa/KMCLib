@@ -7,7 +7,7 @@
 
 
 /*! \file  mpiroutines.h
- *  \brief File for the mpi roitine utlility functions interfaces.
+ *  \brief File for the mpi utlility routines interfaces.
  */
 
 

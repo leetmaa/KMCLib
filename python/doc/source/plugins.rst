@@ -76,6 +76,6 @@ Interface
 .................
 
 .. autoclass:: KMCLib.KMCRateCalculatorPlugin
-   :members:
+   :members: initialize, rate, cutoff
    :special-members:
 

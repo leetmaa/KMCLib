@@ -52,7 +52,8 @@ class KMCRateCalculatorPlugin(Backend.RateCalculator):
     def rate(self, coords, types_before, types_after, rate_constant):
         """
         Called from the base class to get the rate for a particular
-        local geometry. This function must be overloaded.
+        local geometry. Any class inheriting from the plugin base class
+        must provide an implementation of this function.
 
         :param coords: The coordinates of the configuration as a Nx3 numpy array
                        in fractional units of the primitive cell.
@@ -75,6 +76,7 @@ class KMCRateCalculatorPlugin(Backend.RateCalculator):
         lattice site to cut out and send down to the rustom rate function.
         If not implemented by derrived classes the default is to use
         the cutoff of the largetst process local geometry.
+
         :returns: The desiered cutoff in primitive cell internal coordinates.
         """
         # Returning None results in default behaviour.
