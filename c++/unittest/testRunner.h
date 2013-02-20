@@ -20,6 +20,8 @@
 #include "test_random.h"
 #include "test_simulationtimer.h"
 #include "test_ratecalculator.h"
+#include "test_mpicommons.h"
+#include "test_mpiroutines.h"
 
 // -------------------------------------------------------------------------- //
 // Add tests.
@@ -35,4 +37,6 @@ CPPUNIT_TEST_SUITE_REGISTRATION( Test_Matcher );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_Random );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_SimulationTimer );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_RateCalculator );
+CPPUNIT_TEST_SUITE_REGISTRATION( Test_MPICommons );
+CPPUNIT_TEST_SUITE_REGISTRATION( Test_MPIRoutines );
 

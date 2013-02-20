@@ -7,7 +7,6 @@
 # Make sure the swig and python packages are loaded.
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
-#find_package(PythonLibs)
 
 # Add the inclusion paths.
 include_directories(${PYTHON_INCLUDE_PATH})

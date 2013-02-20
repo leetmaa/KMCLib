@@ -31,10 +31,25 @@ SaveAndReadUtilities
    :members:
 
 
+PrintUtilities
+---------------------
+
+.. automodule:: KMCLib.Utilities.PrintUtilities
+   :members:
+
+
 Error
 --------------
 
 .. autoclass:: KMCLib.Exceptions.Error.Error
+   :members:
+   :special-members:
+
+
+Trajectory
+---------------------
+
+.. autoclass:: KMCLib.Utilities.Trajectory.Trajectory.Trajectory
    :members:
    :special-members:
 

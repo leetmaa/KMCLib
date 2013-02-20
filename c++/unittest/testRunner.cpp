@@ -8,15 +8,20 @@
 
 #include <cppunit/ui/text/TestRunner.h>
 #include "testRunner.h"
+#include <mpi.h>
 
-int main ()
+int main (int argc, char *argv[])
 {
-  CppUnit::Test *test =
-    CppUnit::TestFactoryRegistry::getRegistry().makeTest();
-  CppUnit::TextTestRunner runner;
-  runner.addTest(test);
+    MPI_Init(&argc, &argv);
 
-  runner.run();
-  return 0;
+    CppUnit::Test *test = CppUnit::TestFactoryRegistry::getRegistry().makeTest();
+    CppUnit::TextTestRunner runner;
+    runner.addTest(test);
+
+    runner.run();
+
+    MPI_Finalize();
+
+    return 0;
 }
 

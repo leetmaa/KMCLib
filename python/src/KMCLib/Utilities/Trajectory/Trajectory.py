@@ -12,6 +12,8 @@ import sys
 import time
 
 
+from KMCLib.Backend.Backend import MPICommons
+
 class Trajectory(object):
     """
     Class for handling IO to a trajectory file.
@@ -52,29 +54,35 @@ class Trajectory(object):
         self.__trajectory_filename = trajectory_filename
 
         # Open the file and write the meta information.
-        with open(self.__trajectory_filename, 'w') as trajectory:
-            trajectory.write( "# KMCLib Trajectory\n" )
-            trajectory.write( "version=\"2013.1.0\"\n" )
-            trajectory.write( "creation_time=\"%s\"\n"%(time.ctime()) )
 
-            # Write the sites.
-            sites_str = "sites=["
-            indent    = " "*7
-            for i,site in enumerate(sites):
-                sites_str += "[%15.6f,%15.6f,%15.6f]"%(site[0],site[1],site[2])
+        # Make sure only master writes.
+        if MPICommons.isMaster():
+            with open(self.__trajectory_filename, 'w') as trajectory:
+                trajectory.write( "# KMCLib Trajectory\n" )
+                trajectory.write( "version=\"2013.1.0\"\n" )
+                trajectory.write( "creation_time=\"%s\"\n"%(time.ctime()) )
 
-                # Handle the last site differently.
-                if i == len(sites)-1:
-                    sites_str += "]\n"
-                else:
-                    sites_str += ",\n" + indent
+                # Write the sites.
+                sites_str = "sites=["
+                indent    = " "*7
+                for i,site in enumerate(sites):
+                    sites_str += "[%15.6f,%15.6f,%15.6f]"%(site[0],site[1],site[2])
 
-            trajectory.write( sites_str )
+                    # Handle the last site differently.
+                    if i == len(sites)-1:
+                        sites_str += "]\n"
+                    else:
+                        sites_str += ",\n" + indent
 
-            # Write the empty lists.
-            trajectory.write("times=[]\n")
-            trajectory.write("steps=[]\n")
-            trajectory.write("types=[]\n")
+                trajectory.write( sites_str )
+
+                # Write the empty lists.
+                trajectory.write("times=[]\n")
+                trajectory.write("steps=[]\n")
+                trajectory.write("types=[]\n")
+
+        # While the other processes wait.
+        MPICommons.barrier()
 
         # Init the member data.
         self.__types_buffer = []
@@ -88,6 +96,7 @@ class Trajectory(object):
         """
         Append the types and time information to the trajectory.
         The trajectory if flushed to file if the flush time limit has passed.
+        Or if the buffer memory size limit is exceeded.
 
         :param simulation_time: The current time of the simulation.
         :type simulation_time: float
@@ -135,28 +144,35 @@ class Trajectory(object):
         :param types_buffer:           The types buffer given as a list of lists of strings.
         """
         # Save to file.
-        with open(self.__trajectory_filename, 'a') as trajectory:
-            for (sim_time, step, types) in zip(simulation_time_buffer, step_buffer, types_buffer):
-                trajectory.write( "times.append(%f)\n"%sim_time )
-                trajectory.write( "steps.append(%i)\n"%step )
 
-                # Write the types.
-                types_str = "types.append(["
-                indent = " "*14
-                row_length = len(types_str)
-                for t in types[:-1]:
-                    row_length += len(t) + 2
-                    types_str += "\"" + t + "\"" + ","
+        # Make sure only master writes.
+        if MPICommons.isMaster():
+            with open(self.__trajectory_filename, 'a') as trajectory:
+                for (sim_time, step, types) in zip(simulation_time_buffer, step_buffer, types_buffer):
+                    trajectory.write( "times.append(%f)\n"%sim_time )
+                    trajectory.write( "steps.append(%i)\n"%step )
 
-                    # Berak the row if above 70 positions.
-                    if row_length >= 70:
-                        types_str += "\n" + indent
-                        row_length = len(indent)
-                # Add the last type.
-                types_str += "\"" + types[-1] + "\"" + "])\n"
+                    # Write the types.
+                    types_str = "types.append(["
+                    indent = " "*14
+                    row_length = len(types_str)
+                    for t in types[:-1]:
+                        row_length += len(t) + 2
+                        types_str += "\"" + t + "\"" + ","
 
-                # Write it to file.
-                trajectory.write(types_str)
+                        # Berak the row if above 70 positions.
+                        if row_length >= 70:
+                            types_str += "\n" + indent
+                            row_length = len(indent)
+
+                    # Add the last type.
+                    types_str += "\"" + types[-1] + "\"" + "])\n"
+
+                    # Write it to file.
+                    trajectory.write(types_str)
+
+        # While the others wait.
+        MPICommons.barrier()
 
         # Update the time.
         self.__time_last_dump = time.time()

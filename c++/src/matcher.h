@@ -75,8 +75,8 @@ public:
      *  \param add_tasks    (out)     : A vector that will be filled with tasks for adding after match.
      */
     void matchIndicesWithProcesses(const std::vector<std::pair<int,int> > & index_process_to_match,
-                                   Interactions  & interactions,
-                                   Configuration & configuration,
+                                   const Interactions  & interactions,
+                                   const Configuration & configuration,
                                    std::vector<RemoveTask> & remove_tasks,
                                    std::vector<RateTask>   & update_tasks,
                                    std::vector<RateTask>   & add_tasks) const;
@@ -85,13 +85,15 @@ public:
     /*! \brief Update the rates of the rate tasks by calling the
      *         backend call-back function of the RateCalculator stored
      *         on the interactions object.
+     *  \param new_rates(out): The vector to place the updated rates in.
      *  \param tasks         : A vector with tasks to update.
      *  \param interactions  : The interactions to get the rate calculator from.
      *  \param configuration : The configuration to use.
      */
-    void updateRates(std::vector<RateTask> & tasks,
-                     const Interactions    & interactions,
-                     const Configuration   & configuration) const;
+    void updateRates(std::vector<double>         & new_rates,
+                     const std::vector<RateTask> & tasks,
+                     const Interactions          & interactions,
+                     const Configuration         & configuration) const;
 
 
     /*! \brief Update the processes with the given tasks.

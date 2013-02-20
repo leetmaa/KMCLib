@@ -1513,10 +1513,8 @@ void Test_Matcher::testUpdateRates()
     std::vector<RateTask> tasks;
 
     seedRandom(3452321, true);
-    //const double ref_rate1 = randomDouble01();
-    //const double ref_rate2 = randomDouble01();
-    const double ref_rate1 = 2.0;
-    const double ref_rate2 = 3.0;
+    const double ref_rate1 = randomDouble01();
+    const double ref_rate2 = randomDouble01();
 
     RateTask t1;
     t1.index   = 0;
@@ -1596,13 +1594,12 @@ void Test_Matcher::testUpdateRates()
 
     // Send the interactions object down for update
     // together with the processes and a configuration.
-    m.updateRates(tasks, interactions, config);
+    std::vector<double> rates(tasks.size(), 0.0);
+    m.updateRates(rates, tasks, interactions, config);
 
     // Check that the rates were correctly updated.
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( tasks[0].rate, std::sqrt(ref_rate1), 1.0e-12 );
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( tasks[1].rate, std::sqrt(ref_rate2), 1.0e-12 );
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( tasks[2].rate, 0.0,                  1.0e-12 );
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( tasks[3].rate, 0.0,                  1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( rates[0], std::sqrt(ref_rate1), 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( rates[1], std::sqrt(ref_rate2), 1.0e-12 );
 }
 
 

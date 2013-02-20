@@ -400,7 +400,10 @@ void Test_Configuration::testMatchLists()
     CPPUNIT_ASSERT_EQUAL( configuration.types()[351],  1 );
     CPPUNIT_ASSERT_EQUAL( configuration.types()[2517], 1 );
 
-    // Check that the match cached match list was correctly updated.
+    // Check that updating the matchlist gets us the correct values.
+    configuration.updateMatchList(1434);
+
+    // Reference.
     const std::vector<MinimalMatchListEntry> ref2_1434 =        \
         configuration.minimalMatchList( 1434,
                                         lattice_map.neighbourIndices(1434),
