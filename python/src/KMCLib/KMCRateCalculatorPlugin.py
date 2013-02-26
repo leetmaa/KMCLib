@@ -78,6 +78,7 @@ class KMCRateCalculatorPlugin(Backend.RateCalculator):
         the cutoff of the largetst process local geometry.
 
         :returns: The desiered cutoff in primitive cell internal coordinates.
+        :rtype: float
         """
         # Returning None results in default behaviour.
         return None
