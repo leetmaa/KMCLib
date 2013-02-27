@@ -7,8 +7,10 @@
 # Find all test files.
 file( GLOB CppSources test_* )
 
-# Compiler flags.
-add_definitions( -Wno-deprecated-declarations )
+# Compiler flag needed for using CPPUNIT.
+add_definitions( -Wno-deprecated )
+
+# Includsion from the source.
 include_directories( ${KMCLib_SOURCE_DIR}/src )
 
 # Compile the the unittest source.

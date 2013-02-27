@@ -10,6 +10,12 @@ project(KMCLib)
 # To use verbose output.
 set( CMAKE_VERBOSE_MAKEFILE off )
 
+# FIXME - make this into an option.
+# Force the intel compiler.
+#include(CMakeForceCompiler)
+#cmake_force_c_compiler(icc "Intel C Compiler")
+#cmake_force_cxx_compiler(icpc "Intel C++ Compiler")
+
 # Setup general compiler options.
 add_definitions(-std=c++0x -O3 -fPIC -Wall -Wextra -Werror -pedantic)
 add_definitions( -Wno-unused-parameter )

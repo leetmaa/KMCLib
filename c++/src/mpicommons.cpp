@@ -27,23 +27,12 @@ void MPICommons::init()
         return;
     }
 
-    // Allocate dummy arg memory.
-    int argc;
-    char** argv = new char*[24];
-    for (int i = 0; i < 24; ++i)
-    {
-        argv[i] = new char[1];
-    }
+    // Dummy args.
+    int argc = 0;
+    char** argv;
 
     // Make the init call.
     MPI_Init( &argc, &argv );
-
-    // Free what we allocated.
-    for (int i = 0; i < 24; ++i)
-    {
-        delete [] argv[i];
-    }
-    delete [] argv;
 
     // Set the flag to prevent further calls.
     inited__ = true;

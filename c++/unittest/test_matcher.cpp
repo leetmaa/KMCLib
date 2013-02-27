@@ -1607,6 +1607,7 @@ void Test_Matcher::testUpdateRates()
 // This proxy class is part of the UpdateSingleRate test below.
 class CustomRateCalculator : public RateCalculator {
 public:
+    CustomRateCalculator() {}
     virtual ~CustomRateCalculator() {}
     virtual double backendRateCallback(const std::vector<double> geometry,
                                        const int len,
