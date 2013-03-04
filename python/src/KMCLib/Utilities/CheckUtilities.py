@@ -119,7 +119,7 @@ def checkSequence(sequence, msg="The tested object is not a sequence."):
 
     :param sequence: The object to test.
 
-    :param msg: Non-default error message to print,
+    :param msg: Non-default error message to print.
     :type msg: string
 
     :returns:        The valid sequence object.
@@ -127,6 +127,29 @@ def checkSequence(sequence, msg="The tested object is not a sequence."):
     # Check that this is a sequence.
     if not ('__len__' in dir(sequence)):
         raise Error(msg)
+
+    # Done.
+    return sequence
+
+
+def checkSequenceOfPositiveIntegers(sequence, msg="The tested object is not a sequence of positive integers."):
+    """
+    Utility function to check if a parameter is a sequence of positive integers.
+
+    :param sequence: The sequence to check.
+
+    :param msg: Non-default error message to print.
+    :type msg: string
+
+    :returns: The valid sequence.
+    """
+    # Check that it is a sequence.
+    sequence = checkSequence(sequence, msg)
+
+    # Check that each element is a positive integer.
+    for s in sequence:
+        if not isinstance(s, int) or s < 0:
+            raise Error(msg)
 
     # Done.
     return sequence
@@ -192,3 +215,32 @@ def checkPositiveInteger(parameter, default_parameter, parameter_name):
     return parameter
 
 
+def checkPositiveFloat(parameter, default_parameter, parameter_name):
+    """
+    Utility function for checking that a parameter is a positive float.
+
+    :param parameter: The parameter to check.
+
+    :param default_parameter: The value to use if the parameter value is None
+
+    :param parameter_name: The name of the parameter to use in error messages.
+    :type parameter_name: str
+
+    :returns: The checked parameter.
+    """
+    # Set default.
+    if parameter is None:
+        parameter = default_parameter
+
+    # The error message.
+    msg = "The parameter '%s' must be given as a positive float."%(parameter_name)
+    # Check type.
+    if not isinstance(parameter, float):
+        raise Error(msg)
+
+    # Check value.
+    if parameter < 0.0:
+        raise Error(msg)
+
+    # Checked.
+    return parameter

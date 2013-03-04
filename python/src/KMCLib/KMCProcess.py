@@ -12,7 +12,9 @@ from KMCLib.Utilities.CoordinateUtilities import centerCoordinates
 from KMCLib.Utilities.CheckUtilities import checkCoordinateList
 from KMCLib.Utilities.CheckUtilities import checkTypes
 from KMCLib.Utilities.CheckUtilities import checkSequence
+from KMCLib.Utilities.CheckUtilities import checkSequenceOfPositiveIntegers
 from KMCLib.Utilities.CheckUtilities import checkPositiveInteger
+from KMCLib.Utilities.CheckUtilities import checkPositiveFloat
 
 class KMCProcess(object):
     """
@@ -23,7 +25,8 @@ class KMCProcess(object):
                  coordinates=None,
                  elements_before=None,
                  elements_after=None,
-                 basis_sites=None):
+                 basis_sites=None,
+                 rate_constant=None):
         """
         Constructor for the KMCProcess.
 
@@ -48,6 +51,10 @@ class KMCProcess(object):
                             can possibly be applied. Only if the length of this
                             list is 1 can implicit wildcards be used for the
                             matching.
+
+        :param rate_constant: The rate constant associated with this process.
+        :type rate_constant: float
+
         """
         # Check the coordinates.
         coordinates = checkCoordinateList(coordinates)
@@ -61,16 +68,17 @@ class KMCProcess(object):
         self.__elements_after  = checkTypes(elements_after,  len(coordinates))
 
         # Check the list of basis sites.
-        basis_sites = checkSequence(basis_sites,
-                                    msg="The basis_sites input to a KMCProcess must be a list of integers.")
+        basis_sites = checkSequenceOfPositiveIntegers(basis_sites,
+                                                      msg="The basis_sites must be given as a list of positive integers.")
+
         if len(basis_sites) == 0:
-            msg = "The list of available sites for the process may not be empty."
-            raise Error(msg)
-        # Check that all entries are positive intergers.
-        for s in basis_sites:
-            checkPositiveInteger(s,
-                                 default_parameter=None,
-                                 parameter_name="entry in the process basis_sites list")
-        # Store on the class.
-        self.__basis_sites = basis_sites
+            msg = "The list of available basis sites for a process may not be empty."
+        # Passed the  tests.
+        self.__basis_Sites = basis_sites
+
+        # Check the rate constant.
+        self.__rate_constant = checkPositiveFloat(rate_constant,
+                                                  default_parameter=None,
+                                                  parameter_name="rate_constant")
+
 

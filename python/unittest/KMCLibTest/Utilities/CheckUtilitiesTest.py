@@ -17,9 +17,11 @@ from KMCLib.Exceptions.Error import Error
 from KMCLib.Utilities.CheckUtilities import checkCoordinateList
 from KMCLib.Utilities.CheckUtilities import checkIndexWithinBounds
 from KMCLib.Utilities.CheckUtilities import checkSequence
+from KMCLib.Utilities.CheckUtilities import checkSequenceOfPositiveIntegers
 from KMCLib.Utilities.CheckUtilities import checkTypes
 from KMCLib.Utilities.CheckUtilities import checkCellVectors
 from KMCLib.Utilities.CheckUtilities import checkPositiveInteger
+from KMCLib.Utilities.CheckUtilities import checkPositiveFloat
 
 # Implement the test.
 class CheckUtilitiesTest(unittest.TestCase):
@@ -154,6 +156,35 @@ class CheckUtilitiesTest(unittest.TestCase):
         sequence = 1
         self.assertRaises(Error, lambda: checkSequence(sequence))
 
+    def testCheckSequenceOfPositiveIntegers(self):
+        """ Test that the positive integer sequence checking works. """
+        # This is a valid.
+        sequence = [1,2,3,12]
+        checked_sequence = checkSequenceOfPositiveIntegers(sequence)
+        self.assertEqual(checked_sequence, sequence)
+
+        # This is not.
+        sequence = numpy.array([[1,1],[1,4]])
+        self.assertRaises(Error, lambda: checkSequenceOfPositiveIntegers(sequence))
+
+        # This is not.
+        sequence = [1,2,-4]
+        self.assertRaises(Error, lambda: checkSequenceOfPositiveIntegers(sequence))
+
+        # This is valid.
+        sequence = []
+        checked_sequence = checkSequenceOfPositiveIntegers(sequence)
+        self.assertEqual(checked_sequence, sequence)
+
+        # And this is.
+        sequence = numpy.array([1,1,1,4])
+        checked_sequence = checkSequenceOfPositiveIntegers(sequence)
+        self.assertAlmostEqual( numpy.linalg.norm(checked_sequence-sequence), 0.0, 10)
+
+        # But this is not.
+        sequence = [1.0,2.0,0.0]
+        self.assertRaises(Error, lambda: checkSequenceOfPositiveIntegers(sequence))
+
     def testCheckTypes(self):
         """ Test that the types checking works. """
         # This is a valid types list.
@@ -198,6 +229,31 @@ class CheckUtilitiesTest(unittest.TestCase):
         # Test fail wrong type.
         self.assertRaises( Error,
                            lambda: checkPositiveInteger("1", 12, "fail") )
+
+    def testCheckPositiveFloat(self):
+        """ Test that the positive float checking works. """
+        # Test pass.
+        float0 = checkPositiveFloat(21.0, 1.234, "float0")
+        self.assertEqual(float0, 21.0)
+
+        float0 = checkPositiveFloat(0.0, 1.234, "float0")
+        self.assertEqual(float0, 0.0)
+
+        # Test default.
+        float0 = checkPositiveFloat(None, 1.234, "float0")
+        self.assertEqual(float0, 1.234)
+
+        # Test fail negative.
+        self.assertRaises( Error,
+                           lambda: checkPositiveFloat(-1.0, 1.2, "fail") )
+
+        # Test fail wrong type.
+        self.assertRaises( Error,
+                           lambda: checkPositiveFloat(1, 1.2, "fail") )
+
+        # Test fail wrong type.
+        self.assertRaises( Error,
+                           lambda: checkPositiveFloat("1.1", 1.2, "fail") )
 
 
 

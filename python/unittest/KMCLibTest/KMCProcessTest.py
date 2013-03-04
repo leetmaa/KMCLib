@@ -33,7 +33,8 @@ class KMCProcessTest(unittest.TestCase):
         p = KMCProcess(coordinates=coordinates,
                        elements_before=elements_before,
                        elements_after=elements_after,
-                       basis_sites=basis_sites)
+                       basis_sites=basis_sites,
+                       rate_constant=1.0)
 
         # Check that we got a valid instance.
         self.assertTrue( isinstance(p, KMCProcess) )
@@ -50,33 +51,38 @@ class KMCProcessTest(unittest.TestCase):
                            lambda : KMCProcess(coordinates=[[0.0, 0.0],[1.0, 2.0, 3.0]],
                                                elements_before=elements_before,
                                                elements_after=elements_after,
-                                               basis_sites=basis_sites) )
+                                               basis_sites=basis_sites,
+                                               rate_constant=1.0) )
         # Fail on wrong dimension.
         self.assertRaises( Error,
                            lambda : KMCProcess(coordinates=[[0.0, 0.0, 1.3],[2.0, 3.0]],
                                                elements_before=elements_before,
                                                elements_after=elements_after,
-                                               basis_sites=basis_sites) )
+                                               basis_sites=basis_sites,
+                                               rate_constant=1.0) )
         # Fail on wrong dimension.
         self.assertRaises( Error,
                            lambda : KMCProcess(coordinates=[[0.0, 0.0, 1.3, 3.4, 2.0, 3.0]],
                                                elements_before=elements_before,
                                                elements_after=elements_after,
-                                               basis_sites=basis_sites) )
+                                               basis_sites=basis_sites,
+                                               rate_constant=1.0) )
 
         # Fail on wrong type.
         self.assertRaises( Error,
                            lambda : KMCProcess(coordinates=[[0, 0, 1], [3, 2, 3]],
                                                elements_before=elements_before,
                                                elements_after=elements_after,
-                                               basis_sites=basis_sites) )
+                                               basis_sites=basis_sites,
+                                               rate_constant=1.0) )
 
         # Fail on wrong type.
         self.assertRaises( Error,
                            lambda : KMCProcess(coordinates="[[0, 0, 1], [3, 2, 3]]",
                                                elements_before=elements_before,
                                                elements_after=elements_after,
-                                               basis_sites=basis_sites) )
+                                               basis_sites=basis_sites,
+                                               rate_constant=1.0) )
 
         # Fail on wrong type.
         self.assertRaises( Error,
@@ -84,7 +90,8 @@ class KMCProcessTest(unittest.TestCase):
                                                             ["3.1", "2.1", "3"]],
                                                elements_before=elements_before,
                                                elements_after=elements_after,
-                                               basis_sites=basis_sites) )
+                                               basis_sites=basis_sites,
+                                               rate_constant=1.0) )
 
     def testConstructionFailElements(self):
         """ Test that construction fails with the wrong elements format. """
@@ -99,13 +106,15 @@ class KMCProcessTest(unittest.TestCase):
                            lambda : KMCProcess(coordinates=coordinates,
                                                elements_before="A,B",
                                                elements_after=elements_after,
-                                               basis_sites=basis_sites) )
+                                               basis_sites=basis_sites,
+                                               rate_constant=1.0) )
 
         self.assertRaises( Error,
                            lambda : KMCProcess(coordinates=coordinates,
                                                elements_before=elements_before,
                                                elements_after="B,A",
-                                               basis_sites=basis_sites) )
+                                               basis_sites=basis_sites,
+                                               rate_constant=1.0) )
 
     def testConstructionFailNumberOfSites(self):
         """ Test that construction fails mismatch in the number of sites. """
@@ -119,7 +128,8 @@ class KMCProcessTest(unittest.TestCase):
                            lambda : KMCProcess(coordinates=coordinates,
                                                elements_before=elements_before,
                                                elements_after=elements_after,
-                                               basis_sites=basis_sites) )
+                                               basis_sites=basis_sites,
+                                               rate_constant=1.0) )
 
         elements_before = ["A", "B", "B"]
         elements_after = ["B", "A"]
@@ -127,7 +137,8 @@ class KMCProcessTest(unittest.TestCase):
                            lambda : KMCProcess(coordinates=coordinates,
                                                elements_before=elements_before,
                                                elements_after=elements_after,
-                                               basis_sites=basis_sites) )
+                                               basis_sites=basis_sites,
+                                               rate_constant=1.0) )
 
 
         coordinates = [[0.0, 0.0, 0.0], [1.2,3.4,5.6]]
@@ -139,7 +150,8 @@ class KMCProcessTest(unittest.TestCase):
                            lambda : KMCProcess(coordinates=coordinates,
                                                elements_before=elements_before,
                                                elements_after=elements_after,
-                                               basis_sites=basis_sites) )
+                                               basis_sites=basis_sites,
+                                               rate_constant=1.0) )
 
     def testConstructionFailBasisSites(self):
         """ Test that construction fails with the wrong basis sites input. """
@@ -153,21 +165,54 @@ class KMCProcessTest(unittest.TestCase):
                            lambda : KMCProcess(coordinates=coordinates,
                                                elements_before=elements_before,
                                                elements_after=elements_after,
-                                               basis_sites=basis_sites) )
+                                               basis_sites=basis_sites,
+                                               rate_constant=1.0) )
 
         basis_sites = 0
         self.assertRaises( Error,
                            lambda : KMCProcess(coordinates=coordinates,
                                                elements_before=elements_before,
                                                elements_after=elements_after,
-                                               basis_sites=basis_sites) )
+                                               basis_sites=basis_sites,
+                                               rate_constant=1.0) )
 
         basis_sites = [1.0, 2.0]
         self.assertRaises( Error,
                            lambda : KMCProcess(coordinates=coordinates,
                                                elements_before=elements_before,
                                                elements_after=elements_after,
-                                               basis_sites=basis_sites) )
+                                               basis_sites=basis_sites,
+                                               rate_constant=1.0) )
+
+    def testConstructionFailRate(self):
+        """ Test that construction fails with a wrong rate. """
+        # Set the input.
+        coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
+        elements_before = ["A", "B"]
+        elements_after = ["B", "A"]
+        basis_sites = [0]
+
+        # Negative rate.
+        self.assertRaises( Error,
+                           lambda : KMCProcess(coordinates=coordinates,
+                                               elements_before=elements_before,
+                                               elements_after=elements_after,
+                                               basis_sites=basis_sites,
+                                               rate_constant=-1.0) )
+        # Integer rate.
+        self.assertRaises( Error,
+                           lambda : KMCProcess(coordinates=coordinates,
+                                               elements_before=elements_before,
+                                               elements_after=elements_after,
+                                               basis_sites=basis_sites,
+                                               rate_constant=345) )
+        # Wrong type.
+        self.assertRaises( Error,
+                           lambda : KMCProcess(coordinates=coordinates,
+                                               elements_before=elements_before,
+                                               elements_after=elements_after,
+                                               basis_sites=basis_sites,
+                                               rate_constant=[3.459]) )
 
 
 if __name__ == '__main__':
