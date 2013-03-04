@@ -14,7 +14,8 @@ from Utilities.SaveAndReadUtilities import KMCConfigurationFromScript
 __all__ = ['KMCLocalConfiguration', 'KMCInteractions', 'KMCConfiguration',
            'KMCLattice', 'KMCLatticeModel', 'KMCUnitCell',
            'KMCControlParameters', 'KMCInteractionsFromScript',
-           'KMCConfigurationFromScript', 'KMCRateCalculatorPlugin']
+           'KMCConfigurationFromScript', 'KMCRateCalculatorPlugin',
+           'KMCProcess']
 
 # Trick to intialize and finalize MPI only once.
 from Backend import Backend
