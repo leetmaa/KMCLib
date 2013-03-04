@@ -15,6 +15,8 @@ from KMCLib.Utilities.CheckUtilities import checkSequence
 from KMCLib.Utilities.CheckUtilities import checkSequenceOfPositiveIntegers
 from KMCLib.Utilities.CheckUtilities import checkPositiveInteger
 from KMCLib.Utilities.CheckUtilities import checkPositiveFloat
+from KMCLib.KMCLocalConfiguration import KMCLocalConfiguration
+
 
 class KMCProcess(object):
     """
@@ -80,6 +82,18 @@ class KMCProcess(object):
         self.__rate_constant = checkPositiveFloat(rate_constant,
                                                   default_parameter=None,
                                                   parameter_name="rate_constant")
+        # Setup the local configurations.
+        c1 = KMCLocalConfiguration(self.__coordinates, self.__elements_before, center)
+        c2 = KMCLocalConfiguration(self.__coordinates, self.__elements_after,  center)
+        self.__local_configurations = (c1, c2)
+
+    def localConfigurations(self):
+        """
+        Query function for the local configurations.
+
+        :returns: The two local configurations in a tuple.
+        """
+        return self.__local_configurations
 
     def _script(self, variable_name="process"):
         """

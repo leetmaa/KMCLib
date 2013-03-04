@@ -9,13 +9,13 @@
 
 
 import unittest
-
+import numpy
 
 from KMCLib.Exceptions.Error import Error
+from KMCLib.KMCLocalConfiguration import KMCLocalConfiguration
 
 # Import the module to test.
 from KMCLib.KMCProcess import KMCProcess
-
 
 # Implementing the tests.
 class KMCProcessTest(unittest.TestCase):
@@ -256,6 +256,34 @@ process = KMCProcess(
 """
         self.assertEqual(ref_script, script)
 
+    def testLocalConfigurations(self):
+        """ Test that the local configurations are correctly set up """
+        coordinates = numpy.array([[1.0,2.0,3.0], [2.3,5.5,3.2]])
+        elements1 = ["First", "Second"]
+        elements2 = ["Second", "One"]
+
+        # Construct the process.
+        process = KMCProcess(coordinates,
+                             elements1,
+                             elements2,
+                             basis_sites=[9],
+                             rate_constant=1.0)
+
+        # Get the local configurations out.
+        c1 = process.localConfigurations()[0]
+        c2 = process.localConfigurations()[1]
+
+        # Construct the two reference local configurations.
+        ref_c1 = KMCLocalConfiguration(coordinates, elements1, center=0)
+        ref_c2 = KMCLocalConfiguration(coordinates, elements2, center=0)
+
+        # Check coordinates.
+        self.assertAlmostEqual( numpy.linalg.norm(c1.coordinates() - ref_c1.coordinates()), 0.0, 12 )
+        self.assertAlmostEqual( numpy.linalg.norm(c2.coordinates() - ref_c2.coordinates()), 0.0, 12 )
+
+        # Check types.
+        self.assertAlmostEqual( c1.types(), ref_c1.types() )
+        self.assertAlmostEqual( c2.types(), ref_c2.types() )
 
 if __name__ == '__main__':
     unittest.main()
