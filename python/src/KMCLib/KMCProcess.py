@@ -8,6 +8,12 @@
 #
 
 
+from KMCLib.Utilities.CoordinateUtilities import centerCoordinates
+from KMCLib.Utilities.CheckUtilities import checkCoordinateList
+from KMCLib.Utilities.CheckUtilities import checkTypes
+from KMCLib.Utilities.CheckUtilities import checkSequence
+from KMCLib.Utilities.CheckUtilities import checkPositiveInteger
+
 class KMCProcess(object):
     """
     Class for representing a possible process in a lattice KMC simulation.
@@ -17,8 +23,7 @@ class KMCProcess(object):
                  coordinates=None,
                  elements_before=None,
                  elements_after=None,
-                 basis_sites=None,
-                 implicit_wildcards=None):
+                 basis_sites=None):
         """
         Constructor for the KMCProcess.
 
@@ -43,16 +48,29 @@ class KMCProcess(object):
                             can possibly be applied. Only if the length of this
                             list is 1 can implicit wildcards be used for the
                             matching.
-
-        :param implicit_wildcards: A flag to indicate if implicit wildcards
-                                   should be used in the matching when there
-                                   are more sites in the local geometry on the
-                                   lattice than given in the coordinates and
-                                   element lists to specify the process. This
-                                   keyord only takes effect if the basis_sites
-                                   list has the length 1, i.e. that the process
-                                   can only be applied to on specific basis
-                                   site in the primitive cell.
         """
-        # NEEDS IMPLEMENTATION
-        pass
+        # Check the coordinates.
+        coordinates = checkCoordinateList(coordinates)
+
+        # Center the coordinates on the first entry.
+        center = 0
+        self.__coordinates = centerCoordinates(coordinates, center)
+
+        # Check the tyeps.
+        self.__elements_before = checkTypes(elements_before, len(coordinates))
+        self.__elements_after  = checkTypes(elements_after,  len(coordinates))
+
+        # Check the list of basis sites.
+        basis_sites = checkSequence(basis_sites,
+                                    msg="The basis_sites input to a KMCProcess must be a list of integers.")
+        if len(basis_sites) == 0:
+            msg = "The list of available sites for the process may not be empty."
+            raise Error(msg)
+        # Check that all entries are positive intergers.
+        for s in basis_sites:
+            checkPositiveInteger(s,
+                                 default_parameter=None,
+                                 parameter_name="entry in the process basis_sites list")
+        # Store on the class.
+        self.__basis_sites = basis_sites
+

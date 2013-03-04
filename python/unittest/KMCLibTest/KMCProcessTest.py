@@ -10,6 +10,9 @@
 
 import unittest
 
+
+from KMCLib.Exceptions.Error import Error
+
 # Import the module to test.
 from KMCLib.KMCProcess import KMCProcess
 
@@ -20,8 +23,151 @@ class KMCProcessTest(unittest.TestCase):
 
     def testConstruction(self):
         """ Test that the KMCProcess class can be constructed. """
-        # NEEDS IMPLEMENTATION
-        pass
+        # Set the input.
+        coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
+        elements_before = ["A", "B"]
+        elements_after = ["B", "A"]
+        basis_sites = [0]
+
+        # Construct.
+        p = KMCProcess(coordinates=coordinates,
+                       elements_before=elements_before,
+                       elements_after=elements_after,
+                       basis_sites=basis_sites)
+
+        # Check that we got a valid instance.
+        self.assertTrue( isinstance(p, KMCProcess) )
+
+    def testConstructionFailCoordinates(self):
+        """ Test that construction fails with the wrong coordinates format. """
+        # Set the input.
+        elements_before = ["A", "B"]
+        elements_after = ["B", "A"]
+        basis_sites = [0]
+
+        # Fail on wrong dimension.
+        self.assertRaises( Error,
+                           lambda : KMCProcess(coordinates=[[0.0, 0.0],[1.0, 2.0, 3.0]],
+                                               elements_before=elements_before,
+                                               elements_after=elements_after,
+                                               basis_sites=basis_sites) )
+        # Fail on wrong dimension.
+        self.assertRaises( Error,
+                           lambda : KMCProcess(coordinates=[[0.0, 0.0, 1.3],[2.0, 3.0]],
+                                               elements_before=elements_before,
+                                               elements_after=elements_after,
+                                               basis_sites=basis_sites) )
+        # Fail on wrong dimension.
+        self.assertRaises( Error,
+                           lambda : KMCProcess(coordinates=[[0.0, 0.0, 1.3, 3.4, 2.0, 3.0]],
+                                               elements_before=elements_before,
+                                               elements_after=elements_after,
+                                               basis_sites=basis_sites) )
+
+        # Fail on wrong type.
+        self.assertRaises( Error,
+                           lambda : KMCProcess(coordinates=[[0, 0, 1], [3, 2, 3]],
+                                               elements_before=elements_before,
+                                               elements_after=elements_after,
+                                               basis_sites=basis_sites) )
+
+        # Fail on wrong type.
+        self.assertRaises( Error,
+                           lambda : KMCProcess(coordinates="[[0, 0, 1], [3, 2, 3]]",
+                                               elements_before=elements_before,
+                                               elements_after=elements_after,
+                                               basis_sites=basis_sites) )
+
+        # Fail on wrong type.
+        self.assertRaises( Error,
+                           lambda : KMCProcess(coordinates=[["0.1", "0.4", "1.3"],
+                                                            ["3.1", "2.1", "3"]],
+                                               elements_before=elements_before,
+                                               elements_after=elements_after,
+                                               basis_sites=basis_sites) )
+
+    def testConstructionFailElements(self):
+        """ Test that construction fails with the wrong elements format. """
+
+        # Set the input.
+        coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
+        elements_before = ["A", "B"]
+        elements_after = ["B", "A"]
+        basis_sites = [0]
+
+        self.assertRaises( Error,
+                           lambda : KMCProcess(coordinates=coordinates,
+                                               elements_before="A,B",
+                                               elements_after=elements_after,
+                                               basis_sites=basis_sites) )
+
+        self.assertRaises( Error,
+                           lambda : KMCProcess(coordinates=coordinates,
+                                               elements_before=elements_before,
+                                               elements_after="B,A",
+                                               basis_sites=basis_sites) )
+
+    def testConstructionFailNumberOfSites(self):
+        """ Test that construction fails mismatch in the number of sites. """
+        # Set the input.
+        coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0], [1.2,3.4,5.6]]
+        elements_before = ["A", "B"]
+        elements_after = ["B", "A", "B"]
+        basis_sites = [0]
+
+        self.assertRaises( Error,
+                           lambda : KMCProcess(coordinates=coordinates,
+                                               elements_before=elements_before,
+                                               elements_after=elements_after,
+                                               basis_sites=basis_sites) )
+
+        elements_before = ["A", "B", "B"]
+        elements_after = ["B", "A"]
+        self.assertRaises( Error,
+                           lambda : KMCProcess(coordinates=coordinates,
+                                               elements_before=elements_before,
+                                               elements_after=elements_after,
+                                               basis_sites=basis_sites) )
+
+
+        coordinates = [[0.0, 0.0, 0.0], [1.2,3.4,5.6]]
+        elements_before = ["A", "B", "D"]
+        elements_after = ["B", "A", "B"]
+        basis_sites = [0]
+
+        self.assertRaises( Error,
+                           lambda : KMCProcess(coordinates=coordinates,
+                                               elements_before=elements_before,
+                                               elements_after=elements_after,
+                                               basis_sites=basis_sites) )
+
+    def testConstructionFailBasisSites(self):
+        """ Test that construction fails with the wrong basis sites input. """
+        # Set the input.
+        coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
+        elements_before = ["A", "B"]
+        elements_after = ["B", "A"]
+
+        basis_sites = ["First"]
+        self.assertRaises( Error,
+                           lambda : KMCProcess(coordinates=coordinates,
+                                               elements_before=elements_before,
+                                               elements_after=elements_after,
+                                               basis_sites=basis_sites) )
+
+        basis_sites = 0
+        self.assertRaises( Error,
+                           lambda : KMCProcess(coordinates=coordinates,
+                                               elements_before=elements_before,
+                                               elements_after=elements_after,
+                                               basis_sites=basis_sites) )
+
+        basis_sites = [1.0, 2.0]
+        self.assertRaises( Error,
+                           lambda : KMCProcess(coordinates=coordinates,
+                                               elements_before=elements_before,
+                                               elements_after=elements_after,
+                                               basis_sites=basis_sites) )
 
 
 if __name__ == '__main__':
