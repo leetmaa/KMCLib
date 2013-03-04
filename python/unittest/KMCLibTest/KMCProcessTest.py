@@ -214,6 +214,48 @@ class KMCProcessTest(unittest.TestCase):
                                                basis_sites=basis_sites,
                                                rate_constant=[3.459]) )
 
+    def testScript(self):
+        """ Test that the process can generate its own valid script. """
+        # Set the input.
+        coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
+        elements_before = ["A", "B"]
+        elements_after = ["B", "A"]
+        basis_sites = [0]
+
+        # Construct.
+        p = KMCProcess(coordinates=coordinates,
+                       elements_before=elements_before,
+                       elements_after=elements_after,
+                       basis_sites=basis_sites,
+                       rate_constant=1.0)
+
+        # Get the script.
+        script = p._script()
+
+        ref_script = """
+# -----------------------------------------------------------------------------
+# Process
+
+coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
+               [   1.000000e+00,   2.000000e+00,   3.000000e+00]]
+
+elements_before = ['A','B']
+
+elements_after = ['B','A']
+
+basis_sites = [0]
+
+rate_constant =    1.000000e+00
+
+process = KMCProcess(
+    coordinates=coordinates,
+    elements_before=elements_before,
+    elements_after=elements_after,
+    basis_sites=basis_sites,
+    rate_constant=rate_constant)
+"""
+        self.assertEqual(ref_script, script)
+
 
 if __name__ == '__main__':
     unittest.main()

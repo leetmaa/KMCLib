@@ -74,11 +74,129 @@ class KMCProcess(object):
         if len(basis_sites) == 0:
             msg = "The list of available basis sites for a process may not be empty."
         # Passed the  tests.
-        self.__basis_Sites = basis_sites
+        self.__basis_sites = basis_sites
 
         # Check the rate constant.
         self.__rate_constant = checkPositiveFloat(rate_constant,
                                                   default_parameter=None,
                                                   parameter_name="rate_constant")
+
+    def _script(self, variable_name="process"):
+        """
+        Generate a script representation of an instance.
+
+        :param variable_name: A name to use as variable name for
+                              the KMCProcess in the generated script.
+        :type variable_name: str
+
+        :returns: A script that can generate this process object.
+        """
+        # Define the float format string.
+        ff = "%15.6e"
+
+        # Setup the coordinates string.
+        varname = "coordinates"
+        indent = " "*len(varname) + "    "
+
+        coords_string = varname + " = ["
+        # Loop through all coordinates but the last.
+        coord_template = "[" + ff + "," + ff + "," + ff + "],\n"
+
+        # For the first coordinate, if there are more than one coordinate.
+        if len(self.__coordinates) > 1:
+            c = self.__coordinates[0]
+            coords_string += coord_template%(c[0],c[1],c[2])
+
+            # And the middle coordinates.
+            coord_template = indent + "[" + ff + "," + ff + "," + ff + "],\n"
+            for c in self.__coordinates[1:-1]:
+                coords_string += coord_template%(c[0],c[1],c[2])
+
+        # Add the last coordinate (which is also the first if there is only one coordinate).
+        c = self.__coordinates[-1]
+        if len(self.__coordinates) == 1:
+            coord_template = "[" + ff + "," + ff + "," + ff + "]]\n"
+        else:
+            coord_template = indent + "[" + ff + "," + ff + "," + ff + "]]\n"
+        coords_string += coord_template%(c[0],c[1],c[2])
+
+        # Setup the elements before string.
+        elements_before_string = "elements_before = "
+        indent = " "*9
+        line = "["
+        nT = len(self.__elements_before)
+        for i,t in enumerate(self.__elements_before):
+            # Add the type.
+            line += "'" + t + "'"
+            if i == nT-1:
+                # Stop if we reach the end.
+                line += "]\n"
+                elements_before_string += line
+                break
+            else:
+            # Add the separator.
+                line += ","
+
+            # Check if we should add a new line.
+            if len(line) > 50:
+                elements_before_string += line + "\n" + indent
+                line = ""
+
+        # Setup the elements after string.
+        elements_after_string = "elements_after = "
+        indent = " "*9
+        line = "["
+        nT = len(self.__elements_after)
+        for i,t in enumerate(self.__elements_after):
+            # Add the type.
+            line += "'" + t + "'"
+            if i == nT-1:
+                # Stop if we reach the end.
+                line += "]\n"
+                elements_after_string += line
+                break
+            else:
+            # Add the separator.
+                line += ","
+
+            # Check if we should add a new line.
+            if len(line) > 50:
+                elements_after_string += line + "\n" + indent
+                line = ""
+
+        # Setup the basis sites list.
+        basis_sites_string = "basis_sites = ["
+        for j,b in enumerate(self.__basis_sites):
+            if j == (len(self.__basis_sites)-1):
+                basis_sites_string += "%i]"%(b)
+            else:
+                basis_sites_string += "%i,"%(b)
+
+        # Setup the rate constant string.
+        rate_constant_string = "rate_constant = " + ff
+        rate_constant_string = rate_constant_string%(self.__rate_constant)
+
+        # Get the script together.
+
+        # Add a comment line.
+        comment_string = """
+# -----------------------------------------------------------------------------
+# Process
+
+"""
+
+        process_string = variable_name + " = KMCProcess(\n" + \
+            "    coordinates=coordinates,\n" + \
+            "    elements_before=elements_before,\n" + \
+            "    elements_after=elements_after,\n" + \
+            "    basis_sites=basis_sites,\n" + \
+            "    rate_constant=rate_constant)\n"
+
+        return comment_string + coords_string + "\n" + \
+            elements_before_string + "\n" + \
+            elements_after_string  + "\n" + \
+            basis_sites_string     + "\n\n" + \
+            rate_constant_string   + "\n\n" + \
+            process_string
 
 
