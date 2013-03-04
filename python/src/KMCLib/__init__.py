@@ -10,6 +10,7 @@ from KMCControlParameters import KMCControlParameters
 from KMCRateCalculatorPlugin import KMCRateCalculatorPlugin
 from Utilities.SaveAndReadUtilities import KMCInteractionsFromScript
 from Utilities.SaveAndReadUtilities import KMCConfigurationFromScript
+from KMCProcess import KMCProcess
 
 __all__ = ['KMCLocalConfiguration', 'KMCInteractions', 'KMCConfiguration',
            'KMCLattice', 'KMCLatticeModel', 'KMCUnitCell',

@@ -41,7 +41,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'KMCLib'
-copyright = u'2013, Mikael Leetmaa'
+copyright = u'2012 - 2013, Mikael Leetmaa'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -269,7 +269,7 @@ texinfo_documents = [
 epub_title = u'KMCLib'
 epub_author = u'Mikael Leetmaa'
 epub_publisher = u'Mikael Leetmaa'
-epub_copyright = u'2013, Mikael Leetmaa'
+epub_copyright = u'2012 - 2013, Mikael Leetmaa'
 
 # The language of the text. It defaults to the language option
 # or en if the language is not set.

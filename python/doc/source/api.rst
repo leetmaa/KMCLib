@@ -32,6 +32,13 @@ KMCInteractions
    :special-members:
 
 
+KMCProcess
+------------------
+.. autoclass:: KMCLib.KMCProcess
+   :members:
+   :special-members:
+
+
 KMCUnitCell
 ---------------------
 
