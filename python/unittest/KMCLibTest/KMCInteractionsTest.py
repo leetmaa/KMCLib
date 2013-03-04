@@ -12,6 +12,7 @@ import unittest
 import numpy
 
 from KMCLib.KMCLocalConfiguration import KMCLocalConfiguration
+from KMCLib.KMCProcess import KMCProcess
 from KMCLib.KMCRateCalculatorPlugin import KMCRateCalculatorPlugin
 from KMCLib.Exceptions.Error import Error
 from KMCLib.Backend import Backend
@@ -28,85 +29,61 @@ class KMCInteractionsTest(unittest.TestCase):
 
     def testConstruction(self):
         """ Test that the KMCInteractions class can be constructed. """
-        # A first interaction.
+        # A first process.
         coords = [[1.0,2.0,3.4],[12.0,13.0,-1.0],[1.1,1.2,1.3]]
-        types = ["A","*","B"]
-        local_config_0 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        types = ["B","*","A"]
-        local_config_1 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
+        types0 = ["A","*","B"]
+        types1 = ["B","*","A"]
         rate_0_1 = 3.5
-        interaction_0 = (local_config_0, local_config_1, rate_0_1, [0,1,3])
+        process_0 = KMCProcess(coords, types0, types1, [0,1,3], rate_0_1)
 
-        # A second interaction.
+        # A second process.
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types = ["A","C"]
-        local_config_0 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        types = ["C","A"]
-        local_config_1 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
+        types0 = ["A","C"]
+        types1 = ["C","A"]
         rate_0_1 = 1.5
-        interaction_1 = (local_config_0, local_config_1, rate_0_1)
+        process_1 = KMCProcess(coords, types0, types1, [0,1,3], rate_0_1)
 
-        interactions_list = [interaction_0, interaction_1]
+        processes = [process_0, process_1]
 
         # Construct the interactions object.
-        kmc_interactions = KMCInteractions(interactions_list=interactions_list)
+        kmc_interactions = KMCInteractions(processes=processes)
 
         # Check the default implicit wildcard.
         self.assertTrue( kmc_interactions.implicitWildcards() )
 
         # Construct again with non default value.
-        kmc_interactions = KMCInteractions(interactions_list=interactions_list,
+        kmc_interactions = KMCInteractions(processes=processes,
                                            implicit_wildcards=False)
 
         # Check the wildcard again.
         self.assertFalse( kmc_interactions.implicitWildcards() )
 
-        # Check the raw interactions stored on the object.
-        stored_interactions = kmc_interactions._KMCInteractions__raw_interactions
+        # Check the processes stored on the object.
+        stored_processes = kmc_interactions._KMCInteractions__processes
 
         # Checks that the address is the same.
-        self.assertTrue(stored_interactions == interactions_list)
+        self.assertTrue(stored_processes == processes)
 
     def testConstructionWithCustomRates(self):
         """ Test construction with custom rates. """
-        # A first interaction.
+        # A first process.
         coords = [[1.0,2.0,3.4],[12.0,13.0,-1.0],[1.1,1.2,1.3]]
-        types = ["A","*","B"]
-        local_config_0 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        types = ["B","*","A"]
-        local_config_1 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
+        types0 = ["A","*","B"]
+        types1 = ["B","*","A"]
         rate_0_1 = 3.5
-        interaction_0 = (local_config_0, local_config_1, rate_0_1, [0,1,3])
+        process_0 = KMCProcess(coords, types0, types1, [0,1,3], rate_0_1)
 
-        # A second interaction.
+        # A second process.
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types = ["A","C"]
-        local_config_0 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        types = ["C","A"]
-        local_config_1 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
+        types0 = ["A","C"]
+        types1 = ["C","A"]
         rate_0_1 = 1.5
-        interaction_1 = (local_config_0, local_config_1, rate_0_1)
+        process_1 = KMCProcess(coords, types0, types1, [0,1,3], rate_0_1)
 
-        interactions_list = [interaction_0, interaction_1]
+        processes = [process_0, process_1]
 
         # Test that it fails with the wrong rate calculator.
-        interactions = KMCInteractions(interactions_list=interactions_list,
+        interactions = KMCInteractions(processes=processes,
                                        implicit_wildcards=True)
 
         # Test that it fails if the rate calculator is of wrong type.
@@ -122,7 +99,7 @@ class KMCInteractionsTest(unittest.TestCase):
         self.assertRaises( Error, lambda : interactions.setRateCalculator(rate_calculator=KMCRateCalculatorPlugin) )
 
         # Construct the interactions object with a custom rate calculator class.
-        kmc_interactions = KMCInteractions(interactions_list=interactions_list,
+        kmc_interactions = KMCInteractions(processes=processes,
                                            implicit_wildcards=True)
         kmc_interactions.setRateCalculator(rate_calculator=CustomRateCalculator)
 
@@ -134,297 +111,76 @@ class KMCInteractionsTest(unittest.TestCase):
 
     def testConstructionFailNoList(self):
         """ Test that the construction fails if the interactions list is not a list. """
-        self.assertRaises(Error, lambda: KMCInteractions(interactions_list=KMCLocalConfiguration))
-
-    def testConstructionFailNoTuple(self):
-        """ Test that the construction fails if the elements in the interactions list are not lists or tuples of the correct length. """
-        # A first interaction.
-        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types = ["A","B"]
-        local_config_0 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        types = ["B","A"]
-        local_config_1 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
+        # Setup.
+        coords = [[1.0,2.0,3.4],[12.0,13.0,-1.0],[1.1,1.2,1.3]]
+        types0 = ["A","*","B"]
+        types1 = ["B","*","A"]
         rate_0_1 = 3.5
-        interaction_0 = (local_config_0, local_config_1, rate_0_1)
+        process_0 = KMCProcess(coords, types0, types1, [0,1,3], rate_0_1)
+        # Construct and fail.
+        self.assertRaises(Error, lambda: KMCInteractions(processes=process_0))
 
-        # A second interaction.
-        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types = ["A","C"]
-        local_config_0 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        types = ["C","A"]
-        local_config_1 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        rate_0_1 = 1.5
-        interaction_1 = (local_config_0, local_config_1, rate_0_1, rate_0_1, rate_0_1)
-
-        interactions_list = [interaction_0, interaction_1]
-
-        # Fails because interaction_1 is of wrong length.
-        self.assertRaises( Error, lambda: KMCInteractions(interactions_list=interactions_list) )
-
-        interaction_0 = local_config_0
-        interaction_1 = local_config_1
-        interactions_list = [interaction_0, interaction_1]
-
-        # Fails because the interactions are not lists or tuples.
-        self.assertRaises( Error, lambda: KMCInteractions(interactions_list=interactions_list) )
-
-    def testConstructionFailWildcardMove(self):
-        """ Test for failure if wildcards change place in the move. """
-        # A first interaction.
-        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types = ["*","B"]
-        local_config_0 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        types = ["B","*"]
-        local_config_1 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
+    def testConstructionFailWrongList(self):
+        """ Test that the construction fails if the interactions list wrong. """
+        # Setup.
+        coords = [[1.0,2.0,3.4],[12.0,13.0,-1.0],[1.1,1.2,1.3]]
+        types0 = ["A","*","B"]
+        types1 = ["B","*","A"]
         rate_0_1 = 3.5
-        interaction_0 = (local_config_0, local_config_1, rate_0_1)
-
-        # A second interaction.
-        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types = ["A","C"]
-        local_config_0 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        types = ["C","A"]
-        local_config_1 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        rate_0_1 = 1.5
-        interaction_1 = (local_config_0, local_config_1, rate_0_1)
-
-        interactions_list = [interaction_0, interaction_1]
-
-        # Fails because the wildcard moves from position 0 to 1 in the move.
-        self.assertRaises( Error, lambda: KMCInteractions(interactions_list=interactions_list) )
-
-    def testConstructionFailWrongType(self):
-        """ Test that the construction fails if the configurations are of wrong type. """
-        interaction_0 = (Error("dummy"),1.0, 123.0)
-        interactions_list = [interaction_0, interaction_0]
-
-        # Check that it fails.
-        self.assertRaises( Error, lambda: KMCInteractions(interactions_list=interactions_list) )
-
-    def testConstructionFailWrongRateType(self):
-        """ Test that the construction fails if the rate is of wrong type. """
-        # A first interaction.
-        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types = ["A","B"]
-        local_config_0 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        types = ["B","A"]
-        local_config_1 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        rate_0_1 = 3.5
-        interaction_0 = (local_config_0, local_config_1, rate_0_1)
-
-        # A second interaction.
-        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types = ["A","C"]
-        local_config_0 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        types = ["C","A"]
-        local_config_1 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        # Integer rate to fail.
-        rate_0_1 = 1
-        interaction_1 = (local_config_0, local_config_1, rate_0_1)
-
-        interactions_list = [interaction_0, interaction_1]
-
-        # Construct the interactions object - fails because of the integer rate.
-        self.assertRaises( Error, lambda: KMCInteractions(interactions_list=interactions_list) )
-
-    def testConstructionFailNotSameCoords(self):
-        """ Test that the construction fails unless the coordinates are equal. """
-        # A first interaction.
-        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types = ["A","B"]
-        local_config_0 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        types = ["B","A"]
-        local_config_1 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        rate_0_1 = 3.5
-        interaction_0 = (local_config_0, local_config_1, rate_0_1)
-
-        # A second interaction - not the same coords, to fail.
-        coords = [[1.0,2.0,3.4],[1.1,1.2,1.2]]
-        types = ["A","C"]
-        local_config_0 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types = ["C","A"]
-        local_config_1 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        rate_0_1 = 1.3
-        interaction_1 = (local_config_0, local_config_1, rate_0_1)
-
-        interactions_list = [interaction_0, interaction_1]
-
-        # Fails because of different coordinates.
-        self.assertRaises( Error, lambda: KMCInteractions(interactions_list=interactions_list) )
-
-    def testConstructionFailSameTypes(self):
-        """ Test that the construction fails if the types are identical. """
-        # A first interaction.
-        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types = ["A","B"]
-        local_config_0 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        types = ["B","A"]
-        local_config_1 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        rate_0_1 = 3.5
-        interaction_0 = (local_config_0, local_config_1, rate_0_1)
-
-        # A second interaction.
-        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types = ["A","C"]
-        local_config_0 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        types = ["A","C"]
-        local_config_1 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        rate_0_1 = 1.5
-        interaction_1 = (local_config_0, local_config_1, rate_0_1)
-
-        interactions_list = [interaction_0, interaction_1]
-
-        # Fails because of same types.
-        self.assertRaises( Error, lambda: KMCInteractions(interactions_list=interactions_list) )
-
-    def testConstructionFailWrongSitesList(self):
-        """ Test that the construction fails if there is a problem with the sites list. """
-        # A first interaction.
-        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types = ["A","B"]
-        local_config_0 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        types = ["B","A"]
-        local_config_1 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        rate_0_1 = 3.5
-        interaction_0 = (local_config_0, local_config_1, rate_0_1, [0,1])
-
-        # A second interaction.
-        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types = ["A","C"]
-        local_config_0 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        types = ["C","A"]
-        local_config_1 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        rate_0_1 = 1.5
-        interaction_1 = (local_config_0, local_config_1, rate_0_1, [])  # <- with empty list.
-
-        interactions_list = [interaction_0, interaction_1]
-
-        # Fails because of the empty sites list in interaction_1
-        self.assertRaises( Error, lambda: KMCInteractions(interactions_list=interactions_list) )
+        process_0 = KMCProcess(coords, types0, types1, [0,1,3], rate_0_1)
+        # Construct and fail.
+        self.assertRaises(Error, lambda: KMCInteractions(processes=[process_0, coords]))
 
     def testConstructionFailsWrongWildcard(self):
         """ Test that we fail to construct with other than bool input for the implicit wildcard flag """
-        # A first interaction.
-        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types = ["A","B"]
-        local_config_0 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        types = ["B","A"]
-        local_config_1 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
+        # A first process.
+        coords = [[1.0,2.0,3.4],[12.0,13.0,-1.0],[1.1,1.2,1.3]]
+        types0 = ["A","*","B"]
+        types1 = ["B","*","A"]
         rate_0_1 = 3.5
-        interaction_0 = (local_config_0, local_config_1, rate_0_1)
+        process_0 = KMCProcess(coords, types0, types1, [0,1,3], rate_0_1)
 
-        # A second interaction.
+        # A second process.
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types = ["A","C"]
-        local_config_0 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        types = ["C","A"]
-        local_config_1 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
+        types0 = ["A","C"]
+        types1 = ["C","A"]
         rate_0_1 = 1.5
-        interaction_1 = (local_config_0, local_config_1, rate_0_1)
+        process_1 = KMCProcess(coords, types0, types1, [0,1,3], rate_0_1)
 
-        interactions_list = [interaction_0, interaction_1]
+        processes = [process_0, process_1]
 
         # Construct and fail.
-        self.assertRaises(Error, lambda: KMCInteractions(interactions_list=interactions_list,
+        self.assertRaises(Error, lambda: KMCInteractions(processes=processes,
                                                          implicit_wildcards=0) )
 
-        self.assertRaises(Error, lambda: KMCInteractions(interactions_list=interactions_list,
+        self.assertRaises(Error, lambda: KMCInteractions(processes=processes,
                                                          implicit_wildcards="True") )
 
-        self.assertRaises(Error, lambda: KMCInteractions(interactions_list=interactions_list,
+        self.assertRaises(Error, lambda: KMCInteractions(processes=processes,
                                                          implicit_wildcards=[False]) )
 
     def testBackend(self):
         """
         Test that the generated backend object is what we expect.
         """
-        # A first interaction.
-        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types = ["A","B"]
-        local_config_0 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        types = ["B","A"]
-        local_config_1 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
+        # A first process.
+        coords = [[1.0,2.0,3.4],[12.0,13.0,-1.0],[1.1,1.2,1.3]]
+        types0 = ["A","D","B"]
+        types1 = ["B","D","A"]
         rate_0_1 = 3.5
-        interaction_0 = (local_config_0, local_config_1, rate_0_1)
+        process_0 = KMCProcess(coords, types0, types1, [0,1,3], rate_0_1)
 
-        # A second interaction.
+        # A second process.
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types = ["A","C"]
-        local_config_0 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        types = ["C","A"]
-        local_config_1 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
+        types0 = ["A","C"]
+        types1 = ["C","A"]
         rate_0_1 = 1.5
-        interaction_1 = (local_config_0, local_config_1, rate_0_1)
+        process_1 = KMCProcess(coords, types0, types1, [0,1,3], rate_0_1)
 
-        interactions_list = [interaction_0, interaction_1]
+        processes = [process_0, process_1]
 
         # Construct the interactions object.
-        kmc_interactions = KMCInteractions(interactions_list=interactions_list)
+        kmc_interactions = KMCInteractions(processes=processes)
 
         # Setup a dict with the possible types.
         possible_types = {
@@ -465,39 +221,26 @@ class KMCInteractionsTest(unittest.TestCase):
 
     def testBackendWithCustomRates(self):
         """ Test that we can construct the backend object with custom rates. """
-        # A first interaction.
+        # A first process.
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types = ["A","B"]
-        local_config_0 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        types = ["B","A"]
-        local_config_1 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
+        types0 = ["A","B"]
+        types1 = ["B","A"]
         rate_0_1 = 3.5
-        interaction_0 = (local_config_0, local_config_1, rate_0_1)
+        process_0 = KMCProcess(coords, types0, types1, [0], rate_0_1)
 
-        # A second interaction.
-        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types = ["A","C"]
-        local_config_0 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        types = ["C","A"]
-        local_config_1 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
+        # A second process.
+        types0 = ["A","C"]
+        types1 = ["C","A"]
         rate_0_1 = 1.5
-        interaction_1 = (local_config_0, local_config_1, rate_0_1)
+        process_1 = KMCProcess(coords, types0, types1, [0], rate_0_1)
 
-        interactions_list = [interaction_0, interaction_1]
+        processes = [process_0, process_1]
 
         # Set the custom rates class to use.
         custom_rates_class = CustomRateCalculator
 
         # Construct the interactions object.
-        kmc_interactions = KMCInteractions(interactions_list=interactions_list,
+        kmc_interactions = KMCInteractions(processes=processes,
                                            implicit_wildcards=False)
         kmc_interactions.setRateCalculator(rate_calculator=custom_rates_class)
 
@@ -549,36 +292,23 @@ class KMCInteractionsTest(unittest.TestCase):
 
     def testBackendNoFailWrongBasisMatch(self):
         """ Test for no failure when constructing backend with wrong n_basis """
-        # A first interaction.
+        # A first process.
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types = ["A","B"]
-        local_config_0 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        types = ["B","A"]
-        local_config_1 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
+        types0 = ["A","B"]
+        types1 = ["B","A"]
         rate_0_1 = 3.5
-        interaction_0 = (local_config_0, local_config_1, rate_0_1, [0,4])
+        process_0 = KMCProcess(coords, types0, types1, [0,4], rate_0_1)
 
-        # A second interaction.
-        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types = ["A","C"]
-        local_config_0 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        types = ["C","A"]
-        local_config_1 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
+        # A second process.
+        types0 = ["A","C"]
+        types1 = ["C","A"]
         rate_0_1 = 1.5
-        interaction_1 = (local_config_0, local_config_1, rate_0_1, [0,1])
+        process_1 = KMCProcess(coords, types0, types1, [0,1], rate_0_1)
 
-        interactions_list = [interaction_0, interaction_1]
+        processes = [process_0, process_1]
 
         # Construct the interactions object.
-        kmc_interactions = KMCInteractions(interactions_list=interactions_list)
+        kmc_interactions = KMCInteractions(processes=processes)
 
         # Setup a dict with the possible types.
         possible_types = {
@@ -589,7 +319,7 @@ class KMCInteractionsTest(unittest.TestCase):
             "C" : 5,
             }
 
-        # Get the backend - The [0,4] sites list for interaction_0 is simply ignored.
+        # Get the backend - The [0,4] sites list for process_0 is simply ignored.
         cpp_interactions = kmc_interactions._backend(possible_types, 2)
 
         self.assertEqual( len(cpp_interactions.processes()[0].basisSites()), 1 )
@@ -601,140 +331,100 @@ class KMCInteractionsTest(unittest.TestCase):
 
     def testScript(self):
         """ Test that the KMCInteractions can generate its own script. """
-        # A first interaction.
+        # A first process.
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types = ["A","B"]
-        local_config_0 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        types = ["B","A"]
-        local_config_1 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
+        types0 = ["A","B"]
+        types1 = ["B","A"]
         rate_0_1 = 3.5
-        interaction_0 = (local_config_0, local_config_1, rate_0_1)
+        process_0 = KMCProcess(coords, types0, types1, [0], rate_0_1)
 
-        # A second interaction.
-        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types = ["A","C"]
-        local_config_0 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        types = ["C","A"]
-        local_config_1 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
+        # A second process.
+        types0 = ["A","C"]
+        types1 = ["C","A"]
         rate_0_1 = 1.5
-        interaction_1 = (local_config_0, local_config_1, rate_0_1, [0,1,2,3,8])
+        process_1 = KMCProcess(coords, types0, types1, [0], rate_0_1)
 
-        interactions_list = [interaction_0, interaction_1]
+        processes = [process_0, process_1]
 
         # Construct the interactions object.
-        kmc_interactions = KMCInteractions(interactions_list=interactions_list)
+        kmc_interactions = KMCInteractions(processes=processes)
 
         script = kmc_interactions._script()
 
         ref_script = """
 # -----------------------------------------------------------------------------
-# Local configuration
-
-coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
-               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
-
-types = ['A', 'B']
-
-conf1_0 = KMCLocalConfiguration(
-    coordinates=coordinates,
-    types=types)
-
-# -----------------------------------------------------------------------------
-# Local configuration
-
-coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
-               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
-
-types = ['B', 'A']
-
-conf2_0 = KMCLocalConfiguration(
-    coordinates=coordinates,
-    types=types)
-
-# -----------------------------------------------------------------------------
-# Local configuration
-
-coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
-               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
-
-types = ['A', 'C']
-
-conf1_1 = KMCLocalConfiguration(
-    coordinates=coordinates,
-    types=types)
-
-# -----------------------------------------------------------------------------
-# Local configuration
-
-coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
-               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
-
-types = ['C', 'A']
-
-conf2_1 = KMCLocalConfiguration(
-    coordinates=coordinates,
-    types=types)
-
-# -----------------------------------------------------------------------------
 # Interactions
 
-interactions_list = [(conf1_0, conf2_0,    3.500000e+00),
-                     (conf1_1, conf2_1,    1.500000e+00,  [0,1,2,3,8])]
+coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
+               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
+
+elements_before = ['A','B']
+elements_after  = ['B','A']
+basis_sites     = [0]
+rate_constant   =    3.500000e+00
+
+process_0 = KMCProcess(
+    coordinates=coordinates,
+    elements_before=elements_before,
+    elements_after=elements_after,
+    basis_sites=basis_sites,
+    rate_constant=rate_constant)
+
+coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
+               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
+
+elements_before = ['A','C']
+elements_after  = ['C','A']
+basis_sites     = [0]
+rate_constant   =    1.500000e+00
+
+process_1 = KMCProcess(
+    coordinates=coordinates,
+    elements_before=elements_before,
+    elements_after=elements_after,
+    basis_sites=basis_sites,
+    rate_constant=rate_constant)
+
+processes = [process_0,
+             process_1]
 
 interactions = KMCInteractions(
-    interactions_list=interactions_list,
+    processes=processes,
     implicit_wildcards=True)
 """
         self.assertEqual(script, ref_script)
 
-        # Get a script with another name and another number of interactions.
+        # Get a script with another name and another number of processes.
 
-        interactions_list = [interaction_0]
-        kmc_interactions = KMCInteractions(interactions_list=interactions_list,
+        processes = [process_0]
+        kmc_interactions = KMCInteractions(processes=processes,
                                            implicit_wildcards=False)
 
         script = kmc_interactions._script(variable_name="my_kmc_interactions")
 
         ref_script = """
 # -----------------------------------------------------------------------------
-# Local configuration
-
-coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
-               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
-
-types = ['A', 'B']
-
-conf1_0 = KMCLocalConfiguration(
-    coordinates=coordinates,
-    types=types)
-
-# -----------------------------------------------------------------------------
-# Local configuration
-
-coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
-               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
-
-types = ['B', 'A']
-
-conf2_0 = KMCLocalConfiguration(
-    coordinates=coordinates,
-    types=types)
-
-# -----------------------------------------------------------------------------
 # Interactions
 
-interactions_list = [(conf1_0, conf2_0,    3.500000e+00)]
+coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
+               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
+
+elements_before = ['A','B']
+elements_after  = ['B','A']
+basis_sites     = [0]
+rate_constant   =    3.500000e+00
+
+process_0 = KMCProcess(
+    coordinates=coordinates,
+    elements_before=elements_before,
+    elements_after=elements_after,
+    basis_sites=basis_sites,
+    rate_constant=rate_constant)
+
+processes = [process_0]
 
 my_kmc_interactions = KMCInteractions(
-    interactions_list=interactions_list,
+    processes=processes,
     implicit_wildcards=False)
 """
         self.assertEqual(script, ref_script)

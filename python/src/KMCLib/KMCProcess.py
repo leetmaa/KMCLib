@@ -89,11 +89,29 @@ class KMCProcess(object):
 
     def localConfigurations(self):
         """
-        Query function for the local configurations.
+        Query for the local configurations.
 
         :returns: The two local configurations in a tuple.
         """
         return self.__local_configurations
+
+    def basisSites(self):
+        """
+        Query for the basis sites.
+
+        :returns: The basis sites as stored on the class. Returns None if
+                  no basis sites were given on construction.
+        """
+        return self.__basis_sites
+
+    def rateConstant(self):
+        """
+        Query for the rate constant.
+
+        :returns: The rate constant stored on the class.
+        :rtype: float
+        """
+        return self.__rate_constant
 
     def _script(self, variable_name="process"):
         """
@@ -157,7 +175,7 @@ class KMCProcess(object):
                 line = ""
 
         # Setup the elements after string.
-        elements_after_string = "elements_after = "
+        elements_after_string = "elements_after  = "
         indent = " "*9
         line = "["
         nT = len(self.__elements_after)
@@ -179,7 +197,7 @@ class KMCProcess(object):
                 line = ""
 
         # Setup the basis sites list.
-        basis_sites_string = "basis_sites = ["
+        basis_sites_string = "basis_sites     = ["
         for j,b in enumerate(self.__basis_sites):
             if j == (len(self.__basis_sites)-1):
                 basis_sites_string += "%i]"%(b)
@@ -187,18 +205,10 @@ class KMCProcess(object):
                 basis_sites_string += "%i,"%(b)
 
         # Setup the rate constant string.
-        rate_constant_string = "rate_constant = " + ff
+        rate_constant_string = "rate_constant   = " + ff
         rate_constant_string = rate_constant_string%(self.__rate_constant)
 
         # Get the script together.
-
-        # Add a comment line.
-        comment_string = """
-# -----------------------------------------------------------------------------
-# Process
-
-"""
-
         process_string = variable_name + " = KMCProcess(\n" + \
             "    coordinates=coordinates,\n" + \
             "    elements_before=elements_before,\n" + \
@@ -206,11 +216,10 @@ class KMCProcess(object):
             "    basis_sites=basis_sites,\n" + \
             "    rate_constant=rate_constant)\n"
 
-        return comment_string + coords_string + "\n" + \
-            elements_before_string + "\n" + \
-            elements_after_string  + "\n" + \
-            basis_sites_string     + "\n\n" + \
+        return coords_string + "\n" + \
+            elements_before_string + \
+            elements_after_string  + \
+            basis_sites_string     + "\n" + \
             rate_constant_string   + "\n\n" + \
-            process_string
-
+            process_string + "\n"
 

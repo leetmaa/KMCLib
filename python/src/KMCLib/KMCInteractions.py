@@ -12,6 +12,7 @@ import numpy
 import inspect
 
 from KMCLib.KMCLocalConfiguration import KMCLocalConfiguration
+from KMCLib.KMCProcess import KMCProcess
 from KMCLib.Utilities.CheckUtilities import checkSequence
 from KMCLib.Utilities.CheckUtilities import checkPositiveInteger
 from KMCLib.KMCRateCalculatorPlugin import KMCRateCalculatorPlugin
@@ -26,27 +27,20 @@ class KMCInteractions(object):
     """
 
     def __init__(self,
-                 interactions_list=None,
+                 processes=None,
                  implicit_wildcards=None):
         """
         Constructor for the KMCInteractions.
 
-        :param interactions_list: The interactions, given as a list of lists or tuples with
-                                  two local configurations, a rate constant and a list of integers
-                                  refering to the basis sites the interaction should be applicable to.
-                                  The list of basis sites is optional. If not given it will be treated
-                                  as applicable to all basis sites. To use implicit wildcards for an
-                                  interaction the list of basis sites must be of length one for that
-                                  interaction.
-        :type interactions_list:  [(KMCLocalConfiguration, KMCLocalConfiguration, float, [int, ...]), ...]
+        :param processes: A list of possible processes in the simulation.
 
         :param implicit_wildcards: A flag indicating if implicit wildcards should be used in
                                    the matching of processes with the configuration. The default
                                    is True, i.e. to use implicit wildcards.
         :type implicit_wildcards:  bool
         """
-        # Check the interactions input.
-        self.__raw_interactions = self.__checkInteractionsInput(interactions_list)
+        # Check the processes input.
+        self.__processes = self.__checkProcessesInput(processes)
 
         # Check the implicit wildcard flag.
         if implicit_wildcards is None:
@@ -107,73 +101,26 @@ the KMCRateCalculatorPlugin class itself. """
         # All tests passed. Save the instantiated rate calculator on the class.
         self.__rate_calculator = rate_calculator
 
-    def __checkInteractionsInput(self, interactions):
+    def __checkProcessesInput(self, processes):
         """ """
         """
-        Private helper function to check the interactions input parameter.
+        Private helper function to check the process input parameter.
         """
-        msg="The 'interactions' input must be a list of lists or tuples."
-        interactions = checkSequence(interactions, msg)
+        # Check that it is a sequence.
+        msg="The 'processes' input must be a list of KMCProcess instances."
+        processes = checkSequence(processes, msg)
 
-        # Check each interaction.
-        for i,interaction in enumerate(interactions):
+        # Check that its length is not zero.
+        if len(processes) == 0:
+            raise Error("Empty processes input to the KMCInteractions constructor.")
 
-            # Check that it is a sequence.
-            interaction = checkSequence(interaction)
-
-            # Of correct length.
-            if len(interaction) != 3 and len(interaction) != 4:
-                msg = "Each interaction in the list of interactions must be given as list or tuple of length == 3 or 4.\nThe failing interaction is number %i."%(i)
+        # Check that each element is an instance of type KMCProcess.
+        for process in processes:
+            if not isinstance(process, KMCProcess):
+                msg = "Each element in the list of processes must be an instance of KMCProcess."
                 raise Error(msg)
-
-            # Check the types of the first two elements.
-            c0 = interaction[0]
-            c1 = interaction[1]
-            if not (isinstance(c0,KMCLocalConfiguration) and isinstance(c1,KMCLocalConfiguration)):
-                msg = "The first two elements in each interaction list or tuple must be instances of KMCLocalConfiguration.\nThe failing interaction is number %i."%(i)
-                raise Error(msg)
-
-            # Check the type of the third element.
-            rate = interaction[2]
-            if not isinstance(rate, float):
-                msg = "All rate constants must be given as floating point numbers.\nThe failing interaction is number %i."%(i)
-                raise Error(msg)
-
-            # Check the fourth element if given.
-            if len(interaction) == 4:
-                sites = interaction[3]
-                sites = checkSequence(sites, msg="The fourth element in the interaction list must be a list of integers.")
-
-                if len(sites) == 0:
-                    msg = "The list of available sites for the interaction may not be empty."
-                    raise Error(msg)
-
-                for s in sites:
-                    checkPositiveInteger(s,
-                                         default_parameter=None,
-                                         parameter_name="entry in the interaction basis list")
-
-            # Now, check that the coordinates are the same.
-            if numpy.linalg.norm(c0.coordinates()-c1.coordinates()) > 1.0e-8:
-                msg = "The list of coordinates must match for the two configurations in each interaction.\nThe failing interaction is number %i."%(i)
-                raise Error(msg)
-
-            # Check that the types are not the same - this ensures that the interaction does some thing.
-            if c0.types() == c1.types():
-                msg = "The list of types may not match for the two configurations in each interaction.\nThe failing interaction is number %i."%(i)
-                raise Error(msg)
-
-            # Check the positions of the wildcards. If these are not the same
-            # the move is invalid.
-            wildcards_0 = [i for i,t in enumerate(c0.types()) if t == "*"]
-            wildcards_1 = [i for i,t in enumerate(c1.types()) if t == "*"]
-
-            if wildcards_0 != wildcards_1:
-                msg = "Explicit wildcards must be in the same positions in both local configurations corresponding to a process.\nThe failing interaction is number %i."%(i)
-                raise Error(msg)
-
-        # Done with initial checking of input.
-        return interactions
+        # Done.
+        return processes
 
     def implicitWildcards(self):
         """
@@ -206,19 +153,19 @@ the KMCRateCalculatorPlugin class itself. """
                 cpp_processes = Backend.StdVectorProcess()
 
             # For each interaction.
-            for interaction in self.__raw_interactions:
+            for process in self.__processes:
 
                 # Get the corresponding C++ objects.
-                cpp_config1   = interaction[0]._backend(possible_types)
-                cpp_config2   = interaction[1]._backend(possible_types)
-                barrier       = interaction[2]
+                cpp_config1   = process.localConfigurations()[0]._backend(possible_types)
+                cpp_config2   = process.localConfigurations()[1]._backend(possible_types)
+                rate_constant = process.rateConstant()
 
                 basis_list = range(n_basis)
-                if len(interaction) == 4:
+                if process.basisSites() is not None:
                     # Make sure this basis list does not contain positions
-                    # that are not in the
+                    # that are not in the configuration.
                     basis_list = []
-                    for b in interaction[3]:
+                    for b in process.basisSites():
                         if b < n_basis:
                             basis_list.append(b)
 
@@ -235,13 +182,13 @@ the KMCRateCalculatorPlugin class itself. """
 
                     cpp_processes.push_back(Backend.CustomRateProcess(cpp_config1,
                                                                       cpp_config2,
-                                                                      barrier,
+                                                                      rate_constant,
                                                                       cpp_basis,
                                                                       cutoff))
                 else:
                     cpp_processes.push_back(Backend.Process(cpp_config1,
                                                             cpp_config2,
-                                                            barrier,
+                                                            rate_constant,
                                                             cpp_basis))
 
             # Construct the C++ interactions object.
@@ -269,46 +216,26 @@ the KMCRateCalculatorPlugin class itself. """
 
         # Loop through the list of interactions and for each one set up the
         # script for the pair of local configurations that goes together in a tuple.
+        processes_script = ""
+        processes_string = "processes = ["
 
-        interaction_strings = []
-        configuration_script = ""
-        interactions_string = "interactions_list = ["
-        for i,interaction in enumerate(self.__raw_interactions):
+        for i,process in enumerate(self.__processes):
 
-            conf1_name = "conf1_%i"%(i)
-            conf1_script = interaction[0]._script(conf1_name)
-            configuration_script += conf1_script
-
-            conf2_name = "conf2_%i"%(i)
-            conf2_script = interaction[1]._script(conf2_name)
-            configuration_script += conf2_script
+            var_name = "process_%i"%(i)
+            processes_script += process._script(var_name)
 
             if i == 0:
                 indent = ""
             else:
-                indent = " "*21
+                indent = " "*13
 
-            interactions_string += indent + "(%s, %s, %15.6e"%(conf1_name, conf2_name, interaction[2])
+            processes_string += indent + var_name
 
-            # Get the basis sites information.
-            if len(interaction) == 4:
-                basis_string = ",  ["
-                for j,b in enumerate(interaction[3]):
-                    if j == (len(interaction[3])-1):
-                        basis_string += "%i]"%(b)
-                    else:
-                        basis_string += "%i,"%(b)
-
-                interactions_string += basis_string
-
-            # Close the parenthesis.
-            interactions_string += ")"
-
-            # If this is the last string, close.
-            if (i == len(self.__raw_interactions)-1):
-                interactions_string += "]\n"
+            # If this is the last process, close.
+            if i == len(self.__processes) - 1:
+                processes_string += "]\n"
             else:
-                interactions_string += ",\n"
+                processes_string += ",\n"
 
         # Add a comment line.
         comment_string = """
@@ -322,11 +249,12 @@ the KMCRateCalculatorPlugin class itself. """
             implicit = "False"
 
         kmc_interactions_string = variable_name + " = KMCInteractions(\n" + \
-            "    interactions_list=interactions_list,\n" + \
+            "    processes=processes,\n" + \
             "    implicit_wildcards=%s)\n"%(implicit)
 
         # Return the script.
-        return configuration_script + comment_string + interactions_string + "\n" + \
+        return comment_string + processes_script + processes_string + "\n" + \
             kmc_interactions_string
+
 
 

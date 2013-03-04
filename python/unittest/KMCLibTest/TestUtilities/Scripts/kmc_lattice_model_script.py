@@ -39,60 +39,39 @@ configuration = KMCConfiguration(
     possible_types=possible_types)
 
 # -----------------------------------------------------------------------------
-# Local configuration
+# Interactions
 
 coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
                [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
 
-types = ['A', 'B']
+types_before = ['A', 'B']
+types_after  = ['B', 'A']
+rate_constant = 3.500000e+00
+sites = [0, 1, 2]
 
-conf1_0 = KMCLocalConfiguration(
-    coordinates=coordinates,
-    types=types)
-
-# -----------------------------------------------------------------------------
-# Local configuration
-
-coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
-               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
-
-types = ['B', 'A']
-
-conf2_0 = KMCLocalConfiguration(
-    coordinates=coordinates,
-    types=types)
-
-# -----------------------------------------------------------------------------
-# Local configuration
+process_0 = KMCProcess(coordinates,
+                       types_before,
+                       types_after,
+                       sites,
+                       rate_constant)
 
 coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
                [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
 
 types = ['A', 'C']
-
-conf1_1 = KMCLocalConfiguration(
-    coordinates=coordinates,
-    types=types)
-
-# -----------------------------------------------------------------------------
-# Local configuration
-
-coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
-               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
-
 types = ['C', 'A']
+rate_constant = 1.500000e+00
+sites = [0]
 
-conf2_1 = KMCLocalConfiguration(
-    coordinates=coordinates,
-    types=types)
+process_1 = KMCProcess(coordinates,
+                       types_before,
+                       types_after,
+                       sites,
+                       rate_constant)
 
-# -----------------------------------------------------------------------------
-# Interactions
+processes = [process_0, process_1]
 
-interactions_list = [(conf1_0, conf2_0,    3.500000e+00),
-                     (conf1_1, conf2_1,    1.500000e+00)]
-
-interactions = KMCInteractions(interactions_list=interactions_list)
+interactions = KMCInteractions(processes=processes)
 
 # -----------------------------------------------------------------------------
 # Lattice model

@@ -13,6 +13,7 @@ import numpy
 import os
 
 from KMCLib.KMCInteractions import KMCInteractions
+from KMCLib.KMCProcess import KMCProcess
 from KMCLib.KMCConfiguration import KMCConfiguration
 from KMCLib.KMCLocalConfiguration import KMCLocalConfiguration
 from KMCLib.KMCControlParameters import KMCControlParameters
@@ -70,36 +71,25 @@ class KMCLatticeModelTest(unittest.TestCase):
                                   types=types,
                                   possible_types=['A','C','B'])
 
-
-        # A first interaction.
+        # A first process.
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types = ["A","B"]
-        local_config_0 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        types = ["B","A"]
-        local_config_1 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
+        types0 = ["A","B"]
+        types1 = ["B","A"]
+        sites  = [0,1,2]
         rate_0_1 = 3.5
-        interaction_0 = (local_config_0, local_config_1, rate_0_1)
+        process_0 = KMCProcess(coords, types0, types1, sites, rate_0_1)
 
-        # A second interaction.
+        # A second process.
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types = ["A","C"]
-        local_config_0 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        types = ["C","A"]
-        local_config_1 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
+        types0 = ["A","C"]
+        types1 = ["C","A"]
+        sites  = [0,1,2]
         rate_0_1 = 1.5
-        interaction_1 = (local_config_0, local_config_1, rate_0_1)
+        process_1 = KMCProcess(coords, types0, types1, sites, rate_0_1)
 
         # Construct the interactions object.
-        interactions_list = [interaction_0, interaction_1]
-        interactions = KMCInteractions(interactions_list=interactions_list)
+        processes = [process_0, process_1]
+        interactions = KMCInteractions(processes=processes)
 
         # Construct the model.
         model = KMCLatticeModel(config, interactions)
@@ -146,6 +136,7 @@ class KMCLatticeModelTest(unittest.TestCase):
 
         # Generate the interactions with a distance so large that we get a
         # layer of implicite wildcards in the C++ matchlists.
+        sites = [0]
         coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
                        [  -1.000000e+00,   0.000000e+00,   0.000000e+00],
                        [   1.000000e+00,   0.000000e+00,   0.000000e+00],
@@ -153,62 +144,30 @@ class KMCLatticeModelTest(unittest.TestCase):
                        [   0.000000e+00,   1.000000e+00,   0.000000e+00],
                        [   2.000000e+00,   2.000000e+00,   0.000000e+00]]
 
-        types = ['A', 'B', 'B', 'B', 'B', 'A']
+        types0 = ['A', 'B', 'B', 'B', 'B', 'A']
+        types1 = ['B', 'A', 'B', 'B', 'B', 'A']
+        process_0 = KMCProcess(coordinates, types0, types1, sites, 1.0)
 
-        conf1_28 = KMCLocalConfiguration(
-            coordinates=coordinates,
-            types=types)
+        types0 = ['A', 'B', 'B', 'B', 'B', 'B']
+        types1 = ['B', 'B', 'A', 'B', 'B', 'B']
+        process_1 = KMCProcess(coordinates, types0, types1, sites, 1.0)
 
-        types = ['B', 'A', 'B', 'B', 'B', 'A']
+        types0 = ['A', 'B', 'B', 'B', 'B', 'B']
+        types1 = ['B', 'B', 'B', 'A', 'B', 'B']
+        process_2 = KMCProcess(coordinates, types0, types1, sites, 1.0)
 
-        conf2_28 = KMCLocalConfiguration(
-            coordinates=coordinates,
-            types=types)
+        types0 = ['A', 'B', 'B', 'B', 'B', 'B']
+        types1 = ['B', 'B', 'B', 'B', 'A', 'B']
+        process_3 = KMCProcess(coordinates, types0, types1, sites, 1.0)
 
-        types = ['A', 'B', 'B', 'B', 'B', 'B']
-
-        conf1_29 = KMCLocalConfiguration(
-            coordinates=coordinates,
-            types=types)
-
-        types = ['B', 'B', 'A', 'B', 'B', 'B']
-
-        conf2_29 = KMCLocalConfiguration(
-            coordinates=coordinates,
-            types=types)
-
-        types = ['A', 'B', 'B', 'B', 'B', 'B']
-
-        conf1_30 = KMCLocalConfiguration(
-            coordinates=coordinates,
-            types=types)
-
-        types = ['B', 'B', 'B', 'A', 'B', 'B']
-
-        conf2_30 = KMCLocalConfiguration(
-            coordinates=coordinates,
-            types=types)
-
-        types = ['A', 'B', 'B', 'B', 'B', 'B']
-
-        conf1_31 = KMCLocalConfiguration(
-            coordinates=coordinates,
-            types=types)
-
-        types = ['B', 'B', 'B', 'B', 'A', 'B']
-
-        conf2_31 = KMCLocalConfiguration(
-            coordinates=coordinates,
-            types=types)
-
-        # Interactions.
-        interactions_list = [(conf1_28, conf2_28,    1.000000e+00),
-                             (conf1_29, conf2_29,    1.000000e+00),
-                             (conf1_30, conf2_30,    1.000000e+00),
-                             (conf1_31, conf2_31,    1.000000e+00)]
+        # Processes.
+        processes = [process_0,
+                     process_1,
+                     process_2,
+                     process_3]
 
         # No implicit wildcards.
-        interactions = KMCInteractions(interactions_list=interactions_list,
+        interactions = KMCInteractions(processes=processes,
                                        implicit_wildcards=False)
 
         # Create the model.
@@ -222,7 +181,7 @@ class KMCLatticeModelTest(unittest.TestCase):
         self.assertEqual( match_types, ref_match_types )
 
         # Create with implicit wildcards - this is default behavior.
-        interactions = KMCInteractions(interactions_list=interactions_list)
+        interactions = KMCInteractions(processes=processes)
 
         # Create the model.
         model = KMCLatticeModel(config, interactions)
@@ -273,28 +232,10 @@ class KMCLatticeModelTest(unittest.TestCase):
 
         # Interactions.
         coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
-        types = ['A']
-        conf1_0 = KMCLocalConfiguration(
-            coordinates=coordinates,
-            types=types)
-
-        conf2_1 = KMCLocalConfiguration(
-            coordinates=coordinates,
-            types=types)
-
-        types = ['B']
-        conf2_0 = KMCLocalConfiguration(
-            coordinates=coordinates,
-            types=types)
-
-        conf1_1 = KMCLocalConfiguration(
-            coordinates=coordinates,
-            types=types)
-
-        interactions_list = [(conf1_0, conf2_0,    4.0),
-                             (conf1_1, conf2_1,    1.0)]
-
-        interactions = KMCInteractions(interactions_list=interactions_list)
+        process_0 = KMCProcess(coordinates, ['A'], ['B'], [0], 4.0)
+        process_1 = KMCProcess(coordinates, ['B'], ['A'], [0], 1.0)
+        processes = [process_0, process_1]
+        interactions = KMCInteractions(processes)
 
         # Setup the model.
         ab_flip_model = KMCLatticeModel(configuration, interactions)
@@ -365,28 +306,10 @@ class KMCLatticeModelTest(unittest.TestCase):
 
         # Interactions.
         coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
-        types = ['A']
-        conf1_0 = KMCLocalConfiguration(
-            coordinates=coordinates,
-            types=types)
-
-        conf2_1 = KMCLocalConfiguration(
-            coordinates=coordinates,
-            types=types)
-
-        types = ['B']
-        conf2_0 = KMCLocalConfiguration(
-            coordinates=coordinates,
-            types=types)
-
-        conf1_1 = KMCLocalConfiguration(
-            coordinates=coordinates,
-            types=types)
-
-        interactions_list = [(conf1_0, conf2_0,    4.0),
-                             (conf1_1, conf2_1,    1.0)]
-
-        interactions = KMCInteractions(interactions_list=interactions_list,
+        process_0 = KMCProcess(coordinates, ['A'], ['B'], [0], 4.0)
+        process_1 = KMCProcess(coordinates, ['B'], ['A'], [0], 1.0)
+        processes = [process_0, process_1]
+        interactions = KMCInteractions(processes,
                                        implicit_wildcards=True)
 
         # Custom rates.
@@ -464,35 +387,23 @@ class KMCLatticeModelTest(unittest.TestCase):
                                   possible_types=['A','C','B'])
 
 
-        # A first interaction.
+        # A first process.
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types = ["A","B"]
-        local_config_0 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        types = ["B","A"]
-        local_config_1 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
+        types0 = ["A","B"]
+        types1 = ["B","A"]
+        sites  = [0,1,2,3,4]
         rate_0_1 = 3.5
-        interaction_0 = (local_config_0, local_config_1, rate_0_1)
+        process_0 = KMCProcess(coords, types0, types1, sites, rate_0_1)
 
-        # A second interaction.
-        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types = ["A","C"]
-        local_config_0 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        types = ["C","A"]
-        local_config_1 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
+        # A second process.
+        types0 = ["A","C"]
+        types1 = ["C","A"]
         rate_0_1 = 1.5
-        interaction_1 = (local_config_0, local_config_1, rate_0_1)
+        process_1 = KMCProcess(coords, types0, types1, sites, rate_0_1)
 
         # Construct the interactions object.
-        interactions_list = [interaction_0, interaction_1]
-        interactions = KMCInteractions(interactions_list=interactions_list)
+        processes = [process_0, process_1]
+        interactions = KMCInteractions(processes=processes)
 
         # Construct the model.
         model = KMCLatticeModel(config, interactions)
@@ -532,36 +443,22 @@ class KMCLatticeModelTest(unittest.TestCase):
                                   types=types,
                                   possible_types=['A','C','B'])
 
-
-        # A first interaction.
+        # A first process.
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types = ["A","B"]
-        local_config_0 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        types = ["B","A"]
-        local_config_1 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
+        types0 = ["A","B"]
+        types1 = ["B","A"]
         rate_0_1 = 3.5
-        interaction_0 = (local_config_0, local_config_1, rate_0_1)
+        process_0 = KMCProcess(coords, types0, types1, [0], rate_0_1)
 
-        # A second interaction.
-        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types = ["A","C"]
-        local_config_0 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
-        types = ["C","A"]
-        local_config_1 = KMCLocalConfiguration(coordinates=coords,
-                                               types=types,
-                                               center=0)
+        # A second process.
+        types0 = ["A","C"]
+        types1 = ["C","A"]
         rate_0_1 = 1.5
-        interaction_1 = (local_config_0, local_config_1, rate_0_1)
+        process_1 = KMCProcess(coords, types0, types1, [0], rate_0_1)
 
         # Construct the interactions object.
-        interactions_list = [interaction_0, interaction_1]
-        interactions = KMCInteractions(interactions_list=interactions_list)
+        processes = [process_0, process_1]
+        interactions = KMCInteractions(processes)
 
         # Construct the model.
         model = KMCLatticeModel(config, interactions)
@@ -609,61 +506,43 @@ configuration = KMCConfiguration(
     possible_types=possible_types)
 
 # -----------------------------------------------------------------------------
-# Local configuration
-
-coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
-               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
-
-types = ['A', 'B']
-
-conf1_0 = KMCLocalConfiguration(
-    coordinates=coordinates,
-    types=types)
-
-# -----------------------------------------------------------------------------
-# Local configuration
-
-coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
-               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
-
-types = ['B', 'A']
-
-conf2_0 = KMCLocalConfiguration(
-    coordinates=coordinates,
-    types=types)
-
-# -----------------------------------------------------------------------------
-# Local configuration
-
-coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
-               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
-
-types = ['A', 'C']
-
-conf1_1 = KMCLocalConfiguration(
-    coordinates=coordinates,
-    types=types)
-
-# -----------------------------------------------------------------------------
-# Local configuration
-
-coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
-               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
-
-types = ['C', 'A']
-
-conf2_1 = KMCLocalConfiguration(
-    coordinates=coordinates,
-    types=types)
-
-# -----------------------------------------------------------------------------
 # Interactions
 
-interactions_list = [(conf1_0, conf2_0,    3.500000e+00),
-                     (conf1_1, conf2_1,    1.500000e+00)]
+coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
+               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
+
+elements_before = ['A','B']
+elements_after  = ['B','A']
+basis_sites     = [0]
+rate_constant   =    3.500000e+00
+
+process_0 = KMCProcess(
+    coordinates=coordinates,
+    elements_before=elements_before,
+    elements_after=elements_after,
+    basis_sites=basis_sites,
+    rate_constant=rate_constant)
+
+coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
+               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
+
+elements_before = ['A','C']
+elements_after  = ['C','A']
+basis_sites     = [0]
+rate_constant   =    1.500000e+00
+
+process_1 = KMCProcess(
+    coordinates=coordinates,
+    elements_before=elements_before,
+    elements_after=elements_after,
+    basis_sites=basis_sites,
+    rate_constant=rate_constant)
+
+processes = [process_0,
+             process_1]
 
 interactions = KMCInteractions(
-    interactions_list=interactions_list,
+    processes=processes,
     implicit_wildcards=True)
 
 # -----------------------------------------------------------------------------
@@ -718,61 +597,43 @@ configuration = KMCConfiguration(
     possible_types=possible_types)
 
 # -----------------------------------------------------------------------------
-# Local configuration
-
-coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
-               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
-
-types = ['A', 'B']
-
-conf1_0 = KMCLocalConfiguration(
-    coordinates=coordinates,
-    types=types)
-
-# -----------------------------------------------------------------------------
-# Local configuration
-
-coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
-               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
-
-types = ['B', 'A']
-
-conf2_0 = KMCLocalConfiguration(
-    coordinates=coordinates,
-    types=types)
-
-# -----------------------------------------------------------------------------
-# Local configuration
-
-coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
-               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
-
-types = ['A', 'C']
-
-conf1_1 = KMCLocalConfiguration(
-    coordinates=coordinates,
-    types=types)
-
-# -----------------------------------------------------------------------------
-# Local configuration
-
-coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
-               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
-
-types = ['C', 'A']
-
-conf2_1 = KMCLocalConfiguration(
-    coordinates=coordinates,
-    types=types)
-
-# -----------------------------------------------------------------------------
 # Interactions
 
-interactions_list = [(conf1_0, conf2_0,    3.500000e+00),
-                     (conf1_1, conf2_1,    1.500000e+00)]
+coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
+               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
+
+elements_before = ['A','B']
+elements_after  = ['B','A']
+basis_sites     = [0]
+rate_constant   =    3.500000e+00
+
+process_0 = KMCProcess(
+    coordinates=coordinates,
+    elements_before=elements_before,
+    elements_after=elements_after,
+    basis_sites=basis_sites,
+    rate_constant=rate_constant)
+
+coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
+               [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
+
+elements_before = ['A','C']
+elements_after  = ['C','A']
+basis_sites     = [0]
+rate_constant   =    1.500000e+00
+
+process_1 = KMCProcess(
+    coordinates=coordinates,
+    elements_before=elements_before,
+    elements_after=elements_after,
+    basis_sites=basis_sites,
+    rate_constant=rate_constant)
+
+processes = [process_0,
+             process_1]
 
 interactions = KMCInteractions(
-    interactions_list=interactions_list,
+    processes=processes,
     implicit_wildcards=True)
 
 # -----------------------------------------------------------------------------

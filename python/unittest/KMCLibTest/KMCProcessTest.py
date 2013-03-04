@@ -232,20 +232,13 @@ class KMCProcessTest(unittest.TestCase):
         # Get the script.
         script = p._script()
 
-        ref_script = """
-# -----------------------------------------------------------------------------
-# Process
-
-coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
+        ref_script = """coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
                [   1.000000e+00,   2.000000e+00,   3.000000e+00]]
 
 elements_before = ['A','B']
-
-elements_after = ['B','A']
-
-basis_sites = [0]
-
-rate_constant =    1.000000e+00
+elements_after  = ['B','A']
+basis_sites     = [0]
+rate_constant   =    1.000000e+00
 
 process = KMCProcess(
     coordinates=coordinates,
@@ -253,7 +246,9 @@ process = KMCProcess(
     elements_after=elements_after,
     basis_sites=basis_sites,
     rate_constant=rate_constant)
+
 """
+
         self.assertEqual(ref_script, script)
 
     def testLocalConfigurations(self):
@@ -284,6 +279,31 @@ process = KMCProcess(
         # Check types.
         self.assertAlmostEqual( c1.types(), ref_c1.types() )
         self.assertAlmostEqual( c2.types(), ref_c2.types() )
+
+    # FIXME : Needs implementation in the process class.
+    def notestConstructionFailWildcardMove(self):
+        """ Test for failure if wildcards change place in the move. """
+        # This should fail.
+        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
+        types0 = ["*","B"]
+        types1 = ["B","*"]
+        sites  = [0]
+        rate_0_1 = 3.5
+        self.assertRaises( Error,
+                           lambda : KMCProcess(coords, types0, types1, sites, rate_0_1) )
+
+    # FIXME : Needs implementation in the process class.
+    def notestConstructionFailNoMove(self):
+        """ Test for failure if no move takes place. """
+        # This should fail.
+        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
+        types0 = ["A","B"]
+        types1 = ["A","B"]
+        sites  = [0]
+        rate_0_1 = 3.5
+        self.assertRaises( Error,
+                           lambda : KMCProcess(coords, types0, types1, sites, rate_0_1) )
+
 
 if __name__ == '__main__':
     unittest.main()
