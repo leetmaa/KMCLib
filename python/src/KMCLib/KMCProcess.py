@@ -16,7 +16,7 @@ from KMCLib.Utilities.CheckUtilities import checkSequenceOfPositiveIntegers
 from KMCLib.Utilities.CheckUtilities import checkPositiveInteger
 from KMCLib.Utilities.CheckUtilities import checkPositiveFloat
 from KMCLib.KMCLocalConfiguration import KMCLocalConfiguration
-
+from KMCLib.Exceptions.Error import Error
 
 class KMCProcess(object):
     """
@@ -66,8 +66,15 @@ class KMCProcess(object):
         self.__coordinates = centerCoordinates(coordinates, center)
 
         # Check the tyeps.
-        self.__elements_before = checkTypes(elements_before, len(coordinates))
-        self.__elements_after  = checkTypes(elements_after,  len(coordinates))
+        elements_before = checkTypes(elements_before, len(coordinates))
+        elements_after  = checkTypes(elements_after,  len(coordinates))
+
+        # Check that the types represents a valid move.
+        self.__checkValidMove(elements_before, elements_after)
+
+        # All types checking done.
+        self.__elements_before = elements_before
+        self.__elements_after  = elements_after
 
         # Check the list of basis sites.
         basis_sites = checkSequenceOfPositiveIntegers(basis_sites,
@@ -86,6 +93,26 @@ class KMCProcess(object):
         c1 = KMCLocalConfiguration(self.__coordinates, self.__elements_before, center)
         c2 = KMCLocalConfiguration(self.__coordinates, self.__elements_after,  center)
         self.__local_configurations = (c1, c2)
+
+    def __checkValidMove(self, elements_before, elements_after):
+        """
+        Private helper function to check if a move is valid with respect
+        to atom types and wildcards.
+
+        :param elements_before: The list of elements before the move.
+
+        :param elements_after: The list of elements after the move.
+        """
+        # Check that the wildcards, if any, are not moved.
+        before = [ e == "*" for e in elements_before ]
+        after  = [ e == "*" for e in elements_after ]
+
+        if len(before) != len(after) or before != after:
+            raise Error("Wildcards must not move during a valid process.")
+
+        # Check that they are not identical.
+        if elements_before == elements_after:
+            raise Error("The atomic configuration before and after a move can not be identical.")
 
     def localConfigurations(self):
         """

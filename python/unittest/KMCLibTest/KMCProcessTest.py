@@ -280,8 +280,7 @@ process = KMCProcess(
         self.assertAlmostEqual( c1.types(), ref_c1.types() )
         self.assertAlmostEqual( c2.types(), ref_c2.types() )
 
-    # FIXME : Needs implementation in the process class.
-    def notestConstructionFailWildcardMove(self):
+    def testConstructionFailWildcardMove(self):
         """ Test for failure if wildcards change place in the move. """
         # This should fail.
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
@@ -292,13 +291,21 @@ process = KMCProcess(
         self.assertRaises( Error,
                            lambda : KMCProcess(coords, types0, types1, sites, rate_0_1) )
 
-    # FIXME : Needs implementation in the process class.
-    def notestConstructionFailNoMove(self):
+        # This should fail.
+        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
+        types0 = ["*","*"]
+        types1 = ["B","*"]
+        sites  = [0]
+        rate_0_1 = 3.5
+        self.assertRaises( Error,
+                           lambda : KMCProcess(coords, types0, types1, sites, rate_0_1) )
+
+    def testConstructionFailNoMove(self):
         """ Test for failure if no move takes place. """
         # This should fail.
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types0 = ["A","B"]
-        types1 = ["A","B"]
+        types0 = ["A","B", "*"]
+        types1 = ["A","B", "*"]
         sites  = [0]
         rate_0_1 = 3.5
         self.assertRaises( Error,
