@@ -62,7 +62,7 @@ std::vector<int> LatticeMap::neighbourIndices(const int index,
     const CellIndex & cell = c;
 
     // Setup the return data structure.
-    const int n_neighbours = std::pow((2*shells + 1), 3) * n_basis_;
+    const int n_neighbours = std::pow((2.0*shells + 1), 3) * n_basis_;
     std::vector<int> neighbours(n_neighbours);
 
     // Get a pointer to the neighbours data for direct write access.

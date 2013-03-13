@@ -214,7 +214,7 @@ class KMCProcess(object):
 
         # Setup the elements before string.
         elements_before_string = "elements_before = "
-        indent = " "*9
+        indent = " "*19
         line = "["
         nT = len(self.__elements_before)
         for i,t in enumerate(self.__elements_before):
@@ -236,7 +236,7 @@ class KMCProcess(object):
 
         # Setup the elements after string.
         elements_after_string = "elements_after  = "
-        indent = " "*9
+        indent = " "*19
         line = "["
         nT = len(self.__elements_after)
         for i,t in enumerate(self.__elements_after):
