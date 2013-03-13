@@ -7,6 +7,7 @@
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 #
 
+import numpy
 
 from KMCLib.Utilities.CoordinateUtilities import centerCoordinates
 from KMCLib.Utilities.CheckUtilities import checkCoordinateList
@@ -113,6 +114,38 @@ class KMCProcess(object):
         # Check that they are not identical.
         if elements_before == elements_after:
             raise Error("The atomic configuration before and after a move can not be identical.")
+
+    def __eq__(self, other):
+        """ Implements the equal oprator. """
+
+        # Check the length of the basis sites.
+        if len(other.basisSites()) != len(self.basisSites()):
+            return False
+
+        # Check the basis sites.
+        elif not all([s1 == s2 for s1,s2 in zip(other.basisSites(),self.basisSites())]):
+            return False
+
+        # Check the number of atoms in the local configurations.
+        elif numpy.shape(other.localConfigurations()[0].coordinates())[0] != \
+                numpy.shape(self.localConfigurations()[0].coordinates())[0]:
+            return False
+
+        # Check the coordinates.
+        elif numpy.linalg.norm(other.localConfigurations()[0].coordinates() - \
+                                   self.localConfigurations()[0].coordinates()) > 0.00001:
+            return False
+
+        # Check the types.
+        elif not all([s1 == s2 for s1,s2 in zip(other.localConfigurations()[0].types(),
+                                                self.localConfigurations()[0].types())]):
+            return False
+        elif not all([s1 == s2 for s1,s2 in zip(other.localConfigurations()[1].types(),
+                                                self.localConfigurations()[1].types())]):
+            return False
+        # Passed all tests, return true.
+        else:
+            return True
 
     def localConfigurations(self):
         """

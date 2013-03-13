@@ -39,6 +39,123 @@ class KMCProcessTest(unittest.TestCase):
         # Check that we got a valid instance.
         self.assertTrue( isinstance(p, KMCProcess) )
 
+    def testEqualOperator(self):
+        """ Test the equal operator. """
+        # Set the input.
+        coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
+        elements_before = ["A", "B"]
+        elements_after = ["B", "A"]
+        basis_sites = [0]
+
+        # Construct.
+        p1 = KMCProcess(coordinates=coordinates,
+                        elements_before=elements_before,
+                        elements_after=elements_after,
+                        basis_sites=basis_sites,
+                        rate_constant=1.0)
+        # Construct.
+        p2 = KMCProcess(coordinates=coordinates,
+                        elements_before=elements_before,
+                        elements_after=elements_after,
+                        basis_sites=basis_sites,
+                        rate_constant=1.0)
+        # Check.
+        eq = (p1 == p2)
+        self.assertTrue( eq )
+
+        # Set the input again, different coordinates.
+        coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0001]]
+
+        # Construct.
+        p3 = KMCProcess(coordinates=coordinates,
+                        elements_before=elements_before,
+                        elements_after=elements_after,
+                        basis_sites=basis_sites,
+                        rate_constant=1.0)
+        # Check.
+        eq = (p1 == p3)
+        self.assertFalse( eq )
+
+        # Set the input again, different length.
+        coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.],[1.0,2.0,3.0]]
+        elements_before = ["A", "B", "C"]
+        elements_after = ["B", "A", "A"]
+        basis_sites = [0]
+
+        # Construct.
+        p4 = KMCProcess(coordinates=coordinates,
+                        elements_before=elements_before,
+                        elements_after=elements_after,
+                        basis_sites=basis_sites,
+                        rate_constant=1.0)
+        # Check.
+        eq = (p1 == p4)
+        self.assertFalse( eq )
+
+        # Set the input again, different basis sites.
+        coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.]]
+        elements_before = ["A", "B"]
+        elements_after = ["B", "A"]
+        basis_sites = [1]
+
+        # Construct.
+        p5 = KMCProcess(coordinates=coordinates,
+                        elements_before=elements_before,
+                        elements_after=elements_after,
+                        basis_sites=basis_sites,
+                        rate_constant=1.0)
+        # Check.
+        eq = (p1 == p5)
+        self.assertFalse( eq )
+
+        # Set the input again, different length of the basis sites.
+        coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.]]
+        elements_before = ["A", "B"]
+        elements_after = ["B", "A"]
+        basis_sites = [0, 2]
+
+        # Construct.
+        p6 = KMCProcess(coordinates=coordinates,
+                        elements_before=elements_before,
+                        elements_after=elements_after,
+                        basis_sites=basis_sites,
+                        rate_constant=1.0)
+        # Check.
+        eq = (p1 == p6)
+        self.assertFalse( eq )
+
+        # Set the input again, different elements before.
+        coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.]]
+        elements_before = ["A", "D"]
+        elements_after = ["B", "A"]
+        basis_sites = [0]
+
+        # Construct.
+        p7 = KMCProcess(coordinates=coordinates,
+                        elements_before=elements_before,
+                        elements_after=elements_after,
+                        basis_sites=basis_sites,
+                        rate_constant=1.0)
+        # Check.
+        eq = (p1 == p7)
+        self.assertFalse( eq )
+
+        # Set the input again, different elements after.
+        coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.]]
+        elements_before = ["A", "B"]
+        elements_after = ["D", "A"]
+        basis_sites = [0]
+
+        # Construct.
+        p7 = KMCProcess(coordinates=coordinates,
+                        elements_before=elements_before,
+                        elements_after=elements_after,
+                        basis_sites=basis_sites,
+                        rate_constant=1.0)
+        # Check.
+        eq = (p1 == p7)
+        self.assertFalse( eq )
+
     def testConstructionFailCoordinates(self):
         """ Test that construction fails with the wrong coordinates format. """
         # Set the input.

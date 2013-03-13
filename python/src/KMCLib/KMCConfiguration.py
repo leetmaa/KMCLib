@@ -30,8 +30,7 @@ class KMCConfiguration(object):
         Constructor for the KMCConfiguration - the configuration object to use
         in the KMC simulations.
 
-        :param lattice: The lattice of the configurartion.
-        :type lattice: Lattice
+        :param lattice: The lattice of the configurartion as a KMCLattice.
 
         :param types: The site types at the lattice points as a list, e.g. ['type1','type2',..],
                       ordered as [a,b,c,i] with i being the fastest and a the slowest index and
@@ -181,6 +180,12 @@ class KMCConfiguration(object):
         :returns: The stored possible types dict.
         """
         return self.__possible_types
+
+    def cellRepetitions(self):
+        """
+        Querty for the primitive cell repetitions.
+        """
+        return self.__lattice.repetitions()
 
     def _backend(self):
         """
