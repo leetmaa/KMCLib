@@ -4,6 +4,10 @@
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 #
 
+# Temporary workaround for linking issue on OS X 10.8 with macport libraries.
+find_library( CPPUNIT cppunit /opt/local/lib )
+find_library( MPICHCXX mpichcxx /opt/local/lib )
+
 # Find all test files.
 file( GLOB CppSources test_* )
 
@@ -20,5 +24,5 @@ add_library( unittest ${CppSources} )
 add_executable( test.x testRunner )
 
 # Define the libraries to link the test.x executable against.
-target_link_libraries( test.x cppunit unittest src )
+target_link_libraries( test.x ${CPPUNIT} ${MPICHCXX} unittest src )
 
