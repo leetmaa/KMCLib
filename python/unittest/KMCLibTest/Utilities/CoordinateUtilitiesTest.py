@@ -28,7 +28,7 @@ class CoordinateUtilitiesTest(unittest.TestCase):
         center = 2
 
         # Sort - wrt distance,type,x,y,z
-        (sorted_coords, sorted_distances, sorted_types) = sortCoordinates(coords, center, types)
+        (sorted_coords, sorted_distances, sorted_types, co_sorted_types) = sortCoordinates(coords, center, types)
 
         # Setup references.
         ref_coords = numpy.array([[0.0,0.0,0.0],[1.0,2.0,0.0],[2.0,1.0,0.0],[-8.9,12.0,4.0]])
