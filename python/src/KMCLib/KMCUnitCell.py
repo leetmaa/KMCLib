@@ -46,11 +46,19 @@ class KMCUnitCell(object):
 
     def basis(self):
         """
-        Qury for the bais points.
+        Query for the bais points.
 
         :returns: The basis points stored on the class.
         """
         return self.__basis_points
+
+    def cellVectors(self):
+        """
+        Query for the cell vectors.
+
+        :returns: The cell vectors stored on the class.
+        """
+        return self.__cell_vectors
 
     def _script(self, variable_name="unit_cell"):
         """

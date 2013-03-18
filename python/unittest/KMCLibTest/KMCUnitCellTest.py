@@ -44,6 +44,10 @@ class KMCUnitCellTest(unittest.TestCase):
         check_vectors = cell._KMCUnitCell__cell_vectors
         self.assertAlmostEqual( numpy.linalg.norm(ref_vectors - check_vectors), 0.0, 10)
 
+        # Check via the query function.
+        ret_vectors = cell.cellVectors()
+        self.assertAlmostEqual( numpy.linalg.norm(ref_vectors - ret_vectors), 0.0, 10)
+
         # Check the basis points stored on the class.
         ref_basis = numpy.array(basis_points)
         check_basis = cell._KMCUnitCell__basis_points
