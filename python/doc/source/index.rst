@@ -13,6 +13,7 @@ Contents:
 
    intro
    algorithm
+   install
    usage
    plugins
    api
