@@ -7,6 +7,3 @@
 file( GLOB CppSources *.cpp )
 add_library( src ${CppSources} )
 
-# Needed for MPI
-target_link_libraries( src mpichcxx mpich opa mpl rt cr pthread )
-

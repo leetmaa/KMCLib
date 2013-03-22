@@ -4,9 +4,9 @@
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 #
 
-# Temporary workaround for linking issue on OS X 10.8 with macport libraries.
-find_library( CPPUNIT cppunit /opt/local/lib )
-find_library( MPICHCXX mpichcxx /opt/local/lib )
+# Use the custom search path for the cppunit test library.
+message( STATUS "Custom search path for -lcppunit: ${CPPUNIT_DIR}")
+find_library( CPPUNIT cppunit ${CPPUNIT_DIR} )
 
 # Find all test files.
 file( GLOB CppSources test_* )
@@ -18,11 +18,11 @@ add_definitions( -Wno-deprecated )
 include_directories( ${KMCLib_SOURCE_DIR}/src )
 
 # Compile the the unittest source.
-add_library( unittest ${CppSources} )
+add_library( unittest EXCLUDE_FROM_ALL ${CppSources} )
 
 # Build and link the test runner.
-add_executable( test.x testRunner )
+add_executable( test.x EXCLUDE_FROM_ALL testRunner )
 
 # Define the libraries to link the test.x executable against.
-target_link_libraries( test.x ${CPPUNIT} ${MPICHCXX} unittest src )
+target_link_libraries( test.x ${CPPUNIT} unittest src )
 

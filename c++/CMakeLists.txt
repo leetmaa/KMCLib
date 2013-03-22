@@ -7,33 +7,62 @@
 cmake_minimum_required(VERSION 2.8)
 project(KMCLib)
 
-# To use verbose output.
+# Set to on to use verbose output default.
 set( CMAKE_VERBOSE_MAKEFILE off )
 
-# FIXME - make this into an option.
-# Force the intel compiler.
-#include(CMakeForceCompiler)
-#cmake_force_c_compiler(icc "Intel C Compiler")
-#cmake_force_cxx_compiler(icpc "Intel C++ Compiler")
 
-# Setup general compiler options.
-add_definitions(-std=c++0x -O3 -fPIC -Wall -Wextra -Werror -pedantic)
-add_definitions( -Wno-unused-parameter )
+# -----------------------------------------------------------------------------
+# SET THE COMPILER
+# -----------------------------------------------------------------------------
 
-# Add the extara flags for the TIMEPROF target
-# (use with "cmake -DCMAKE_BUILD_TYPE=TIMEPROF ..")
-set(CMAKE_CXX_FLAGS_TIMEPROF "-g -pg")
+# Force using the "mpicxx" compiler wrapper.
+include(CMakeForceCompiler)
+cmake_force_cxx_compiler(mpicxx "System CXX compiler with MPI wrapping")
 
-# Compile the source.
+# Check for supported compiler and set the flags.
+if (CMAKE_COMPILER_IS_GNUCXX)
+  set( CMAKE_CXX_FLAGS "-std=c++0x -O3 -fPIC -Wall -Wextra -Werror -pedantic")
+  set( CMAKE_CXX_FLAGS_DEBUG "-g -pg" )
+  set( CMAKE_CXX_FLAGS_RELEASE  "" )
+  message( STATUS "Using g++ via mpicxx" )
+
+  # Allow for unused parameters.
+  add_definitions( -Wno-unused-parameter )
+
+  # Workaround for known mpich c++ bug.
+  add_definitions( -DMPICH_IGNORE_CXX_SEEK )
+  add_definitions( -DMPICH_SKIP_MPICXX )
+
+else()
+  message( FATAL_ERROR "Invalid CXX compiler. Make sure you have g++ installed" )
+endif ()
+
+# Includsion from the source.
+include_directories( ${KMCLib_SOURCE_DIR}/src )
+
+
+# -----------------------------------------------------------------------------
+# ADD THE SRC TARGET
+# -----------------------------------------------------------------------------
+
 add_subdirectory(src)
 
-# Compile the tests.
+# -----------------------------------------------------------------------------
+# ADD THE TESTS TARGET
+# -----------------------------------------------------------------------------
+
 add_subdirectory(unittest)
 
-# Make the wrapping.
+# -----------------------------------------------------------------------------
+# ADD THE WRAPPINGS
+# -----------------------------------------------------------------------------
+
 add_subdirectory(wrap)
 
-# Install.
+# -----------------------------------------------------------------------------
+# ADD THE INSTALL TARGET
+# -----------------------------------------------------------------------------
+
 install( FILES ${CMAKE_BINARY_DIR}/wrap/Backend.py ${CMAKE_BINARY_DIR}/wrap/_Backend.so
          DESTINATION ${CMAKE_BINARY_DIR}/../../python/src/KMCLib/Backend/ )
 
