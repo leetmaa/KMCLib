@@ -247,10 +247,10 @@ class KMCLatticeModelTest(unittest.TestCase):
         self.__files_to_remove.append(trajectory_filename)
 
         # The control parameters.
-        control_parameters = KMCControlParameters(number_of_steps=3000,
-                                                  dump_interval=1000)
+        control_parameters = KMCControlParameters(number_of_steps=1000,
+                                                  dump_interval=500)
 
-        # Run the model for 2000 steps.
+        # Run the model for 1000 steps.
         ab_flip_model.run(control_parameters,
                           trajectory_filename=trajectory_filename)
 
@@ -275,7 +275,9 @@ class KMCLatticeModelTest(unittest.TestCase):
         # Note that the average should be 20.0% over a long run.
         # It is pure luck that it is exact at this particular
         # step with the presently used random number seed.
-        self.assertAlmostEqual(20.0, nA * 100.0 / (nA + nB), 3.0 )
+        fraction =  nA * 100.0 / (nA + nB)
+        target = 20.0
+        self.assertAlmostEqual(fraction, target, 3)
 
     def testCustomRatesRun(self):
         """ Test the run of an A-B flip model with custom rates. """
@@ -326,15 +328,15 @@ class KMCLatticeModelTest(unittest.TestCase):
         self.__files_to_remove.append(trajectory_filename)
 
         # The control parameters.
-        control_parameters = KMCControlParameters(number_of_steps=3000,
-                                                  dump_interval=1000)
+        control_parameters = KMCControlParameters(number_of_steps=1000,
+                                                  dump_interval=500)
 
-        # Run the model for 2000 steps.
+        # Run the model for 1000 steps.
         ab_flip_model.run(control_parameters,
                           trajectory_filename=trajectory_filename)
 
         # Read the first last frames from the trajectory file and check that
-        # the fraction of A is close to 20% in the last, and 0 in the first.
+        # the fraction of A is close to 75% in the last, and 0 in the first.
         global_dict = {}
         local_dict  = {}
         execfile(trajectory_filename, global_dict, local_dict)

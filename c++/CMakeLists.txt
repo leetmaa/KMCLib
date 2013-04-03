@@ -21,6 +21,7 @@ cmake_force_cxx_compiler(mpicxx "System CXX compiler with MPI wrapping")
 
 # Check for supported compiler and set the flags.
 if (CMAKE_COMPILER_IS_GNUCXX)
+
   set( CMAKE_CXX_FLAGS "-std=c++0x -O3 -fPIC -Wall -Wextra -Werror -pedantic")
   set( CMAKE_CXX_FLAGS_DEBUG "-g -pg" )
   set( CMAKE_CXX_FLAGS_RELEASE  "" )
@@ -35,7 +36,7 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 
 else()
   message( FATAL_ERROR "Invalid CXX compiler. Make sure you have g++ installed" )
-endif ()
+endif()
 
 # Includsion from the source.
 include_directories( ${KMCLib_SOURCE_DIR}/src )

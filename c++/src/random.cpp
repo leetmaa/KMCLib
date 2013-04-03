@@ -1,5 +1,5 @@
 /*
-  Copyright (c)  2012  Mikael Leetmaa
+  Copyright (c)  2012-2013  Mikael Leetmaa
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -21,7 +21,6 @@
 // The random number generator and distributions.
 
 static std::mt19937 rng;
-static std::uniform_real_distribution<double> distribution01(0.0,1.0);
 
 
 // -----------------------------------------------------------------------------
@@ -46,6 +45,6 @@ void seedRandom(const bool time_seed, int seed)
 //
 double randomDouble01()
 {
-    return distribution01(rng);
+    return std::generate_canonical<double, 32>(rng);
 }
 

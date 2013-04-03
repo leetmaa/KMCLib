@@ -30,11 +30,11 @@ void Test_Random::testSeedAndCall()
     double rnd4 = randomDouble01();
 
     // Here are the references.
-    const double ref_rnd0 = 0.607341330679530;
-    const double ref_rnd1 = 0.859434012378925;
-    const double ref_rnd2 = 0.892982684733411;
-    const double ref_rnd3 = 0.179153478230757;
-    const double ref_rnd4 = 0.758584006450279;
+    const double ref_rnd0 = 0.777702410239726;
+    const double ref_rnd1 = 0.607341330498457;
+    const double ref_rnd2 = 0.237541215959936;
+    const double ref_rnd3 = 0.859434012323618;
+    const double ref_rnd4 = 0.824278527405113;
 
     // Check.
     CPPUNIT_ASSERT_DOUBLES_EQUAL(rnd0, ref_rnd0, 1.0e-10);
