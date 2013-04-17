@@ -22,7 +22,7 @@ cmake_force_cxx_compiler(mpicxx "System CXX compiler with MPI wrapping")
 # Check for supported compiler and set the flags.
 if (CMAKE_COMPILER_IS_GNUCXX)
 
-  set( CMAKE_CXX_FLAGS "-std=c++0x -O3 -fPIC -Wall -Wextra -Werror -pedantic")
+  set( CMAKE_CXX_FLAGS "-O3 -fPIC -Wall -Wextra -Werror -pedantic")
   set( CMAKE_CXX_FLAGS_DEBUG "-g -pg" )
   set( CMAKE_CXX_FLAGS_RELEASE  "" )
   message( STATUS "Using g++ via mpicxx" )
@@ -40,6 +40,7 @@ endif()
 
 # Includsion from the source.
 include_directories( ${KMCLib_SOURCE_DIR}/src )
+include_directories( ${KMCLib_SOURCE_DIR}/externals/include )
 
 
 # -----------------------------------------------------------------------------

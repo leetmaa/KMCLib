@@ -5,5 +5,8 @@
 #
 
 file( GLOB CppSources *.cpp )
-add_library( src ${CppSources} )
+
+file( GLOB ExternalObj ${KMCLib_SOURCE_DIR}/externals/obj/*.o )
+
+add_library( src ${CppSources} ${ExternalObj} )
 
