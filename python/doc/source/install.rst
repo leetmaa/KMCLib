@@ -3,7 +3,7 @@ Installation
 =============
 
 The installation of KMCLib should be straight forward once you have
-an **-std=c++11 compatible C++ compiler** wrapped in an **mpicxx**
+a **C++ compiler** wrapped in an **mpicxx**
 script, as well as **cppunit**, **SWIG**,
 **mpi** and **Python2.7** with **numpy** installed on your
 system. This table shows on which systems we have successfully
@@ -33,7 +33,19 @@ procedure. Please follow the below steps carefully.
 Step #0: Fix dependencies
 ..........................
 Needless to say, without the above mentioned dependencies you will
-not get far. Install them properly before you take the next step.
+not get far. Please install them properly.
+
+The mersenne-twister pseudo random number generator used is
+included in the distribution. You will have to prepare this by
+typing ::
+
+    make
+
+in the KMCLib/c++/externals/ directory.
+
+Please make sure all your external dependencies are in place before
+you go to the next step.
+
 
 Step #1: Run CMake
 ...................
@@ -51,8 +63,8 @@ will have to give the search path to cmake using the -DCPPUNIT_DIR flag::
 .. NOTE::
 
    The present version of the build system assumes that your
-   **mpicxx** uses **g++**. No other compilers are supported unless
-   you implement the support yourself. You can check what the mpicxx
+   **mpicxx** uses **g++**. No other compilers are yet supported.
+   You can check what the mpicxx
    command does on your machine by typing "mpicxx -show" in a terminal.
 
 
