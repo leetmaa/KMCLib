@@ -1,4 +1,4 @@
-External dependencies
+External Dependencies
 ======================
 This folder holds all external libraries needed for the c++ part of KMCLib
 which are shipped with the distribution.
@@ -6,8 +6,8 @@ which are shipped with the distribution.
 We are only using one external library distributed here.
 
 
-CREDITS
-=======
+Credits
+========
 
 mersenne-twister
 -----------------
@@ -22,8 +22,8 @@ The patches we have applied to make this mersenne-twister implementation a
    std::generate_canonical<double, 32>(rng);
 can be found in the Makefile.
 
-LICENSE
-=======
+License
+========
 Each external library includes its own license information.
 Please see those files for details.
 
