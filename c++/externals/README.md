@@ -3,12 +3,6 @@ External Dependencies
 This folder holds all external libraries needed for the c++ part of KMCLib
 which are shipped with the distribution.
 
-We are only using one external library distributed here.
-
-
-Credits
-========
-
 mersenne-twister
 -----------------
 The "mersenne-twister" implementation we use here is written by
