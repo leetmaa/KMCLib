@@ -8,6 +8,9 @@
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
 
+# Find the proper python library.
+find_library( PYTHON  python ${PYTHON_LIBRARY_DIR} )
+
 # Add the inclusion paths.
 include_directories(${PYTHON_INCLUDE_PATH})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
@@ -22,7 +25,9 @@ set_source_files_properties(backend.i PROPERTIES SWIG_FLAGS "")
 
 # Set the flag to ignore error from SWIG auto generated code.
 add_definitions( -Wno-uninitialized )
+add_definitions( -Wno-missing-field-initializers )
+add_definitions( -Wno-write-strings )
 
 # Add the target.
-swig_add_module(Backend python backend.i)
-swig_link_libraries(Backend src)
+swig_add_module( Backend python backend.i )
+swig_link_libraries( Backend src ${PYTHON} )

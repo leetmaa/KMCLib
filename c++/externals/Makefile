@@ -4,6 +4,8 @@
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 #
 
+
+
 # -----------------------------------------------------------------------------
 # This is what we want to install.
 # -----------------------------------------------------------------------------
@@ -50,8 +52,13 @@ all: ./src/mersenne-twister-master/INSTALL_STAMP
 ./src/mersenne-twister-master/PATCH_STAMP: ./src/mersenne-twister-master/UNPACK_STAMP
 # Patch the .cpp and .h files.
 	cd ./src/mersenne-twister-master/ && \
-	sed s/"#include <stdio.h>"/"\/\/ -----------\n\/\/ Patch by KMCLib make system to account for undefined UINT32_MAX\n#include <limits>\n#define UINT32_MAX  (std::numeric_limits<uint32_t>::max())\n\/\/ ------------\n\n#include <stdio.h>"/g mersenne-twister.cpp | sed s/"\"mersenne-twister.h\""/"\"cslarsenmt.h\"\nusing namespace mt;\n"/g | sed s/"MT\[0\] = value;"/"index = 0; MT\[0\] = value;"/g | sed s/"float"/"double"/g | sed s/"1.0f"/"1.0d"/g > cslarsenmt.cpp && \
-	sed s/"#define MERSENNE_TWISTER_H"/"#define MERSENNE_TWISTER_H\nnamespace mt {"/g mersenne-twister.h | sed s/"#endif \/\/ MERSENNE_TWISTER_H"/"#endif \/\/ MERSENNE_TWISTER_H\n}"/g | sed s/"RAND_MAX"/"RAND_MAX_MT"/g | sed s/"float"/"double"/g > cslarsenmt.h && \
+	echo "namespace mt {\n" > tmp.h && \
+	cat mersenne-twister.h >> tmp.h && \
+	echo "\n} // Namespace KMCLib patch" >> tmp.h && \
+	cat tmp.h | sed s/"RAND_MAX"/"RAND_MAX_MT"/g | sed s/"float"/"double"/g > cslarsenmt.h && \
+	echo "// Patching\n#include <stdio.h>\n#include <stdint.h>\n#include \"cslarsenmt.h\"\n#include <limits>\n#ifndef UINT32_MAX\n#define UINT32_MAX  (std::numeric_limits<uint32_t>::max())\n#endif\nusing namespace mt;\n" > tmp.cpp &&\
+	cat mersenne-twister.cpp >> tmp.cpp &&\
+	cat tmp.cpp | sed s/"#include \"mersenne-twister.h\""/""/g | sed s/"MT\[0\] = value;"/"index = 0; MT\[0\] = value;"/g | sed s/"float"/"double"/g | sed s/"1.0f"/"1.0"/g > cslarsenmt.cpp && \
 	touch PATCH_STAMP && \
 	cd -
 
