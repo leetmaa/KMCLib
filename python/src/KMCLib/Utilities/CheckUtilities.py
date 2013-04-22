@@ -71,7 +71,7 @@ def checkCellVectors(cell_vectors):
     # Check for linear dependencies.
     cell_T = numpy.transpose(cell_vectors)
     cell_determinant = numpy.linalg.det(cell_T)
-    if cell_determinant < 0.1:
+    if cell_determinant < 0.00001:
         raise Error("The unit cell vectors are linearly dependent with determinant = %f."%(cell_determinant))
 
     # Done checking.

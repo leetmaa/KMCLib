@@ -89,7 +89,7 @@ class CheckUtilitiesTest(unittest.TestCase):
         self.assertRaises(Error, lambda: checkCellVectors(trial_vectors))
 
         # These should fail because of linear dependencies.
-        trial_vectors = [[1.0,0.0,0.0],[0.0,1.0,2.0],[0.5,0.5,1.01]]
+        trial_vectors = [[1.0,0.0,0.0],[0.0,1.0,2.0],[0.5,0.5,1.000001]]
         self.assertRaises(Error, lambda: checkCellVectors(trial_vectors))
 
         trial_vectors = [[1.0,0.0,0.0],[0.5,0.5,1.0],[0.0,1.0,2.0]]
