@@ -506,6 +506,38 @@ class KMCProcessTest(unittest.TestCase):
                                                basis_sites=basis_sites,
                                                rate_constant=1.0) )
 
+    def testReconstructMoveVectors(self):
+        """ Test that the helper function to reconstruct move vectors works as intended. """
+        # Get an empty process.
+        process = KMCProcess.__new__(KMCProcess)
+
+        # Give it coordinate values.
+        coordinates = [[ 0.0, 0.0, 0.0],
+                       [ 1.0, 2.0, 3.0],
+                       [-1.0, 1.0, 5.0],
+                       [ 8.0, 4.0, 7.0]]
+        process._KMCProcess__coordinates = coordinates
+
+        # Give it element values.
+        process._KMCProcess__elements_before = ["A","B","D","F"]
+        process._KMCProcess__elements_after  = ["A","F","D","B"]
+
+        move_vectors = process._KMCProcess__reconstructMoveVectors()
+
+        self.assertTrue( move_vectors is not None )
+        self.assertEqual( len(move_vectors), 2 )
+
+        self.assertEqual( move_vectors[0][0], 1 )
+        self.assertEqual( move_vectors[1][0], 3 )
+
+        ref_v1 = numpy.array([ 7.,  2.,  4.])
+        norm = numpy.linalg.norm(move_vectors[0][1] - ref_v1)
+        self.assertAlmostEqual( norm, 0.0, 10 )
+
+        ref_v2 = numpy.array([-7., -2., -4.])
+        norm = numpy.linalg.norm(move_vectors[1][1] - ref_v2)
+        self.assertAlmostEqual( norm, 0.0, 10 )
+
 
 # NEEDS IMPLEMENTATION
     def notestScript(self):
