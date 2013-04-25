@@ -200,8 +200,8 @@ and the second element is a cartesian vector of length 3, in internal
 coordinates defining where the moved index goes."""
 
         # Check that we have a sequence.
-        if not checkSequence(move_vectors, msg):
-            raise Error(msg)
+        move_vectors = checkSequence(move_vectors, msg)
+
         # Check the format of each element.
         for t in move_vectors:
             if not isinstance(t, tuple):
