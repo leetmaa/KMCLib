@@ -155,6 +155,29 @@ def checkSequenceOfPositiveIntegers(sequence, msg="The tested object is not a se
     return sequence
 
 
+def checkSequenceOfFloats(sequence, msg="The tested object is not a sequence of floats."):
+    """
+    Utility function to check if a parameter is a sequence of floating point numbers.
+
+    :param sequence: The sequence to check.
+
+    :param msg: Non-default error message to print.
+    :type msg: string
+
+    :returns: The valid sequence.
+    """
+    # Check that it is a sequence.
+    sequence = checkSequence(sequence, msg)
+
+    # Check that each element is a float.
+    for s in sequence:
+        if not isinstance(s, float):
+            raise Error(msg)
+
+    # Done.
+    return sequence
+
+
 def checkTypes(types, length):
     """
     Check that the types list is given as a list of strings with the correct

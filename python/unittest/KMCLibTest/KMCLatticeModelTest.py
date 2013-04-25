@@ -77,7 +77,11 @@ class KMCLatticeModelTest(unittest.TestCase):
         types1 = ["B","A"]
         sites  = [0,1,2]
         rate_0_1 = 3.5
-        process_0 = KMCProcess(coords, types0, types1, sites, rate_0_1)
+        process_0 = KMCProcess(coords,
+                               types0,
+                               types1,
+                               basis_sites=sites,
+                               rate_constant=rate_0_1)
 
         # A second process.
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
@@ -85,7 +89,11 @@ class KMCLatticeModelTest(unittest.TestCase):
         types1 = ["C","A"]
         sites  = [0,1,2]
         rate_0_1 = 1.5
-        process_1 = KMCProcess(coords, types0, types1, sites, rate_0_1)
+        process_1 = KMCProcess(coords,
+                               types0,
+                               types1,
+                               basis_sites=sites,
+                               rate_constant=rate_0_1)
 
         # Construct the interactions object.
         processes = [process_0, process_1]
@@ -146,19 +154,19 @@ class KMCLatticeModelTest(unittest.TestCase):
 
         types0 = ['A', 'B', 'B', 'B', 'B', 'A']
         types1 = ['B', 'A', 'B', 'B', 'B', 'A']
-        process_0 = KMCProcess(coordinates, types0, types1, sites, 1.0)
+        process_0 = KMCProcess(coordinates, types0, types1, None, sites, 1.0)
 
         types0 = ['A', 'B', 'B', 'B', 'B', 'B']
         types1 = ['B', 'B', 'A', 'B', 'B', 'B']
-        process_1 = KMCProcess(coordinates, types0, types1, sites, 1.0)
+        process_1 = KMCProcess(coordinates, types0, types1, None, sites, 1.0)
 
         types0 = ['A', 'B', 'B', 'B', 'B', 'B']
         types1 = ['B', 'B', 'B', 'A', 'B', 'B']
-        process_2 = KMCProcess(coordinates, types0, types1, sites, 1.0)
+        process_2 = KMCProcess(coordinates, types0, types1, None, sites, 1.0)
 
         types0 = ['A', 'B', 'B', 'B', 'B', 'B']
         types1 = ['B', 'B', 'B', 'B', 'A', 'B']
-        process_3 = KMCProcess(coordinates, types0, types1, sites, 1.0)
+        process_3 = KMCProcess(coordinates, types0, types1, None, sites, 1.0)
 
         # Processes.
         processes = [process_0,
@@ -232,8 +240,17 @@ class KMCLatticeModelTest(unittest.TestCase):
 
         # Interactions.
         coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
-        process_0 = KMCProcess(coordinates, ['A'], ['B'], [0], 4.0)
-        process_1 = KMCProcess(coordinates, ['B'], ['A'], [0], 1.0)
+        process_0 = KMCProcess(coordinates,
+                               ['A'],
+                               ['B'],
+                               basis_sites=[0],
+                               rate_constant=4.0)
+        process_1 = KMCProcess(coordinates,
+                               ['B'],
+                               ['A'],
+                               basis_sites=[0],
+                               rate_constant=1.0)
+
         processes = [process_0, process_1]
         interactions = KMCInteractions(processes)
 
@@ -308,8 +325,8 @@ class KMCLatticeModelTest(unittest.TestCase):
 
         # Interactions.
         coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
-        process_0 = KMCProcess(coordinates, ['A'], ['B'], [0], 4.0)
-        process_1 = KMCProcess(coordinates, ['B'], ['A'], [0], 1.0)
+        process_0 = KMCProcess(coordinates, ['A'], ['B'], None, [0], 4.0)
+        process_1 = KMCProcess(coordinates, ['B'], ['A'], None, [0], 1.0)
         processes = [process_0, process_1]
         interactions = KMCInteractions(processes,
                                        implicit_wildcards=True)
@@ -395,13 +412,21 @@ class KMCLatticeModelTest(unittest.TestCase):
         types1 = ["B","A"]
         sites  = [0,1,2,3,4]
         rate_0_1 = 3.5
-        process_0 = KMCProcess(coords, types0, types1, sites, rate_0_1)
+        process_0 = KMCProcess(coords,
+                               types0,
+                               types1,
+                               basis_sites=sites,
+                               rate_constant=rate_0_1)
 
         # A second process.
         types0 = ["A","C"]
         types1 = ["C","A"]
         rate_0_1 = 1.5
-        process_1 = KMCProcess(coords, types0, types1, sites, rate_0_1)
+        process_1 = KMCProcess(coords,
+                               types0,
+                               types1,
+                               basis_sites=sites,
+                               rate_constant=rate_0_1)
 
         # Construct the interactions object.
         processes = [process_0, process_1]
@@ -450,13 +475,21 @@ class KMCLatticeModelTest(unittest.TestCase):
         types0 = ["A","B"]
         types1 = ["B","A"]
         rate_0_1 = 3.5
-        process_0 = KMCProcess(coords, types0, types1, [0], rate_0_1)
+        process_0 = KMCProcess(coords,
+                               types0,
+                               types1,
+                               basis_sites=[0],
+                               rate_constant=rate_0_1)
 
         # A second process.
         types0 = ["A","C"]
         types1 = ["C","A"]
         rate_0_1 = 1.5
-        process_1 = KMCProcess(coords, types0, types1, [0], rate_0_1)
+        process_1 = KMCProcess(coords,
+                               types0,
+                               types1,
+                               basis_sites=[0],
+                               rate_constant=rate_0_1)
 
         # Construct the interactions object.
         processes = [process_0, process_1]

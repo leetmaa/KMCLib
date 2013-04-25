@@ -34,14 +34,14 @@ class KMCInteractionsTest(unittest.TestCase):
         types0 = ["A","*","B"]
         types1 = ["B","*","A"]
         rate_0_1 = 3.5
-        process_0 = KMCProcess(coords, types0, types1, [0,1,3], rate_0_1)
+        process_0 = KMCProcess(coords, types0, types1, basis_sites=[0,1,3], rate_constant=rate_0_1)
 
         # A second process.
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
         types0 = ["A","C"]
         types1 = ["C","A"]
         rate_0_1 = 1.5
-        process_1 = KMCProcess(coords, types0, types1, [0,1,3], rate_0_1)
+        process_1 = KMCProcess(coords, types0, types1, basis_sites=[0,1,3], rate_constant=rate_0_1)
 
         processes = [process_0, process_1]
 
@@ -71,14 +71,14 @@ class KMCInteractionsTest(unittest.TestCase):
         types0 = ["A","*","B"]
         types1 = ["B","*","A"]
         rate_0_1 = 3.5
-        process_0 = KMCProcess(coords, types0, types1, [0,1,3], rate_0_1)
+        process_0 = KMCProcess(coords, types0, types1, basis_sites=[0,1,3], rate_constant=rate_0_1)
 
         # A second process.
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
         types0 = ["A","C"]
         types1 = ["C","A"]
         rate_0_1 = 1.5
-        process_1 = KMCProcess(coords, types0, types1, [0,1,3], rate_0_1)
+        process_1 = KMCProcess(coords, types0, types1, basis_sites=[0,1,3], rate_constant=rate_0_1)
 
         processes = [process_0, process_1]
 
@@ -116,7 +116,7 @@ class KMCInteractionsTest(unittest.TestCase):
         types0 = ["A","*","B"]
         types1 = ["B","*","A"]
         rate_0_1 = 3.5
-        process_0 = KMCProcess(coords, types0, types1, [0,1,3], rate_0_1)
+        process_0 = KMCProcess(coords, types0, types1, basis_sites=[0,1,3], rate_constant=rate_0_1)
         # Construct and fail.
         self.assertRaises(Error, lambda: KMCInteractions(processes=process_0))
 
@@ -127,7 +127,7 @@ class KMCInteractionsTest(unittest.TestCase):
         types0 = ["A","*","B"]
         types1 = ["B","*","A"]
         rate_0_1 = 3.5
-        process_0 = KMCProcess(coords, types0, types1, [0,1,3], rate_0_1)
+        process_0 = KMCProcess(coords, types0, types1, basis_sites=[0,1,3], rate_constant=rate_0_1)
         # Construct and fail.
         self.assertRaises(Error, lambda: KMCInteractions(processes=[process_0, coords]))
 
@@ -138,14 +138,14 @@ class KMCInteractionsTest(unittest.TestCase):
         types0 = ["A","*","B"]
         types1 = ["B","*","A"]
         rate_0_1 = 3.5
-        process_0 = KMCProcess(coords, types0, types1, [0,1,3], rate_0_1)
+        process_0 = KMCProcess(coords, types0, types1, basis_sites=[0,1,3], rate_constant=rate_0_1)
 
         # A second process.
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
         types0 = ["A","C"]
         types1 = ["C","A"]
         rate_0_1 = 1.5
-        process_1 = KMCProcess(coords, types0, types1, [0,1,3], rate_0_1)
+        process_1 = KMCProcess(coords, types0, types1, basis_sites=[0,1,3], rate_constant=rate_0_1)
 
         processes = [process_0, process_1]
 
@@ -168,14 +168,14 @@ class KMCInteractionsTest(unittest.TestCase):
         types0 = ["A","D","B"]
         types1 = ["B","D","A"]
         rate_0_1 = 3.5
-        process_0 = KMCProcess(coords, types0, types1, [0,1,3], rate_0_1)
+        process_0 = KMCProcess(coords, types0, types1, basis_sites=[0,1,3], rate_constant=rate_0_1)
 
         # A second process.
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
         types0 = ["A","C"]
         types1 = ["C","A"]
         rate_0_1 = 1.5
-        process_1 = KMCProcess(coords, types0, types1, [0,1,3], rate_0_1)
+        process_1 = KMCProcess(coords, types0, types1, basis_sites=[0,1,3], rate_constant=rate_0_1)
 
         processes = [process_0, process_1]
 
@@ -226,13 +226,13 @@ class KMCInteractionsTest(unittest.TestCase):
         types0 = ["A","B"]
         types1 = ["B","A"]
         rate_0_1 = 3.5
-        process_0 = KMCProcess(coords, types0, types1, [0], rate_0_1)
+        process_0 = KMCProcess(coords, types0, types1, basis_sites=[0], rate_constant=rate_0_1)
 
         # A second process.
         types0 = ["A","C"]
         types1 = ["C","A"]
         rate_0_1 = 1.5
-        process_1 = KMCProcess(coords, types0, types1, [0], rate_0_1)
+        process_1 = KMCProcess(coords, types0, types1, basis_sites=[0], rate_constant=rate_0_1)
 
         processes = [process_0, process_1]
 
@@ -297,13 +297,13 @@ class KMCInteractionsTest(unittest.TestCase):
         types0 = ["A","B"]
         types1 = ["B","A"]
         rate_0_1 = 3.5
-        process_0 = KMCProcess(coords, types0, types1, [0,4], rate_0_1)
+        process_0 = KMCProcess(coords, types0, types1, basis_sites=[0,4], rate_constant=rate_0_1)
 
         # A second process.
         types0 = ["A","C"]
         types1 = ["C","A"]
         rate_0_1 = 1.5
-        process_1 = KMCProcess(coords, types0, types1, [0,1], rate_0_1)
+        process_1 = KMCProcess(coords, types0, types1, basis_sites=[0,1], rate_constant=rate_0_1)
 
         processes = [process_0, process_1]
 
@@ -336,13 +336,13 @@ class KMCInteractionsTest(unittest.TestCase):
         types0 = ["A","B"]
         types1 = ["B","A"]
         rate_0_1 = 3.5
-        process_0 = KMCProcess(coords, types0, types1, [0], rate_0_1)
+        process_0 = KMCProcess(coords, types0, types1, basis_sites=[0], rate_constant=rate_0_1)
 
         # A second process.
         types0 = ["A","C"]
         types1 = ["C","A"]
         rate_0_1 = 1.5
-        process_1 = KMCProcess(coords, types0, types1, [0], rate_0_1)
+        process_1 = KMCProcess(coords, types0, types1, basis_sites=[0], rate_constant=rate_0_1)
 
         processes = [process_0, process_1]
 

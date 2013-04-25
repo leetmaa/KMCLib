@@ -52,8 +52,8 @@ sites = [0, 1, 2]
 process_0 = KMCProcess(coordinates,
                        types_before,
                        types_after,
-                       sites,
-                       rate_constant)
+                       basis_sites=sites,
+                       rate_constant=rate_constant)
 
 coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
                [   1.000000e-01,  -8.000000e-01,  -2.100000e+00]]
@@ -66,8 +66,8 @@ sites = [0]
 process_1 = KMCProcess(coordinates,
                        types_before,
                        types_after,
-                       sites,
-                       rate_constant)
+                       basis_sites=sites,
+                       rate_constant=rate_constant)
 
 processes = [process_0, process_1]
 

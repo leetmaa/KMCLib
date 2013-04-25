@@ -28,11 +28,14 @@ class KMCProcessTest(unittest.TestCase):
         elements_before = ["A", "B"]
         elements_after = ["B", "A"]
         basis_sites = [0]
+        move_vectors = [(0, [1.0,2.0,3.0]),
+                        (1, [-1.0,-2.0,-3.0])]
 
         # Construct.
         p = KMCProcess(coordinates=coordinates,
                        elements_before=elements_before,
                        elements_after=elements_after,
+                       move_vectors=move_vectors,
                        basis_sites=basis_sites,
                        rate_constant=1.0)
 
@@ -45,18 +48,22 @@ class KMCProcessTest(unittest.TestCase):
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
         elements_before = ["A", "B"]
         elements_after = ["B", "A"]
+        move_vectors = [(0, [1.0,2.0,3.0]),
+                        (1, [-1.0,-2.0,-3.0])]
         basis_sites = [0]
 
         # Construct.
         p1 = KMCProcess(coordinates=coordinates,
                         elements_before=elements_before,
                         elements_after=elements_after,
+                        move_vectors=move_vectors,
                         basis_sites=basis_sites,
                         rate_constant=1.0)
         # Construct.
         p2 = KMCProcess(coordinates=coordinates,
                         elements_before=elements_before,
                         elements_after=elements_after,
+                        move_vectors=move_vectors,
                         basis_sites=basis_sites,
                         rate_constant=1.0)
         # Check.
@@ -65,11 +72,13 @@ class KMCProcessTest(unittest.TestCase):
 
         # Set the input again, different coordinates.
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0001]]
-
+        move_vectors = [(0, [1.0,2.0,3.0001]),
+                        (1, [-1.0,-2.0,-3.0001])]
         # Construct.
         p3 = KMCProcess(coordinates=coordinates,
                         elements_before=elements_before,
                         elements_after=elements_after,
+                        move_vectors=move_vectors,
                         basis_sites=basis_sites,
                         rate_constant=1.0)
         # Check.
@@ -81,11 +90,13 @@ class KMCProcessTest(unittest.TestCase):
         elements_before = ["A", "B", "C"]
         elements_after = ["B", "A", "A"]
         basis_sites = [0]
+        move_vectors = None
 
         # Construct.
         p4 = KMCProcess(coordinates=coordinates,
                         elements_before=elements_before,
                         elements_after=elements_after,
+                        move_vectors=move_vectors,
                         basis_sites=basis_sites,
                         rate_constant=1.0)
         # Check.
@@ -102,6 +113,7 @@ class KMCProcessTest(unittest.TestCase):
         p5 = KMCProcess(coordinates=coordinates,
                         elements_before=elements_before,
                         elements_after=elements_after,
+                        move_vectors=move_vectors,
                         basis_sites=basis_sites,
                         rate_constant=1.0)
         # Check.
@@ -118,6 +130,7 @@ class KMCProcessTest(unittest.TestCase):
         p6 = KMCProcess(coordinates=coordinates,
                         elements_before=elements_before,
                         elements_after=elements_after,
+                        move_vectors=move_vectors,
                         basis_sites=basis_sites,
                         rate_constant=1.0)
         # Check.
@@ -134,6 +147,7 @@ class KMCProcessTest(unittest.TestCase):
         p7 = KMCProcess(coordinates=coordinates,
                         elements_before=elements_before,
                         elements_after=elements_after,
+                        move_vectors=move_vectors,
                         basis_sites=basis_sites,
                         rate_constant=1.0)
         # Check.
@@ -150,10 +164,77 @@ class KMCProcessTest(unittest.TestCase):
         p7 = KMCProcess(coordinates=coordinates,
                         elements_before=elements_before,
                         elements_after=elements_after,
+                        move_vectors=move_vectors,
                         basis_sites=basis_sites,
                         rate_constant=1.0)
         # Check.
         eq = (p1 == p7)
+        self.assertFalse( eq )
+
+    def testEqualOperatorMoveVectors(self):
+        """ Test the equal operator w.r.t. the move vectors. """
+        # Set the input.
+        coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
+        elements_before = ["A", "B"]
+        elements_after = ["B", "A"]
+        move_vectors = [(0, [1.0,2.0,3.0]),
+                        (1, [-1.0,-2.0,-3.0])]
+        basis_sites = [0]
+
+        # Construct.
+        p1 = KMCProcess(coordinates=coordinates,
+                        elements_before=elements_before,
+                        elements_after=elements_after,
+                        move_vectors=move_vectors,
+                        basis_sites=basis_sites,
+                        rate_constant=1.0)
+
+        # Construct.
+        p2 = KMCProcess(coordinates=coordinates,
+                        elements_before=elements_before,
+                        elements_after=elements_after,
+                        move_vectors=None,
+                        basis_sites=basis_sites,
+                        rate_constant=1.0)
+
+        # The same move vectors should be reconstructed, so there are equal.
+        eq = (p1 == p2)
+        self.assertTrue( eq )
+
+        # If se explicitly set the move vectors to None on p2 they are not equal.
+        p2._KMCProcess__move_vectors = None
+        eq = (p1 == p2)
+        self.assertFalse( eq )
+
+        # And the other way around.
+        eq = (p2 == p1)
+        self.assertFalse( eq )
+
+        # Now, make the other one None also.
+        p1._KMCProcess__move_vectors = None
+        eq = (p1 == p2)
+        self.assertTrue( eq )
+
+        # Set explicitly to different vectors.
+        p1._KMCProcess__move_vectors = move_vectors = [(0, [1.0,2.0,3.0]),
+                                                       (1, [-1.0,-2.0,-3.0])]
+
+        p2._KMCProcess__move_vectors = move_vectors = [(1, [1.0,2.0,3.0]),
+                                                       (0, [-1.0,-2.0,-3.0])]
+        eq = (p1 == p2)
+        self.assertFalse( eq )
+
+        # And the vector.
+        p2._KMCProcess__move_vectors = move_vectors = [(0, [1.0,2.0,3.0]),
+                                                       (1, [-1.0,-2.1,-3.0])]
+        eq = (p1 == p2)
+        self.assertFalse( eq )
+
+        # The length.
+        p2._KMCProcess__move_vectors = move_vectors = [(0, [1.0,2.0,3.0]),
+                                                       (1, [-1.0,-2.1,-3.0]),
+                                                       (2, [ 1.0,-2.1,-3.0])]
+        eq = (p1 == p2)
         self.assertFalse( eq )
 
     def testConstructionFailCoordinates(self):
@@ -161,6 +242,8 @@ class KMCProcessTest(unittest.TestCase):
         # Set the input.
         elements_before = ["A", "B"]
         elements_after = ["B", "A"]
+        move_vectors = [(0, [1.0,2.0,3.0]),
+                        (1, [-1.0,-2.0,-3.0])]
         basis_sites = [0]
 
         # Fail on wrong dimension.
@@ -168,6 +251,7 @@ class KMCProcessTest(unittest.TestCase):
                            lambda : KMCProcess(coordinates=[[0.0, 0.0],[1.0, 2.0, 3.0]],
                                                elements_before=elements_before,
                                                elements_after=elements_after,
+                                               move_vectors=move_vectors,
                                                basis_sites=basis_sites,
                                                rate_constant=1.0) )
         # Fail on wrong dimension.
@@ -175,6 +259,7 @@ class KMCProcessTest(unittest.TestCase):
                            lambda : KMCProcess(coordinates=[[0.0, 0.0, 1.3],[2.0, 3.0]],
                                                elements_before=elements_before,
                                                elements_after=elements_after,
+                                               move_vectors=move_vectors,
                                                basis_sites=basis_sites,
                                                rate_constant=1.0) )
         # Fail on wrong dimension.
@@ -182,6 +267,7 @@ class KMCProcessTest(unittest.TestCase):
                            lambda : KMCProcess(coordinates=[[0.0, 0.0, 1.3, 3.4, 2.0, 3.0]],
                                                elements_before=elements_before,
                                                elements_after=elements_after,
+                                               move_vectors=move_vectors,
                                                basis_sites=basis_sites,
                                                rate_constant=1.0) )
 
@@ -190,6 +276,7 @@ class KMCProcessTest(unittest.TestCase):
                            lambda : KMCProcess(coordinates=[[0, 0, 1], [3, 2, 3]],
                                                elements_before=elements_before,
                                                elements_after=elements_after,
+                                               move_vectors=move_vectors,
                                                basis_sites=basis_sites,
                                                rate_constant=1.0) )
 
@@ -198,6 +285,7 @@ class KMCProcessTest(unittest.TestCase):
                            lambda : KMCProcess(coordinates="[[0, 0, 1], [3, 2, 3]]",
                                                elements_before=elements_before,
                                                elements_after=elements_after,
+                                               move_vectors=move_vectors,
                                                basis_sites=basis_sites,
                                                rate_constant=1.0) )
 
@@ -207,6 +295,7 @@ class KMCProcessTest(unittest.TestCase):
                                                             ["3.1", "2.1", "3"]],
                                                elements_before=elements_before,
                                                elements_after=elements_after,
+                                               move_vectors=move_vectors,
                                                basis_sites=basis_sites,
                                                rate_constant=1.0) )
 
@@ -217,12 +306,15 @@ class KMCProcessTest(unittest.TestCase):
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
         elements_before = ["A", "B"]
         elements_after = ["B", "A"]
+        move_vectors = [(0, [1.0,2.0,3.0]),
+                        (1, [-1.0,-2.0,-3.0])]
         basis_sites = [0]
 
         self.assertRaises( Error,
                            lambda : KMCProcess(coordinates=coordinates,
                                                elements_before="A,B",
                                                elements_after=elements_after,
+                                               move_vectors=move_vectors,
                                                basis_sites=basis_sites,
                                                rate_constant=1.0) )
 
@@ -230,6 +322,7 @@ class KMCProcessTest(unittest.TestCase):
                            lambda : KMCProcess(coordinates=coordinates,
                                                elements_before=elements_before,
                                                elements_after="B,A",
+                                               move_vectors=move_vectors,
                                                basis_sites=basis_sites,
                                                rate_constant=1.0) )
 
@@ -239,6 +332,8 @@ class KMCProcessTest(unittest.TestCase):
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0], [1.2,3.4,5.6]]
         elements_before = ["A", "B"]
         elements_after = ["B", "A", "B"]
+        move_vectors = [(0, [1.0,2.0,3.0]),
+                        (1, [-1.0,-2.0,-3.0])]
         basis_sites = [0]
 
         self.assertRaises( Error,
@@ -246,6 +341,7 @@ class KMCProcessTest(unittest.TestCase):
                                                elements_before=elements_before,
                                                elements_after=elements_after,
                                                basis_sites=basis_sites,
+                                               move_vectors=move_vectors,
                                                rate_constant=1.0) )
 
         elements_before = ["A", "B", "B"]
@@ -255,6 +351,7 @@ class KMCProcessTest(unittest.TestCase):
                                                elements_before=elements_before,
                                                elements_after=elements_after,
                                                basis_sites=basis_sites,
+                                               move_vectors=move_vectors,
                                                rate_constant=1.0) )
 
 
@@ -268,6 +365,7 @@ class KMCProcessTest(unittest.TestCase):
                                                elements_before=elements_before,
                                                elements_after=elements_after,
                                                basis_sites=basis_sites,
+                                               move_vectors=move_vectors,
                                                rate_constant=1.0) )
 
     def testConstructionFailBasisSites(self):
@@ -276,12 +374,15 @@ class KMCProcessTest(unittest.TestCase):
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
         elements_before = ["A", "B"]
         elements_after = ["B", "A"]
+        move_vectors = [(0, [1.0,2.0,3.0]),
+                        (1, [-1.0,-2.0,-3.0])]
 
         basis_sites = ["First"]
         self.assertRaises( Error,
                            lambda : KMCProcess(coordinates=coordinates,
                                                elements_before=elements_before,
                                                elements_after=elements_after,
+                                               move_vectors=move_vectors,
                                                basis_sites=basis_sites,
                                                rate_constant=1.0) )
 
@@ -290,6 +391,7 @@ class KMCProcessTest(unittest.TestCase):
                            lambda : KMCProcess(coordinates=coordinates,
                                                elements_before=elements_before,
                                                elements_after=elements_after,
+                                               move_vectors=move_vectors,
                                                basis_sites=basis_sites,
                                                rate_constant=1.0) )
 
@@ -299,6 +401,7 @@ class KMCProcessTest(unittest.TestCase):
                                                elements_before=elements_before,
                                                elements_after=elements_after,
                                                basis_sites=basis_sites,
+                                               move_vectors=move_vectors,
                                                rate_constant=1.0) )
 
     def testConstructionFailRate(self):
@@ -307,6 +410,8 @@ class KMCProcessTest(unittest.TestCase):
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
         elements_before = ["A", "B"]
         elements_after = ["B", "A"]
+        move_vectors = [(0, [1.0,2.0,3.0]),
+                        (1, [-1.0,-2.0,-3.0])]
         basis_sites = [0]
 
         # Negative rate.
@@ -314,6 +419,7 @@ class KMCProcessTest(unittest.TestCase):
                            lambda : KMCProcess(coordinates=coordinates,
                                                elements_before=elements_before,
                                                elements_after=elements_after,
+                                               move_vectors=move_vectors,
                                                basis_sites=basis_sites,
                                                rate_constant=-1.0) )
         # Integer rate.
@@ -321,6 +427,7 @@ class KMCProcessTest(unittest.TestCase):
                            lambda : KMCProcess(coordinates=coordinates,
                                                elements_before=elements_before,
                                                elements_after=elements_after,
+                                               move_vectors=move_vectors,
                                                basis_sites=basis_sites,
                                                rate_constant=345) )
         # Wrong type.
@@ -328,10 +435,80 @@ class KMCProcessTest(unittest.TestCase):
                            lambda : KMCProcess(coordinates=coordinates,
                                                elements_before=elements_before,
                                                elements_after=elements_after,
+                                               move_vectors=move_vectors,
                                                basis_sites=basis_sites,
                                                rate_constant=[3.459]) )
 
-    def testScript(self):
+
+    def testConstructionFailMoveVectors(self):
+        """ Test that the wrong move vector input gives and error. """
+        coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
+        elements_before = ["A", "B"]
+        elements_after = ["B", "A"]
+        basis_sites = [0]
+
+        # The move vectors do not match configuration.
+        move_vectors = [(1, [1.0,2.0,3.0]),
+                        (0, [-1.0,-2.0,-3.0])]
+        self.assertRaises( Error,
+                           lambda : KMCProcess(coordinates=coordinates,
+                                               elements_before=elements_before,
+                                               elements_after=elements_after,
+                                               move_vectors=move_vectors,
+                                               basis_sites=basis_sites,
+                                               rate_constant=1.0) )
+
+        move_vectors = [(0, [1.1,2.0,3.0]),
+                        (1, [-1.0,-2.0,-3.0])]
+        self.assertRaises( Error,
+                           lambda : KMCProcess(coordinates=coordinates,
+                                               elements_before=elements_before,
+                                               elements_after=elements_after,
+                                               move_vectors=move_vectors,
+                                               basis_sites=basis_sites,
+                                               rate_constant=1.0) )
+
+        move_vectors = [(0, [1.0,2.0,3.0])]
+        self.assertRaises( Error,
+                           lambda : KMCProcess(coordinates=coordinates,
+                                               elements_before=elements_before,
+                                               elements_after=elements_after,
+                                               move_vectors=move_vectors,
+                                               basis_sites=basis_sites,
+                                               rate_constant=1.0) )
+
+        # Wrong format.
+        move_vectors = [(0, [0.0])]
+        self.assertRaises( Error,
+                           lambda : KMCProcess(coordinates=coordinates,
+                                               elements_before=elements_before,
+                                               elements_after=elements_after,
+                                               move_vectors=move_vectors,
+                                               basis_sites=basis_sites,
+                                               rate_constant=1.0) )
+
+        move_vectors = [(0, [1.0,2.0,3.0]),
+                        (1.2, [-1.0,-2.0,-3.0])]
+        self.assertRaises( Error,
+                           lambda : KMCProcess(coordinates=coordinates,
+                                               elements_before=elements_before,
+                                               elements_after=elements_after,
+                                               move_vectors=move_vectors,
+                                               basis_sites=basis_sites,
+                                               rate_constant=1.0) )
+
+        move_vectors = "[(0, [1.0,2.0,3.0]),(1, [-1.0,-2.0,-3.0])]"
+        self.assertRaises( Error,
+                           lambda : KMCProcess(coordinates=coordinates,
+                                               elements_before=elements_before,
+                                               elements_after=elements_after,
+                                               move_vectors=move_vectors,
+                                               basis_sites=basis_sites,
+                                               rate_constant=1.0) )
+
+
+# NEEDS IMPLEMENTATION
+    def notestScript(self):
         """ Test that the process can generate its own valid script. """
         # Set the input.
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
@@ -343,6 +520,7 @@ class KMCProcessTest(unittest.TestCase):
         p = KMCProcess(coordinates=coordinates,
                        elements_before=elements_before,
                        elements_after=elements_after,
+                       move_vectors=move_vectors,
                        basis_sites=basis_sites,
                        rate_constant=1.0)
 
@@ -372,7 +550,7 @@ process = KMCProcess(
         """ Test that the local configurations are correctly set up """
         coordinates = numpy.array([[1.0,2.0,3.0], [2.3,5.5,3.2]])
         elements1 = ["First", "Second"]
-        elements2 = ["Second", "One"]
+        elements2 = ["Second", "First"]
 
         # Construct the process.
         process = KMCProcess(coordinates,
