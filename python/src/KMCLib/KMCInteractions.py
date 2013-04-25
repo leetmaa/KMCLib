@@ -15,6 +15,7 @@ from KMCLib.KMCLocalConfiguration import KMCLocalConfiguration
 from KMCLib.KMCProcess import KMCProcess
 from KMCLib.Utilities.CheckUtilities import checkSequence
 from KMCLib.Utilities.CheckUtilities import checkPositiveInteger
+from KMCLib.Utilities.CheckUtilities import checkSequenceOf
 from KMCLib.KMCRateCalculatorPlugin import KMCRateCalculatorPlugin
 from KMCLib.Exceptions.Error import Error
 from KMCLib.Backend import Backend
@@ -40,7 +41,7 @@ class KMCInteractions(object):
         :type implicit_wildcards:  bool
         """
         # Check the processes input.
-        self.__processes = self.__checkProcessesInput(processes)
+        self.__processes = checkSequenceOf(processes, KMCProcess, msg="The 'processes' input must be a list of KMCProcess instances.")
 
         # Check the implicit wildcard flag.
         if implicit_wildcards is None:
@@ -100,27 +101,6 @@ the KMCRateCalculatorPlugin class itself. """
                 raise Error(msg)
         # All tests passed. Save the instantiated rate calculator on the class.
         self.__rate_calculator = rate_calculator
-
-    def __checkProcessesInput(self, processes):
-        """ """
-        """
-        Private helper function to check the process input parameter.
-        """
-        # Check that it is a sequence.
-        msg="The 'processes' input must be a list of KMCProcess instances."
-        processes = checkSequence(processes, msg)
-
-        # Check that its length is not zero.
-        if len(processes) == 0:
-            raise Error("Empty processes input to the KMCInteractions constructor.")
-
-        # Check that each element is an instance of type KMCProcess.
-        for process in processes:
-            if not isinstance(process, KMCProcess):
-                msg = "Each element in the list of processes must be an instance of KMCProcess."
-                raise Error(msg)
-        # Done.
-        return processes
 
     def implicitWildcards(self):
         """

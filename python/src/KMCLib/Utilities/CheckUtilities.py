@@ -12,7 +12,6 @@ import numpy
 
 from KMCLib.Exceptions.Error import Error
 
-
 def checkIndexWithinBounds(index, list, msg=None):
     """
     Check that the given index is within the bounds of the list.
@@ -144,11 +143,11 @@ def checkSequenceOfPositiveIntegers(sequence, msg="The tested object is not a se
     :returns: The valid sequence.
     """
     # Check that it is a sequence.
-    sequence = checkSequence(sequence, msg)
+    sequence = checkSequenceOf(sequence, int, msg)
 
     # Check that each element is a positive integer.
     for s in sequence:
-        if not isinstance(s, int) or s < 0:
+        if s < 0:
             raise Error(msg)
 
     # Done.
@@ -166,14 +165,33 @@ def checkSequenceOfFloats(sequence, msg="The tested object is not a sequence of 
 
     :returns: The valid sequence.
     """
+    return checkSequenceOf(sequence, float, msg)
+
+
+def checkSequenceOf(sequence, class_type, msg="The tested object is not a sequence of the correct type."):
+    """
+    Utility function to check if a parameter is a sequence of instances of a given type.
+
+    :param sequence: The sequence to check.
+
+    :param class_type: The class of which the elements in the sequence should be instances.
+
+    :param msg: Non-default error message to print.
+    :type msg: string
+
+    :returns: The valid sequence.
+    """
     # Check that it is a sequence.
     sequence = checkSequence(sequence, msg)
 
-    # Check that each element is a float.
-    for s in sequence:
-        if not isinstance(s, float):
-            raise Error(msg)
+    # Check that its length is not zero.
+    if len(sequence) == 0:
+        raise Error(msg)
 
+    # Check that each element is an instance of type KMCProcess.
+    for process in sequence:
+        if not isinstance(process, class_type):
+            raise Error(msg)
     # Done.
     return sequence
 

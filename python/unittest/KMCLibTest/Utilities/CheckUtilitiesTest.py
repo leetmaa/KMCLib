@@ -17,6 +17,7 @@ from KMCLib.Exceptions.Error import Error
 from KMCLib.Utilities.CheckUtilities import checkCoordinateList
 from KMCLib.Utilities.CheckUtilities import checkIndexWithinBounds
 from KMCLib.Utilities.CheckUtilities import checkSequence
+from KMCLib.Utilities.CheckUtilities import checkSequenceOf
 from KMCLib.Utilities.CheckUtilities import checkSequenceOfPositiveIntegers
 from KMCLib.Utilities.CheckUtilities import checkTypes
 from KMCLib.Utilities.CheckUtilities import checkCellVectors
@@ -171,11 +172,6 @@ class CheckUtilitiesTest(unittest.TestCase):
         sequence = [1,2,-4]
         self.assertRaises(Error, lambda: checkSequenceOfPositiveIntegers(sequence))
 
-        # This is valid.
-        sequence = []
-        checked_sequence = checkSequenceOfPositiveIntegers(sequence)
-        self.assertEqual(checked_sequence, sequence)
-
         # And this is.
         sequence = numpy.array([1,1,1,4])
         checked_sequence = checkSequenceOfPositiveIntegers(sequence)
@@ -184,6 +180,30 @@ class CheckUtilitiesTest(unittest.TestCase):
         # But this is not.
         sequence = [1.0,2.0,0.0]
         self.assertRaises(Error, lambda: checkSequenceOfPositiveIntegers(sequence))
+
+    def testCheckSequenceOf(self):
+        """ Test that the general sequence checking works. """
+        # Make a classes to check.
+        class Dummy:
+            def __init__(self):
+                pass
+        class Dummy2:
+            def __init__(self):
+                pass
+
+        # Setup a valid sequence.
+        sequence = [Dummy(),Dummy(), Dummy()]
+        checked_sequence = checkSequenceOf(sequence, Dummy, msg="Error error.")
+
+        # Check that it passes the test.
+        self.assertEqual(checked_sequence, sequence)
+
+        # Setup an invald sequence.
+        sequence = [Dummy(),Dummy2(), Dummy()]
+
+        # Check that it does not pass.
+        self.assertRaises(Error,
+                          lambda : checkSequenceOf(sequence, Dummy))
 
     def testCheckTypes(self):
         """ Test that the types checking works. """
