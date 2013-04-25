@@ -589,6 +589,55 @@ process = KMCProcess(
         # Check.
         self.assertEqual(ref_script, script)
 
+        # Construct with default move vectors.
+        p = KMCProcess(coordinates=coordinates,
+                       elements_before=elements_before,
+                       elements_after=elements_after,
+                       basis_sites=basis_sites,
+                       rate_constant=1.0)
+
+        # Get the script.
+        script = p._script()
+
+        # The generated script is still the same.
+        self.assertEqual(ref_script, script)
+
+        # Construct with complicated move and no move vectors.
+        coordinates = [[0.0, 0.0, 0.0],[1.0,0.0,0.0], [0.0,1.0,0.0]]
+        elements_before = ["A", "B", "C"]
+        elements_after = ["C", "A", "B"]
+        basis_sites = [0, 1, 4]
+
+        p = KMCProcess(coordinates=coordinates,
+                       elements_before=elements_before,
+                       elements_after=elements_after,
+                       basis_sites=basis_sites,
+                       rate_constant=1.0)
+
+        # Get the script.
+        script = p._script()
+
+        ref_script = """coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
+               [   1.000000e+00,   0.000000e+00,   0.000000e+00],
+               [   0.000000e+00,   1.000000e+00,   0.000000e+00]]
+
+elements_before = ['A','B','C']
+elements_after  = ['C','A','B']
+move_vectors    = None
+basis_sites     = [0,1,4]
+rate_constant   =    1.000000e+00
+
+process = KMCProcess(
+    coordinates=coordinates,
+    elements_before=elements_before,
+    elements_after=elements_after,
+    move_vectors=move_vectors,
+    basis_sites=basis_sites,
+    rate_constant=rate_constant)
+
+"""
+        self.assertEqual(script, ref_script)
+
     def testLocalConfigurations(self):
         """ Test that the local configurations are correctly set up """
         coordinates = numpy.array([[1.0,2.0,3.0], [2.3,5.5,3.2]])

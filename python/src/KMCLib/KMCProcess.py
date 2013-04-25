@@ -410,7 +410,7 @@ coordinates defining where the moved index goes."""
 
         # Setup the move vector string.
         if self.__move_vectors is None:
-            move_vectors_string = "move_vectors    = None"
+            move_vectors_string = "move_vectors    = None\n"
         else:
             move_vectors_string = "move_vectors    = ["
             indent = " "*19
