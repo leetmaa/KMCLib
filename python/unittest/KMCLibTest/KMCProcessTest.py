@@ -538,6 +538,14 @@ class KMCProcessTest(unittest.TestCase):
         norm = numpy.linalg.norm(move_vectors[1][1] - ref_v2)
         self.assertAlmostEqual( norm, 0.0, 10 )
 
+        # Give it  new element values.
+        process._KMCProcess__elements_before = ["A","B","G","F"]
+        process._KMCProcess__elements_after  = ["A","F","D","B"]
+
+        move_vectors = process._KMCProcess__reconstructMoveVectors()
+
+        self.assertTrue( move_vectors is None )
+
 
 # NEEDS IMPLEMENTATION
     def notestScript(self):
