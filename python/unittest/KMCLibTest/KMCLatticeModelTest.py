@@ -548,6 +548,8 @@ coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
 
 elements_before = ['A','B']
 elements_after  = ['B','A']
+move_vectors    = [(  0,[   1.000000e-01,  -8.000000e-01,  -2.100000e+00]),
+                   (  1,[  -1.000000e-01,   8.000000e-01,   2.100000e+00])]
 basis_sites     = [0]
 rate_constant   =    3.500000e+00
 
@@ -555,6 +557,7 @@ process_0 = KMCProcess(
     coordinates=coordinates,
     elements_before=elements_before,
     elements_after=elements_after,
+    move_vectors=move_vectors,
     basis_sites=basis_sites,
     rate_constant=rate_constant)
 
@@ -563,6 +566,8 @@ coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
 
 elements_before = ['A','C']
 elements_after  = ['C','A']
+move_vectors    = [(  0,[   1.000000e-01,  -8.000000e-01,  -2.100000e+00]),
+                   (  1,[  -1.000000e-01,   8.000000e-01,   2.100000e+00])]
 basis_sites     = [0]
 rate_constant   =    1.500000e+00
 
@@ -570,6 +575,7 @@ process_1 = KMCProcess(
     coordinates=coordinates,
     elements_before=elements_before,
     elements_after=elements_after,
+    move_vectors=move_vectors,
     basis_sites=basis_sites,
     rate_constant=rate_constant)
 
@@ -639,6 +645,8 @@ coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
 
 elements_before = ['A','B']
 elements_after  = ['B','A']
+move_vectors    = [(  0,[   1.000000e-01,  -8.000000e-01,  -2.100000e+00]),
+                   (  1,[  -1.000000e-01,   8.000000e-01,   2.100000e+00])]
 basis_sites     = [0]
 rate_constant   =    3.500000e+00
 
@@ -646,6 +654,7 @@ process_0 = KMCProcess(
     coordinates=coordinates,
     elements_before=elements_before,
     elements_after=elements_after,
+    move_vectors=move_vectors,
     basis_sites=basis_sites,
     rate_constant=rate_constant)
 
@@ -654,6 +663,8 @@ coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
 
 elements_before = ['A','C']
 elements_after  = ['C','A']
+move_vectors    = [(  0,[   1.000000e-01,  -8.000000e-01,  -2.100000e+00]),
+                   (  1,[  -1.000000e-01,   8.000000e-01,   2.100000e+00])]
 basis_sites     = [0]
 rate_constant   =    1.500000e+00
 
@@ -661,6 +672,7 @@ process_1 = KMCProcess(
     coordinates=coordinates,
     elements_before=elements_before,
     elements_after=elements_after,
+    move_vectors=move_vectors,
     basis_sites=basis_sites,
     rate_constant=rate_constant)
 
@@ -678,6 +690,7 @@ my_model = KMCLatticeModel(
     configuration=configuration,
     interactions=interactions)
 """
+
         # Check.
         self.assertEqual(script, ref_script)
 

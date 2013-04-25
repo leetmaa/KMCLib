@@ -408,6 +408,22 @@ coordinates defining where the moved index goes."""
                 elements_after_string += line + "\n" + indent
                 line = ""
 
+        # Setup the move vector string.
+        if self.__move_vectors is None:
+            move_vectors_string = "move_vectors    = None"
+        else:
+            move_vectors_string = "move_vectors    = ["
+            indent = " "*19
+            vector_template = "[" + ff + "," + ff + "," + ff + "]"
+            for i, (index, vector) in enumerate(self.__move_vectors):
+
+                move_vectors_string += "( %2i,"%(index) + vector_template%(vector[0], vector[1], vector[2])
+
+                if i < len(self.__move_vectors)-1:
+                    move_vectors_string += "),\n" + indent
+                else:
+                    move_vectors_string += ")]\n"
+
         # Setup the basis sites list.
         basis_sites_string = "basis_sites     = ["
         for j,b in enumerate(self.__basis_sites):
@@ -425,12 +441,14 @@ coordinates defining where the moved index goes."""
             "    coordinates=coordinates,\n" + \
             "    elements_before=elements_before,\n" + \
             "    elements_after=elements_after,\n" + \
+            "    move_vectors=move_vectors,\n" +\
             "    basis_sites=basis_sites,\n" + \
             "    rate_constant=rate_constant)\n"
 
         return coords_string + "\n" + \
             elements_before_string + \
             elements_after_string  + \
+            move_vectors_string    + \
             basis_sites_string     + "\n" + \
             rate_constant_string   + "\n\n" + \
             process_string + "\n"

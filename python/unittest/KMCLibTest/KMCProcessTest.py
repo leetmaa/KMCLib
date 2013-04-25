@@ -546,17 +546,17 @@ class KMCProcessTest(unittest.TestCase):
 
         self.assertTrue( move_vectors is None )
 
-
-# NEEDS IMPLEMENTATION
-    def notestScript(self):
+    def testScript(self):
         """ Test that the process can generate its own valid script. """
         # Set the input.
         coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
         elements_before = ["A", "B"]
         elements_after = ["B", "A"]
-        basis_sites = [0]
+        move_vectors = [(0, [1.0, 2.0, 3.0]),
+                        (1, [-1.0, -2.0, -3.0])]
+        basis_sites = [0, 1, 4]
 
-        # Construct.
+        # Construct with given move vectors.
         p = KMCProcess(coordinates=coordinates,
                        elements_before=elements_before,
                        elements_after=elements_after,
@@ -572,18 +572,21 @@ class KMCProcessTest(unittest.TestCase):
 
 elements_before = ['A','B']
 elements_after  = ['B','A']
-basis_sites     = [0]
+move_vectors    = [(  0,[   1.000000e+00,   2.000000e+00,   3.000000e+00]),
+                   (  1,[  -1.000000e+00,  -2.000000e+00,  -3.000000e+00])]
+basis_sites     = [0,1,4]
 rate_constant   =    1.000000e+00
 
 process = KMCProcess(
     coordinates=coordinates,
     elements_before=elements_before,
     elements_after=elements_after,
+    move_vectors=move_vectors,
     basis_sites=basis_sites,
     rate_constant=rate_constant)
 
 """
-
+        # Check.
         self.assertEqual(ref_script, script)
 
     def testLocalConfigurations(self):
