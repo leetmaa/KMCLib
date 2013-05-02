@@ -237,6 +237,48 @@ class KMCProcessTest(unittest.TestCase):
         eq = (p1 == p2)
         self.assertFalse( eq )
 
+    def testEqualOperatorUnsorted(self):
+        """ Test the equal operator for unsorted coordinates. """
+        # Set the first input.
+        coordinates_1     = [[0.0, 0.0, 0.0],
+                             [1.0, 3.0, 1.0],
+                             [1.0, 2.0, 3.0]]
+        elements_before_1 = ["A", "C", "B"]
+        elements_after_1  = ["B", "C", "A"]
+        move_vectors_1    = [(0, [1.0,2.0,3.0]),
+                             (2, [-1.0,-2.0,-3.0])]
+        basis_sites_1     = [0]
+
+        # Set the second input.
+        coordinates_2     = [[0.0, 0.0, 0.0],
+                             [1.0, 2.0, 3.0],
+                             [1.0, 3.0, 1.0],]
+        elements_before_2 = ["A", "B", "C"]
+        elements_after_2  = ["B", "A", "C"]
+        move_vectors_2    = [(0, [1.0,2.0,3.0]),
+                             (1, [-1.0,-2.0,-3.0])]
+        basis_sites_2     = [0]
+
+        # Construct.
+        p1 = KMCProcess(coordinates=coordinates_1,
+                        elements_before=elements_before_1,
+                        elements_after=elements_after_1,
+                        move_vectors=move_vectors_1,
+                        basis_sites=basis_sites_1,
+                        rate_constant=1.0)
+
+        # Construct.
+        p2 = KMCProcess(coordinates=coordinates_2,
+                        elements_before=elements_before_2,
+                        elements_after=elements_after_2,
+                        move_vectors=move_vectors_2,
+                        basis_sites=basis_sites_2,
+                        rate_constant=1.0)
+
+        # These should be equal despite differing order.
+        eq = (p1 == p2)
+        self.assertTrue( eq )
+
     def testConstructionFailCoordinates(self):
         """ Test that construction fails with the wrong coordinates format. """
         # Set the input.

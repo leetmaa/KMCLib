@@ -31,7 +31,7 @@ def centerCoordinates(coordinates, index):
     return coordinates
 
 
-def sortCoordinates(coordinates, center, types1, types2=None):
+def sortCoordinatesDistance(coordinates, center, types1, types2=None):
     """
     Sort the coordinates with respect to distance form the provided center index and type.
 
@@ -46,7 +46,7 @@ def sortCoordinates(coordinates, center, types1, types2=None):
     :param types2: The second, optional, list of site types to co-sort with the coordinates.
     :type types2:  a list of strings
 
-    :returns: The sorted coordinates and sorted types.
+    :returns: The sorted coordinates, distances and sorted types.
     """
     if types2 is None:
         types2 = [ t for t in types1 ]
@@ -74,4 +74,41 @@ def sortCoordinates(coordinates, center, types1, types2=None):
 
     # Done.
     return (coordinates, distances, types1, types2)
+
+
+def sortCoordinates(coordinates, types1, types2=None):
+    """
+    Sort the coordinates with respect to their x,y and z coordinates
+
+    :param coordinates: The coordinates to sort.
+
+    :param types1: The first list of site types to co-sort with the coordinates.
+    :type types1:  a list of strings
+
+    :param types2: The second, optional, list of site types to co-sort with the coordinates.
+    :type types2:  a list of strings
+
+    :returns: The sorted coordinates and sorted types.
+    """
+    if types2 is None:
+        types2 = [ t for t in types1 ]
+
+    # Get the types.
+    dt = coordinates.dtype
+    dtype = [('x',dt),('y',dt),('z',dt),('type1', numpy.array(types1).dtype),('type2', numpy.array(types2).dtype)]
+
+    # Setup the data to sort.
+    to_sort = numpy.array([ (c[0],c[1],c[2],t1,t2) for (c,t1,t2) in zip(coordinates,types1, types2)],
+                          dtype=dtype)
+
+    # Sort.
+    sorted_list = numpy.sort(to_sort, order=['x','y','z','type1'])
+
+    # Extract the info.
+    coordinates = numpy.array([[c[0],c[1],c[2]] for c in sorted_list])
+    types1      = [c[3] for c in sorted_list]
+    types2      = [c[4] for c in sorted_list]
+
+    # Done.
+    return (coordinates, types1, types2)
 

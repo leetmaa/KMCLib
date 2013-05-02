@@ -10,6 +10,7 @@
 import numpy
 
 from KMCLib.Utilities.CoordinateUtilities import centerCoordinates
+from KMCLib.Utilities.CoordinateUtilities import sortCoordinates
 from KMCLib.Utilities.CheckUtilities import checkCoordinateList
 from KMCLib.Utilities.CheckUtilities import checkTypes
 from KMCLib.Utilities.CheckUtilities import checkSequence
@@ -252,7 +253,6 @@ coordinates defining where the moved index goes."""
 
     def __eq__(self, other):
         """ Implements the equal oprator. """
-
         # Check the length of the basis sites.
         if len(other.basisSites()) != len(self.basisSites()):
             return False
@@ -266,35 +266,59 @@ coordinates defining where the moved index goes."""
                 numpy.shape(self.localConfigurations()[0].coordinates())[0]:
             return False
 
-        # Check the coordinates.
-        elif numpy.linalg.norm(other.localConfigurations()[0].coordinates() - \
-                                   self.localConfigurations()[0].coordinates()) > 0.00001:
-            return False
+        # Sort the coordinates of both processes before comparison.
+        (sorted_coords_self, sorted_types_before_self, sorted_types_after_self) = \
+            sortCoordinates(coordinates = self.localConfigurations()[0].coordinates(),
+                            types1 = self.localConfigurations()[0].types(),
+                            types2 = self.localConfigurations()[1].types())
 
-        # Check the types.
-        elif not all([s1 == s2 for s1,s2 in zip(other.localConfigurations()[0].types(),
-                                                self.localConfigurations()[0].types())]):
+        (sorted_coords_other, sorted_types_before_other, sorted_types_after_other) = \
+            sortCoordinates(coordinates = other.localConfigurations()[0].coordinates(),
+                            types1 = other.localConfigurations()[0].types(),
+                            types2 = other.localConfigurations()[1].types())
+
+        # Check the coordinates and types.
+        if numpy.linalg.norm(sorted_coords_self - sorted_coords_other) > 0.00001:
             return False
-        elif not all([s1 == s2 for s1,s2 in zip(other.localConfigurations()[1].types(),
-                                                self.localConfigurations()[1].types())]):
+        elif not all([s1 == s2 for s1,s2 in zip(sorted_types_before_self,
+                                                sorted_types_before_other)]):
+            return False
+        elif not all([s1 == s2 for s1,s2 in zip(sorted_types_after_self,
+                                                sorted_types_after_other)]):
             return False
 
         # Check the move vectors.
-        elif self.__move_vectors is not None and other._KMCProcess__move_vectors is None:
+        if self.__move_vectors is not None and other._KMCProcess__move_vectors is None:
             return False
         elif self.__move_vectors is None and other._KMCProcess__move_vectors is not None:
             return False
 
         if self.__move_vectors is not None:
+
+            # Check the length of the move vectors.
             if len(self.__move_vectors) != len(other._KMCProcess__move_vectors):
                 return False
-            elif self.__move_vectors is not None:
-                # Check the content of the move vectors.
-                for v1, v2 in zip(self.__move_vectors, other._KMCProcess__move_vectors):
-                    if v1[0] != v2[0]:
-                        return False
-                    elif numpy.linalg.norm(numpy.array(v1[1])-numpy.array(v2[1])) > 1.0e-8:
-                        return False
+
+            # To check if the move vectors are the same we need to know the mapping
+            # between the coordinates of self and other.
+            other_map = []
+            for i, coord1 in enumerate(self.localConfigurations()[0].coordinates()):
+                for j, coord2 in enumerate(other.localConfigurations()[0].coordinates()):
+                    if numpy.linalg.norm(coord1-coord2) < 0.0001:
+                        other_map.append(j)
+                        break
+
+            # For each move vector, loop through the others and find the one that matches.
+            for v1 in self.__move_vectors:
+
+                found = False
+                for v2 in other._KMCProcess__move_vectors:
+                    if v1[0] == other_map[v2[0]]:
+                        if numpy.linalg.norm(numpy.array(v1[1])-numpy.array(v2[1])) < 1.0e-8:
+                            found = True
+                            break
+                if not found:
+                    return False
 
         # Passed all tests, return true.
         return True

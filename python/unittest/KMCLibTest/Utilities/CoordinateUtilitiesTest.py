@@ -13,6 +13,7 @@ import numpy
 
 # Import from the module we test.
 from KMCLib.Utilities.CoordinateUtilities import centerCoordinates
+from KMCLib.Utilities.CoordinateUtilities import sortCoordinatesDistance
 from KMCLib.Utilities.CoordinateUtilities import sortCoordinates
 
 
@@ -20,15 +21,15 @@ from KMCLib.Utilities.CoordinateUtilities import sortCoordinates
 class CoordinateUtilitiesTest(unittest.TestCase):
     """ Class for testing the coordinate utility functions. """
 
-    def testSortCoordinates(self):
-        """ Test the coordinate sorting function. """
+    def testSortCoordinatesDistance(self):
+        """ Test the coordinate sorting wrt distances function. """
         # Lets, use these coordinates.
         coords = numpy.array([[2.0,1.0,0.0],[1.0,2.0,0.0],[0.0,0.0,0.0],[-8.9,12.0,4.0]])
         types  = ["B","A","C","A"]
         center = 2
 
         # Sort - wrt distance,type,x,y,z
-        (sorted_coords, sorted_distances, sorted_types, co_sorted_types) = sortCoordinates(coords, center, types)
+        (sorted_coords, sorted_distances, sorted_types, co_sorted_types) = sortCoordinatesDistance(coords, center, types)
 
         # Setup references.
         ref_coords = numpy.array([[0.0,0.0,0.0],[1.0,2.0,0.0],[2.0,1.0,0.0],[-8.9,12.0,4.0]])
@@ -39,6 +40,29 @@ class CoordinateUtilitiesTest(unittest.TestCase):
         self.assertAlmostEqual(numpy.linalg.norm(sorted_distances-ref_distances), 0.0, 10)
         self.assertAlmostEqual(numpy.linalg.norm(sorted_coords-ref_coords), 0.0, 10)
         self.assertEqual(sorted_types, ref_types)
+
+    def testSortCoordinates(self):
+        """ Test the coordinate sorting function. """
+        # Lets, use these coordinates.
+        coords = numpy.array([[2.0,1.0,0.0],[1.0,2.0,0.0],[0.0,0.0,0.0],[-8.9,12.0,4.0]])
+        types1  = ["B","A","C","A"]
+        types2  = ["D","G","C","V"]
+
+        # Sort - wrt x,y,z,type
+        (sorted_coords, sorted_types1, sorted_types2) = sortCoordinates(coords, types1, types2)
+
+        # Setup references.
+        ref_coords = numpy.array([[ -8.9,  12.,    4. ],
+                                  [  0.,    0.,    0. ],
+                                  [  1.,    2.,    0. ],
+                                  [  2.,    1.,    0. ]])
+        ref_types1 = ["A","C","A","B"]
+        ref_types2 = ['V', 'C', 'G', 'D']
+
+        # Check.
+        self.assertAlmostEqual(numpy.linalg.norm(sorted_coords-ref_coords), 0.0, 10)
+        self.assertEqual(sorted_types1, ref_types1)
+        self.assertEqual(sorted_types2, ref_types2)
 
     def testCenterCoordinates(self):
         """ Test the coordinate centering function. """
