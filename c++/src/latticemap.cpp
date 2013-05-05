@@ -208,6 +208,68 @@ const std::vector<int> & LatticeMap::indicesFromCell(const int i,
 
 // -----------------------------------------------------------------------------
 //
+int LatticeMap::indexFromMoveInfo(const int index,
+                                  const int i,
+                                  const int j,
+                                  const int k,
+                                  const int basis) const
+{
+    // PERFORMME
+
+    // Find out which cell the index is in.
+    int cell_i, cell_j, cell_k;
+    indexToCell(index, cell_i, cell_j, cell_k);
+
+    // Get the new cell indices.
+    cell_i += i;
+    cell_j += j;
+    cell_k += k;
+
+    // Wrap the cell indices.
+    if (periodic_[0])
+    {
+        if (cell_i < 0)
+        {
+            cell_i += repetitions_[0];
+        }
+        else if (cell_i >= repetitions_[0])
+        {
+            cell_i -= repetitions_[0];
+        }
+    }
+
+    if (periodic_[1])
+    {
+        if (cell_j < 0)
+        {
+            cell_j += repetitions_[1];
+        }
+        else if (cell_j >= repetitions_[1])
+        {
+            cell_j -= repetitions_[1];
+        }
+    }
+
+    if (periodic_[2])
+    {
+        if (cell_k < 0)
+        {
+            cell_k += repetitions_[2];
+        }
+        else if (cell_k >= repetitions_[2])
+        {
+            cell_k -= repetitions_[2];
+        }
+    }
+
+    // Get the indices in the wrapped cell and return the
+    // index at the given basis position.
+    return indicesFromCell(cell_i, cell_j, cell_k)[basis];
+}
+
+
+// -----------------------------------------------------------------------------
+//
 void LatticeMap::indexToCell(const int index,
                              int & cell_i,
                              int & cell_j,

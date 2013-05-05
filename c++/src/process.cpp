@@ -1,5 +1,5 @@
 /*
-  Copyright (c)  2012  Mikael Leetmaa
+  Copyright (c)  2012-2013  Mikael Leetmaa
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -77,6 +77,13 @@ Process::Process(const Configuration & first,
         m.distance    = distance;
         m.coordinate  = coordinate;
         m.index       = -1;
+
+        // FIXME
+        m.move_cell_i = 0;
+        m.move_cell_j = 0;
+        m.move_cell_k = 0;
+        m.move_basis  = 0;
+
         minimal_match_list_.push_back(m);
 
         // If the first and second type differ increase the length of the

@@ -29,13 +29,17 @@ Configuration::Configuration(std::vector<std::vector<double> > const & coordinat
     elements_(elements),
     match_lists_(elements_.size())
 {
-    // Setup the coordinates.
+    // Setup the coordinates and initial atom ids.
     for (size_t i = 0; i < coordinates.size(); ++i)
     {
         coordinates_.push_back( Coordinate(coordinates[i][0],
                                            coordinates[i][1],
                                            coordinates[i][2]));
+        atom_id_.push_back(i);
     }
+
+    // Set the atom id coordinates to the same as the coordinates to start with.
+    atom_id_coordinates_ = coordinates_;
 
     // Loop through the possible types map and find out what the maximum is.
     std::map<std::string,int>::const_iterator it1 = possible_types.begin();
@@ -54,9 +58,9 @@ Configuration::Configuration(std::vector<std::vector<double> > const & coordinat
     // Fill the list.
     it1 = possible_types.begin();
     for ( ; it1 != possible_types.end(); ++it1 )
-    {
-        type_names_[it1->second] = it1->first;
-    }
+     {
+         type_names_[it1->second] = it1->first;
+     }
 
     // Setup the types from the elements strings.
     for (size_t i = 0; i < elements_.size(); ++i)
@@ -64,7 +68,7 @@ Configuration::Configuration(std::vector<std::vector<double> > const & coordinat
         const std::string element = elements_[i];
         const int type = possible_types.find(element)->second;
         types_.push_back(type);
-    }
+     }
 }
 
 
@@ -220,8 +224,12 @@ const std::vector<MinimalMatchListEntry> & Configuration::minimalMatchList(const
 // -----------------------------------------------------------------------------
 //
 void Configuration::performProcess(Process & process,
-                                   const int site_index)
+                                   const int site_index,
+                                   const LatticeMap & lattice_map)
 {
+    // PERFORMME
+    // Need to time and optimize the new parts of the routine.
+
     // Get the proper match lists.
     const std::vector<MinimalMatchListEntry> & process_match_list = process.minimalMatchList();
     const std::vector<MinimalMatchListEntry> & site_match_list    = minimalMatchList(site_index);
@@ -230,6 +238,9 @@ void Configuration::performProcess(Process & process,
     std::vector<MinimalMatchListEntry>::const_iterator it1 = process_match_list.begin();
     std::vector<MinimalMatchListEntry>::const_iterator it2 = site_match_list.begin();
     std::vector<int>::iterator it3 = process.affectedIndices().begin();
+
+    // Local vector to store the atom id updates in.
+    std::vector<std::pair<int,int> > id_updates;
 
     // Loop over the match lists and get the types and indices out.
     for( ; it1 != process_match_list.end(); ++it1, ++it2)
@@ -243,12 +254,42 @@ void Configuration::performProcess(Process & process,
         // NOTE: The > 0 is needed for handling the wildcard match.
         if (types_[index] != update_type && update_type > 0)
         {
+            // Use the lattice map to calculate the corresponding new index.
+            const int new_index = lattice_map.indexFromMoveInfo(index,
+                                                                (*it1).move_cell_i,
+                                                                (*it1).move_cell_j,
+                                                                (*it1).move_cell_k,
+                                                                (*it1).move_basis);
+
+            // Get the atom id to apply the move vector to.
+            const int atom_id = atom_id_[index];
+
+            // Apply the move vector to the atom coordinate.
+            atom_id_coordinates_[atom_id] += (*it1).move_coordinate;
+
+            // Add the (new_index, atom_id) pair for update.
+            id_updates.push_back(std::pair<int,int>(new_index, atom_id));
+
             // Set the type at this index.
             types_[index]    = update_type;
             elements_[index] = type_names_[update_type];
+
             // Mark this index as affected.
             (*it3) = index;
             ++it3;
         }
+    }
+
+    // Perform the moves on the ids.
+    for (size_t i = 0; i < id_updates.size(); ++i)
+    {
+        const int index = id_updates[i].first;
+        const int id    = id_updates[i].second;
+
+        // Update the atom id at this lattice site index.
+        atom_id_[index] = id;
+
+        // Update the coordinate of this atom id.
+        atom_id_coordinates_[id] = coordinates_[index];
     }
 }

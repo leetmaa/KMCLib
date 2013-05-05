@@ -63,6 +63,21 @@ public:
                                              const int j,
                                              const int k) const;
 
+    /*! \brief Get the index to move to from the original
+     *         index and the move cell and basis information.
+     * \param     i : The relative move cell index in the a direction.
+     * \param     j : The relative move cell index in the b direction.
+     * \param     k : The relative cell index in the c direction.
+     * \param basis : The basis position in the cell.
+     * \return: The corresponding new index.
+     */
+    int indexFromMoveInfo(const int index,
+                          const int i,
+                          const int j,
+                          const int k,
+                          const int basis) const;
+
+
     /*! \brief Get the cell indices given a global index.
      * \param index (int) : The index to the the cell for.
      * \param i (out): The cell index in the a direction.

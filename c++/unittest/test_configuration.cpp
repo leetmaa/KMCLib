@@ -206,7 +206,7 @@ void Test_Configuration::testPerformProcess()
     CPPUNIT_ASSERT_EQUAL( configuration.types()[2517], 1 );
 
     // Peform the process.
-    configuration.performProcess(p, 1434);
+    configuration.performProcess(p, 1434, lattice_map);
 
     // Check that the types were correctly updated.
     CPPUNIT_ASSERT_EQUAL( configuration.types()[1434], 2 );
@@ -390,7 +390,7 @@ void Test_Configuration::testMatchLists()
     CPPUNIT_ASSERT_EQUAL( configuration.types()[2517], 1 );
 
     // Peform the process.
-    configuration.performProcess(p, 1434);
+    configuration.performProcess(p, 1434, lattice_map);
 
     // Check that the types were correctly updated.
     CPPUNIT_ASSERT_EQUAL( configuration.types()[1434], 2 );

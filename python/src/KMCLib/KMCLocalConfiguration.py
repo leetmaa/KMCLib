@@ -14,7 +14,6 @@ from KMCLib.Utilities.CheckUtilities import checkCoordinateList
 from KMCLib.Utilities.CheckUtilities import checkIndexWithinBounds
 from KMCLib.Utilities.CheckUtilities import checkTypes
 from KMCLib.Utilities.CoordinateUtilities import centerCoordinates
-from KMCLib.Utilities.CoordinateUtilities import sortCoordinates
 from KMCLib.Utilities.ConversionUtilities import numpy2DArrayToStdVectorStdVectorDouble
 from KMCLib.Backend import Backend
 

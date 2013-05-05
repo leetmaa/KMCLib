@@ -29,11 +29,26 @@ struct MinimalMatchListEntry {
     /// The index in the global structure.
     int index;
 
+    /// The move vector cell component in the a direction.
+    int move_cell_i;
+
+    /// The move vector cell component in the b direction.
+    int move_cell_j;
+
+    /// The move vector cell component in the c direction.
+    int move_cell_k;
+
+    /// The basis component of the move vector.
+    int move_basis;
+
     /// The distance.
     double distance;
 
     /// The coordinate.
     Coordinate coordinate;
+
+    /// The move coordinate.
+    Coordinate move_coordinate;
 
 };
 
@@ -116,6 +131,7 @@ bool operator<(const MinimalMatchListEntry & m1,
         return (m1.distance < m2.distance);
     }
 }
+
 
 #endif // __MATCHLISTENTRY__
 

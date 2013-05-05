@@ -89,9 +89,11 @@ public:
      *  \param process : The process to perform, which will be updated with the affected
      *                   indices.
      *  \param site_index : The index of the site where the process should be performed.
+     *  \param lattice_map : The lattice map needed for proper move vector indexing.
      */
     void performProcess(Process & process,
-                        const int site_index);
+                        const int site_index,
+                        const LatticeMap & lattice_map);
 
     /*! \brief Query for the type name.
      *  \param type: The type integer to get the name for.
@@ -103,14 +105,20 @@ protected:
 
 private:
 
-    /// The coordinates.
+    /// The lattice coordinates.
     std::vector<Coordinate> coordinates_;
 
-    /// The elements.
+    /// The coordinates for each atom id.
+    std::vector<Coordinate> atom_id_coordinates_;
+
+    /// The lattice elements.
     std::vector<std::string> elements_;
 
-    /// The elements.
+    /// The the lattice elements in integer representation.
     std::vector<int> types_;
+
+    /// The atom id for each lattice point.
+    std::vector<int> atom_id_;
 
     /// The mapping from type integers to names.
     std::vector<std::string> type_names_;

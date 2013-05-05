@@ -59,6 +59,12 @@ public:
     inline
     Coordinate operator-(const Coordinate & other) const;
 
+    /*! \brief 'add into' operator.
+     *  \param other : The Coordinate to add into this.
+     */
+    inline
+    void operator+=(const Coordinate & other);
+
     /*! \brief 'access' operator.
      *  \param i : The index to get out (0,1 or 2) corresponding to x,y,z
      *  \return : The queried component.
@@ -180,6 +186,16 @@ Coordinate Coordinate::operator-(const Coordinate & other) const
     return Coordinate(x_ - other.x_,
                       y_ - other.y_,
                       z_ - other.z_);
+}
+
+
+// -----------------------------------------------------------------------------
+//
+void Coordinate::operator+=(const Coordinate & other)
+{
+    x_ += other.x_;
+    y_ += other.y_;
+    z_ += other.z_;
 }
 
 
