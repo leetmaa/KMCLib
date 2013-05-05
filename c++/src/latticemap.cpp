@@ -263,8 +263,9 @@ int LatticeMap::indexFromMoveInfo(const int index,
     }
 
     // Get the indices in the wrapped cell and return the
-    // index at the given basis position.
-    return indicesFromCell(cell_i, cell_j, cell_k)[basis];
+    // index at the given relative basis position.
+    const int basis_index = basis + basisSiteFromIndex(index);
+    return indicesFromCell(cell_i, cell_j, cell_k)[basis_index];
 }
 
 

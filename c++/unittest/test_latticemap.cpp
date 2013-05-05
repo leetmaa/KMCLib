@@ -65,7 +65,6 @@ void Test_LatticeMap::testConstructionAndQuery()
 //
 void Test_LatticeMap::testIndicesFromCell()
 {
-    // LOCAL SCOPE FOR CLARITY
     {
         // A map with 1 in the basis.
         const int basis = 1;
@@ -196,6 +195,80 @@ void Test_LatticeMap::testIndicesFromCell()
     }
 
     // DONE
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_LatticeMap::testIndexFromMoveInfo()
+{
+    // Get us a lattice map to test. Non-periodic.
+    const int map_basis = 3;
+    std::vector<int> repetitions(3);
+    repetitions[0] = 4;
+    repetitions[1] = 2;
+    repetitions[2] = 3;
+    const std::vector<bool> periodicity(3, false);
+    const LatticeMap map(map_basis, repetitions, periodicity);
+
+    // Setup a dummy move info.
+    const int move_i =  1;
+    const int move_j = -1;
+    const int move_k = -2;
+    const int basis  = -1;
+
+    // Index 16 is in cell 0,1,2 at basis possition 1.
+    const int index  = 16;
+
+    // The above move info should take us to the index
+    // at basis position 0 in cell 1, 0, 0.
+    const int ref_index = map.indicesFromCell(1,0,0)[0];
+
+    const int test_index = map.indexFromMoveInfo(index,
+                                                 move_i,
+                                                 move_j,
+                                                 move_k,
+                                                 basis);
+
+    // Check that this is true.
+    CPPUNIT_ASSERT_EQUAL( ref_index, test_index );
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_LatticeMap::testIndexFromMoveInfoPeriodic()
+{
+    // Get us a lattice map to test. Periodic.
+    const int map_basis = 3;
+    std::vector<int> repetitions(3);
+    repetitions[0] = 4;
+    repetitions[1] = 2;
+    repetitions[2] = 3;
+    const std::vector<bool> periodicity(3, true);
+    const LatticeMap map(map_basis, repetitions, periodicity);
+
+    // Setup a dummy move info.
+    const int move_i = -3;
+    const int move_j = -1;
+    const int move_k = -2;
+    const int basis  =  0;
+
+    // Index 2 is in cell 0,0,0 at basis possition 2.
+    const int index  = 2;
+
+    // The above move info should take us to the index
+    // at basis position 2 in cell 1, 1, 1.
+    const int ref_index = map.indicesFromCell(1,1,1)[2];
+
+    const int test_index = map.indexFromMoveInfo(index,
+                                                 move_i,
+                                                 move_j,
+                                                 move_k,
+                                                 basis);
+
+    // Check that this is true.
+    CPPUNIT_ASSERT_EQUAL( ref_index, test_index );
 }
 
 
