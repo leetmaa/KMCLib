@@ -73,6 +73,30 @@ void Test_Coordinate::testLessOperator()
 
 // -------------------------------------------------------------------------- //
 //
+void Test_Coordinate::testAddIntoOperator()
+{
+    Coordinate c1(0.1, -1.2, 3.3);
+    const Coordinate ref_c1 = c1;
+    const Coordinate c2(-0.123, 0.2, 99.3);
+
+    // Add c2 into c1.
+    c1 += c2;
+
+    // Check against elementarty operation.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( c1.x(), ref_c1.x() + c2.x(), 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( c1.y(), ref_c1.y() + c2.y(), 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( c1.z(), ref_c1.z() + c2.z(), 1.0e-12 );
+
+    // Check against hardcoded ref.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( c1.x(), -0.023, 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( c1.y(), -1.000, 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( c1.z(),  102.6, 1.0e-12 );
+
+}
+
+
+// -------------------------------------------------------------------------- //
+//
 void Test_Coordinate::testEqualsOperator()
 {
     // Two equal.
