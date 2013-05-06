@@ -33,6 +33,12 @@ public:
      */
     Coordinate(const double x, const double y, const double z);
 
+    /*! \brief Get the norm of the coordinate vector.
+     *  \return : The norm of the coordinate vector.
+     */
+    inline
+    double norm() const;
+
     /*! \brief 'less than' for sorting.
      *  \param other : The Coordinate to compare.
      *  \return : (this < other)
@@ -58,6 +64,13 @@ public:
      */
     inline
     Coordinate operator-(const Coordinate & other) const;
+
+    /*! \brief 'plus' operator.
+     *  \param other : The Coordinate to add.
+     *  \return : this + other
+     */
+    inline
+    Coordinate operator+(const Coordinate & other) const;
 
     /*! \brief 'add into' operator.
      *  \param other : The Coordinate to add into this.
@@ -135,6 +148,13 @@ private:
 
 // -----------------------------------------------------------------------------
 //
+double Coordinate::norm() const
+{
+    return std::sqrt(x_*x_ + y_*y_ + z_*z_);
+}
+
+// -----------------------------------------------------------------------------
+//
 bool Coordinate::operator<(const Coordinate & other) const
 {
     if ( x_ < other.x_)
@@ -186,6 +206,16 @@ Coordinate Coordinate::operator-(const Coordinate & other) const
     return Coordinate(x_ - other.x_,
                       y_ - other.y_,
                       z_ - other.z_);
+}
+
+
+// -----------------------------------------------------------------------------
+//
+Coordinate Coordinate::operator+(const Coordinate & other) const
+{
+    return Coordinate(x_ + other.x_,
+                      y_ + other.y_,
+                      z_ + other.z_);
 }
 
 

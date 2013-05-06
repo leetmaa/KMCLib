@@ -20,6 +20,9 @@
 /// A minimal struct to replace the MatchListEntry class.
 struct MinimalMatchListEntry {
 
+    /// Flag for indicating if we have a move coordinate.
+    bool has_move_coordinate;
+
     /// The match type integer.
     int match_type;
 

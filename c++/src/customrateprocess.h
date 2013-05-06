@@ -36,12 +36,21 @@ public:
      *  \param rate          : The rate in Hz associated with the process.
      *  \param basis_sites   : The basis sites where this process is applicable.
      *  \param cutoff        : The cutoff distance in primitive cell fractional units.
+     *  \param move_origins  : The vector of indices in the local configurations
+                               that the move vectors originate from. This vector
+                               can be empty if no move vectors are used.
+     *  \param move_vectors  : The vector of coordinates for each moved atom.
+                               This vector can be empty if no move vectors are used,
+                               i.e., if only elements are moved on the lattice and no
+                               atom id moves are considered.
      */
     CustomRateProcess(const Configuration & first,
                       const Configuration & second,
                       const double rate,
                       const std::vector<int> & basis_sites,
-                      const double cutoff);
+                      const double cutoff,
+                      const std::vector<int> & move_origins=std::vector<int>(0),
+                      const std::vector<Coordinate> & move_vectors=std::vector<Coordinate>(0));
 
     /*! \brief Virtual destructor needed for inheritance.
      */

@@ -22,17 +22,17 @@
 Process::Process(const Configuration & first,
                  const Configuration & second,
                  const double rate,
-                 const std::vector<int> & basis_sites) :
+                 const std::vector<int> & basis_sites,
+                 const std::vector<int> & move_origins,
+                 const std::vector<Coordinate> & move_vectors) :
     range_(1),
     rate_(rate),
     cutoff_(0.0),
     sites_(0),
     affected_indices_(0),
-    basis_sites_(basis_sites)
+    basis_sites_(basis_sites),
+    id_moves_(0)
 {
-    // The check that the first and second configurartions match well enough
-    // should be carried out in python so there is no need to do it again here.
-
     // Get a handle to the coordinates and elements.
     const std::vector<Coordinate> & coords  = first.coordinates();
 
@@ -77,6 +77,7 @@ Process::Process(const Configuration & first,
         m.distance    = distance;
         m.coordinate  = coordinate;
         m.index       = -1;
+        m.has_move_coordinate = false;
 
         // FIXME
         m.move_cell_i = 0;
@@ -94,8 +95,50 @@ Process::Process(const Configuration & first,
         }
     }
 
+    // Loop over the move vector origins and place the move vectors
+    // on the match list entries before sorting.
+    for (size_t i = 0; i < move_origins.size(); ++i)
+    {
+        const int move_origin = move_origins[i];
+        minimal_match_list_[move_origin].move_coordinate = move_vectors[i];
+        minimal_match_list_[move_origin].has_move_coordinate = true;
+    }
+
     // Sort the match list.
     std::sort(minimal_match_list_.begin(), minimal_match_list_.end());
+
+    // Find out which index in the match list each move vector
+    // points to.
+    for (size_t i = 0; i < minimal_match_list_.size(); ++i)
+    {
+        // Get the move vector out.
+        const Coordinate & move_vector = minimal_match_list_[i].move_coordinate;
+
+        // If this move vector is different from zero we go on and try to find
+        // which index in the sorted match list it points to.
+
+        if (minimal_match_list_[i].has_move_coordinate)
+        {
+            // Setup the destination coordinate.
+            const Coordinate destination = minimal_match_list_[i].coordinate + move_vector;
+
+            for (size_t j = 0; j < minimal_match_list_.size(); ++j)
+            {
+                // We can only move to a coordinate which also has a
+                // move coordinate.
+                if (minimal_match_list_[j].has_move_coordinate && (j != i) )
+                {
+                    // If the difference is small enough we have a match.
+                    const Coordinate diff = minimal_match_list_[j].coordinate - destination;
+                    if (diff.norm() < 1.0e-5)
+                    {
+                        id_moves_.push_back(std::pair<int,int>(i,j));
+                        break;
+                    }
+                }
+            }
+        }
+    }
 }
 
 

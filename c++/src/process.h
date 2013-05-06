@@ -38,13 +38,24 @@ public:
                                coordinates around an active site.
      *  \param second        : The second configuration, to update the local
                                configuration with if the process is selected.
+                               It is assumed that the first and second configuration
+                               has identical coordinates.
      *  \param rate          : The rate in Hz associated with the process.
      *  \param basis_sites   : The basis sites where this process is applicable.
+     *  \param move_origins  : The vector of indices in the local configurations
+                               that the move vectors originate from. This vector
+                               can be empty if no move vectors are used.
+     *  \param move_vectors  : The vector of coordinates for each moved atom.
+                               This vector can be empty if no move vectors are used,
+                               i.e., if only elements are moved on the lattice and no
+                               atom id moves are considered.
      */
     Process(const Configuration & first,
             const Configuration & second,
             const double rate,
-            const std::vector<int> & basis_sites);
+            const std::vector<int> & basis_sites,
+            const std::vector<int> & move_origins=std::vector<int>(0),
+            const std::vector<Coordinate> & move_vectors=std::vector<Coordinate>(0));
 
     /*! \brief Virtual destructor needed for use as base class.
      */
@@ -125,6 +136,11 @@ public:
      */
     const std::vector<int> & basisSites() const { return basis_sites_; }
 
+    /*! \brief Query for the atom id moves.
+     *  \return : The pairs of match list indices corresponding to atom id moves.
+     */
+    const std::vector< std::pair<int,int> > & idMoves() const { return id_moves_; }
+
     /*! \brief Query for the cutoff distance.
      *  \return : The cutoff radius for the process.
      */
@@ -159,6 +175,9 @@ protected:
 
     /// The basis sites to which this process can be applied.
     std::vector<int> basis_sites_;
+
+    /// The atom id moves.
+    std::vector< std::pair<int,int> > id_moves_;
 
 private:
 

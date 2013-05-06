@@ -24,8 +24,10 @@ CustomRateProcess::CustomRateProcess(const Configuration & first,
                                      const Configuration & second,
                                      const double rate,
                                      const std::vector<int> & basis_sites,
-                                     const double cutoff) :
-    Process(first, second, rate, basis_sites)
+                                     const double cutoff,
+                                     const std::vector<int> & move_origins,
+                                     const std::vector<Coordinate> & move_vectors) :
+    Process(first, second, rate, basis_sites, move_origins, move_vectors)
 {
     // Save the cutoff if it is larger than what we have allready.
     if (cutoff > cutoff_)
