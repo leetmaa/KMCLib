@@ -25,6 +25,10 @@ public:
 
     CPPUNIT_TEST_SUITE( Test_Process );
     CPPUNIT_TEST( testConstruction );
+    CPPUNIT_TEST( testConstruction2 );
+    CPPUNIT_TEST( testConstruction3 );
+    CPPUNIT_TEST( testConstructionMoveVectors );
+    CPPUNIT_TEST( testConstructionMoveVectors2 );
     CPPUNIT_TEST( testMatchList );
     CPPUNIT_TEST( testMatchListLong );
     CPPUNIT_TEST( testAddAndRemoveSite );
@@ -34,6 +38,10 @@ public:
     CPPUNIT_TEST_SUITE_END();
 
     void testConstruction();
+    void testConstruction2();
+    void testConstruction3();
+    void testConstructionMoveVectors();
+    void testConstructionMoveVectors2();
     void testMatchList();
     void testMatchListLong();
     void testAddAndRemoveSite();

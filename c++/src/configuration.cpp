@@ -239,9 +239,6 @@ void Configuration::performProcess(Process & process,
     std::vector<MinimalMatchListEntry>::const_iterator it2 = site_match_list.begin();
     std::vector<int>::iterator it3 = process.affectedIndices().begin();
 
-    // Local vector to store the atom id updates in.
-    std::vector<std::pair<int,int> > id_updates;
-
     // Loop over the match lists and get the types and indices out.
     for( ; it1 != process_match_list.end(); ++it1, ++it2)
     {
@@ -254,21 +251,11 @@ void Configuration::performProcess(Process & process,
         // NOTE: The > 0 is needed for handling the wildcard match.
         if (types_[index] != update_type && update_type > 0)
         {
-            // Use the lattice map to calculate the corresponding new index.
-            const int new_index = lattice_map.indexFromMoveInfo(index,
-                                                                (*it1).move_cell_i,
-                                                                (*it1).move_cell_j,
-                                                                (*it1).move_cell_k,
-                                                                (*it1).move_basis);
-
             // Get the atom id to apply the move vector to.
             const int atom_id = atom_id_[index];
 
             // Apply the move vector to the atom coordinate.
             atom_id_coordinates_[atom_id] += (*it1).move_coordinate;
-
-            // Add the (new_index, atom_id) pair for update.
-            id_updates.push_back(std::pair<int,int>(new_index, atom_id));
 
             // Set the type at this index.
             types_[index]    = update_type;
@@ -280,16 +267,32 @@ void Configuration::performProcess(Process & process,
         }
     }
 
-    // Perform the moves on the ids.
+    // Perform the moves on all involved atom-ids.
+    const std::vector< std::pair<int,int> > & process_id_moves = process.idMoves();
+
+    // Local vector to store the atom id updates in.
+    std::vector<std::pair<int,int> > id_updates(process_id_moves.size());
+
+    // Setup the id updates list.
+    for (size_t i = 0; i < process_id_moves.size(); ++i)
+    {
+        const int match_list_index_from = process_id_moves[i].first;
+        const int match_list_index_to   = process_id_moves[i].second;
+
+        const int lattice_index_from = site_match_list[match_list_index_from].index;
+        const int lattice_index_to   = site_match_list[match_list_index_to].index;
+
+        id_updates[i].first  = atom_id_[lattice_index_from];
+        id_updates[i].second = lattice_index_to;
+    }
+
+    // Apply the id updates on the configuration.
     for (size_t i = 0; i < id_updates.size(); ++i)
     {
-        const int index = id_updates[i].first;
-        const int id    = id_updates[i].second;
+        const int id    = id_updates[i].first;
+        const int index = id_updates[i].second;
 
-        // Update the atom id at this lattice site index.
+        // Set the atom id at this lattice site index.
         atom_id_[index] = id;
-
-        // Update the coordinate of this atom id.
-        atom_id_coordinates_[id] = coordinates_[index];
     }
 }

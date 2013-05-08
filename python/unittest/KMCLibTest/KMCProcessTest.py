@@ -42,6 +42,82 @@ class KMCProcessTest(unittest.TestCase):
         # Check that we got a valid instance.
         self.assertTrue( isinstance(p, KMCProcess) )
 
+    def testConstructionSorting(self):
+        """ Test that the coordinates elements and move vectors gets sorted """
+        # Set the input.
+        coordinates = [[0.0, 0.0, 0.0],
+                       [3.0, 3.0, 3.0],
+                       [1.0, 1.0, 1.0],
+                       [1.1, 1.1, 1.1],
+                       [1.5, 1.5, 1.5],
+                       [2.5, 2.5, 2.5]]
+
+        elements_before = ["A", "B", "C", "P", "D", "E"]
+        elements_after =  ["B", "C", "D", "P", "A", "E"]
+        basis_sites = [0]
+        rate_constant = 1.0
+
+        move_vectors = [(0, [ 1.5, 1.5, 1.5]),
+                        (1, [-3.0,-3.0,-3.0]),
+                        (2, [ 2.0, 2.0, 2.0]),
+                        (4, [-0.5,-0.5,-0.5])]
+
+        # Construct.
+        p = KMCProcess(coordinates=coordinates,
+                       elements_before=elements_before,
+                       elements_after=elements_after,
+                       move_vectors=move_vectors,
+                       basis_sites=basis_sites,
+                       rate_constant=1.0)
+
+        # Get the configurations out.
+        config_before = p.localConfigurations()[0]
+        config_after  = p.localConfigurations()[1]
+
+        # Check that the coordinates, elements and move vectors
+        # have been sorted.
+
+        ref_coords = numpy.array([[ 0.,  0.,  0. ],
+                                  [ 1.,  1.,  1. ],
+                                  [ 1.1, 1.1, 1.1],
+                                  [ 1.5, 1.5, 1.5],
+                                  [ 2.5, 2.5, 2.5],
+                                  [ 3.,  3.,  3.]])
+
+        # Before move.
+        coords = config_before.coordinates()
+        norm = numpy.linalg.norm(ref_coords - coords)
+        self.assertAlmostEqual( norm, 0.0, 10 )
+
+        # After move.
+        coords = config_after.coordinates()
+        norm = numpy.linalg.norm(ref_coords - coords)
+        self.assertAlmostEqual( norm, 0.0, 10 )
+
+        # Check the elements before move.
+        ref_types = ["A", "C", "P", "D", "E", "B"]
+        self.assertEqual( ref_types, config_before.types() )
+
+        # Check the elements after move.
+        ref_types = ["B", "D", "P", "A", "E", "C"]
+        self.assertEqual( ref_types, config_after.types() )
+
+        ref_vectors = [(0, [ 1.5, 1.5, 1.5]),
+                       (1, [ 2.0, 2.0, 2.0]),
+                       (3, [-0.5,-0.5,-0.5]),
+                       (5, [-3.0,-3.0,-3.0])]
+
+        ret_vectors = p.moveVectors()
+
+        for ref, ret in zip(ref_vectors, ret_vectors):
+            # Check the 'from' index.
+            self.assertEqual(ref[0], ret[0])
+
+            # Check the vector.
+            norm = numpy.linalg.norm(numpy.array(ref[1]) - numpy.array(ret[1]))
+            self.assertAlmostEqual( norm, 0.0, 10 )
+
+
     def testEqualOperator(self):
         """ Test the equal operator. """
         # Set the input.
@@ -201,8 +277,8 @@ class KMCProcessTest(unittest.TestCase):
         eq = (p1 == p2)
         self.assertTrue( eq )
 
-        # If se explicitly set the move vectors to None on p2 they are not equal.
-        p2._KMCProcess__move_vectors = None
+        # If se explicitly set the move vectors to empty on p2 they are not equal.
+        p2._KMCProcess__move_vectors = []
         eq = (p1 == p2)
         self.assertFalse( eq )
 
@@ -210,8 +286,8 @@ class KMCProcessTest(unittest.TestCase):
         eq = (p2 == p1)
         self.assertFalse( eq )
 
-        # Now, make the other one None also.
-        p1._KMCProcess__move_vectors = None
+        # Now, make the other one empty also.
+        p1._KMCProcess__move_vectors = []
         eq = (p1 == p2)
         self.assertTrue( eq )
 

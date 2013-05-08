@@ -31,7 +31,7 @@ def centerCoordinates(coordinates, index):
     return coordinates
 
 
-def sortCoordinatesDistance(coordinates, center, types1, types2=None):
+def sortCoordinatesDistance(coordinates, center, types1, types2=None, co_sort=None):
     """
     Sort the coordinates with respect to distance form the provided center index and type.
 
@@ -51,16 +51,27 @@ def sortCoordinatesDistance(coordinates, center, types1, types2=None):
     if types2 is None:
         types2 = [ t for t in types1 ]
 
+    ret_co_sort = True
+    if co_sort is None:
+        co_sort = types2
+        ret_co_sort = False
+
     # Get the types.
     dt = coordinates.dtype
-    dtype = [('x',dt),('y',dt),('z',dt),('d',dt),('type1', numpy.array(types1).dtype),('type2', numpy.array(types2).dtype)]
+    dtype = [('x',dt),
+             ('y',dt),
+             ('z',dt),
+             ('d',dt),
+             ('type1', numpy.array(types1).dtype),
+             ('type2', numpy.array(types2).dtype),
+             ('co_sort', numpy.array(co_sort).dtype)]
 
     # Calculate the distance form the center.
     origin = coordinates[center]
     distances = numpy.array([ numpy.linalg.norm(coord) for coord in coordinates ])
 
     # Setup the data to sort.
-    to_sort = numpy.array([ (c[0],c[1],c[2],d,t1,t2) for (c,d,t1,t2) in zip(coordinates,distances,types1, types2)],
+    to_sort = numpy.array([ (c[0],c[1],c[2],d,t1,t2,cs) for (c,d,t1,t2,cs) in zip(coordinates,distances,types1, types2, co_sort)],
                           dtype=dtype)
 
     # Sort.
@@ -71,12 +82,15 @@ def sortCoordinatesDistance(coordinates, center, types1, types2=None):
     distances   = numpy.array([c[3] for c in sorted_list])
     types1      = [c[4] for c in sorted_list]
     types2      = [c[5] for c in sorted_list]
+    co_sort     = [c[6] for c in sorted_list]
 
     # Done.
-    return (coordinates, distances, types1, types2)
+    if ret_co_sort:
+        return (coordinates, distances, types1, types2, co_sort)
+    else:
+        return (coordinates, distances, types1, types2)
 
-
-def sortCoordinates(coordinates, types1, types2=None):
+def sortCoordinates(coordinates, types1, types2=None, co_sort=None):
     """
     Sort the coordinates with respect to their x,y and z coordinates
 
@@ -88,17 +102,30 @@ def sortCoordinates(coordinates, types1, types2=None):
     :param types2: The second, optional, list of site types to co-sort with the coordinates.
     :type types2:  a list of strings
 
-    :returns: The sorted coordinates and sorted types.
+    :param co_sort: The list of some thing to co-sort.
+
+    :returns: The sorted coordinates and sorted types. A sorted co_sort list
+              is also returned if a co_sort argument was given.
     """
     if types2 is None:
         types2 = [ t for t in types1 ]
 
+    ret_co_sort = True
+    if co_sort is None:
+        co_sort = types2
+        ret_co_sort = False
+
     # Get the types.
     dt = coordinates.dtype
-    dtype = [('x',dt),('y',dt),('z',dt),('type1', numpy.array(types1).dtype),('type2', numpy.array(types2).dtype)]
+    dtype = [('x',dt),
+             ('y',dt),
+             ('z',dt),
+             ('type1', numpy.array(types1).dtype),
+             ('type2', numpy.array(types2).dtype),
+             ('co_sort', numpy.array(co_sort).dtype)]
 
     # Setup the data to sort.
-    to_sort = numpy.array([ (c[0],c[1],c[2],t1,t2) for (c,t1,t2) in zip(coordinates,types1, types2)],
+    to_sort = numpy.array([ (c[0],c[1],c[2],t1,t2,cs) for (c,t1,t2,cs) in zip(coordinates, types1, types2, co_sort)],
                           dtype=dtype)
 
     # Sort.
@@ -108,7 +135,10 @@ def sortCoordinates(coordinates, types1, types2=None):
     coordinates = numpy.array([[c[0],c[1],c[2]] for c in sorted_list])
     types1      = [c[3] for c in sorted_list]
     types2      = [c[4] for c in sorted_list]
+    co_sort     = [c[5] for c in sorted_list]
 
     # Done.
-    return (coordinates, types1, types2)
-
+    if ret_co_sort:
+        return (coordinates, types1, types2, co_sort)
+    else:
+        return (coordinates, types1, types2)

@@ -78,13 +78,6 @@ Process::Process(const Configuration & first,
         m.coordinate  = coordinate;
         m.index       = -1;
         m.has_move_coordinate = false;
-
-        // FIXME
-        m.move_cell_i = 0;
-        m.move_cell_j = 0;
-        m.move_cell_k = 0;
-        m.move_basis  = 0;
-
         minimal_match_list_.push_back(m);
 
         // If the first and second type differ increase the length of the
@@ -111,14 +104,14 @@ Process::Process(const Configuration & first,
     // points to.
     for (size_t i = 0; i < minimal_match_list_.size(); ++i)
     {
-        // Get the move vector out.
-        const Coordinate & move_vector = minimal_match_list_[i].move_coordinate;
-
-        // If this move vector is different from zero we go on and try to find
-        // which index in the sorted match list it points to.
-
         if (minimal_match_list_[i].has_move_coordinate)
         {
+            // If this move vector is different from zero we go on and try to find
+            // which index in the sorted match list it points to.
+
+            // Get the move vector out.
+            const Coordinate & move_vector = minimal_match_list_[i].move_coordinate;
+
             // Setup the destination coordinate.
             const Coordinate destination = minimal_match_list_[i].coordinate + move_vector;
 
@@ -130,6 +123,7 @@ Process::Process(const Configuration & first,
                 {
                     // If the difference is small enough we have a match.
                     const Coordinate diff = minimal_match_list_[j].coordinate - destination;
+
                     if (diff.norm() < 1.0e-5)
                     {
                         id_moves_.push_back(std::pair<int,int>(i,j));

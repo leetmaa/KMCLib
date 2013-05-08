@@ -10,7 +10,7 @@
 import numpy
 
 from KMCLib.Utilities.CoordinateUtilities import centerCoordinates
-from KMCLib.Utilities.CoordinateUtilities import sortCoordinates
+from KMCLib.Utilities.CoordinateUtilities import sortCoordinatesDistance
 from KMCLib.Utilities.CheckUtilities import checkCoordinateList
 from KMCLib.Utilities.CheckUtilities import checkTypes
 from KMCLib.Utilities.CheckUtilities import checkSequence
@@ -90,6 +90,9 @@ class KMCProcess(object):
         # Check that the move vectors are compatible with the elements.
         self.__move_vectors = self.__checkValidMoveVectors(move_vectors)
 
+        # Sort the coordinates and co-sort the elements and move vectors.
+        self.__sortCoordinatesElementsAndMoveVectors()
+
         # Check the list of basis sites.
         basis_sites = checkSequenceOfPositiveIntegers(basis_sites,
                                                       msg="The basis_sites must be given as a list of positive integers.")
@@ -143,7 +146,8 @@ class KMCProcess(object):
 
         # Quick return if no move vectors.
         if move_vectors is None:
-            return None
+            move_vectors = []
+            return move_vectors
 
         # Try to make the move with the move vectors and check that
         # we end up in the elements after list.
@@ -251,6 +255,51 @@ coordinates defining where the moved index goes."""
 
         return [(index_0, vector_0), (index_1, vector_1)]
 
+    def __sortCoordinatesElementsAndMoveVectors(self):
+        """
+        Private helper to sort the validated coordinate input,
+        and update the element order and move_vector indexing accordingly.
+        """
+        # Set up the original indexing.
+        original_indexing = range(len(self.__coordinates))
+
+        # Sort, and co-sort coordinates and indices.
+        (sorted_coords, dummy_distances, sorted_types_before, sorted_types_after, new_to_old_index) = \
+            sortCoordinatesDistance(coordinates = self.__coordinates,
+                                    center      = 0,
+                                    types1      = self.__elements_before,
+                                    types2      = self.__elements_after,
+                                    co_sort     = original_indexing)
+
+        # Fix the move vectors.
+        if len(self.__move_vectors) > 0:
+            old_to_new_index = []
+            for i in range(len(new_to_old_index)):
+                old_to_new_index.append(new_to_old_index.index(i))
+
+            # Fixt the move vector indexing.
+            move_vector_index = []
+            for v in self.__move_vectors:
+                move_vector_index.append( old_to_new_index[v[0]] )
+
+            # Setup and sort the backmapping.
+            help_index = range(len(move_vector_index))
+            to_sort = numpy.array(zip(help_index, move_vector_index))
+            sorted_indices = to_sort[numpy.argsort(to_sort[:,1])]
+
+            # Construct the new move vectors.
+            new_move_vectors = []
+            for idx in sorted_indices:
+                new_move_vectors.append( (idx[1], self.__move_vectors[idx[0]][1]) )
+
+            # Set the move vectors.
+            self.__move_vectors = new_move_vectors
+
+        # Set the new data on the class.
+        self.__coordinates = sorted_coords
+        self.__elements_before = sorted_types_before
+        self.__elements_after = sorted_types_after
+
     def __eq__(self, other):
         """ Implements the equal oprator. """
         # Check the length of the basis sites.
@@ -266,59 +315,35 @@ coordinates defining where the moved index goes."""
                 numpy.shape(self.localConfigurations()[0].coordinates())[0]:
             return False
 
-        # Sort the coordinates of both processes before comparison.
-        (sorted_coords_self, sorted_types_before_self, sorted_types_after_self) = \
-            sortCoordinates(coordinates = self.localConfigurations()[0].coordinates(),
-                            types1 = self.localConfigurations()[0].types(),
-                            types2 = self.localConfigurations()[1].types())
+        coords_self = self.localConfigurations()[0].coordinates()
+        coords_other = other.localConfigurations()[0].coordinates()
 
-        (sorted_coords_other, sorted_types_before_other, sorted_types_after_other) = \
-            sortCoordinates(coordinates = other.localConfigurations()[0].coordinates(),
-                            types1 = other.localConfigurations()[0].types(),
-                            types2 = other.localConfigurations()[1].types())
+        types_before_self = self.localConfigurations()[0].types()
+        types_before_other = other.localConfigurations()[0].types()
+
+        types_after_self = self.localConfigurations()[1].types()
+        types_after_other = other.localConfigurations()[1].types()
 
         # Check the coordinates and types.
-        if numpy.linalg.norm(sorted_coords_self - sorted_coords_other) > 0.00001:
+        if numpy.linalg.norm(coords_self - coords_other) > 0.00001:
             return False
-        elif not all([s1 == s2 for s1,s2 in zip(sorted_types_before_self,
-                                                sorted_types_before_other)]):
+        elif not all([s1 == s2 for s1,s2 in zip(types_before_self,
+                                                types_before_other)]):
             return False
-        elif not all([s1 == s2 for s1,s2 in zip(sorted_types_after_self,
-                                                sorted_types_after_other)]):
+        elif not all([s1 == s2 for s1,s2 in zip(types_after_self,
+                                                types_after_other)]):
             return False
 
         # Check the move vectors.
-        if self.__move_vectors is not None and other._KMCProcess__move_vectors is None:
+        if len(self.__move_vectors) != len(other._KMCProcess__move_vectors):
             return False
-        elif self.__move_vectors is None and other._KMCProcess__move_vectors is not None:
-            return False
-
-        if self.__move_vectors is not None:
-
-            # Check the length of the move vectors.
-            if len(self.__move_vectors) != len(other._KMCProcess__move_vectors):
-                return False
-
-            # To check if the move vectors are the same we need to know the mapping
-            # between the coordinates of self and other.
-            other_map = []
-            for i, coord1 in enumerate(self.localConfigurations()[0].coordinates()):
-                for j, coord2 in enumerate(other.localConfigurations()[0].coordinates()):
-                    if numpy.linalg.norm(coord1-coord2) < 0.0001:
-                        other_map.append(j)
-                        break
 
             # For each move vector, loop through the others and find the one that matches.
-            for v1 in self.__move_vectors:
-
-                found = False
-                for v2 in other._KMCProcess__move_vectors:
-                    if v1[0] == other_map[v2[0]]:
-                        if numpy.linalg.norm(numpy.array(v1[1])-numpy.array(v2[1])) < 1.0e-8:
-                            found = True
-                            break
-                if not found:
-                    return False
+        for v1,v2 in zip(self.__move_vectors,other._KMCProcess__move_vectors):
+            if v1[0] != v2[0]:
+                return False
+            elif numpy.linalg.norm(numpy.array(v1[1])-numpy.array(v2[1])) > 1.0e-8:
+                return False
 
         # Passed all tests, return true.
         return True
@@ -348,6 +373,14 @@ coordinates defining where the moved index goes."""
         :rtype: float
         """
         return self.__rate_constant
+
+    def moveVectors(self):
+        """
+        Query for the move vectors.
+
+        :returns: The move vectors stored on the class.
+        """
+        return self.__move_vectors
 
     def _script(self, variable_name="process"):
         """
@@ -433,7 +466,7 @@ coordinates defining where the moved index goes."""
                 line = ""
 
         # Setup the move vector string.
-        if self.__move_vectors is None:
+        if len(self.__move_vectors) == 0:
             move_vectors_string = "move_vectors    = None\n"
         else:
             move_vectors_string = "move_vectors    = ["

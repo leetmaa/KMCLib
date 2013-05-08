@@ -67,6 +67,368 @@ void Test_Process::testConstruction()
 
 // -------------------------------------------------------------------------- //
 //
+void Test_Process::testConstruction2()
+{
+    // Setup a valid possible types map.
+    std::map<std::string,int> possible_types;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["C"] = 0;
+
+    // Setup the two configurations.
+    std::vector<std::string> elements1;
+    elements1.push_back("A");
+    elements1.push_back("B");
+
+    std::vector<std::string> elements2;
+    elements2.push_back("C");
+    elements2.push_back("B");
+
+    // Setup coordinates.
+    std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
+    coords[1][0] =  1.0;
+    coords[1][1] =  1.3;
+    coords[1][2] = -4.4;
+
+    // The configurations.
+    const Configuration config1(coords, elements1, possible_types);
+    const Configuration config2(coords, elements2, possible_types);
+
+    // Get the list of move origins.
+    std::vector<int> move_origins;
+    move_origins.push_back(0);
+    move_origins.push_back(1);
+
+    // Setup the move vectors.
+    std::vector<Coordinate> move_vectors;
+    move_vectors.push_back(Coordinate(1.0, 1.3, -4.4));
+    move_vectors.push_back(Coordinate(-1.0, -1.3, 4.4));
+
+    // Construct the process.
+    std::vector<int> basis_sites(3,0);
+    basis_sites[1] = 23;
+    basis_sites[2] = 11;
+    const double rate = 13.7;
+    Process process(config1, config2, rate, basis_sites, move_origins, move_vectors);
+
+    // Check that there are no listed indices by default.
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 0);
+
+    // Check that the basis sites can be returned correctly.
+    const std::vector<int> ret_basis_sites = process.basisSites();
+    CPPUNIT_ASSERT_EQUAL( ret_basis_sites[0], basis_sites[0] );
+    CPPUNIT_ASSERT_EQUAL( ret_basis_sites[1], basis_sites[1] );
+    CPPUNIT_ASSERT_EQUAL( ret_basis_sites[2], basis_sites[2] );
+
+    // Check that the list of id-moves was correctly constructed
+    // based on the move vectors.
+    const std::vector< std::pair<int,int> > & id_moves = process.idMoves();
+
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(id_moves.size()), 2 );
+    CPPUNIT_ASSERT_EQUAL( id_moves[0].first,  0 );
+    CPPUNIT_ASSERT_EQUAL( id_moves[0].second, 1 );
+    CPPUNIT_ASSERT_EQUAL( id_moves[1].first,  1 );
+    CPPUNIT_ASSERT_EQUAL( id_moves[1].second, 0 );
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Process::testConstruction3()
+{
+    // Setup a valid possible types map.
+    std::map<std::string,int> possible_types;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["C"] = 0;
+
+    // Setup the two configurations.
+    std::vector<std::string> elements1;
+    elements1.push_back("A");
+    elements1.push_back("B");
+
+    std::vector<std::string> elements2;
+    elements2.push_back("C");
+    elements2.push_back("B");
+
+    // Setup coordinates.
+    std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
+    coords[0][0] =   0.0;
+    coords[0][1] =   0.0;
+    coords[0][2] = 100.0;
+
+    coords[1][0] = -1.0;
+    coords[1][1] = -1.3;
+    coords[1][2] = -4.4;
+
+    // The configurations.
+    const Configuration config1(coords, elements1, possible_types);
+    const Configuration config2(coords, elements2, possible_types);
+
+    // Get the list of move origins.
+    std::vector<int> move_origins;
+    move_origins.push_back(0);
+    move_origins.push_back(1);
+
+    // Setup the move vectors.
+    std::vector<Coordinate> move_vectors;
+    move_vectors.push_back(Coordinate(-1.0, -1.3, -104.4));
+    move_vectors.push_back(Coordinate(1.0, 1.3, 104.4));
+
+    // Construct the process.
+    std::vector<int> basis_sites(3,0);
+    basis_sites[1] = 23;
+    basis_sites[2] = 11;
+    const double rate = 13.7;
+    Process process(config1, config2, rate, basis_sites, move_origins, move_vectors);
+
+    // Check that there are no listed indices by default.
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 0);
+
+    // Check that the basis sites can be returned correctly.
+    const std::vector<int> ret_basis_sites = process.basisSites();
+    CPPUNIT_ASSERT_EQUAL( ret_basis_sites[0], basis_sites[0] );
+    CPPUNIT_ASSERT_EQUAL( ret_basis_sites[1], basis_sites[1] );
+    CPPUNIT_ASSERT_EQUAL( ret_basis_sites[2], basis_sites[2] );
+
+    // Check that the list of id-moves was correctly constructed
+    // based on the move vectors.
+    const std::vector< std::pair<int,int> > & id_moves = process.idMoves();
+
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(id_moves.size()), 2 );
+    CPPUNIT_ASSERT_EQUAL( id_moves[0].first,  0 );
+    CPPUNIT_ASSERT_EQUAL( id_moves[0].second, 1 );
+    CPPUNIT_ASSERT_EQUAL( id_moves[1].first,  1 );
+    CPPUNIT_ASSERT_EQUAL( id_moves[1].second, 0 );
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Process::testConstructionMoveVectors()
+{
+    // Setup a valid possible types map.
+    std::map<std::string,int> possible_types;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["C"] = 0;
+
+    // Setup the two configurations.
+    std::vector<std::string> elements1;
+    elements1.push_back("A");
+    elements1.push_back("B");
+    elements1.push_back("C");
+    elements1.push_back("D");
+    elements1.push_back("E");
+    elements1.push_back("F");
+    elements1.push_back("G");
+
+    std::vector<std::string> elements2;
+    elements2.push_back("A");
+    elements2.push_back("G");
+    elements2.push_back("F");
+    elements2.push_back("D");
+    elements2.push_back("E");
+    elements2.push_back("C");
+    elements2.push_back("B");
+
+    // Setup coordinates.
+    std::vector<std::vector<double> > coords(7,std::vector<double>(3,0.0));
+    coords[0][0] =  0.0;
+    coords[0][1] =  0.0;
+    coords[0][2] =  0.0;
+
+    coords[1][0] =  1.0;
+    coords[1][1] =  1.0;
+    coords[1][2] =  1.0;
+
+    coords[2][0] =  2.0;
+    coords[2][1] =  2.0;
+    coords[2][2] =  2.0;
+
+    coords[3][0] =  3.0;
+    coords[3][1] =  3.0;
+    coords[3][2] =  3.0;
+
+    coords[4][0] =  4.0;
+    coords[4][1] =  4.0;
+    coords[4][2] =  4.0;
+
+    coords[5][0] =  5.0;
+    coords[5][1] =  5.0;
+    coords[5][2] =  5.0;
+
+    coords[6][0] =  6.0;
+    coords[6][1] =  6.0;
+    coords[6][2] =  6.0;
+
+    // The configurations.
+    const Configuration config1(coords, elements1, possible_types);
+    const Configuration config2(coords, elements2, possible_types);
+
+    // Get the list of move origins.
+    std::vector<int> move_origins;
+    move_origins.push_back(1);
+    move_origins.push_back(2);
+    move_origins.push_back(5);
+    move_origins.push_back(6);
+
+    // Setup the move vectors.
+    std::vector<Coordinate> move_vectors;
+    move_vectors.push_back(Coordinate( 5.0, 5.0, 5.0));
+    move_vectors.push_back(Coordinate( 3.0, 3.0, 3.0));
+    move_vectors.push_back(Coordinate(-3.0,-3.0,-3.0));
+    move_vectors.push_back(Coordinate(-5.0,-5.0,-5.0));
+
+    // Construct the process.
+    std::vector<int> basis_sites(3,0);
+    basis_sites[1] = 23;
+    basis_sites[2] = 11;
+    const double rate = 13.7;
+    Process process(config1, config2, rate, basis_sites, move_origins, move_vectors);
+
+    // Check that there are no listed indices by default.
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 0);
+
+    // Check that the basis sites can be returned correctly.
+    const std::vector<int> ret_basis_sites = process.basisSites();
+    CPPUNIT_ASSERT_EQUAL( ret_basis_sites[0], basis_sites[0] );
+    CPPUNIT_ASSERT_EQUAL( ret_basis_sites[1], basis_sites[1] );
+    CPPUNIT_ASSERT_EQUAL( ret_basis_sites[2], basis_sites[2] );
+
+    // Check that the list of id-moves was correctly constructed
+    // based on the move vectors.
+    const std::vector< std::pair<int,int> > & id_moves = process.idMoves();
+
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(id_moves.size()), 4 );
+    CPPUNIT_ASSERT_EQUAL( id_moves[0].first,  1 );
+    CPPUNIT_ASSERT_EQUAL( id_moves[0].second, 6 );
+
+    CPPUNIT_ASSERT_EQUAL( id_moves[1].first,  2 );
+    CPPUNIT_ASSERT_EQUAL( id_moves[1].second, 5 );
+
+    CPPUNIT_ASSERT_EQUAL( id_moves[2].first,  5 );
+    CPPUNIT_ASSERT_EQUAL( id_moves[2].second, 2 );
+
+    CPPUNIT_ASSERT_EQUAL( id_moves[3].first,  6 );
+    CPPUNIT_ASSERT_EQUAL( id_moves[3].second, 1 );
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Process::testConstructionMoveVectors2()
+{
+    // Setup a valid possible types map.
+    std::map<std::string,int> possible_types;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["C"] = 0;
+
+    // Setup the two configurations.
+    std::vector<std::string> elements1;
+    elements1.push_back("A");
+    elements1.push_back("F");
+    elements1.push_back("G");
+    elements1.push_back("D");
+    elements1.push_back("E");
+    elements1.push_back("B");
+    elements1.push_back("C");
+
+    std::vector<std::string> elements2;
+    elements2.push_back("A");
+    elements2.push_back("C");
+    elements2.push_back("B");
+    elements2.push_back("D");
+    elements2.push_back("E");
+    elements2.push_back("G");
+    elements2.push_back("F");
+
+    // Setup coordinates.
+    std::vector<std::vector<double> > coords(7,std::vector<double>(3,0.0));
+    coords[0][0] =  0.0;
+    coords[0][1] =  0.0;
+    coords[0][2] =  0.0;
+
+    coords[1][0] =  5.0;
+    coords[1][1] =  5.0;
+    coords[1][2] =  5.0;
+
+    coords[2][0] =  6.0;
+    coords[2][1] =  6.0;
+    coords[2][2] =  6.0;
+
+    coords[3][0] =  3.0;
+    coords[3][1] =  3.0;
+    coords[3][2] =  3.0;
+
+    coords[4][0] =  4.0;
+    coords[4][1] =  4.0;
+    coords[4][2] =  4.0;
+
+    coords[5][0] =  1.0;
+    coords[5][1] =  1.0;
+    coords[5][2] =  1.0;
+
+    coords[6][0] =  2.0;
+    coords[6][1] =  2.0;
+    coords[6][2] =  2.0;
+
+    // The configurations.
+    const Configuration config1(coords, elements1, possible_types);
+    const Configuration config2(coords, elements2, possible_types);
+
+    // Get the list of move origins.
+    std::vector<int> move_origins;
+    move_origins.push_back(1);
+    move_origins.push_back(2);
+    move_origins.push_back(5);
+    move_origins.push_back(6);
+
+    // Setup the move vectors.
+    std::vector<Coordinate> move_vectors;
+    move_vectors.push_back(Coordinate(-3.0,-3.0,-3.0));
+    move_vectors.push_back(Coordinate(-5.0,-5.0,-5.0));
+    move_vectors.push_back(Coordinate( 5.0, 5.0, 5.0));
+    move_vectors.push_back(Coordinate( 3.0, 3.0, 3.0));
+
+    // Construct the process.
+    std::vector<int> basis_sites(3,0);
+    basis_sites[1] = 23;
+    basis_sites[2] = 11;
+    const double rate = 13.7;
+    Process process(config1, config2, rate, basis_sites, move_origins, move_vectors);
+
+    // Check that there are no listed indices by default.
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 0);
+
+    // Check that the basis sites can be returned correctly.
+    const std::vector<int> ret_basis_sites = process.basisSites();
+    CPPUNIT_ASSERT_EQUAL( ret_basis_sites[0], basis_sites[0] );
+    CPPUNIT_ASSERT_EQUAL( ret_basis_sites[1], basis_sites[1] );
+    CPPUNIT_ASSERT_EQUAL( ret_basis_sites[2], basis_sites[2] );
+
+    // Check that the list of id-moves was correctly constructed
+    // based on the move vectors.
+    const std::vector< std::pair<int,int> > & id_moves = process.idMoves();
+
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(id_moves.size()), 4 );
+    CPPUNIT_ASSERT_EQUAL( id_moves[0].first,  1 );
+    CPPUNIT_ASSERT_EQUAL( id_moves[0].second, 6 );
+
+    CPPUNIT_ASSERT_EQUAL( id_moves[1].first,  2 );
+    CPPUNIT_ASSERT_EQUAL( id_moves[1].second, 5 );
+
+    CPPUNIT_ASSERT_EQUAL( id_moves[2].first,  5 );
+    CPPUNIT_ASSERT_EQUAL( id_moves[2].second, 2 );
+
+    CPPUNIT_ASSERT_EQUAL( id_moves[3].first,  6 );
+    CPPUNIT_ASSERT_EQUAL( id_moves[3].second, 1 );
+}
+
+
+// -------------------------------------------------------------------------- //
+//
 void Test_Process::testMatchList()
 {
     // Setup a valid possible types map.

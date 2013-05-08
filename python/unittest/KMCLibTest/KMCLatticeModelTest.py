@@ -146,15 +146,19 @@ class KMCLatticeModelTest(unittest.TestCase):
         # layer of implicite wildcards in the C++ matchlists.
         sites = [0]
         coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
-                       [  -1.000000e+00,   0.000000e+00,   0.000000e+00],
                        [   1.000000e+00,   0.000000e+00,   0.000000e+00],
+                       [  -1.000000e+00,   0.000000e+00,   0.000000e+00],
                        [   0.000000e+00,  -1.000000e+00,   0.000000e+00],
                        [   0.000000e+00,   1.000000e+00,   0.000000e+00],
                        [   2.000000e+00,   2.000000e+00,   0.000000e+00]]
 
         types0 = ['A', 'B', 'B', 'B', 'B', 'A']
-        types1 = ['B', 'A', 'B', 'B', 'B', 'A']
+        types1 = ['B', 'B', 'A', 'B', 'B', 'A']
         process_0 = KMCProcess(coordinates, types0, types1, None, sites, 1.0)
+
+        print process_0.localConfigurations()[0].types()
+        print process_0.localConfigurations()[1].types()
+        print process_0.localConfigurations()[0].coordinates()
 
         types0 = ['A', 'B', 'B', 'B', 'B', 'B']
         types1 = ['B', 'B', 'A', 'B', 'B', 'B']
