@@ -152,9 +152,15 @@ the KMCRateCalculatorPlugin class itself. """
                 # And construct the C++ entry.
                 cpp_basis = Backend.StdVectorInt(basis_list)
 
+                # Setup the move vectors representation in C++.
+                move_origins = [int(v[0]) for v in process.moveVectors()]
+                cpp_move_origins = Backend.StdVectorInt(move_origins)
+                cpp_move_vectors = Backend.StdVectorCoordinate()
+                for v in process.moveVectors():
+                    cpp_move_vectors.push_back(Backend.Coordinate(v[1][0], v[1][1], v[1][2]))
+
                 # Construct and store the C++ process.
                 if self.__rate_calculator is not None:
-
                     # Set the cutoff correctly.
                     cutoff = self.__rate_calculator.cutoff()
                     if cutoff is None:
@@ -164,12 +170,16 @@ the KMCRateCalculatorPlugin class itself. """
                                                                       cpp_config2,
                                                                       rate_constant,
                                                                       cpp_basis,
-                                                                      cutoff))
+                                                                      cutoff,
+                                                                      cpp_move_origins,
+                                                                      cpp_move_vectors))
                 else:
                     cpp_processes.push_back(Backend.Process(cpp_config1,
                                                             cpp_config2,
                                                             rate_constant,
-                                                            cpp_basis))
+                                                            cpp_basis,
+                                                            cpp_move_origins,
+                                                            cpp_move_vectors))
 
             # Construct the C++ interactions object.
             if self.__rate_calculator is not None:
