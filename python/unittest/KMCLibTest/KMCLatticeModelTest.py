@@ -156,10 +156,6 @@ class KMCLatticeModelTest(unittest.TestCase):
         types1 = ['B', 'B', 'A', 'B', 'B', 'A']
         process_0 = KMCProcess(coordinates, types0, types1, None, sites, 1.0)
 
-        print process_0.localConfigurations()[0].types()
-        print process_0.localConfigurations()[1].types()
-        print process_0.localConfigurations()[0].coordinates()
-
         types0 = ['A', 'B', 'B', 'B', 'B', 'B']
         types1 = ['B', 'B', 'A', 'B', 'B', 'B']
         process_1 = KMCProcess(coordinates, types0, types1, None, sites, 1.0)

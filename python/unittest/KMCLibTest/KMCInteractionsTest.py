@@ -289,6 +289,54 @@ class KMCInteractionsTest(unittest.TestCase):
                                                                         cpp_types2,
                                                                         rate_constant), rate_constant, 12 )
 
+    def testMoveVectorsBackendTransfer(self):
+        """ Chck that the move vectors in C++ are the onces we give from python. """
+       # Two moves with (implicit) move vectors.
+        coords1 = [[0.0,0.0,0.0],[1.0,1.0,0.0]]
+        types0  = ["A","B"]
+        types1  = ["B","A"]
+        process_0 = KMCProcess(coords1,
+                               types0,
+                               types1,
+                               basis_sites=[0],
+                               rate_constant=1.0)
+        coords2 = [[0.0,0.0,0.0],
+                   [1.0,-1.0,0.0],
+                   [0.6, 0.7, 0.8],
+                   [0.4, 0.5, 0.3],
+                   [0.5, 0.3, 0.6]]
+        types0  = ["B", "A", "C", "C", "B"]
+        types1  = ["A", "B", "C", "C", "B"]
+        process_1 = KMCProcess(coords2,
+                               types0,
+                               types1,
+                               basis_sites=[0],
+                               rate_constant=0.5)
+
+        processes = [process_0, process_1]
+        interactions = KMCInteractions(processes, implicit_wildcards=True)
+
+        # Setup the backend.
+        possible_types = {
+            "A" : 0,
+            "B" : 1,
+            "C" : 2,
+            }
+        cpp_interactions = interactions._backend(possible_types=possible_types,
+                                                 n_basis=2)
+
+        # Check that the move vectors on the backend object are what we expect.
+        cpp_processes = cpp_interactions.processes()
+        cpp_p0 = cpp_processes[0]
+        cpp_p1 = cpp_processes[1]
+
+        self.assertEqual( len(cpp_p0.idMoves()), 2 );
+        self.assertEqual( cpp_p0.idMoves()[0][0], 0 );
+        self.assertEqual( cpp_p0.idMoves()[0][1], 1 );
+
+        self.assertEqual( len(cpp_p1.idMoves()), 2 );
+        self.assertEqual( cpp_p0.idMoves()[0][0], 0 );
+        self.assertEqual( cpp_p1.idMoves()[0][1], 4 );
 
     def testBackendNoFailWrongBasisMatch(self):
         """ Test for no failure when constructing backend with wrong n_basis """

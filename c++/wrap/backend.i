@@ -53,12 +53,13 @@
 %template(StdVectorInt) std::vector<int>;
 %template(StdVectorBool) std::vector<bool>;
 %template(StdVectorProcess) std::vector<Process>;
-%template(SteVectorProcessPtr) std::vector<Process*>;
+%template(StdVectorProcessPtr) std::vector<Process*>;
 %template(StdVectorCustomRateProcess) std::vector<CustomRateProcess>;
 %template(StdVectorCoordinate) std::vector<Coordinate>;
 %template(StdVectorMinimalMatchListEntry) std::vector<MinimalMatchListEntry>;
 %template(StdVectorStdVectorDouble) std::vector<std::vector<double> >;
 %template(StdMapStringInt) std::map<std::string,int>;
+%template(StdVectorStdPairIntInt) std::vector<std::pair<int, int> >;
 
 // Include the definitions.
 %include "latticemodel.h"
