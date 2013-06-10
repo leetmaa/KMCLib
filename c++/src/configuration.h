@@ -101,6 +101,16 @@ public:
      */
     const std::string & typeName(const int type) const { return type_names_[type]; }
 
+    /*! \brief Get the atom id coordinates.
+     *  \return : The list of atom id coordinates.
+     */
+    const std::vector<Coordinate> & atomIdCoordinates() const { return atom_id_coordinates_; }
+
+    /*! \brief Get the atom id at each lattice site.
+     *  \retrurn : The list of atom ids for the lattice sites.
+     */
+    const std::vector<int> & atomID() const { return atom_id_; }
+
 protected:
 
 private:

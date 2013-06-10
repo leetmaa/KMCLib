@@ -226,6 +226,234 @@ void Test_Configuration::testPerformProcess()
 
 // -------------------------------------------------------------------------- //
 //
+void Test_Configuration::testPerformProcessVectors()
+{
+    // Setup a realistic system.
+    std::vector< std::vector<double> > basis(3, std::vector<double>(3,0.0));
+    basis[1][0] = 0.25;
+    basis[1][1] = 0.25;
+    basis[1][2] = 0.25;
+    basis[2][0] = 0.75;
+    basis[2][1] = 0.75;
+    basis[2][2] = 0.75;
+
+    std::vector<int> basis_sites(3);
+    basis_sites[0] = 0;
+    basis_sites[1] = 1;
+    basis_sites[2] = 2;
+    std::vector<std::string> basis_elements(3);
+    basis_elements[0] = "A";
+    basis_elements[1] = "B";
+    basis_elements[2] = "B";
+
+    // Make a 37x18x19 structure.
+    const int nI = 37;
+    const int nJ = 18;
+    const int nK = 19;
+    const int nB = 3;
+
+    // Coordinates and elements.
+    std::vector<std::vector<double> > coordinates;
+    std::vector<std::string> elements;
+
+    for (int i = 0; i < nI; ++i)
+    {
+        for (int j = 0; j < nJ; ++j)
+        {
+            for (int k = 0; k < nK; ++k)
+            {
+                for (int b = 0; b < nB; ++b)
+                {
+                    std::vector<double> c(3);
+                    c[0] = i + basis[b][0];
+                    c[1] = j + basis[b][1];
+                    c[2] = k + basis[b][2];
+                    coordinates.push_back(c);
+                    elements.push_back(basis_elements[b]);
+                }
+            }
+        }
+    }
+
+    elements[0]    = "V";
+    elements[216]  = "V";   // These affects process 0,1 and 3
+    elements[1434] = "V";
+    elements[2101] = "V";   // This affects process 0,1 and 2
+
+    // Possible types.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["V"] = 3;
+
+    // Setup the configuration.
+    Configuration configuration(coordinates, elements, possible_types);
+
+    // Setup the lattice map.
+    std::vector<int> repetitions(3);
+    repetitions[0] = nI;
+    repetitions[1] = nJ;
+    repetitions[2] = nK;
+    std::vector<bool> periodicity(3, true);
+    LatticeMap lattice_map(nB, repetitions, periodicity);
+
+    // Init the match lists.
+    configuration.initMatchLists(lattice_map, 1);
+
+    // Get a process that finds a V between two B and moves it
+    // to a nearby site.
+    std::vector<std::string> process_elements1(3);
+    process_elements1[0] = "V";
+    process_elements1[1] = "B";
+    process_elements1[2] = "B";
+
+    std::vector<std::string> process_elements2(3);
+    process_elements2[0] = "B";
+    process_elements2[1] = "V";
+    process_elements2[2] = "B";
+
+    std::vector<std::vector<double> > process_coordinates(3, std::vector<double>(3, 0.0));
+
+    process_coordinates[1][0] = -0.25;
+    process_coordinates[1][1] = -0.25;
+    process_coordinates[1][2] = -0.25;
+    process_coordinates[2][0] =  0.25;
+    process_coordinates[2][1] =  0.25;
+    process_coordinates[2][2] =  0.25;
+
+    const double rate = 13.7;
+    Configuration c1(process_coordinates, process_elements1, possible_types);
+    Configuration c2(process_coordinates, process_elements2, possible_types);
+
+    // Setup the move vectors.
+    std::vector<int> move_origins;
+    move_origins.push_back(0);
+    move_origins.push_back(1);
+
+    std::vector<Coordinate> move_vectors;
+    move_vectors.push_back( Coordinate(-0.25, -0.25, -0.25) );
+    move_vectors.push_back( Coordinate( 0.25,  0.25,  0.25) );
+
+    // Construct the process.
+    Process p(c1, c2, rate, basis_sites, move_origins, move_vectors);
+
+    // Now, add index 1434 to the process.
+    // We know by construction that these match.
+    p.addSite(1434, 0.0);
+
+    // Check that the atom ID's and coordinates are unchanged.
+    const std::vector<int> & atom_id = configuration.atomID();
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(atom_id.size()),
+                          static_cast<int>(configuration.elements().size()) );
+
+    for (int i = 0; i < static_cast<int>(atom_id.size()); ++i)
+    {
+        CPPUNIT_ASSERT_EQUAL( configuration.atomID()[i], i );
+
+        const Coordinate & coord = configuration.coordinates()[i];
+        const Coordinate & id_coord = configuration.atomIdCoordinates()[i];
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.x(), id_coord.x(), 1.0e-12);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.y(), id_coord.y(), 1.0e-12);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.z(), id_coord.z(), 1.0e-12);
+    }
+
+    // Peform the process.
+    configuration.performProcess(p, 1434, lattice_map);
+
+    // Now, check the ID's again.
+    for (int i = 0; i < static_cast<int>(atom_id.size()); ++i)
+    {
+        if (i != 1434 && i != 350)
+        {
+            CPPUNIT_ASSERT_EQUAL( configuration.atomID()[i], i );
+
+            const Coordinate & coord = configuration.coordinates()[i];
+            const Coordinate & id_coord = configuration.atomIdCoordinates()[i];
+            CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.x(), id_coord.x(), 1.0e-12);
+            CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.y(), id_coord.y(), 1.0e-12);
+            CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.z(), id_coord.z(), 1.0e-12);
+        }
+    }
+
+    {
+        const Coordinate & coord = configuration.coordinates()[1434];
+        const Coordinate & id_coord = configuration.atomIdCoordinates()[350];
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.x(), id_coord.x(), 1.0e-12);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.y(), id_coord.y(), 1.0e-12);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.z(), id_coord.z(), 1.0e-12);
+    }
+
+    {
+        const Coordinate & coord = configuration.coordinates()[350];
+        const Coordinate & id_coord = configuration.atomIdCoordinates()[1434];
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.x(), id_coord.x(), 1.0e-12);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.y(), id_coord.y(), 1.0e-12);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.z(), id_coord.z(), 1.0e-12);
+    }
+
+    CPPUNIT_ASSERT_EQUAL( configuration.atomID()[1434],  350 );
+    CPPUNIT_ASSERT_EQUAL( configuration.atomID()[350],  1434 );
+
+}
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Configuration::testAtomID()
+{
+    // Setup coordinates.
+    std::vector<std::vector<double> > coords(5, std::vector<double>(3, 0.0));
+    coords[0][0]  = 0.1;
+    coords[0][1]  = 0.2;
+    coords[0][2]  = 0.3;
+    coords[1][0]  = 0.4;
+    coords[1][1]  = 0.5;
+    coords[1][2]  = 0.6;
+    coords[2][0]  = 0.7;
+    coords[2][1]  = 0.8;
+    coords[2][2]  = 0.9;
+    coords[3][0]  = 1.1;
+    coords[3][1]  = 1.2;
+    coords[3][2]  = 1.3;
+    coords[4][0]  = 3.6;
+    coords[4][1]  = 3.5;
+    coords[4][2]  = 3.4;
+
+    // Setup elements.
+    std::vector<std::string> elements(5);
+    elements[0] = "A";
+    elements[1] = "B";
+    elements[2] = "D";
+    elements[3] = "H";
+    elements[4] = "J";
+
+    // Setup the mapping from element to integer.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["D"] = 3;
+    possible_types["H"] = 4;
+    possible_types["J"] = 5;
+    possible_types["G"] = 6;
+
+    // Construct the configuration.
+    Configuration configuration(coords, elements, possible_types);
+
+    // Check that the atom ID's are unchanged.
+    const std::vector<int> & atom_id = configuration.atomID();
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(atom_id.size()),
+                          static_cast<int>(configuration.elements().size()) );
+
+    for (int i = 0; i < static_cast<int>(atom_id.size()); ++i)
+    {
+        CPPUNIT_ASSERT_EQUAL( configuration.atomID()[i], i );
+    }
+}
+
+
+// -------------------------------------------------------------------------- //
+//
 void Test_Configuration::testMatchLists()
 {
     // Setup a configuration.

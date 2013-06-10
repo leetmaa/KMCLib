@@ -114,7 +114,7 @@ void Interactions::updateProcessMatchLists(const Configuration & configuration)
     {
         Process & p = (*process_pointers_[i]);
 
-       // Skip this process unless the size of basis sites is one.
+        // Skip this process unless the size of basis sites is one.
         if ( p.basisSites().size() != 1 )
         {
             continue;
@@ -136,7 +136,11 @@ void Interactions::updateProcessMatchLists(const Configuration & configuration)
         std::vector<MinimalMatchListEntry>::iterator it1 = process_matchlist.begin();
         std::vector<MinimalMatchListEntry>::const_iterator it2 = config_matchlist.begin();
 
-        // Loop over the process match list.
+        // Insert the wildcards and update the indexing.
+        int old_index = 0;
+        int new_index = 0;
+        std::vector<int> index_mapping(config_matchlist.size());
+
         for ( ; it1 != process_matchlist.end() && it2 != config_matchlist.end(); ++it1, ++it2 )
         {
             // Check if there is a match in lattice point.
@@ -148,7 +152,28 @@ void Interactions::updateProcessMatchLists(const Configuration & configuration)
 
                 it1 = process_matchlist.insert(it1, wildcard_entry);
                 // it1 now points to the newly inserted position.
+
+                ++new_index;
             }
+            else
+            {
+                // Add the mapping.
+                index_mapping[old_index] = new_index;
+                ++old_index;
+                ++new_index;
+           }
+        }
+
+        // With this mapping information we can update the process id moves.
+        index_mapping.resize(old_index);
+        std::vector<std::pair<int,int> > & id_moves = p.idMoves();
+        for (size_t j = 0; j < id_moves.size(); ++j)
+        {
+            const int old_index_first  = id_moves[j].first;
+            const int old_index_second = id_moves[j].second;
+
+            id_moves[j].first  = index_mapping[old_index_first];
+            id_moves[j].second = index_mapping[old_index_second];
         }
     }
 }

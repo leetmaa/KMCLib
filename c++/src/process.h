@@ -6,7 +6,6 @@
 */
 
 
-
 /*! \file  process.h
  *  \brief File for the Process class definition.
  */
@@ -140,6 +139,11 @@ public:
      *  \return : The pairs of match list indices corresponding to atom id moves.
      */
     const std::vector< std::pair<int,int> > & idMoves() const { return id_moves_; }
+
+    /*! \brief Non-const query for the atom id moves.
+     *  \return : The pairs of match list indices corresponding to atom id moves.
+     */
+    std::vector< std::pair<int,int> > & idMoves() { return id_moves_; }
 
     /*! \brief Query for the cutoff distance.
      *  \return : The cutoff radius for the process.

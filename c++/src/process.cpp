@@ -124,7 +124,7 @@ Process::Process(const Configuration & first,
                     // If the difference is small enough we have a match.
                     const Coordinate diff = minimal_match_list_[j].coordinate - destination;
 
-                    if (diff.norm() < 1.0e-5)
+                    if (diff.norm() < 1.0e-6)
                     {
                         id_moves_.push_back(std::pair<int,int>(i,j));
                         break;

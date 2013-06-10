@@ -786,3 +786,152 @@ void Test_Interactions::testUpdateProcessMatchLists()
 
     }
 }
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Interactions::testUpdateProcessIDMoves()
+{
+    // Setup two valid processes.
+    std::vector<Process> processes;
+
+    std::vector<std::string> process_elements1(3);
+    process_elements1[0] = "A";
+    process_elements1[1] = "B";
+    process_elements1[2] = "V";
+
+    std::vector<std::string> process_elements2(3);
+    process_elements2[0] = "B";
+    process_elements2[1] = "A";
+    process_elements2[2] = "A";
+
+    std::vector<std::vector<double> > process_coordinates1(3, std::vector<double>(3, 0.0));
+    process_coordinates1[1][0] = -1.0;
+    process_coordinates1[1][1] =  0.0;
+    process_coordinates1[1][2] =  0.0;
+
+    process_coordinates1[2][0] =  0.3;
+    process_coordinates1[2][1] =  0.3;
+    process_coordinates1[2][2] =  0.3;
+
+    std::vector<int> move_origins;
+    move_origins.push_back(0);
+    move_origins.push_back(1);
+
+    std::vector<Coordinate> move_vectors;
+    move_vectors.push_back( Coordinate(-1.0, 0.0, 0.0) );
+    move_vectors.push_back( Coordinate( 1.0, 0.0, 0.0) );
+
+    // Possible types.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["V"] = 3;
+
+    const double rate = 13.7;
+    const Configuration c1(process_coordinates1, process_elements1, possible_types);
+    const Configuration c2(process_coordinates1, process_elements2, possible_types);
+
+    // Let this process be valid at site 0.
+    processes.push_back(Process(c1,c2,rate,std::vector<int>(1,0), move_origins, move_vectors));
+
+    // Let this process be valid at sites 0 and 2.
+    std::vector<int> sites_vector(2,0);
+    sites_vector[1] = 2;
+    processes.push_back(Process(c1,c2,rate,sites_vector, move_origins, move_vectors));
+
+    std::vector<std::vector<double> > process_coordinates2(3, std::vector<double>(3, 0.0));
+
+    process_coordinates2[1][0] =  0.7;
+    process_coordinates2[1][1] =  0.7;
+    process_coordinates2[1][2] = -0.3;
+
+    process_coordinates2[2][0] =  1.0;
+    process_coordinates2[2][1] =  1.0;
+    process_coordinates2[2][2] =  1.0;
+
+    move_vectors[0] = Coordinate( 0.7, 0.7, -0.3);
+    move_vectors[1] = Coordinate(-0.7,-0.7,  0.3);
+
+
+    const Configuration c3(process_coordinates2, process_elements1, possible_types);
+    const Configuration c4(process_coordinates2, process_elements2, possible_types);
+
+    // Let the process be valid at site 1.
+    processes.push_back(Process(c3,c4,rate,std::vector<int>(1,1), move_origins, move_vectors));
+
+    Interactions interactions(processes, true);
+
+    // Generate a corresponding configuration.
+    std::vector<std::vector<double> > config_coordinates;
+    std::vector<std::string> elements;
+    for (int i = 0; i < 5; ++i)
+    {
+        for (int j = 0; j < 5; ++j)
+        {
+            for (int k = 0; k < 5; ++k)
+            {
+                std::vector<double> coord(3);
+                coord[0] = 0.0 + i*1.0;
+                coord[1] = 0.0 + j*1.0;
+                coord[2] = 0.0 + k*1.0;
+                config_coordinates.push_back(coord);
+                elements.push_back("V");
+
+                coord[0] = 0.3 + i*1.0;
+                coord[1] = 0.3 + j*1.0;
+                coord[2] = 0.3 + k*1.0;
+                elements.push_back("B");
+                config_coordinates.push_back(coord);
+            }
+        }
+    }
+
+    // Get the config and lattice map.
+    Configuration config(config_coordinates, elements, possible_types);
+    const LatticeMap lattice_map(2, std::vector<int>(3,5), std::vector<bool>(3,true));
+
+    // Now, setup the matchlists in the configuration.
+    config.initMatchLists(lattice_map, interactions.maxRange());
+
+    // Check the process match lists before we start.
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[0]->minimalMatchList().size()), 3);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[1]->minimalMatchList().size()), 3);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[2]->minimalMatchList().size()), 3);
+
+    // Check the id moves before update.
+    {
+        const std::vector< std::pair<int, int> > & id_moves = interactions.processes()[0]->idMoves();
+        CPPUNIT_ASSERT_EQUAL( static_cast<int>(id_moves.size()), 2 );
+        CPPUNIT_ASSERT_EQUAL( id_moves[0].first,  0 );
+        CPPUNIT_ASSERT_EQUAL( id_moves[0].second, 2 );
+        CPPUNIT_ASSERT_EQUAL( id_moves[1].first,  2 );
+        CPPUNIT_ASSERT_EQUAL( id_moves[1].second, 0 );
+    }
+
+    // Update the interactions according to the configuration match lists.
+    // This also updates the id moves on the processes.
+    interactions.updateProcessMatchLists(config);
+
+    // Check the id moves after update.
+    {
+        const std::vector<MinimalMatchListEntry> & match = interactions.processes()[0]->minimalMatchList();
+        CPPUNIT_ASSERT_EQUAL( static_cast<int>(match.size()), 6 );
+
+        const std::vector< std::pair<int, int> > & id_moves = interactions.processes()[0]->idMoves();
+        CPPUNIT_ASSERT_EQUAL( static_cast<int>(id_moves.size()), 2 );
+        CPPUNIT_ASSERT_EQUAL( id_moves[0].first,  0 );
+        CPPUNIT_ASSERT_EQUAL( id_moves[0].second, 5 );
+        CPPUNIT_ASSERT_EQUAL( id_moves[1].first,  5 );
+        CPPUNIT_ASSERT_EQUAL( id_moves[1].second, 0 );
+
+        // Wildcards are now added.
+        CPPUNIT_ASSERT_EQUAL( match[0].match_type,  1 );
+        CPPUNIT_ASSERT_EQUAL( match[1].match_type,  3 );
+        CPPUNIT_ASSERT_EQUAL( match[2].match_type,  0 );
+        CPPUNIT_ASSERT_EQUAL( match[3].match_type,  0 );
+        CPPUNIT_ASSERT_EQUAL( match[4].match_type,  0 );
+        CPPUNIT_ASSERT_EQUAL( match[5].match_type,  2 );
+    }
+}
