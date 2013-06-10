@@ -8,6 +8,7 @@ from KMCLatticeModel import KMCLatticeModel
 from KMCUnitCell import KMCUnitCell
 from KMCControlParameters import KMCControlParameters
 from KMCRateCalculatorPlugin import KMCRateCalculatorPlugin
+from KMCAnalysisPlugin import KMCAnalysisPlugin
 from Utilities.SaveAndReadUtilities import KMCInteractionsFromScript
 from Utilities.SaveAndReadUtilities import KMCConfigurationFromScript
 from KMCProcess import KMCProcess
@@ -16,7 +17,7 @@ __all__ = ['KMCLocalConfiguration', 'KMCInteractions', 'KMCConfiguration',
            'KMCLattice', 'KMCLatticeModel', 'KMCUnitCell',
            'KMCControlParameters', 'KMCInteractionsFromScript',
            'KMCConfigurationFromScript', 'KMCRateCalculatorPlugin',
-           'KMCProcess']
+           'KMCAnalysisPlugin', 'KMCProcess']
 
 # Trick to intialize and finalize MPI only once.
 from Backend import Backend

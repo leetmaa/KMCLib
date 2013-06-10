@@ -79,3 +79,66 @@ Interface
    :members: initialize, rate, cutoff
    :special-members:
 
+
+
+KMCAnalysisPlugin
+-------------------------
+The KMCAnalysisPlugin is used to perform on-the-fly custom analysis
+during the KMC simulation. A list of instantiated KMCAnalysisPlugin
+objects can be given to the run(...) function of the KMCLatticeModel.
+Each user-defined custom analysis object must inherit from the
+KMCAnalysisPlugin base class.
+Three functions are available to overload for setting up, handling
+updates after a step and finalizing the analysis.
+Here is an example:
+
+.. code-block:: python
+
+    from KMCLib.KMCAnalysisPlugin import KMCAnalysisPlugin
+
+    # Define the custom analysis class.
+    class CustomAnalysis(KMCAnalysisPlugin)
+        """ Custom analysis class """
+        def __init__(self, ... ):
+            # Initialize the object.
+            ...
+
+        # Overload the interface functions.
+        def setup(self, step, time, configuration):
+            ...
+
+        def registerStep(self, step, time, configuration):
+            ...
+
+        def finalize(self):
+            ...
+
+    # Instantiate the custom analysis object.
+    my_analysis1 = CustomAnalysis(...)
+    my_analysis2 = CustomAnalysis(...)
+    ...
+
+    # Setup the list of analysis objects.
+    analysis = [my_analysis1, my_analysis2, ... ]
+
+    # Setup the kmc lattice model to run (see documentation for parameters)
+    kmc_model = KMCLatticeMode(...)
+
+    # Start the simulation with custom on-the-fly analysis every 10:th step.
+    kmc_mode.run( ...
+                  control_parameters=KMCControlParameters( ...
+                                                           analysis_interval=10)
+                  analysis=analysis)
+
+.. NOTE::
+   How often the registerStep(...) function is called during the
+   simulation is controlled via the 'analysis_interval' parameter given
+   to the KMCControlParameters.
+
+
+Interface
+.................
+
+.. autoclass:: KMCLib.KMCAnalysisPlugin
+   :members: setup, registerStep, finalize, __init__
+

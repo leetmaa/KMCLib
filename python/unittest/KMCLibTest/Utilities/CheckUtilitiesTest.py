@@ -205,6 +205,14 @@ class CheckUtilitiesTest(unittest.TestCase):
         self.assertRaises(Error,
                           lambda : checkSequenceOf(sequence, Dummy))
 
+        # Setup a sequence containing classes (not instances)
+        sequence = [Dummy(), Dummy, Dummy2]
+        self.assertRaises(Error,
+                          lambda : checkSequenceOf(sequence, Dummy))
+        sequence = [Dummy]
+        self.assertRaises(Error,
+                          lambda : checkSequenceOf(sequence, Dummy))
+
     def testCheckTypes(self):
         """ Test that the types checking works. """
         # This is a valid types list.

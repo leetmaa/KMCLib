@@ -16,7 +16,8 @@ class KMCControlParameters(object):
 
     def __init__(self,
                  number_of_steps=None,
-                 dump_interval=None):
+                 dump_interval=None,
+                 analysis_interval=None):
         """
         Constructuor for the KMCControlParameters object that
         holds all parameters controlling the flow of the KMC simulation.
@@ -28,6 +29,11 @@ class KMCControlParameters(object):
         :param dump_interval: The number of steps between subsequent trajectory
                               dumps. The default value is 1, i.e. dump every step.
         :type dump_interval: int
+
+        :param analysis_interval: The number of steps between subsequent calls to
+                                  the custom analysis 'registerStep' functions.
+                                  The default value is 1, i.e. analysis every step.
+        :type analysis_interval: int
         """
         # Check and set the number of steps.
         self.__number_of_steps = checkPositiveInteger(number_of_steps,
@@ -37,6 +43,10 @@ class KMCControlParameters(object):
         self.__dump_interval = checkPositiveInteger(dump_interval,
                                                     1,
                                                     "dump_interval")
+
+        self.__analysis_interval = checkPositiveInteger(analysis_interval,
+                                                        1,
+                                                        "analysis_interval")
 
     def numberOfSteps(self):
         """
@@ -54,5 +64,10 @@ class KMCControlParameters(object):
         """
         return self.__dump_interval
 
+    def analysisInterval(self):
+        """
+        Query for the analysis interval.
 
-
+        :returns: The analysis interval.
+        """
+        return self.__analysis_interval

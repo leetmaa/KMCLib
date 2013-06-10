@@ -189,8 +189,8 @@ def checkSequenceOf(sequence, class_type, msg="The tested object is not a sequen
         raise Error(msg)
 
     # Check that each element is an instance of type KMCProcess.
-    for process in sequence:
-        if not isinstance(process, class_type):
+    for element in sequence:
+        if not isinstance(element, class_type):
             raise Error(msg)
     # Done.
     return sequence

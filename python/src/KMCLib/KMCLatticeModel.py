@@ -13,9 +13,11 @@ from KMCLib.Backend import Backend
 from KMCLib.KMCConfiguration import KMCConfiguration
 from KMCLib.KMCInteractions import KMCInteractions
 from KMCLib.KMCControlParameters import KMCControlParameters
+from KMCLib.KMCAnalysisPlugin import KMCAnalysisPlugin
 from KMCLib.Exceptions.Error import Error
 from KMCLib.Utilities.Trajectory.Trajectory import Trajectory
 from KMCLib.Utilities.PrintUtilities import prettyPrint
+from KMCLib.Utilities.CheckUtilities import checkSequenceOf
 
 class KMCLatticeModel(object):
     """
@@ -84,7 +86,8 @@ class KMCLatticeModel(object):
 
     def run(self,
             control_parameters=None,
-            trajectory_filename=None):
+            trajectory_filename=None,
+            analysis=None):
         """
         Run the KMC lattice model simulation with specified parameters.
 
@@ -114,6 +117,13 @@ The 'trajectory_filename' input to the KMCLattice model run function
 must be given as string."""
             raise Error(msg)
 
+        # Check the analysis.
+        if analysis is None:
+            analysis = []
+        else:
+            msg = "Each element in the 'analyis' list must be an instance of KMCAnalysisPlugin."
+            analysis = checkSequenceOf(analysis, KMCAnalysisPlugin, msg)
+
         # Construct the C++ lattice model.
         prettyPrint(" KMCLib: setting up the backend C++ object.")
         cpp_model = self._backend()
@@ -135,9 +145,17 @@ must be given as string."""
                               step             = 0,
                               types            = self.__configuration.types())
 
+        # Setup the analysis objects.
+        for ap in analysis:
+            step = 0
+            ap.setup(step,
+                     self.__cpp_timer.simulationTime(),
+                     self.__configuration);
+
         # Get the needed parameters.
-        n_steps = control_parameters.numberOfSteps()
-        n_dump  = control_parameters.dumpInterval()
+        n_steps   = control_parameters.numberOfSteps()
+        n_dump    = control_parameters.dumpInterval()
+        n_analyse = control_parameters.analysisInterval()
         prettyPrint(" KMCLib: Runing for %i steps, starting from time: %f\n"%(n_steps,self.__cpp_timer.simulationTime()))
 
         # Run the KMC simulation.
@@ -162,7 +180,20 @@ must be given as string."""
                         trajectory.append(simulation_time  = self.__cpp_timer.simulationTime(),
                                           step             = step,
                                           types            = self.__configuration.types())
+
+                if ((step)%n_analyse == 0):
+                    # Run all other python analysis.
+                    for ap in analysis:
+                        ap.registerStep(step,
+                                        self.__cpp_timer.simulationTime(),
+                                        self.__configuration);
+
         finally:
+
+            # Perform the analysis post processing.
+            for ap in analysis:
+                ap.finalize();
+
             # Flush the buffers when done.
             if use_trajectory:
                 trajectory.flush()

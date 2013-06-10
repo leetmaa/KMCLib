@@ -19,6 +19,8 @@ from KMCLib.KMCLocalConfiguration import KMCLocalConfiguration
 from KMCLib.KMCControlParameters import KMCControlParameters
 from KMCLib.KMCUnitCell import KMCUnitCell
 from KMCLib.KMCLattice  import KMCLattice
+from KMCLib.KMCAnalysisPlugin import KMCAnalysisPlugin
+from KMCLib.Exceptions.Error import Error
 
 # Import from the module we test.
 from KMCLib.KMCLatticeModel import KMCLatticeModel
@@ -375,6 +377,172 @@ class KMCLatticeModelTest(unittest.TestCase):
         # step the A population is 74%.
         value = 1.0 * nA / (nA + nB)
         self.assertAlmostEqual(0.74, value, 2)
+
+    def testRunWithAnalysis(self):
+        """ Test that the analyis plugins get called correctly. """
+        # Cell.
+        cell_vectors = [[   1.000000e+00,   0.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   1.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   0.000000e+00,   1.000000e+00]]
+
+        basis_points = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+
+        unit_cell = KMCUnitCell(
+            cell_vectors=cell_vectors,
+            basis_points=basis_points)
+
+        # Lattice.
+        lattice = KMCLattice(
+            unit_cell=unit_cell,
+            repetitions=(10,10,1),
+            periodic=(True, True, False))
+
+        # Configuration.
+        types = ['B']*100
+        possible_types = ['A','B']
+        configuration = KMCConfiguration(
+            lattice=lattice,
+            types=types,
+            possible_types=possible_types)
+
+        # Interactions.
+        coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+        process_0 = KMCProcess(coordinates,
+                               ['A'],
+                               ['B'],
+                               basis_sites=[0],
+                               rate_constant=4.0)
+        process_1 = KMCProcess(coordinates,
+                               ['B'],
+                               ['A'],
+                               basis_sites=[0],
+                               rate_constant=1.0)
+
+        processes = [process_0, process_1]
+        interactions = KMCInteractions(processes)
+
+        # Setup the model.
+        ab_flip_model = KMCLatticeModel(configuration, interactions)
+
+        # Run the model with a trajectory file.
+        name = os.path.abspath(os.path.dirname(__file__))
+        name = os.path.join(name, "TestUtilities", "Scratch")
+        trajectory_filename = os.path.join(name, "ab_flip_traj.py")
+        self.__files_to_remove.append(trajectory_filename)
+
+        # The control parameters.
+        control_parameters = KMCControlParameters(number_of_steps=1000,
+                                                  dump_interval=500,
+                                                  analysis_interval=300)
+
+
+        # Setup a valid minimal analysis object.
+        class AnalysisProxy1(KMCAnalysisPlugin):
+            def __init__(self):
+                pass
+
+        # Setup a slightly larger analyis object.
+        class AnalysisProxy2(KMCAnalysisPlugin):
+            def __init__(self):
+                self.setup_called = False
+                self.finalize_called = False
+                self.register_step_counts = 0
+
+            def setup(self, step, time, configuration):
+                self.setup_called = True
+
+            def registerStep(self, step, time, configuration):
+                self.register_step_counts += 1
+
+            def finalize(self):
+                self.finalize_called = True
+
+        ap2 = AnalysisProxy2()
+        analysis = [ AnalysisProxy1(), ap2 ]
+
+        # Run the model for 1000 steps with the analysis objects.
+        # With dump interval 500 the analysis objects should  be
+        # called on startup, the at step 300, 600 and step 900 and
+        # a finalization after that.
+        ab_flip_model.run(control_parameters,
+                          trajectory_filename=trajectory_filename,
+                          analysis=analysis)
+
+        self.assertTrue(ap2.setup_called)
+        self.assertTrue(ap2.finalize_called)
+        self.assertEqual(ap2.register_step_counts, 3)
+
+    def testRunFailAnalysis(self):
+        """ Test that the analyis plugins get called correctly. """
+        # Cell.
+        cell_vectors = [[   1.000000e+00,   0.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   1.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   0.000000e+00,   1.000000e+00]]
+
+        basis_points = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+
+        unit_cell = KMCUnitCell(
+            cell_vectors=cell_vectors,
+            basis_points=basis_points)
+
+        # Lattice.
+        lattice = KMCLattice(
+            unit_cell=unit_cell,
+            repetitions=(10,10,1),
+            periodic=(True, True, False))
+
+        # Configuration.
+        types = ['B']*100
+        possible_types = ['A','B']
+        configuration = KMCConfiguration(
+            lattice=lattice,
+            types=types,
+            possible_types=possible_types)
+
+        # Interactions.
+        coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+        process_0 = KMCProcess(coordinates,
+                               ['A'],
+                               ['B'],
+                               basis_sites=[0],
+                               rate_constant=4.0)
+        process_1 = KMCProcess(coordinates,
+                               ['B'],
+                               ['A'],
+                               basis_sites=[0],
+                               rate_constant=1.0)
+
+        processes = [process_0, process_1]
+        interactions = KMCInteractions(processes)
+
+        # Setup the model.
+        ab_flip_model = KMCLatticeModel(configuration, interactions)
+
+        # The control parameters.
+        control_parameters = KMCControlParameters(number_of_steps=1000,
+                                                  dump_interval=500)
+
+        # Setup a valid minimal analysis object.
+        class AnalysisProxy1(KMCAnalysisPlugin):
+            def __init__(self):
+                pass
+
+        # Fail because of not instantitated analysis.
+        self.assertRaises( Error,
+                           lambda : ab_flip_model.run(control_parameters,
+                                                      analysis=[AnalysisProxy1]) )
+        # Fail because of empty analyis list.
+        self.assertRaises( Error,
+                           lambda : ab_flip_model.run(control_parameters,
+                                                      analysis=[]) )
+        # Fail because of not list.
+        self.assertRaises( Error,
+                           lambda : ab_flip_model.run(control_parameters,
+                                                      analysis=AnalysisProxy1()) )
+        # Fail because of wrong type.
+        self.assertRaises( Error,
+                           lambda : ab_flip_model.run(control_parameters,
+                                                      analysis=[AnalysisProxy1(), "AP3"]) )
 
     def testBackend(self):
         """ Test that the backend object is correctly constructed. """

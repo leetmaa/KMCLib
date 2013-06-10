@@ -18,6 +18,7 @@ from KMCLatticeTest import KMCLatticeTest
 from KMCLatticeModelTest import KMCLatticeModelTest
 from KMCControlParametersTest import KMCControlParametersTest
 from KMCRateCalculatorPluginTest import KMCRateCalculatorPluginTest
+from KMCAnalysisPluginTest import KMCAnalysisPluginTest
 from KMCProcessTest import KMCProcessTest
 
 from Utilities import UtilitiesTests
@@ -34,6 +35,7 @@ def suite():
          unittest.TestLoader().loadTestsFromTestCase(KMCLatticeModelTest),
          unittest.TestLoader().loadTestsFromTestCase(KMCControlParametersTest),
          unittest.TestLoader().loadTestsFromTestCase(KMCRateCalculatorPluginTest),
+         unittest.TestLoader().loadTestsFromTestCase(KMCAnalysisPluginTest),
          unittest.TestLoader().loadTestsFromTestCase(KMCProcessTest),
          UtilitiesTests.suite(),
          ExceptionsTests.suite(),
