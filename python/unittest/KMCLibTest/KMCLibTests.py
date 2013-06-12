@@ -24,6 +24,7 @@ from KMCProcessTest import KMCProcessTest
 from Utilities import UtilitiesTests
 from Exceptions import ExceptionsTests
 from Backend import BackendTests
+from OnTheFlyMSD import OnTheFlyMSDTests
 
 def suite():
     suite = unittest.TestSuite(
@@ -39,7 +40,8 @@ def suite():
          unittest.TestLoader().loadTestsFromTestCase(KMCProcessTest),
          UtilitiesTests.suite(),
          ExceptionsTests.suite(),
-         BackendTests.suite()])
+         BackendTests.suite(),
+         OnTheFlyMSDTests.suite()])
     return suite
 
 if __name__ == '__main__':
