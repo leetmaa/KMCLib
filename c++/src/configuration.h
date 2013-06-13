@@ -62,6 +62,12 @@ public:
      */
     const std::vector<int> & types() const { return types_; }
 
+    /*! \brief Const query for the moved atom ids.
+     *  \return : A copy of the moved atom ids, resized to correct length.
+     */
+    inline
+    std::vector<int> movedAtomIDs() const;
+
     /*! \brief Construct and return the match list for the given list of
      *         indices.
      *  \param origin_index : The index to treat as the origin.
@@ -115,6 +121,9 @@ protected:
 
 private:
 
+    /// Counter for the number of moved atom ids the last move.
+    int n_moved_;
+
     /// The lattice coordinates.
     std::vector<Coordinate> coordinates_;
 
@@ -130,6 +139,9 @@ private:
     /// The atom id for each lattice point.
     std::vector<int> atom_id_;
 
+    /// The first n_moved_ elements hold the moved atom ids.
+    std::vector<int> moved_atom_ids_;
+
     /// The mapping from type integers to names.
     std::vector<std::string> type_names_;
 
@@ -137,6 +149,21 @@ private:
     std::vector< std::vector<MinimalMatchListEntry> > match_lists_;
 
 };
+
+
+// -----------------------------------------------------------------------------
+// Inlined function definitions follow.
+// -----------------------------------------------------------------------------
+
+std::vector<int> Configuration::movedAtomIDs() const
+{
+    // PERFORMME
+    std::vector<int> moved(moved_atom_ids_);
+    moved.resize(n_moved_);
+    return moved;
+}
+
+
 
 
 #endif // __CONFIGURATION__

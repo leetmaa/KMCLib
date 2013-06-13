@@ -78,6 +78,7 @@ Process::Process(const Configuration & first,
         m.coordinate  = coordinate;
         m.index       = -1;
         m.has_move_coordinate = false;
+        m.move_coordinate = Coordinate(0.0, 0.0, 0.0);
         minimal_match_list_.push_back(m);
 
         // If the first and second type differ increase the length of the

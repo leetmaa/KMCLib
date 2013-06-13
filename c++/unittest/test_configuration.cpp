@@ -700,3 +700,226 @@ void Test_Configuration::testTypeNameQuery()
 
     // DONE
 }
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Configuration::testMovedAtomIDs()
+{
+    // Setup a configuration.
+    const std::vector< std::vector<double> > basis(0, std::vector<double>(3,0.0));
+    const std::vector<int> basis_sites(1, 0);
+    const std::vector<std::string> basis_elements(1, "A");
+
+    // Make a 37x18x19 structure.
+    const int nI = 37;
+    const int nJ = 18;
+    const int nK = 19;
+    const int nB = 1;
+
+    // Coordinates and elements.
+    std::vector<std::vector<double> > coordinates;
+    std::vector<std::string> elements;
+
+    for (int i = 0; i < nI; ++i)
+    {
+        for (int j = 0; j < nJ; ++j)
+        {
+            for (int k = 0; k < nK; ++k)
+            {
+                std::vector<double> c(3);
+                c[0] = static_cast<double>(i);
+                c[1] = static_cast<double>(j);
+                c[2] = static_cast<double>(k);
+                coordinates.push_back(c);
+                elements.push_back(basis_elements[0]);
+            }
+        }
+    }
+
+    elements[0]    = "V";
+    elements[216]  = "V";
+    elements[1434] = "V";
+    elements[2101] = "V";
+
+    // Possible types.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["V"] = 3;
+
+    // Setup the configuration.
+    Configuration configuration(coordinates, elements, possible_types);
+
+    // Setup the lattice map.
+    std::vector<int> repetitions(3);
+    repetitions[0] = nI;
+    repetitions[1] = nJ;
+    repetitions[2] = nK;
+    std::vector<bool> periodicity(3, true);
+    LatticeMap lattice_map(nB, repetitions, periodicity);
+
+    // Init the match lists.
+    configuration.initMatchLists(lattice_map, 1);
+
+    // Get a process that finds a V surrounded by A,
+    // moves two of the A's and changing the V to B,
+    // keeping all other atoms in place.
+    std::vector<std::string> process_elements1(7);
+    process_elements1[0] = "V";
+    process_elements1[1] = "A";
+    process_elements1[2] = "A";
+    process_elements1[3] = "A";
+    process_elements1[4] = "A";
+    process_elements1[5] = "A";
+    process_elements1[6] = "A";
+
+    std::vector<std::string> process_elements2(7);
+    process_elements2[0] = "B";
+    process_elements2[1] = "V";
+    process_elements2[2] = "V";
+    process_elements2[3] = "A";
+    process_elements2[4] = "A";
+    process_elements2[5] = "A";
+    process_elements2[6] = "A";
+
+    std::vector<std::vector<double> > process_coordinates(7, std::vector<double>(3, 0.0));
+
+    process_coordinates[1][0] = -1.0;
+    process_coordinates[1][1] =  0.0;
+    process_coordinates[1][2] =  0.0;
+
+    process_coordinates[2][0] =  1.0;
+    process_coordinates[2][1] =  0.0;
+    process_coordinates[2][2] =  0.0;
+
+    process_coordinates[3][0] =  0.0;
+    process_coordinates[3][1] = -1.0;
+    process_coordinates[3][2] =  0.0;
+
+    process_coordinates[4][0] =  0.0;
+    process_coordinates[4][1] =  1.0;
+    process_coordinates[4][2] =  0.0;
+
+    process_coordinates[5][0] =  0.0;
+    process_coordinates[5][1] =  0.0;
+    process_coordinates[5][2] = -1.0;
+
+    process_coordinates[6][0] =  0.0;
+    process_coordinates[6][1] =  0.0;
+    process_coordinates[6][2] =  1.0;
+
+    const double rate = 13.7;
+    Configuration c1(process_coordinates, process_elements1, possible_types);
+    Configuration c2(process_coordinates, process_elements2, possible_types);
+
+    // Setup the move vectors for the first process.
+    std::vector<int> move_origins_p1;
+    move_origins_p1.push_back(1);
+    move_origins_p1.push_back(2);
+
+    std::vector<Coordinate> move_coordinates_p1;
+
+    // Move 1 to 2 (atom_id 1092 moved from lattice site 1092 to
+    // lattice site 1776)
+    move_coordinates_p1.push_back(Coordinate( 2.0, 0.0, 0.0));
+
+    // Move 2 to 1 (atom_id 1776 moved from lattice site 1776 to
+    // lattice site 1092)
+    move_coordinates_p1.push_back(Coordinate(-2.0, 0.0, 0.0));
+
+    Process p(c1, c2, rate, basis_sites, move_origins_p1, move_coordinates_p1);
+
+    // Now, add index 1434 to the process.
+    // We know by construction that these match.
+    p.addSite(1434, 0.0);
+
+    // Peform the process.
+    configuration.performProcess(p, 1434, lattice_map);
+
+    // Get the moved atom_id:s out.
+    const std::vector<int> moved_atom_ids1 = configuration.movedAtomIDs();
+
+    // Check marked ids.
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(moved_atom_ids1.size()), 3 );
+    CPPUNIT_ASSERT_EQUAL( moved_atom_ids1[0], 1434 );
+    CPPUNIT_ASSERT_EQUAL( moved_atom_ids1[1], 1092 );
+    CPPUNIT_ASSERT_EQUAL( moved_atom_ids1[2], 1776 );
+
+    // Get a process that finds a B surrounded by two V's in the
+    // positive and negative x directions and the rest A.
+
+    // Moves atoms. Make sure we change the atom_id
+    // at the central location.
+
+    process_elements1[0] = "B";
+    process_elements1[1] = "V";
+    process_elements1[2] = "V";
+    process_elements1[3] = "A";
+    process_elements1[4] = "A";
+    process_elements1[5] = "A";
+    process_elements1[6] = "A";
+
+    process_elements2[0] = "V";
+    process_elements2[1] = "B";
+    process_elements2[2] = "A";
+    process_elements2[3] = "A";
+    process_elements2[4] = "V";
+    process_elements2[5] = "A";
+    process_elements2[6] = "A";
+
+    // Setup the move vectors for the second process.
+    std::vector<int> move_origins_p2;
+    move_origins_p2.push_back(0);
+    move_origins_p2.push_back(1);
+    move_origins_p2.push_back(2);
+    move_origins_p2.push_back(4);
+
+    std::vector<Coordinate> move_coordinates_p2;
+
+    // Move 0 to 1 (atom_id 1434 moved from lattice site 1434 to
+    // lattice site 1092)
+    move_coordinates_p2.push_back(Coordinate(-1.0, 0.0, 0.0));
+
+    // Move 1 to 4 (atom_id 1776 moved from lattice site 1092 to
+    // lattice site 1453)
+    move_coordinates_p2.push_back(Coordinate( 1.0, 1.0, 0.0));
+
+    // Move 2 to 0 (atom_id 1092 moved from lattice site 1776 to
+    // lattice site 1434)
+    move_coordinates_p2.push_back(Coordinate(-1.0, 0.0, 0.0));
+
+    // Move 4 to 2 (atom_id 1453 moved from lattice site 1453 to
+    // lattice site 1776)
+    move_coordinates_p2.push_back(Coordinate( 1.0,-1.0, 0.0));
+
+    Configuration c3(process_coordinates, process_elements1, possible_types);
+    Configuration c4(process_coordinates, process_elements2, possible_types);
+    Process p2(c3, c4, rate, basis_sites, move_origins_p2, move_coordinates_p2);
+
+    // Now, add index 1434 to the process.
+    // We know by construction that these match.
+    p2.addSite(1434, 0.0);
+
+    // Peform the process.
+    configuration.updateMatchList(1434);
+    configuration.performProcess(p2, 1434, lattice_map);
+
+    // Get the moved atom_id:s out.
+    const std::vector<int> moved_atom_ids2 = configuration.movedAtomIDs();
+
+    // Check marked ids.
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(moved_atom_ids2.size()), 4 );
+    CPPUNIT_ASSERT_EQUAL( moved_atom_ids2[0], 1434 );
+    CPPUNIT_ASSERT_EQUAL( moved_atom_ids2[1], 1776 );
+    CPPUNIT_ASSERT_EQUAL( moved_atom_ids2[2], 1453 );
+    CPPUNIT_ASSERT_EQUAL( moved_atom_ids2[3], 1092 );
+
+    // Check that the ids sit where we think they should.
+    CPPUNIT_ASSERT_EQUAL( configuration.atomID()[1434], 1092 );
+    CPPUNIT_ASSERT_EQUAL( configuration.atomID()[1092], 1434 );
+    CPPUNIT_ASSERT_EQUAL( configuration.atomID()[1453], 1776 );
+    CPPUNIT_ASSERT_EQUAL( configuration.atomID()[1776], 1453 );
+
+}

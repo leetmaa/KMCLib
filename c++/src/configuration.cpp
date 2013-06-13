@@ -26,6 +26,7 @@ static std::vector<MinimalMatchListEntry> tmp_minimal_match_list__(0);
 Configuration::Configuration(std::vector<std::vector<double> > const & coordinates,
                              std::vector<std::string> const & elements,
                              const std::map<std::string,int> & possible_types) :
+    n_moved_(0),
     elements_(elements),
     match_lists_(elements_.size())
 {
@@ -87,6 +88,11 @@ void Configuration::initMatchLists( const LatticeMap & lattice_map,
                                            neighbourhood,
                                            lattice_map);
     }
+
+    // Now that we know the size of the match lists we can allocate
+    // memory for the moved_atom_ids_ vector.
+    const size_t size = match_lists_[0].size();
+    moved_atom_ids_.resize(size);
 }
 
 
@@ -237,7 +243,13 @@ void Configuration::performProcess(Process & process,
     // Iterators to the match list entries.
     std::vector<MinimalMatchListEntry>::const_iterator it1 = process_match_list.begin();
     std::vector<MinimalMatchListEntry>::const_iterator it2 = site_match_list.begin();
+
+    // Iterators to the info storages.
     std::vector<int>::iterator it3 = process.affectedIndices().begin();
+    std::vector<int>::iterator it4 = moved_atom_ids_.begin();
+
+    // Reset the moved counter.
+    n_moved_ = 0;
 
     // Loop over the match lists and get the types and indices out.
     for( ; it1 != process_match_list.end(); ++it1, ++it2)
@@ -264,6 +276,11 @@ void Configuration::performProcess(Process & process,
             // Mark this index as affected.
             (*it3) = index;
             ++it3;
+
+            // Mark this atom_id as moved.
+            (*it4) = atom_id;
+            ++it4;
+            ++n_moved_;
         }
     }
 
@@ -295,4 +312,6 @@ void Configuration::performProcess(Process & process,
         // Set the atom id at this lattice site index.
         atom_id_[index] = id;
     }
+
 }
+

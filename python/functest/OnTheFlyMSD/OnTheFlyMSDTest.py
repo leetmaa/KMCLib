@@ -47,7 +47,7 @@ p1 = KMCProcess(coordinates=coordinates_p1,
                 elements_after=["A","B"],
                 move_vectors=None,
                 basis_sites=[0],
-                rate_constant=0.4)
+                rate_constant=1.0)
 
 interactions = KMCInteractions(processes=[p0, p1],
                                implicit_wildcards=True)

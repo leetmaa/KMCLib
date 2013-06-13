@@ -66,6 +66,7 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
         Recieves the step call from the MC loop.
         """
         # Check if any of our tracking type has moved.
+        print configuration._backend().movedAtomIDs()
 
         # Make place for the latest coordinate and time.
 
