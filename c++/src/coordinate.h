@@ -15,6 +15,7 @@
 #define __COORDINATE__
 
 #include <cmath>
+#include <vector>
 
 /*! \brief Class for representing a coordinate.
  */
@@ -109,6 +110,12 @@ public:
      */
     inline
     const double & z() const { return z_; }
+
+    /*! \brief Query for the data as a std::vector.
+     *  \return : The data as a vector.
+     */
+    inline
+    std::vector<double>data() const;
 
     /*! \brief Calculate the distance between this and another coordinate.
      *  \return : The distance.
@@ -294,6 +301,18 @@ double Coordinate::distanceToOrigin() const
                               std::pow(z_, 2));
     //return tmp_value;
     return std::sqrt( tmp_value );
+}
+
+
+// -----------------------------------------------------------------------------
+//
+std::vector<double> Coordinate::data() const
+{
+    std::vector<double> tmp(3);
+    tmp[0] = x_;
+    tmp[1] = y_;
+    tmp[2] = z_;
+    return tmp;
 }
 
 

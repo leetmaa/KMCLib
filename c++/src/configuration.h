@@ -52,15 +52,31 @@ public:
      */
     const std::vector<Coordinate> & coordinates() const { return coordinates_; }
 
+    /*! \brief Const query for the atom id coordinates.
+     *  \return : The atom id coordinates of the configuration.
+     */
+    const std::vector<Coordinate> & atomIDCoordinates() const { return atom_id_coordinates_; }
+
     /*! \brief Const query for the elements.
      *  \return : The elements of the configuration.
      */
     const std::vector<std::string> & elements() const { return elements_; }
 
+    /*! \brief Const query for the atom id types.
+     *  \return : The atom id types of the configuration.
+     */
+    const std::vector<std::string> & atomIDElements() const { return atom_id_elements_; }
+
     /*! \brief Const query for the types.
      *  \return : The types of the configuration.
      */
     const std::vector<int> & types() const { return types_; }
+
+    /*! \brief Const query for the moved atom ids.
+     *  \return : A copy of the moved atom ids, resized to correct length.
+     */
+    inline
+    std::vector<int> movedAtomIDs() const;
 
     /*! \brief Construct and return the match list for the given list of
      *         indices.
@@ -115,6 +131,9 @@ protected:
 
 private:
 
+    /// Counter for the number of moved atom ids the last move.
+    int n_moved_;
+
     /// The lattice coordinates.
     std::vector<Coordinate> coordinates_;
 
@@ -124,11 +143,17 @@ private:
     /// The lattice elements.
     std::vector<std::string> elements_;
 
+    /// The elements per atom id.
+    std::vector<std::string> atom_id_elements_;
+
     /// The the lattice elements in integer representation.
     std::vector<int> types_;
 
     /// The atom id for each lattice point.
     std::vector<int> atom_id_;
+
+    /// The first n_moved_ elements hold the moved atom ids.
+    std::vector<int> moved_atom_ids_;
 
     /// The mapping from type integers to names.
     std::vector<std::string> type_names_;
@@ -137,6 +162,21 @@ private:
     std::vector< std::vector<MinimalMatchListEntry> > match_lists_;
 
 };
+
+
+// -----------------------------------------------------------------------------
+// Inlined function definitions follow.
+// -----------------------------------------------------------------------------
+
+std::vector<int> Configuration::movedAtomIDs() const
+{
+    // PERFORMME
+    std::vector<int> moved(moved_atom_ids_);
+    moved.resize(n_moved_);
+    return moved;
+}
+
+
 
 
 #endif // __CONFIGURATION__

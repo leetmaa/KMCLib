@@ -30,6 +30,13 @@ void Test_Coordinate::testConstructionAndQuery()
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c.x(), 0.1, 1.0e-14);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c.y(), 0.2, 1.0e-14);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c.z(), 0.3, 1.0e-14);
+
+    // Get the data.
+    const std::vector<double> data = c.data();
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(data.size()), 3);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( data[0], c.x(), 1.0e-14);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( data[1], c.y(), 1.0e-14);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( data[2], c.z(), 1.0e-14);
 }
 
 
