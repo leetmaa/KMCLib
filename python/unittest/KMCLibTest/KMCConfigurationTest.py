@@ -420,6 +420,39 @@ class KMCConfigurationTest(unittest.TestCase):
         # Check the type of the cpp backend.
         self.assertTrue(isinstance(cpp_backend, Backend.Configuration))
 
+    def testQueries(self):
+        """ Test the configuration's query functions. """
+        config = KMCConfiguration.__new__(KMCConfiguration)
+
+        c0_ref = numpy.random.random()
+        c1_ref = numpy.random.random()
+        c2_ref = numpy.random.random()
+
+        # Set the backend proxy.
+        class BackendProxy(object):
+            def __init__(self):
+                pass
+            def elements(self):
+                return ("B", "F", "A")
+            def atomIDElements(self):
+                return ("A", "B", "F")
+            def atomIDCoordinates(self):
+                return (Backend.Coordinate(c0_ref,c1_ref,c2_ref),)
+
+        config._KMCConfiguration__backend = BackendProxy()
+
+        # Query and check.
+        atom_id_types  = config.atomIDTypes()
+        atom_id_coords = config.atomIDCoordinates()
+        lattice_types  = config.types()
+
+        self.assertEqual(atom_id_types, ("A","B","F"))
+        self.assertEqual(lattice_types, ["B","F","A"])
+
+        self.assertAlmostEqual(atom_id_coords[0].x(), c0_ref, 10)
+        self.assertAlmostEqual(atom_id_coords[0].y(), c1_ref, 10)
+        self.assertAlmostEqual(atom_id_coords[0].z(), c2_ref, 10)
+
     def testScript(self):
         """ Test that we can generate a valid script. """
         # Setup a valid KMCUnitCell.

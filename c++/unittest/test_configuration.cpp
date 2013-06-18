@@ -704,7 +704,7 @@ void Test_Configuration::testTypeNameQuery()
 
 // -------------------------------------------------------------------------- //
 //
-void Test_Configuration::testMovedAtomIDs()
+void Test_Configuration::testAtomIDElementsCoordinatesMovedIDs()
 {
     // Setup a configuration.
     const std::vector< std::vector<double> > basis(0, std::vector<double>(3,0.0));
@@ -751,6 +751,37 @@ void Test_Configuration::testMovedAtomIDs()
 
     // Setup the configuration.
     Configuration configuration(coordinates, elements, possible_types);
+
+    // Test the atom id coordinates. Should initially be the same as the coordinates of
+    // the configuration.
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(configuration.coordinates().size()),
+                          static_cast<int>(configuration.atomIDCoordinates().size()) );
+
+    for (size_t i = 0; i < configuration.coordinates().size(); ++i)
+    {
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(configuration.coordinates()[i].x(),
+                                     configuration.atomIDCoordinates()[i].x(),
+                                     1.0e-12);
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(configuration.coordinates()[i].y(),
+                                     configuration.atomIDCoordinates()[i].y(),
+                                     1.0e-12);
+
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(configuration.coordinates()[i].z(),
+                                     configuration.atomIDCoordinates()[i].z(),
+                                     1.0e-12);
+    }
+
+    // Test the atom id elements. Should initially be the same as the types of
+    // the lattice configuration.
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(configuration.elements().size()),
+                          static_cast<int>(configuration.atomIDElements().size()) );
+
+    for (size_t i = 0; i < configuration.elements().size(); ++i)
+    {
+        CPPUNIT_ASSERT_EQUAL(configuration.elements()[i],
+                             configuration.atomIDElements()[i]);
+    }
 
     // Setup the lattice map.
     std::vector<int> repetitions(3);
@@ -847,6 +878,43 @@ void Test_Configuration::testMovedAtomIDs()
     CPPUNIT_ASSERT_EQUAL( moved_atom_ids1[1], 1092 );
     CPPUNIT_ASSERT_EQUAL( moved_atom_ids1[2], 1776 );
 
+    // Check the corresponding atom id coordinates.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(configuration.coordinates()[1776].x(),
+                                 configuration.atomIDCoordinates()[1092].x(),
+                                 1.0e-12);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(configuration.coordinates()[1776].y(),
+                                 configuration.atomIDCoordinates()[1092].y(),
+                                 1.0e-12);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(configuration.coordinates()[1776].z(),
+                                 configuration.atomIDCoordinates()[1092].z(),
+                                 1.0e-12);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(configuration.coordinates()[1092].x(),
+                                 configuration.atomIDCoordinates()[1776].x(),
+                                 1.0e-12);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(configuration.coordinates()[1092].y(),
+                                 configuration.atomIDCoordinates()[1776].y(),
+                                 1.0e-12);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(configuration.coordinates()[1092].z(),
+                                 configuration.atomIDCoordinates()[1776].z(),
+                                 1.0e-12);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(configuration.coordinates()[1434].x(),
+                                 configuration.atomIDCoordinates()[1434].x(),
+                                 1.0e-12);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(configuration.coordinates()[1434].y(),
+                                 configuration.atomIDCoordinates()[1434].y(),
+                                 1.0e-12);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(configuration.coordinates()[1434].z(),
+                                 configuration.atomIDCoordinates()[1434].z(),
+                                 1.0e-12);
+
+    // Check the corresponding atom ID elements.
+    CPPUNIT_ASSERT_EQUAL(configuration.elements()[1776],
+                         configuration.atomIDElements()[1092]);
+    CPPUNIT_ASSERT_EQUAL(configuration.elements()[1092],
+                         configuration.atomIDElements()[1776]);
+    CPPUNIT_ASSERT_EQUAL(configuration.elements()[1434],
+                         configuration.atomIDElements()[1434]);
+
     // Get a process that finds a B surrounded by two V's in the
     // positive and negative x directions and the rest A.
 
@@ -922,4 +990,51 @@ void Test_Configuration::testMovedAtomIDs()
     CPPUNIT_ASSERT_EQUAL( configuration.atomID()[1453], 1776 );
     CPPUNIT_ASSERT_EQUAL( configuration.atomID()[1776], 1453 );
 
+    // Check that they have the types they should have.
+    CPPUNIT_ASSERT_EQUAL(configuration.elements()[1092],
+                         configuration.atomIDElements()[1434]);
+    CPPUNIT_ASSERT_EQUAL(configuration.elements()[1434],
+                         configuration.atomIDElements()[1092]);
+    CPPUNIT_ASSERT_EQUAL(configuration.elements()[1776],
+                         configuration.atomIDElements()[1453]);
+    CPPUNIT_ASSERT_EQUAL(configuration.elements()[1453],
+                         configuration.atomIDElements()[1776]);
+
+    // Check the coordinates.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(configuration.coordinates()[1434].x(),
+                                 configuration.atomIDCoordinates()[1092].x(),
+                                 1.0e-12);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(configuration.coordinates()[1434].y(),
+                                 configuration.atomIDCoordinates()[1092].y(),
+                                 1.0e-12);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(configuration.coordinates()[1434].z(),
+                                 configuration.atomIDCoordinates()[1092].z(),
+                                 1.0e-12);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(configuration.coordinates()[1092].x(),
+                                 configuration.atomIDCoordinates()[1434].x(),
+                                 1.0e-12);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(configuration.coordinates()[1092].y(),
+                                 configuration.atomIDCoordinates()[1434].y(),
+                                 1.0e-12);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(configuration.coordinates()[1092].z(),
+                                 configuration.atomIDCoordinates()[1434].z(),
+                                 1.0e-12);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(configuration.coordinates()[1453].x(),
+                                 configuration.atomIDCoordinates()[1776].x(),
+                                 1.0e-12);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(configuration.coordinates()[1453].y(),
+                                 configuration.atomIDCoordinates()[1776].y(),
+                                 1.0e-12);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(configuration.coordinates()[1453].z(),
+                                 configuration.atomIDCoordinates()[1776].z(),
+                                 1.0e-12);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(configuration.coordinates()[1776].x(),
+                                 configuration.atomIDCoordinates()[1453].x(),
+                                 1.0e-12);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(configuration.coordinates()[1776].y(),
+                                 configuration.atomIDCoordinates()[1453].y(),
+                                 1.0e-12);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(configuration.coordinates()[1776].z(),
+                                 configuration.atomIDCoordinates()[1453].z(),
+                                 1.0e-12);
 }

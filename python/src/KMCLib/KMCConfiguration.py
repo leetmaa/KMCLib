@@ -1,7 +1,7 @@
 """ Module for the KMCConfiguration """
 
 
-# Copyright (c)  2012  Mikael Leetmaa
+# Copyright (c)  2012-2013  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -165,6 +165,18 @@ class KMCConfiguration(object):
         # Return the types.
         return self.__types
 
+    def atomIDTypes(self):
+        """
+        Query for the types indexed according to the atom_ids.
+        """
+        return self._backend().atomIDElements()
+
+    def atomIDCoordinates(self):
+        """
+        Query for the coordinates per atom id.
+        """
+        return self._backend().atomIDCoordinates()
+
     def sites(self):
         """
         Query function for the lattice sites.
@@ -183,9 +195,15 @@ class KMCConfiguration(object):
 
     def cellRepetitions(self):
         """
-        Querty for the primitive cell repetitions.
+        Query for the primitive cell repetitions.
         """
         return self.__lattice.repetitions()
+
+    def movedAtomIDs(self):
+        """
+        Query for the moved atom_id:s of the last move.
+        """
+        return self._backend().movedAtomIDs()
 
     def _backend(self):
         """

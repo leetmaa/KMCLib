@@ -28,6 +28,7 @@ Configuration::Configuration(std::vector<std::vector<double> > const & coordinat
                              const std::map<std::string,int> & possible_types) :
     n_moved_(0),
     elements_(elements),
+    atom_id_elements_(elements),
     match_lists_(elements_.size())
 {
     // Setup the coordinates and initial atom ids.
@@ -273,6 +274,12 @@ void Configuration::performProcess(Process & process,
             types_[index]    = update_type;
             elements_[index] = type_names_[update_type];
 
+            // Update the atom id element.
+            if (!(*it1).has_move_coordinate)
+            {
+                atom_id_elements_[atom_id] = elements_[index];
+            }
+
             // Mark this index as affected.
             (*it3) = index;
             ++it3;
@@ -311,7 +318,8 @@ void Configuration::performProcess(Process & process,
 
         // Set the atom id at this lattice site index.
         atom_id_[index] = id;
-    }
+        atom_id_elements_[id] = elements_[index];
 
+    }
 }
 

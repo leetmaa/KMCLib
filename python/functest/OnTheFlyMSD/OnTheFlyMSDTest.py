@@ -55,10 +55,11 @@ interactions = KMCInteractions(processes=[p0, p1],
 model = KMCLatticeModel(configuration=config,
                         interactions=interactions)
 
-
 # Setup the analysis.
-msd = OnTheFlyMSD(track_type="B")
-
+msd = OnTheFlyMSD(history_steps=400,
+                  n_bins=1000,
+                  t_max=2500.0,
+                  track_type="B")
 
 # Implement the test.
 class OnTheFlyMSDTest(unittest.TestCase):
@@ -67,14 +68,16 @@ class OnTheFlyMSDTest(unittest.TestCase):
     def testRun(self):
         """ Run the model and check the results. """
         # Setup the control parameters.
-        control_parameters = KMCControlParameters(number_of_steps=40,
-                                                  dump_interval=1)
+        control_parameters = KMCControlParameters(number_of_steps=400000,
+                                                  dump_interval=1000,
+                                                  analysis_interval=10)
         # Run the model.
         model.run(control_parameters=control_parameters,
                   trajectory_filename="traj.py",
                   analysis=[msd])
 
-        print msd.result()
+        with open('msd.data', 'w') as f:
+            msd.result(f)
 
         # NEEDS IMPLEMENTATION
 

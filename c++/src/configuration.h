@@ -52,10 +52,20 @@ public:
      */
     const std::vector<Coordinate> & coordinates() const { return coordinates_; }
 
+    /*! \brief Const query for the atom id coordinates.
+     *  \return : The atom id coordinates of the configuration.
+     */
+    const std::vector<Coordinate> & atomIDCoordinates() const { return atom_id_coordinates_; }
+
     /*! \brief Const query for the elements.
      *  \return : The elements of the configuration.
      */
     const std::vector<std::string> & elements() const { return elements_; }
+
+    /*! \brief Const query for the atom id types.
+     *  \return : The atom id types of the configuration.
+     */
+    const std::vector<std::string> & atomIDElements() const { return atom_id_elements_; }
 
     /*! \brief Const query for the types.
      *  \return : The types of the configuration.
@@ -132,6 +142,9 @@ private:
 
     /// The lattice elements.
     std::vector<std::string> elements_;
+
+    /// The elements per atom id.
+    std::vector<std::string> atom_id_elements_;
 
     /// The the lattice elements in integer representation.
     std::vector<int> types_;

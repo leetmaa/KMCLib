@@ -23,6 +23,22 @@ class OnTheFlyMSDTest(unittest.TestCase):
                           t_max = 1024.0,
                           track_type="A")
 
+    def testCalculateBin(self):
+        """ Test that the bins are correctly determined. """
+        msd = OnTheFlyMSD(history_steps=13,
+                          n_bins=512,
+                          t_max = 1024.0,
+                          track_type="A")
+        self.assertEqual( msd._calculateBin(0.0), 0 )
+        self.assertEqual( msd._calculateBin(1.0), 0 )
+        self.assertEqual( msd._calculateBin(1.4), 0 )
+        self.assertEqual( msd._calculateBin(1.9), 0 )
+        self.assertEqual( msd._calculateBin(2.0), 1 )
+        self.assertEqual( msd._calculateBin(3.4), 1 )
+        self.assertEqual( msd._calculateBin(30.4), 15 )
+        self.assertEqual( msd._calculateBin(34.0), 17 )
+        self.assertEqual( msd._calculateBin(1026.1), 513 )
+
 
 if __name__ == '__main__':
     unittest.main()
