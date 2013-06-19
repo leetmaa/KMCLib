@@ -40,6 +40,15 @@ public:
     inline
     double norm() const;
 
+    /*! \brief Calculate the diagonal of the outer product of this
+     *         coordinate with the other
+     *  \param other : The other coordinate.
+     *  \return : The diagonal of the outer product of this and the other
+                  coordinate.
+     */
+    inline
+    Coordinate outerProdDiag(const Coordinate & other) const;
+
     /*! \brief 'less than' for sorting.
      *  \param other : The Coordinate to compare.
      *  \return : (this < other)
@@ -159,6 +168,15 @@ double Coordinate::norm() const
 {
     return std::sqrt(x_*x_ + y_*y_ + z_*z_);
 }
+
+
+// -----------------------------------------------------------------------------
+//
+Coordinate Coordinate::outerProdDiag(const Coordinate & other) const
+{
+    return Coordinate(x_*other.x_, y_*other.y_, z_*other.z_);
+}
+
 
 // -----------------------------------------------------------------------------
 //

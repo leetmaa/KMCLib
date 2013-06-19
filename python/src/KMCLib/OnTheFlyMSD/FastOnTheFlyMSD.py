@@ -13,9 +13,11 @@ import sys
 from KMCLib.KMCAnalysisPlugin import KMCAnalysisPlugin
 from KMCLib.Utilities.CheckUtilities import checkPositiveInteger
 from KMCLib.Utilities.CheckUtilities import checkPositiveFloat
+from KMCLib.Utilities.ConversionUtilities import stdVectorCoordinateToNumpy2DArray
 from KMCLib.Exceptions.Error import Error
+from KMCLib.Backend import Backend
 
-class OnTheFlyMSD(KMCAnalysisPlugin):
+class FastOnTheFlyMSD(KMCAnalysisPlugin):
     """
     Class for performing on-the-fly MSD analysis.
     """
@@ -44,11 +46,6 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
             raise Error("The 'track_type' parameter must be a string.")
         self.__track_type = track_type
 
-        # Setup the histogram.
-        self.__raw_histogram     = numpy.zeros((self.__n_bins, 3))
-        self.__raw_histogram_sqr = numpy.zeros((self.__n_bins, 3))
-        self.__bin_counters      = numpy.zeros((self.__n_bins), dtype=int)
-
         # Calculate and store the binsize.
         self.__binsize = self.__t_max / self.__n_bins
 
@@ -60,80 +57,29 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
         if not self.__track_type in configuration.possibleTypes():
             raise Error("The track type of the MSD calculator is not one of the valid types of the configuration.")
 
-        # Setup the internal buffer data structures.
-        self.__buffer = numpy.zeros((len(configuration.types()), self.__history_steps, 4))
-        self.__step_counters = numpy.ones(len(configuration.types()), dtype=int)
-
-        # Populate the internal buffer data with the t=0 values.
-        atom_id_coordinates = configuration.atomIDCoordinates()
-        atom_id_types       = configuration.atomIDTypes()
-        atom_ids = range(len(configuration.atomIDCoordinates()))
-
-        for atom_id in atom_ids:
-            if atom_id_types[atom_id] == self.__track_type:
-                # Get the coordinate.
-                coord = numpy.array(list(atom_id_coordinates[atom_id].data()))
-
-                # Store the transformed initial coordinate.
-                self.__buffer[atom_id][0][0:3] = coord
-
-        # Done.
+        # Setup the backend.
+        self.__backend = Backend.OnTheFlyMSD(configuration._backend(),
+                                             self.__history_steps,
+                                             self.__n_bins,
+                                             self.__t_max,
+                                             time,
+                                             self.__track_type)
 
     def registerStep(self, step, time, configuration):
         """
         Recieves the step call from the MC loop.
         """
-        # Check if any of our tracking type has moved.
-        atom_ids            = configuration.movedAtomIDs()
-        atom_id_types       = configuration.atomIDTypes()
-        atom_id_coordinates = configuration.atomIDCoordinates()
-
-        # Track the atom ids.
-        for atom_id in atom_ids:
-            if atom_id_types[atom_id] == self.__track_type:
-
-                # Make place for the latest coordinate and time.
-                for s in range(self.__history_steps - 1):
-                    step = self.__history_steps - s - 2
-                    self.__buffer[atom_id][step+1][:] = self.__buffer[atom_id][step][:]
-
-                # Add the latest coordinate and time.
-                coord = numpy.array(list(atom_id_coordinates[atom_id].data()))
-
-                self.__buffer[atom_id][0][0:3] = coord
-                self.__buffer[atom_id][0][3]   = time
-
-                # Calculate the squared displacement values
-                # and squared displacement values squared.
-                steps = min(self.__history_steps, self.__step_counters[atom_id] + 1)
-                for s in range(steps - 1):
-                    step = s + 1
-                    diff = numpy.square(self.__buffer[atom_id][0][0:3] - self.__buffer[atom_id][step][0:3])
-                    dt   = self.__buffer[atom_id][0][3] - self.__buffer[atom_id][step][3]
-
-                    # Bin the values and increment the bin counters.
-                    bin_idx = self._calculateBin(dt)
-                    if bin_idx < self.__n_bins:
-                        self.__raw_histogram[bin_idx]     += diff
-                        self.__raw_histogram_sqr[bin_idx] += numpy.square(diff)
-                        self.__bin_counters[bin_idx]      += 1
-
-                # Increment the step counter.
-                self.__step_counters[atom_id] += 1
-
-        # FIXME : Implement this properly.
-        # Check the bounds of the largest value.
-        if self.__raw_histogram_sqr.max() >= sys.float_info.max - 10000:
-
-            # Time to handle the numerical overflow case.
-            self._storePartialHistograms()
-
-        # Done.
+        self.__backend.registerStep(time, configuration._backend())
 
     def finalize(self):
         """
         Recieves the finalize call after the MC loop.
         """
+        # Setup the histogram data in python.
+        raw_histogram       = stdVectorCoordinateToNumpy2DArray(self.__backend.histogramBuffer())
+        raw_histogram_sqr   = stdVectorCoordinateToNumpy2DArray(self.__backend.histogramBufferSqr())
+        self.__bin_counters = self.__backend.histogramBinCounts()
+
         # Remove zeros from the bin counters.
         bin_counters_copy = numpy.array(self.__bin_counters)
         where = bin_counters_copy == 0
@@ -142,13 +88,13 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
         # Produce the final results by dividing with the bin counters
         # and calculate the standard deviation in each point.
         self.__results    = numpy.zeros((3,self.__n_bins))
-        self.__results[0] = self.__raw_histogram[:,0] / bin_counters_copy
-        self.__results[1] = self.__raw_histogram[:,1] / bin_counters_copy
-        self.__results[2] = self.__raw_histogram[:,2] / bin_counters_copy
+        self.__results[0] = raw_histogram[:,0] / bin_counters_copy
+        self.__results[1] = raw_histogram[:,1] / bin_counters_copy
+        self.__results[2] = raw_histogram[:,2] / bin_counters_copy
         self.__time_steps = (numpy.arange(self.__n_bins)+1)*self.__binsize - self.__binsize / 2.0
 
         # Calculate the standard deviation (of the mean, i.e. the value) in each point.
-        sqr_raw_histogram  = numpy.square(self.__raw_histogram)
+        sqr_raw_histogram  = numpy.square(raw_histogram)
         self.__std_dev     = numpy.zeros((3,self.__n_bins))
         sqr_raw_histogram_div = numpy.array(sqr_raw_histogram)
         sqr_raw_histogram_div[:,0] = sqr_raw_histogram[:,0] / bin_counters_copy
@@ -160,9 +106,9 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
         prefactor1 = (1.0 / (bin_counters_copy - 1))
 
         # Get the standard deviation.
-        self.__std_dev[0] = prefactor2 * numpy.sqrt(prefactor1 * (self.__raw_histogram_sqr[:,0] - sqr_raw_histogram_div[:,0] ))
-        self.__std_dev[1] = prefactor2 * numpy.sqrt(prefactor1 * (self.__raw_histogram_sqr[:,1] - sqr_raw_histogram_div[:,1] ))
-        self.__std_dev[2] = prefactor2 * numpy.sqrt(prefactor1 * (self.__raw_histogram_sqr[:,2] - sqr_raw_histogram_div[:,2] ))
+        self.__std_dev[0] = prefactor2 * numpy.sqrt(prefactor1 * (raw_histogram_sqr[:,0] - sqr_raw_histogram_div[:,0] ))
+        self.__std_dev[1] = prefactor2 * numpy.sqrt(prefactor1 * (raw_histogram_sqr[:,1] - sqr_raw_histogram_div[:,1] ))
+        self.__std_dev[2] = prefactor2 * numpy.sqrt(prefactor1 * (raw_histogram_sqr[:,2] - sqr_raw_histogram_div[:,2] ))
 
     def result(self, stream=sys.stdout):
         """

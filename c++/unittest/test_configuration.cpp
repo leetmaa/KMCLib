@@ -139,9 +139,9 @@ void Test_Configuration::testPerformProcess()
     }
 
     elements[0]    = "V";
-    elements[216]  = "V";   // These affects process 0,1 and 3
+    elements[216]  = "V";
     elements[1434] = "V";
-    elements[2101] = "V";   // This affects process 0,1 and 2
+    elements[2101] = "V";
 
     // Possible types.
     std::map<std::string, int> possible_types;

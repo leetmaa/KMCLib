@@ -104,7 +104,6 @@ void Configuration::updateMatchList(const int index)
     // Update the match list's types information.
     std::vector<MinimalMatchListEntry>::iterator it1   = match_lists_[index].begin();
     const std::vector<MinimalMatchListEntry>::const_iterator end = match_lists_[index].end();
-
     for ( ; it1 != end; ++it1 )
     {
         (*it1).match_type = types_[(*it1).index];
