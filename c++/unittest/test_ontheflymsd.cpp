@@ -859,6 +859,111 @@ void Test_OnTheFlyMSD::testStepZ()
 //
 void Test_OnTheFlyMSD::testCalculateAndBinMSD()
 {
-    // NEEDS IMPLEMENTATION
+    // Setup input.
+    std::vector< std::pair<Coordinate, double> > history;
+    history.push_back(std::pair<Coordinate, double>(Coordinate( 1.1, 1.3, 7.8), 7.3));
+    history.push_back(std::pair<Coordinate, double>(Coordinate( 1.3, 1.9, 7.6), 6.3));
+    history.push_back(std::pair<Coordinate, double>(Coordinate(-0.2, 1.0,-4.6), 2.1));
+    history.push_back(std::pair<Coordinate, double>(Coordinate( 1.0,-1.8, 3.5), 1.3));
+    history.push_back(std::pair<Coordinate, double>(Coordinate( 2.1, 1.3,-5.5), 0.3));
+
+    // The histogram and histogram squared, filled with some initial values.
+    const int h_size = 6;
+
+    const Coordinate h_start(2.2, 3.1, 1.4);
+    std::vector<Coordinate> histogram(h_size, h_start);
+
+    const Coordinate h_sqr_start(4.48, 9.61, 1.96);
+    std::vector<Coordinate> histogram_sqr(h_size, h_sqr_start);
+
+    std::vector<int> bin_counters(h_size, 9);
+
+    // The bin size.
+    const double binsize = 1.0;
+
+    // Call the binning function with this data.
+    calculateAndBinMSD(history, binsize, histogram, histogram_sqr, bin_counters);
+
+    // Calculate the results by hand.
+    Coordinate diff = history[0].first - history[1].first;
+    const Coordinate diff_0(diff.x()*diff.x(),
+                            diff.y()*diff.y(),
+                            diff.z()*diff.z());
+    const Coordinate diff_0_sqr(diff_0.x()*diff_0.x(),
+                                diff_0.y()*diff_0.y(),
+                                diff_0.z()*diff_0.z());
+    const double dt_0 = history[0].second - history[1].second;
+    const int bin_0 = dt_0 / binsize;
+
+    // This should result in bin 1.
+    CPPUNIT_ASSERT_EQUAL( bin_0, 1 );
+
+    diff = history[0].first - history[2].first;
+    const Coordinate diff_1(diff.x()*diff.x(),
+                            diff.y()*diff.y(),
+                            diff.z()*diff.z());
+    const Coordinate diff_1_sqr(diff_1.x()*diff_1.x(),
+                                diff_1.y()*diff_1.y(),
+                                diff_1.z()*diff_1.z());
+    const double dt_1 = history[0].second - history[2].second;
+    const int bin_1 = dt_1 / binsize;
+
+    // This should result in bin 5.
+    CPPUNIT_ASSERT_EQUAL( bin_1, 5 );
+
+    const double dt_2 = history[0].second - history[3].second;
+    const int bin_2 = dt_2 / binsize;
+
+    // This should result in bin 6.
+    CPPUNIT_ASSERT_EQUAL( bin_2, 6 );
+
+    const double dt_3 = history[0].second - history[4].second;
+    const int bin_3 = dt_3 / binsize;
+
+    // This should result in bin 7.
+    CPPUNIT_ASSERT_EQUAL( bin_3, 7 );
+
+    // Check the results.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[bin_0].x(), h_start.x() + diff_0.x(), 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[bin_0].y(), h_start.y() + diff_0.y(), 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[bin_0].z(), h_start.z() + diff_0.z(), 1.0e-12 );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram_sqr[bin_0].x(), h_sqr_start.x() + diff_0_sqr.x(), 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram_sqr[bin_0].y(), h_sqr_start.y() + diff_0_sqr.y(), 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram_sqr[bin_0].z(), h_sqr_start.z() + diff_0_sqr.z(), 1.0e-12 );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[bin_1].x(), h_start.x() + diff_1.x(), 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[bin_1].y(), h_start.y() + diff_1.y(), 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[bin_1].z(), h_start.z() + diff_1.z(), 1.0e-12 );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram_sqr[bin_1].x(), h_sqr_start.x() + diff_1_sqr.x(), 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram_sqr[bin_1].y(), h_sqr_start.y() + diff_1_sqr.y(), 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram_sqr[bin_1].z(), h_sqr_start.z() + diff_1_sqr.z(), 1.0e-12 );
+
+    for (int i = 0; i < h_size; ++i)
+    {
+        if (i != bin_0 && i != bin_1)
+        {
+            CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[i].x(), h_start.x(), 1.0e-12 );
+            CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[i].y(), h_start.y(), 1.0e-12 );
+            CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[i].z(), h_start.z(), 1.0e-12 );
+
+            CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram_sqr[i].x(), h_sqr_start.x(), 1.0e-12 );
+            CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram_sqr[i].y(), h_sqr_start.y(), 1.0e-12 );
+            CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram_sqr[i].z(), h_sqr_start.z(), 1.0e-12 );
+        }
+    }
+
+    // Check the bin counts.
+    CPPUNIT_ASSERT_EQUAL( bin_counters[bin_0], 10 );
+    CPPUNIT_ASSERT_EQUAL( bin_counters[bin_1], 10 );
+
+    for (int i = 0; i < h_size; ++i)
+    {
+        if (i != bin_0 && i != bin_1)
+        {
+            CPPUNIT_ASSERT_EQUAL( bin_counters[i], 9 );
+        }
+    }
 }
 
