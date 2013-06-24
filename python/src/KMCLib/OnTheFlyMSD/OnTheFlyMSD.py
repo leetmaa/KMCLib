@@ -29,6 +29,19 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
                  track_type=None):
         """
         Constructor for the OnTheFlyMSD.
+
+        :param history_steps: The number of steps per atom to store in the
+                              history buffer.
+        :type history_steps: int
+
+        :param n_bins: The nuber of bins in the histogram.
+        :type n_bins: int
+
+        :param t_max: The starting value of the last bin.
+        :type t_max: float
+
+        :param track_type: The atom type to track during the simulation.
+        :type track_type: str
         """
         # Check and set the history steps input.
         self.__history_steps = checkPositiveInteger(history_steps, 5, "history_step")
@@ -50,6 +63,15 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
     def setup(self, step, time, configuration):
         """
         Recieves the setup call from the before the MC loop.
+
+        :param step: The step number of the simulation.
+        :type step: int
+
+        :param time: The time of the simulation.
+        :type time: float
+
+        :param configuration: The configuration of the simulation.
+        :type configuration: KMCConfiguration
         """
         # Make sure the track type is one of the possible types.
         if not self.__track_type in configuration.possibleTypes():
@@ -66,6 +88,15 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
     def registerStep(self, step, time, configuration):
         """
         Recieves the step call from the MC loop.
+
+        :param step: The step number of the simulation.
+        :type step: int
+
+        :param time: The time of the simulation.
+        :type time: float
+
+        :param configuration: The configuration of the simulation.
+        :type configuration: KMCConfiguration
         """
         self.__backend.registerStep(time, configuration._backend())
 
@@ -120,24 +151,33 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
     def results(self):
         """
         Query function for the result.
+
+        :returns: The results as a 3*N numpy array with the MSD data in the
+                  x, y and z directions (expressed in fractional coordinates).
         """
         return self.__results
 
     def timeSteps(self):
         """
         Query function for the time steps.
+
+        :returns: The bin center time values of the MSD(t) histogram.
         """
         return self.__time_steps
 
     def stdDev(self):
         """
         Query function for the standard deviation.
+
+        :returns: The standard deviation of the results, as a 3*N numpy array.
         """
         return self.__std_dev
 
     def binCounters(self):
         """
         Query function for the bin counters.
+
+        :returns: The number of values that was averaged over in each bin.
         """
         return self.__bin_counters
 
