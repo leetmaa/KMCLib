@@ -57,3 +57,17 @@ def numpy2DArrayToStdVectorStdVectorDouble(array):
     # Done.
     return cpp_2D_vector
 
+
+def stdVectorCoordinateToNumpy2DArray(cpp_vector):
+    """
+    Convert a std::vector<Coordinate> to a nx3 numpy array.
+    """
+    size = len(cpp_vector)
+    py_data = numpy.zeros((size, 3))
+
+    for i in range(size):
+        py_data[i][0] = cpp_vector[i].x()
+        py_data[i][1] = cpp_vector[i].y()
+        py_data[i][2] = cpp_vector[i].z()
+
+    return py_data

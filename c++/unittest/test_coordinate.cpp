@@ -233,3 +233,27 @@ void Test_Coordinate::testAccessOperator()
 
     // DONE
 }
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Coordinate::testOuterProdDiag()
+{
+    const Coordinate c1(0.1, -1.2, 3.3);
+    const Coordinate c2(-0.123, 0.2, 99.3);
+
+    // Get the product.
+    const Coordinate prod_1 = c1.outerProdDiag(c2);
+    const Coordinate prod_2 = c2.outerProdDiag(c1);
+
+    // Setup the reference.
+    const Coordinate ref(c1.x()*c2.x(), c1.y()*c2.y(), c1.z()*c2.z());
+
+    // Check against the reference.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( prod_1.x(), ref.x(), 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( prod_1.y(), ref.y(), 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( prod_1.z(), ref.z(), 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( prod_2.x(), ref.x(), 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( prod_2.y(), ref.y(), 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( prod_2.z(), ref.z(), 1.0e-12 );
+}

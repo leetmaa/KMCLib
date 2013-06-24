@@ -25,6 +25,7 @@
 #include "simulationtimer.h"
 #include "ratecalculator.h"
 #include "mpicommons.h"
+#include "ontheflymsd.h"
 %}
 
 // Use directors on the RateCalculator for using the python callback.
@@ -74,6 +75,7 @@
 %include "simulationtimer.h"
 %include "ratecalculator.h"
 %include "mpicommons.h"
+%include "ontheflymsd.h"
 
 // This extends the Coordinate class with python indexing support.
 %extend Coordinate

@@ -31,6 +31,7 @@ public:
     CPPUNIT_TEST( testDistance );
     CPPUNIT_TEST( testMinusOperator );
     CPPUNIT_TEST( testAccessOperator );
+    CPPUNIT_TEST( testOuterProdDiag );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstructionAndQuery();
@@ -40,6 +41,7 @@ public:
     void testDistance();
     void testMinusOperator();
     void testAccessOperator();
+    void testOuterProdDiag();
 };
 
 #endif
