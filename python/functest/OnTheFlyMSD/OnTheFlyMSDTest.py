@@ -77,7 +77,7 @@ class OnTheFlyMSDTest(unittest.TestCase):
                   analysis=[msd])
 
         with open('msd.data1', 'w') as f:
-            msd.printResult(f)
+            msd.printResults(f)
 
         # NEEDS IMPLEMENTATION
 
@@ -141,7 +141,7 @@ class OnTheFlyMSDTest(unittest.TestCase):
                   analysis=[msd])
 
         with open('msd.data2', 'w') as f:
-            msd.printResult(f)
+            msd.printResults(f)
 
         # NEEDS IMPLEMENTATION
 
