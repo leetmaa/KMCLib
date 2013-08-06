@@ -60,6 +60,9 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
         # Calculate and store the binsize.
         self.__binsize = self.__t_max / self.__n_bins
 
+        # Set the step counter to zero.
+        self.__n_steps = 0
+
     def setup(self, step, time, configuration):
         """
         Recieves the setup call from the before the MC loop.
@@ -99,6 +102,7 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
         :type configuration: KMCConfiguration
         """
         self.__backend.registerStep(time, configuration._backend())
+        self.__n_steps += 1
 
     def finalize(self):
         """
@@ -121,23 +125,31 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
         self.__time_steps = (numpy.arange(self.__n_bins)+1)*self.__binsize - self.__binsize / 2.0
 
         # Calculate the standard deviation (of the mean, i.e. the value) in each point.
-        sqr_raw_histogram  = numpy.square(self.__raw_histogram)
         self.__std_dev     = numpy.zeros((3,self.__n_bins))
-        sqr_raw_histogram_div = numpy.array(sqr_raw_histogram)
-        sqr_raw_histogram_div[:,0] = sqr_raw_histogram[:,0] / bin_counters_copy
-        sqr_raw_histogram_div[:,1] = sqr_raw_histogram[:,1] / bin_counters_copy
-        sqr_raw_histogram_div[:,2] = sqr_raw_histogram[:,2] / bin_counters_copy
 
-        # Calculate the prefactors.
-        prefactor2 = (1.0 / numpy.sqrt(bin_counters_copy))
-        where = bin_counters_copy == 1
-        bin_counters_copy[where] = 2
-        prefactor1 = (1.0 / (bin_counters_copy - 1))
+        # Calculate the standar deviation.
 
-        # Get the standard deviation.
-        self.__std_dev[0] = prefactor2 * numpy.sqrt(prefactor1 * (self.__raw_histogram_sqr[:,0] - sqr_raw_histogram_div[:,0] ))
-        self.__std_dev[1] = prefactor2 * numpy.sqrt(prefactor1 * (self.__raw_histogram_sqr[:,1] - sqr_raw_histogram_div[:,1] ))
-        self.__std_dev[2] = prefactor2 * numpy.sqrt(prefactor1 * (self.__raw_histogram_sqr[:,2] - sqr_raw_histogram_div[:,2] ))
+
+        # FIXME: Must go as input or be obtained from the backend.
+        self.__rate = 60.0
+
+        self.__effective_n = numpy.zeros(self.__n_bins, dtype=float)
+
+        self.__a_const = self.__rate * self.__binsize * self.__n_steps
+        print self.__a_const
+
+        for i in range(len(self.__results[0])):
+            rate_factor = (1 + self.__rate * self.__time_steps[i])
+
+            self.__effective_n[i] = rate_factor
+            print rate_factor, self.__raw_histogram[i,0]
+            if (self.__raw_histogram[i,0] != 0):
+
+                self.__std_dev[0][i] = self.__results[0][i] * numpy.sqrt( ( 2 * rate_factor * rate_factor + 1 ) / ( 3 * rate_factor * self.__bin_counters[i] ) )
+
+                self.__std_dev[1][i] = self.__results[1][i] * numpy.sqrt( ( 2 * rate_factor * rate_factor + 1 ) / ( 3 * rate_factor * self.__bin_counters[i] ) )
+
+                self.__std_dev[2][i] = self.__results[2][i] * numpy.sqrt( ( 2 * rate_factor * rate_factor + 1 ) / ( 3 * rate_factor * self.__bin_counters[i] ) )
 
     def __getBackendResults(self):
         """
@@ -187,6 +199,6 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
 
         :param stream: The stream to print to. Defaults to 'sys.stdout'.
         """
-        all_results = zip(self.__time_steps, self.__results[0], self.__results[1], self.__results[2], self.__bin_counters, self.__std_dev[0], self.__std_dev[1], self.__std_dev[2])
-        for t, x, y, z, c, sx, sy, sz in all_results:
-            stream.write("%10.5f %10.5f %10.5f %10.5f %10i %10.5f %10.5f %10.5f\n"%(t, x, y, z, c, sx, sy, sz))
+        all_results = zip(self.__time_steps, self.__results[0], self.__results[1], self.__results[2], self.__bin_counters, self.__std_dev[0], self.__std_dev[1], self.__std_dev[2], self.__effective_n)
+        for t, x, y, z, c, sx, sy, sz, nn in all_results:
+            stream.write("%10.5f %10.5f %10.5f %10.5f %10i %10.5f %10.5f %10.5f %10.5f %10.5f\n"%(t, x, y, z, c, sx, sy, sz, nn, (self.__a_const - self.__rate*self.__binsize*nn)))
