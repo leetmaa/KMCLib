@@ -206,7 +206,7 @@ void Test_OnTheFlyMSD::testStepX()
     // Check that the histogram was correctly updated.
     const double delta_t = time - t0;
     const double binsize = t_max / n_bins;
-    const size_t bin = delta_t / binsize;
+    const size_t bin = static_cast<size_t>(delta_t / binsize);
 
     const std::vector<Coordinate> & histogram = msd.histogramBuffer();
     for (size_t i = 0; i < histogram.size(); ++i)
@@ -471,7 +471,7 @@ void Test_OnTheFlyMSD::testStepY()
     // Check that the histogram was correctly updated.
     const double delta_t = time - t0;
     const double binsize = t_max / n_bins;
-    const size_t bin = delta_t / binsize;
+    const size_t bin = static_cast<size_t>(delta_t / binsize);
 
     const std::vector<Coordinate> & histogram = msd.histogramBuffer();
     for (size_t i = 0; i < histogram.size(); ++i)
@@ -735,7 +735,7 @@ void Test_OnTheFlyMSD::testStepZ()
     // Check that the histogram was correctly updated.
     const double delta_t = time - t0;
     const double binsize = t_max / n_bins;
-    const size_t bin = delta_t / binsize;
+    const size_t bin = static_cast<size_t>(delta_t / binsize);
 
     const std::vector<Coordinate> & histogram = msd.histogramBuffer();
     for (size_t i = 0; i < histogram.size(); ++i)
@@ -893,7 +893,7 @@ void Test_OnTheFlyMSD::testCalculateAndBinMSD()
                                 diff_0.y()*diff_0.y(),
                                 diff_0.z()*diff_0.z());
     const double dt_0 = history[0].second - history[1].second;
-    const int bin_0 = dt_0 / binsize;
+    const int bin_0 = static_cast<size_t>(dt_0 / binsize);
 
     // This should result in bin 1.
     CPPUNIT_ASSERT_EQUAL( bin_0, 1 );
@@ -906,19 +906,19 @@ void Test_OnTheFlyMSD::testCalculateAndBinMSD()
                                 diff_1.y()*diff_1.y(),
                                 diff_1.z()*diff_1.z());
     const double dt_1 = history[0].second - history[2].second;
-    const int bin_1 = dt_1 / binsize;
+    const int bin_1 = static_cast<size_t>(dt_1 / binsize);
 
     // This should result in bin 5.
     CPPUNIT_ASSERT_EQUAL( bin_1, 5 );
 
     const double dt_2 = history[0].second - history[3].second;
-    const int bin_2 = dt_2 / binsize;
+    const int bin_2 = static_cast<size_t>(dt_2 / binsize);
 
     // This should result in bin 6.
     CPPUNIT_ASSERT_EQUAL( bin_2, 6 );
 
     const double dt_3 = history[0].second - history[4].second;
-    const int bin_3 = dt_3 / binsize;
+    const int bin_3 = static_cast<size_t>(dt_3 / binsize);
 
     // This should result in bin 7.
     CPPUNIT_ASSERT_EQUAL( bin_3, 7 );

@@ -51,7 +51,7 @@ endif()
 # Check for supported compiler and set the flags.
 if (CMAKE_COMPILER_IS_GNUCXX)
 
-  set( CMAKE_CXX_FLAGS "-O3 -fPIC -Wall -Wextra -Werror -pedantic")
+  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC -Wall -Wextra -Werror -pedantic")
   set( CMAKE_CXX_FLAGS_DEBUG "-g -pg" )
   set( CMAKE_CXX_FLAGS_RELEASE  "" )
   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO  "-g -pg" )
