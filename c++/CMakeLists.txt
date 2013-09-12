@@ -29,7 +29,7 @@ if(MPI)
   set( CMAKE_VERBOSE_MAKEFILE on )
 
   # Generate the mpiflag.h file.
-  file(WRITE ${KMCLib_SOURCE_DIR}/src/mpiflag.h "#define RUNMPI true")
+  file(WRITE ${KMCLib_SOURCE_DIR}/src/mpiflag.h "#define RUNMPI true\n")
 
 else()
 
@@ -39,7 +39,7 @@ else()
   set( CMAKE_VERBOSE_MAKEFILE off )
 
   # Generate the mpiflag.h file.
-  file(WRITE ${KMCLib_SOURCE_DIR}/src/mpiflag.h "#define RUNMPI false")
+  file(WRITE ${KMCLib_SOURCE_DIR}/src/mpiflag.h "#define RUNMPI false\n")
 
 endif()
 
