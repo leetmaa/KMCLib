@@ -13,20 +13,21 @@
 
 #include "mpicommons.h"
 
-#include <mpi.h>
-
 bool inited__    = false;
 bool finalized__ = false;
+
 
 // -----------------------------------------------------------------------------
 //
 void MPICommons::init()
 {
-    if (inited__)
+   if (inited__)
     {
         return;
     }
 
+    // Switch for using MPI.
+#if RUNMPI == true
     // Dummy args.
     int argc = 0;
     char** argv;
@@ -36,6 +37,7 @@ void MPICommons::init()
 
     // Set the flag to prevent further calls.
     inited__ = true;
+#endif
 }
 
 
@@ -48,9 +50,10 @@ void MPICommons::finalize()
         return;
     }
 
-    MPI_Finalize();
-
-    finalized__ = true;
+#if RUNMPI == true
+        MPI_Finalize();
+        finalized__ = true;
+#endif
 }
 
 
@@ -58,9 +61,13 @@ void MPICommons::finalize()
 //
 int MPICommons::myRank(const MPI_Comm comm)
 {
+#if RUNMPI == true
     int rank;
     MPI_Comm_rank( comm, &rank );
     return rank;
+#else
+    return 0;
+#endif
 }
 
 
@@ -68,9 +75,13 @@ int MPICommons::myRank(const MPI_Comm comm)
 //
 int MPICommons::size(const MPI_Comm comm)
 {
+#if RUNMPI == true
     int size;
     MPI_Comm_size( comm, &size );
     return size;
+#else
+    return 1;
+#endif
 }
 
 
@@ -78,5 +89,7 @@ int MPICommons::size(const MPI_Comm comm)
 //
 void MPICommons::barrier(const MPI_Comm comm)
 {
+#if RUNMPI == true
     MPI_Barrier( comm );
+#endif
 }

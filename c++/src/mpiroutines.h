@@ -11,8 +11,12 @@
  */
 
 
+#ifndef __MPIROUTINES__
+#define __MPIROUTINES__
+
+
 #include <vector>
-#include <mpi.h>
+#include "mpih.h"
 
 
 /*! \brief Calculate the chunks for all processes. Convenient for testing.
@@ -82,10 +86,17 @@ T_vector splitOverProcesses(const T_vector & global,
                             const MPI_Comm & comm)
 {
     // Get the dimensions.
+#if RUNMPI == true
     int rank, size;
     MPI_Comm_rank( comm, &rank );
     MPI_Comm_size( comm, &size );
+#else
+    int rank = 0;
+    int size = 1;
+#endif
+
     const int global_len = global.size();
+
 
     // Calculate everyones chunk sizes.
     std::vector< std::pair<int,int> > chunks = determineChunks(size,
@@ -116,9 +127,15 @@ T_vector joinOverProcesses(const T_vector & local,
     // PERFORMME: Prototyping. Chunks does not need to be this involved.
 
     // Get the dimensions.
+#if RUNMPI == true
     int rank, size;
     MPI_Comm_rank( comm, &rank );
     MPI_Comm_size( comm, &size );
+#else
+    int rank = 0;
+    int size = 1;
+#endif
+
     const int local_len = local.size();
 
     // Get the total length of the vector.
@@ -150,3 +167,5 @@ T_vector joinOverProcesses(const T_vector & local,
     return global_data;
 }
 
+
+#endif // __MPIROUTINES__

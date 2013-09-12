@@ -15,8 +15,7 @@
 #ifndef __MPICOMMONS__
 #define __MPICOMMONS__
 
-
-#include <mpi.h>
+#include "mpih.h"
 
 /// Struct for handling MPI functions to be wrapped.
 struct MPICommons {

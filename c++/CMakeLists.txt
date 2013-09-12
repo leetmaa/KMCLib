@@ -7,17 +7,46 @@
 cmake_minimum_required(VERSION 2.8)
 project(KMCLib)
 
-# Set to on to use verbose output default.
-set( CMAKE_VERBOSE_MAKEFILE off )
+# -----------------------------------------------------------------------------
+# CHECK IF USING MPI OR NOT
+# -----------------------------------------------------------------------------
 
+# Determine if this is a parallel build or not.
+if(NOT MPI)
+   set(MPI False
+       CACHE STRING "Choose to force MPI via mpicxx or not : True or False"
+       FORCE)
+endif()
+
+# If it is, set use mpicxx.
+if(MPI)
+  message( STATUS "== This is a parallel MPI build ==" )
+  # Force using the "mpicxx" compiler wrapper.
+  include(CMakeForceCompiler)
+  cmake_force_cxx_compiler(mpicxx "System CXX compiler with MPI wrapping")
+
+  # User verbosit as default when compiling in parallel.
+  set( CMAKE_VERBOSE_MAKEFILE on )
+
+  # Generate the mpiflag.h file.
+  file(WRITE ${KMCLib_SOURCE_DIR}/src/mpiflag.h "#define RUNMPI true")
+
+else()
+
+  message( STATUS "== This is a serial build ==" )
+
+  # Shut verbosity off as default in serial build mode.
+  set( CMAKE_VERBOSE_MAKEFILE off )
+
+  # Generate the mpiflag.h file.
+  file(WRITE ${KMCLib_SOURCE_DIR}/src/mpiflag.h "#define RUNMPI false")
+
+endif()
 
 # -----------------------------------------------------------------------------
 # SET THE COMPILER
 # -----------------------------------------------------------------------------
 
-# Force using the "mpicxx" compiler wrapper.
-include(CMakeForceCompiler)
-cmake_force_cxx_compiler(mpicxx "System CXX compiler with MPI wrapping")
 
 # Check for supported compiler and set the flags.
 if (CMAKE_COMPILER_IS_GNUCXX)
@@ -25,15 +54,19 @@ if (CMAKE_COMPILER_IS_GNUCXX)
   set( CMAKE_CXX_FLAGS "-O3 -fPIC -Wall -Wextra -Werror -pedantic")
   set( CMAKE_CXX_FLAGS_DEBUG "-g -pg" )
   set( CMAKE_CXX_FLAGS_RELEASE  "" )
-  message( STATUS "Using g++ via mpicxx" )
+  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO  "-g -pg" )
 
   # Allow for unused parameters.
   add_definitions( -Wno-unused-parameter )
 
-  # Workaround for known mpich c++ bug.
-  add_definitions( -DMPICH_IGNORE_CXX_SEEK )
-  add_definitions( -DMPICH_SKIP_MPICXX )
+  if(MPI)
+    message( STATUS "Using g++ via mpicxx" )
+    # Workaround for known mpich c++ bug.
+    add_definitions( -DMPICH_IGNORE_CXX_SEEK )
+    add_definitions( -DMPICH_SKIP_MPICXX )
+  endif()
 
+# Only g++ supported.
 else()
   message( FATAL_ERROR "Invalid CXX compiler. Make sure you have g++ installed" )
 endif()
