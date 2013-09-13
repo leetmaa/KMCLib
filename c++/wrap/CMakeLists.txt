@@ -8,13 +8,16 @@
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
 
-# FIXME
-# Only needed for Mac OSX,
-# Find the proper python library.
-# find_library( PYTHON  python ${PYTHON_LIBRARY_DIR} )
+# To force a Mac OSX with macports Python, use with -DMACPORT=TRUE
+if (MACPORT)
+   set(CMAKE_LIBRARY_PATH "/opt/local/Library/Frameworks")
+   message( STATUS "Looking for libraries in ${CMAKE_LIBRARY_PATH}" )
+endif()
 
-# Add the inclusion paths.
-include_directories(${PYTHON_INCLUDE_PATH})
+# Find the python library.
+find_library( PYTHON_LIB python )
+message( STATUS "Using python library ${PYTHON_LIB}")
+
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories( ${KMCLib_SOURCE_DIR}/src )
 
@@ -33,9 +36,9 @@ add_definitions( -Wno-missing-field-initializers )
 add_definitions( -Wno-write-strings )
 
 # For clang.
-add_definitions( -Wno-self-assign )
-add_definitions( -Wno-dynamic-class-memaccess )
+#add_definitions( -Wno-self-assign )
+#add_definitions( -Wno-dynamic-class-memaccess )
 
 # Add the target.
 swig_add_module( Backend python backend.i )
-swig_link_libraries( Backend src )
+swig_link_libraries( Backend ${PYTHON_LIB} src )

@@ -36,7 +36,7 @@ else()
   message( STATUS "== This is a serial build ==" )
 
   # Shut verbosity off as default in serial build mode.
-  set( CMAKE_VERBOSE_MAKEFILE off )
+  set( CMAKE_VERBOSE_MAKEFILE on )
 
   # Generate the mpiflag.h file.
   file(WRITE ${KMCLib_SOURCE_DIR}/src/mpiflag.h "#define RUNMPI false\n")
@@ -100,4 +100,3 @@ add_subdirectory(wrap)
 
 install( FILES ${CMAKE_BINARY_DIR}/wrap/Backend.py ${CMAKE_BINARY_DIR}/wrap/_Backend.so
          DESTINATION ${CMAKE_BINARY_DIR}/../../python/src/KMCLib/Backend/ )
-
