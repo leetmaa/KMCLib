@@ -55,7 +55,7 @@ if (CMAKE_COMPILER_IS_GNUCXX)
   if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC -Wall -Wextra -Werror -pedantic")
   else()
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-Bsymbolic-functions -O3 -fPIC -Wall -Wextra -Werror -pedantic")
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-Bsymbolic -O3 -fPIC -Wall -Wextra -Werror -pedantic")
   endif()
 
   set( CMAKE_CXX_FLAGS_DEBUG "-g -pg" )
@@ -70,6 +70,7 @@ if (CMAKE_COMPILER_IS_GNUCXX)
     # Workaround for known mpich c++ bug.
     add_definitions( -DMPICH_IGNORE_CXX_SEEK )
     add_definitions( -DMPICH_SKIP_MPICXX )
+    add_definitions( -Wno-long-long )
   endif()
 
 # Only g++ supported.
