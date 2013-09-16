@@ -114,7 +114,7 @@ all: ./src/mersenne-twister-master/INSTALL_STAMP ./src/cppunit-1.12.1/INSTALL_ST
 # Install cppunit.
 ./src/cppunit-1.12.1/INSTALL_STAMP: ./src/cppunit-1.12.1/BUILD_STAMP
 	cd ./src/cppunit-1.12.1/ && \
-	mv installdir/lib/libcppunit.a ../../lib && \
+	mv installdir/lib/libcppunit* ../../lib && \
 	mv include/cppunit/ ../../include/ && \
 	touch INSTALL_STAMP && \
 	cd -
