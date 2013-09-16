@@ -23,7 +23,7 @@ if(MPI)
   message( STATUS "== This is a parallel MPI build ==" )
   # Force using the "mpicxx" compiler wrapper.
   include(CMakeForceCompiler)
-  cmake_force_cxx_compiler(mpicxx "System CXX compiler with MPI wrapping")
+  cmake_force_cxx_compiler(${MPI} "System CXX compiler with MPI wrapping")
 
   # User verbosit as default when compiling in parallel.
   set( CMAKE_VERBOSE_MAKEFILE on )
@@ -66,7 +66,7 @@ if (CMAKE_COMPILER_IS_GNUCXX)
   add_definitions( -Wno-unused-parameter )
 
   if(MPI)
-    message( STATUS "Using g++ via mpicxx" )
+    message( STATUS "Using g++ via ${MPI}" )
     # Workaround for known mpich c++ bug.
     add_definitions( -DMPICH_IGNORE_CXX_SEEK )
     add_definitions( -DMPICH_SKIP_MPICXX )
