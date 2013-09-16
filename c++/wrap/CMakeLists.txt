@@ -35,6 +35,7 @@ add_definitions( -Wno-write-strings )
 # For clang - FIXME
 #add_definitions( -Wno-self-assign )
 #add_definitions( -Wno-dynamic-class-memaccess )
+add_definitions( -fno-strict-aliasing )
 
 # Add the target.
 swig_add_module( Backend python backend.i )
