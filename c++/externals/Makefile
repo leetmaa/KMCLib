@@ -6,36 +6,41 @@
 
 
 
-# -----------------------------------------------------------------------------
-# This is what we want to install.
-# -----------------------------------------------------------------------------
-
 # Installing is the last task, so this one goes here.
-all: ./src/mersenne-twister-master/INSTALL_STAMP
+all: ./src/mersenne-twister-master/INSTALL_STAMP ./src/cppunit-1.12.1/INSTALL_STAMP
 
 
 # -----------------------------------------------------------------------------
-# Target to force mersenne-twister unpack.
+# Target to force unpack.
 # -----------------------------------------------------------------------------
 
 ./zip/FORCE_UNPACK:
 # Touch the file if not done.
 	touch ./zip/FORCE_UNPACK
 
-
 # -----------------------------------------------------------------------------
-# Unpack mersenne-twister.
+# Unpack.
 # -----------------------------------------------------------------------------
 
-./src/mersenne-twister-master/UNPACK_STAMP: ./zip/cslarsen_mersenne_twister_04e512d825.zip ./zip/FORCE_UNPACK
 # Unpack the mersenne-twister.
+./src/mersenne-twister-master/UNPACK_STAMP: ./zip/cslarsen_mersenne_twister_04e512d825.zip ./zip/FORCE_UNPACK
 	unzip -o ./zip/cslarsen_mersenne_twister_04e512d825.zip -d ./src && \
 	touch ./src/mersenne-twister-master/UNPACK_STAMP
 
+# Unpack cppunit.
+./src/cppunit-1.12.1/UNPACK_STAMP: ./zip/cppunit-1.12.1.tar.gz ./zip/FORCE_UNPACK
+	cp ./zip/cppunit-1.12.1.tar.gz ./src && \
+	cd ./src/ && \
+	tar -xzvf cppunit-1.12.1.tar.gz && \
+	rm  cppunit-1.12.1.tar.gz && \
+	touch cppunit-1.12.1/UNPACK_STAMP && \
+	cd -
 
 # -----------------------------------------------------------------------------
-# Patch mersenne-twister.
+# Patch.
 # -----------------------------------------------------------------------------
+
+# Patch the Mersenne-Twister
 
 # In the .cpp file:
 # 1) Make sure UINT32_MAX is defined.
@@ -62,23 +67,35 @@ all: ./src/mersenne-twister-master/INSTALL_STAMP
 	touch PATCH_STAMP && \
 	cd -
 
-
 # -----------------------------------------------------------------------------
+# Build.
+# -----------------------------------------------------------------------------
+
 # Build the patched mersenne-twister.
-# -----------------------------------------------------------------------------
-
 ./src/mersenne-twister-master/BUILD_STAMP: ./src/mersenne-twister-master/PATCH_STAMP
-# Build the library.
 	cd ./src/mersenne-twister-master/ && \
 	$(CXX) -O3 -fPIC -o cslarsenmt.o -c cslarsenmt.cpp && \
 	touch BUILD_STAMP && \
 	cd -
 
+# Build cppunit.
+./src/cppunit-1.12.1/BUILD_STAMP: ./src/cppunit-1.12.1/UNPACK_STAMP
+	cd ./src/cppunit-1.12.1/ && \
+	mkdir installdir && \
+	./configure CC=gcc CXX=g++ LDFLAGS="-ldl" --prefix="${CURDIR}/src/cppunit-1.12.1/installdir" && \
+	make && \
+	make check && \
+	make install && \
+	touch BUILD_STAMP && \
+	cd -
+
 
 # -----------------------------------------------------------------------------
-# Installe the mersenne-twister so that the CMake build system finds it.
+# Install.
 # -----------------------------------------------------------------------------
 
+
+# Install the mersenne-twister.
 ./src/mersenne-twister-master/INSTALL_STAMP: ./src/mersenne-twister-master/BUILD_STAMP
 # Generate the header and copy the files over.
 	cd ./src/mersenne-twister-master/ && \
@@ -87,13 +104,24 @@ all: ./src/mersenne-twister-master/INSTALL_STAMP
 	touch INSTALL_STAMP && \
 	cd -
 
+# Install cppunit.
+./src/cppunit-1.12.1/INSTALL_STAMP: ./src/cppunit-1.12.1/BUILD_STAMP
+	cd ./src/cppunit-1.12.1/ && \
+	mv installdir/lib/libcppunit.a ../../lib && \
+	mv include/cppunit/ ../../include/ && \
+	touch INSTALL_STAMP && \
+	cd -
+
 
 # -----------------------------------------------------------------------------
-# Cleanup by simply deleting everything.
+# Cleanup.
 # -----------------------------------------------------------------------------
 
 clean:
 	rm -r ./src/mersenne-twister-master/ && \
+	rm -r ./src/cppunit-1.12.1/ && \
 	rm ./obj/*.o && \
-	rm ./include/externals/*.h
+	rm ./lib/*.a && \
+	rm ./include/externals/*.h &&\
+	rm -r ./include/cppunit
 
