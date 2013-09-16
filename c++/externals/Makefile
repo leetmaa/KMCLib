@@ -67,6 +67,13 @@ all: ./src/mersenne-twister-master/INSTALL_STAMP ./src/cppunit-1.12.1/INSTALL_ST
 	touch PATCH_STAMP && \
 	cd -
 
+
+# Patch cppunit.
+./src/cppunit-1.12.1/PATCH_STAMP: ./src/cppunit-1.12.1/UNPACK_STAMP
+	cd ./src/cppunit-1.12.1/ && \
+	echo "rm -rf conftest.dSYM" >> configure && \
+	cd -
+
 # -----------------------------------------------------------------------------
 # Build.
 # -----------------------------------------------------------------------------
@@ -79,10 +86,10 @@ all: ./src/mersenne-twister-master/INSTALL_STAMP ./src/cppunit-1.12.1/INSTALL_ST
 	cd -
 
 # Build cppunit.
-./src/cppunit-1.12.1/BUILD_STAMP: ./src/cppunit-1.12.1/UNPACK_STAMP
+./src/cppunit-1.12.1/BUILD_STAMP: ./src/cppunit-1.12.1/PATCH_STAMP
 	cd ./src/cppunit-1.12.1/ && \
 	mkdir installdir && \
-	./configure CC=gcc CXX=g++ LDFLAGS="-ldl" --prefix="${CURDIR}/src/cppunit-1.12.1/installdir" && \
+	./configure LDFLAGS="-ldl" --prefix="${CURDIR}/src/cppunit-1.12.1/installdir" && \
 	make && \
 	make check && \
 	make install && \
@@ -124,4 +131,3 @@ clean:
 	rm ./lib/*.a && \
 	rm ./include/externals/*.h &&\
 	rm -r ./include/cppunit
-
