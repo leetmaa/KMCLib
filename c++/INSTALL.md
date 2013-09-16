@@ -9,29 +9,25 @@ on being *clang* compatible as well.
 Linux: "sudo apt-get install swig" Max OSX with macports:
 "sudo port install swig && sudo port install swig-python"
 
-## 2) Make sure you have CPPUNIT installed.
-Download [CPPUNIT](http://sourceforge.net/projects/cppunit/) and follow the
-instructions.
+## 2) Build the included external dependencies.
+This includeds CppUnit and a mersenne-twister implementation.
+"cd KMCLib/c++/externals",
+"CXX=g++ make"
 
-## 3) Build the included external dependencies.
-"cd KMCLib/c++/externals"
-Linux: "make".
-Mac info will come, for the moment you can try the linux makefile (but make
-sure you are using *g++* and not *clang* or else it won't work).
-
-## 4) Build KMCLib C++ tests and backend.
+## 3) Build KMCLib C++ tests and backend.
 "cd KMCLib/c++",
 "mkdir build",
 "cd build",
-"cmake -DMPI=TRUE .." for the MPI version (requiers that you have mpi installed
+Linux: "cmake -DMPI=TRUE .." for the MPI version (requiers that you have mpi installed
  and the compiler wrapped in an *mpicxx* script), or "cmake -DMPI=FALSE .." for
  the serial version,
+Mac with g++ and python from macports: "cmake -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc -DMACPORT=TRUE .." or leave -DMACPORT out to use machine Python.
 "make test.x",
 "./unittest/test.x",
 "make install"
 
-## 5) Run the Python tests.
-Place your KMCLib/python/src directory in your PYTHONPATH variable and run
+## 4) Run the Python tests.
+Place "your KMCLib/python/src" directory in your PYTHONPATH variable and run
 "python KMCLib/python/unittest/utest.py" and each of the tests under
 "KMCLib/python/functest/". We have used *python 2.7* for all development and
 testing.
