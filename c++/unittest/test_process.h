@@ -35,6 +35,7 @@ public:
     CPPUNIT_TEST( testPickSite );
     CPPUNIT_TEST( testAffectedIndices );
     CPPUNIT_TEST( testCutoffAndRange );
+    CPPUNIT_TEST( testProcessNumber );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstruction();
@@ -48,6 +49,7 @@ public:
     void testPickSite();
     void testAffectedIndices();
     void testCutoffAndRange();
+    void testProcessNumber();
 
 };
 

@@ -24,7 +24,9 @@ Process::Process(const Configuration & first,
                  const double rate,
                  const std::vector<int> & basis_sites,
                  const std::vector<int> & move_origins,
-                 const std::vector<Coordinate> & move_vectors) :
+                 const std::vector<Coordinate> & move_vectors,
+                 const int process_number) :
+    process_number_(process_number),
     range_(1),
     rate_(rate),
     cutoff_(0.0),

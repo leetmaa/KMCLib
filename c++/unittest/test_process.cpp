@@ -894,3 +894,58 @@ void Test_Process::testCutoffAndRange()
 }
 
 
+// -------------------------------------------------------------------------- //
+//
+void Test_Process::testProcessNumber()
+{
+    // Setup a valid possible types map.
+    std::map<std::string,int> possible_types;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["C"] = 0;
+
+    // Setup the two configurations.
+    std::vector<std::string> elements1;
+    elements1.push_back("A");
+    elements1.push_back("B");
+
+    std::vector<std::string> elements2;
+    elements2.push_back("C");
+    elements2.push_back("B");
+
+    // Setup coordinates.
+    std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
+    coords[1][0] =  1.0;
+    coords[1][1] =  1.3;
+    coords[1][2] = -4.4;
+
+    // The configurations.
+    const Configuration config1(coords, elements1, possible_types);
+    const Configuration config2(coords, elements2, possible_types);
+
+    // Setup an empty move vector.
+    const std::vector<int> move_origins(0);
+    const std::vector<Coordinate> move_vectors(0);
+
+    // Give the process its number.
+    const int p_number = 198;
+
+    // Construct the process.
+    const double rate = 13.7;
+    const std::vector<int> basis_sites(1,0);
+    Process process(config1, config2, rate, basis_sites, move_origins, move_vectors, p_number);
+
+    // Check that the number that is returned is the same.
+    CPPUNIT_ASSERT_EQUAL( process.processNumber(), p_number );
+
+
+    // Construct another process without the process number.
+    Process process2(config1, config2, rate, basis_sites, move_origins, move_vectors);
+
+    // Check that the process number is -1 as default.
+    CPPUNIT_ASSERT_EQUAL( process2.processNumber(), -1 );
+
+    // DONE
+}
+
+

@@ -133,7 +133,7 @@ the KMCRateCalculatorPlugin class itself. """
                 cpp_processes = Backend.StdVectorProcess()
 
             # For each interaction.
-            for process in self.__processes:
+            for process_number, process in enumerate(self.__processes):
 
                 # Get the corresponding C++ objects.
                 cpp_config1   = process.localConfigurations()[0]._backend(possible_types)
@@ -172,14 +172,16 @@ the KMCRateCalculatorPlugin class itself. """
                                                                       cpp_basis,
                                                                       cutoff,
                                                                       cpp_move_origins,
-                                                                      cpp_move_vectors))
+                                                                      cpp_move_vectors,
+                                                                      process_number))
                 else:
                     cpp_processes.push_back(Backend.Process(cpp_config1,
                                                             cpp_config2,
                                                             rate_constant,
                                                             cpp_basis,
                                                             cpp_move_origins,
-                                                            cpp_move_vectors))
+                                                            cpp_move_vectors,
+                                                            process_number))
 
             # Construct the C++ interactions object.
             if self.__rate_calculator is not None:
