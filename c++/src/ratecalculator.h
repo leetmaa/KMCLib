@@ -36,19 +36,21 @@ public:
     /*! \brief The backend callback function for sending process information
      *         to objects inheriting from this method. The KMCRateCalculatorPlugin
      *         class in python overloads this function.
-     * \param geometry     : The geometry, with x,y,z coordinates for each atom in contiguous memory.
-     * \param len          : The number of atoms, must be geometry.size()/3 used for reshping
-     *                       geometry data in Python.
-     * \param types_before : The types before the process.
-     * \param types_after  : The types after the process.
-     * \param rate_constant: The rate constant associated with the process.
+     * \param geometry       : The geometry, with x,y,z coordinates for each atom in contiguous memory.
+     * \param len            : The number of atoms, must be geometry.size()/3 used for reshping
+     *                         geometry data in Python.
+     * \param types_before   : The types before the process.
+     * \param types_after    : The types after the process.
+     * \param rate_constant  : The rate constant associated with the process.
+     * \param process_number : The id number of the process.
      * \return : The base class implementation returns the rate constant unmodified.
      */
     virtual double backendRateCallback(const std::vector<double> geometry,
                                        const int len,
                                        const std::vector<std::string> & types_before,
                                        const std::vector<std::string> & types_after,
-                                       const double rate_constant) const { return rate_constant; }
+                                       const double rate_constant,
+                                       const int process_number) const { return rate_constant; }
 
 protected:
 
@@ -95,7 +97,8 @@ double getRate(const RateCalculator & rc,
                const std::vector<Coordinate> & geometry,
                const std::vector<std::string> & types_before,
                const std::vector<std::string> & types_after,
-               const double rate_constant);
+               const double rate_constant,
+               const int process_number);
 
 
 #endif // __RATECALCULATOR__

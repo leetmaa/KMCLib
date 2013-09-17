@@ -35,12 +35,14 @@ void Test_RateCalculator::testRateCallback()
     const std::vector<std::string> types_before;
     const std::vector<std::string> types_after;
     const double rate_constant = randomDouble01();
+    const int process_number = 10;
 
     const double rate0 = r.backendRateCallback(geometry,
                                                geometry.size()/3,
                                                types_before,
                                                types_after,
-                                               rate_constant);
+                                               rate_constant,
+                                               process_number);
 
     // We test that the interface in C++ only returns the rate constant again.
     CPPUNIT_ASSERT_DOUBLES_EQUAL( rate_constant, rate0, 1.0e-12 );

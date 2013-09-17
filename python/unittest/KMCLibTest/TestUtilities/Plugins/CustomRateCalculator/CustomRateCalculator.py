@@ -13,7 +13,12 @@ from KMCLib.KMCRateCalculatorPlugin import KMCRateCalculatorPlugin
 class CustomRateCalculator(KMCRateCalculatorPlugin):
     """ An example of a custom rate calculator plugin. """
 
-    def rate(self, coords, types_before, types_after, rate_constant):
+    def rate(self,
+             coords,
+             types_before,
+             types_after,
+             rate_constant,
+             process_number):
         """ Overloaded API rate function. """
         if types_before[0] == "B":
             return 3.0

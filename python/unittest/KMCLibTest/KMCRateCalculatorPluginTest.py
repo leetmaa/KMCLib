@@ -54,9 +54,9 @@ class KMCRateCalculatorPluginTest(unittest.TestCase):
 
     def testUsage(self):
         """ Test that the KMCRateCalculatorPlugin can be used in a simulation. """
-        # To get the random numbers returned.
+        # To get the random numbers and process numbers returned.
         ref_randoms = []
-
+        ref_process_numbers = []
         # Define a derrived class.
         class RateCalc(KMCRateCalculatorPlugin):
             # Overload the initialize function.
@@ -64,11 +64,12 @@ class KMCRateCalculatorPluginTest(unittest.TestCase):
                 # Save something on the class here.
                 self._times_called = 0
             # Overload the rate function.
-            def rate(self, coords, types_befpre, types_after, rate_constant):
+            def rate(self, coords, types_befpre, types_after, rate_constant, process_number):
                 # Do some simple counting and return the random number.
                 self._times_called += 1
                 rnd = numpy.random.uniform(0.0,1.0)
                 ref_randoms.append(rnd)
+                ref_process_numbers.append(process_number)
                 return rnd
             # Overload the additive rate function.
             def useAdditiveRate(self):
@@ -85,34 +86,43 @@ class KMCRateCalculatorPluginTest(unittest.TestCase):
         cpp_types2 = Backend.StdVectorString()
         cpp_types2.push_back("B")
         rate_constant = 3.1415927
-
         ret_randoms = []
         ret_randoms.append(Backend.getRate(calculator,
                                            cpp_coords,
                                            cpp_types1,
                                            cpp_types2,
-                                           rate_constant))
+                                           rate_constant,
+                                           21))
         ret_randoms.append(Backend.getRate(calculator,
                                            cpp_coords,
                                            cpp_types1,
                                            cpp_types2,
-                                           rate_constant))
+                                           rate_constant,
+                                           12))
         ret_randoms.append(Backend.getRate(calculator,
                                            cpp_coords,
                                            cpp_types1,
                                            cpp_types2,
-                                           rate_constant))
+                                           rate_constant,
+                                           10))
         ret_randoms.append(Backend.getRate(calculator,
                                            cpp_coords,
                                            cpp_types1,
                                            cpp_types2,
-                                           rate_constant))
+                                           rate_constant,
+                                           2))
 
         # Check that it was called 4 times.
         self.assertEqual( calculator._times_called, 4 )
 
         # Check the values.
         self.assertAlmostEqual( ret_randoms, ref_randoms, 12 )
+
+        # Check the reference process numbers.
+        self.assertEqual( ref_process_numbers[0], 21 )
+        self.assertEqual( ref_process_numbers[1], 12 )
+        self.assertEqual( ref_process_numbers[2], 10 )
+        self.assertEqual( ref_process_numbers[3], 2  )
 
 if __name__ == '__main__':
     unittest.main()

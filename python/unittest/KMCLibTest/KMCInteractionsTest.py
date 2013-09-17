@@ -246,7 +246,7 @@ class KMCInteractionsTest(unittest.TestCase):
 
         # Set the rate function on the custom rates calculator for testing.
         ref_rnd = numpy.random.uniform(0.0,1.0)
-        def testRateFunction(coords, types_before, types_after, rate_const):
+        def testRateFunction(coords, types_before, types_after, rate_const, process_number):
             return ref_rnd
         kmc_interactions._KMCInteractions__rate_calculator.rate = testRateFunction
 
@@ -268,17 +268,20 @@ class KMCInteractionsTest(unittest.TestCase):
         cpp_types1 = Backend.StdVectorString()
         cpp_types2 = Backend.StdVectorString()
         rate_constant = 543.2211
+        process_number = 33
 
         self.assertAlmostEqual( cpp_interactions.rateCalculator().backendRateCallback(cpp_coords,
                                                                                       cpp_coords.size()/3,
                                                                                       cpp_types1,
                                                                                       cpp_types2,
-                                                                                      rate_constant), ref_rnd, 12 )
+                                                                                      rate_constant,
+                                                                                      process_number), ref_rnd, 12 )
         self.assertAlmostEqual( kmc_interactions._KMCInteractions__rate_calculator.backendRateCallback(cpp_coords,
                                                                                                        cpp_coords.size()/3,
                                                                                                        cpp_types1,
                                                                                                        cpp_types2,
-                                                                                                       rate_constant), ref_rnd, 12 )
+                                                                                                       rate_constant,
+                                                                                                       process_number), ref_rnd, 12 )
 
         # Construct a C++ RateCalculator object directly and check that this object
         # returns the rate given to it.
@@ -287,7 +290,8 @@ class KMCInteractionsTest(unittest.TestCase):
                                                                         cpp_coords.size()/3,
                                                                         cpp_types1,
                                                                         cpp_types2,
-                                                                        rate_constant), rate_constant, 12 )
+                                                                        rate_constant,
+                                                                        process_number), rate_constant, 12 )
 
     def testBackendNoFailWrongBasisMatch(self):
         """ Test for no failure when constructing backend with wrong n_basis """
