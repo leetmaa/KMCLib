@@ -42,7 +42,10 @@ double getRate(const RateCalculator & rc,
                const std::vector<std::string> & types_before,
                const std::vector<std::string> & types_after,
                const double rate_constant,
-               const int process_number)
+               const int process_number,
+               const double global_x,
+               const double global_y,
+               const double global_z)
 {
     // Translate to row major contiguous memoery layout.
     std::vector<double> py_geo(geometry.size()*3);
@@ -60,7 +63,10 @@ double getRate(const RateCalculator & rc,
                                               types_before,
                                               types_after,
                                               rate_constant,
-                                              process_number);
+                                              process_number,
+                                              global_x,
+                                              global_y,
+                                              global_z);
    return rate;
 
 }

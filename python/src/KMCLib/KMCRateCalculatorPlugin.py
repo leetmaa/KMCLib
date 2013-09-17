@@ -35,7 +35,10 @@ class KMCRateCalculatorPlugin(Backend.RateCalculator):
                             types_before,
                             types_after,
                             rate_constant,
-                            process_number):
+                            process_number,
+                            global_x,
+                            global_y,
+                            global_z):
         """
         Function called from C++ to get the rate. It function recieves
         the data from C++ and parse it to a Python friendly format to send it
@@ -43,11 +46,13 @@ class KMCRateCalculatorPlugin(Backend.RateCalculator):
         """
         # Call and return the custom rate.
         # PERFORMME: Consider creating the numpy array in C++ if possible.
+        global_coordinate = (global_x, global_y, global_z)
         return self.rate(numpy.array(cpp_coords).reshape(coords_len,3),
                          types_before,
                          types_after,
                          rate_constant,
-                         process_number)
+                         process_number,
+                         global_coordinate)
 
     def initialize(self):
         """
@@ -61,7 +66,8 @@ class KMCRateCalculatorPlugin(Backend.RateCalculator):
              types_before,
              types_after,
              rate_constant,
-             process_number):
+             process_number,
+             global_coordinate):
         """
         Called from the base class to get the rate for a particular
         local geometry. Any class inheriting from the plugin base class
@@ -78,6 +84,8 @@ class KMCRateCalculatorPlugin(Backend.RateCalculator):
                               to either update or replace.
 
         :param process_number: The process id number.
+
+        :param global_coordinate: The global coordinate of the central index.
 
         :returns: The custom rate of the process. Note that the returned rate must
                   not be negative or zero.

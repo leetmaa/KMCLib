@@ -57,6 +57,7 @@ class KMCRateCalculatorPluginTest(unittest.TestCase):
         # To get the random numbers and process numbers returned.
         ref_randoms = []
         ref_process_numbers = []
+        ref_coordinates = []
         # Define a derrived class.
         class RateCalc(KMCRateCalculatorPlugin):
             # Overload the initialize function.
@@ -64,12 +65,13 @@ class KMCRateCalculatorPluginTest(unittest.TestCase):
                 # Save something on the class here.
                 self._times_called = 0
             # Overload the rate function.
-            def rate(self, coords, types_befpre, types_after, rate_constant, process_number):
+            def rate(self, coords, types_befpre, types_after, rate_constant, process_number, coordinate):
                 # Do some simple counting and return the random number.
                 self._times_called += 1
                 rnd = numpy.random.uniform(0.0,1.0)
                 ref_randoms.append(rnd)
                 ref_process_numbers.append(process_number)
+                ref_coordinates.append(coordinate)
                 return rnd
             # Overload the additive rate function.
             def useAdditiveRate(self):
@@ -87,30 +89,49 @@ class KMCRateCalculatorPluginTest(unittest.TestCase):
         cpp_types2.push_back("B")
         rate_constant = 3.1415927
         ret_randoms = []
+        process_numbers = [21, 12, 10, 2]
+        global_xyz = numpy.array([[0.2,0.4,0.5],
+                                  [1.1,1.3,1.4],
+                                  [3.4,4.3,3.3],
+                                  [4.2,3.2,1.9]])
+
+
         ret_randoms.append(Backend.getRate(calculator,
                                            cpp_coords,
                                            cpp_types1,
                                            cpp_types2,
                                            rate_constant,
-                                           21))
+                                           process_numbers[0],
+                                           global_xyz[0,0],
+                                           global_xyz[0,1],
+                                           global_xyz[0,2]))
         ret_randoms.append(Backend.getRate(calculator,
                                            cpp_coords,
                                            cpp_types1,
                                            cpp_types2,
                                            rate_constant,
-                                           12))
+                                           process_numbers[1],
+                                           global_xyz[1,0],
+                                           global_xyz[1,1],
+                                           global_xyz[1,2]))
         ret_randoms.append(Backend.getRate(calculator,
                                            cpp_coords,
                                            cpp_types1,
                                            cpp_types2,
                                            rate_constant,
-                                           10))
+                                           process_numbers[2],
+                                           global_xyz[2,0],
+                                           global_xyz[2,1],
+                                           global_xyz[2,2]))
         ret_randoms.append(Backend.getRate(calculator,
                                            cpp_coords,
                                            cpp_types1,
                                            cpp_types2,
                                            rate_constant,
-                                           2))
+                                           process_numbers[3],
+                                           global_xyz[3,0],
+                                           global_xyz[3,1],
+                                           global_xyz[3,2]))
 
         # Check that it was called 4 times.
         self.assertEqual( calculator._times_called, 4 )
@@ -123,6 +144,10 @@ class KMCRateCalculatorPluginTest(unittest.TestCase):
         self.assertEqual( ref_process_numbers[1], 12 )
         self.assertEqual( ref_process_numbers[2], 10 )
         self.assertEqual( ref_process_numbers[3], 2  )
+
+        # Check the reference coordinate.
+        self.assertAlmostEqual( numpy.linalg.norm( global_xyz - numpy.array(ref_coordinates)), 0.0, 10 )
+
 
 if __name__ == '__main__':
     unittest.main()

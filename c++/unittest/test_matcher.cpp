@@ -1499,7 +1499,10 @@ public:
                                        const std::vector<std::string> & types_before,
                                        const std::vector<std::string> & types_after,
                                        const double rate_constant,
-                                       const int process_number) const
+                                       const int process_number,
+                                       const double global_x,
+                                       const double global_y,
+                                       const double global_z) const
         {
             // Return.
             return std::sqrt(rate_constant);
@@ -1615,7 +1618,10 @@ public:
                                        const std::vector<std::string> & types_before,
                                        const std::vector<std::string> & types_after,
                                        const double rate_constant,
-                                       const int process_number) const
+                                       const int process_number,
+                                       const double global_x,
+                                       const double global_y,
+                                       const double global_z) const
         {
             // Test the geometry.
             CPPUNIT_ASSERT_DOUBLES_EQUAL( geometry[0], 0.0, 1.0e-12 );

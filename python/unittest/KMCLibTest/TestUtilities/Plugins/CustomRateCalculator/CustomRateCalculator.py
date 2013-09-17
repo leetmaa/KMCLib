@@ -18,7 +18,8 @@ class CustomRateCalculator(KMCRateCalculatorPlugin):
              types_before,
              types_after,
              rate_constant,
-             process_number):
+             process_number,
+             global_coordinate):
         """ Overloaded API rate function. """
         if types_before[0] == "B":
             return 3.0
