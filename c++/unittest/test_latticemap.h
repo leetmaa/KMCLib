@@ -32,6 +32,7 @@ public:
     CPPUNIT_TEST( testNeighbourIndicesMinimal );
     CPPUNIT_TEST( testNeighbourIndicesMinimal2 );
     CPPUNIT_TEST( testNeighbourIndicesLong );
+    CPPUNIT_TEST( testSupersetNeighbourIndices );
     CPPUNIT_TEST( testWrap );
     CPPUNIT_TEST( testWrapLong );
     CPPUNIT_TEST( testBasisSiteFromIndex );
@@ -45,6 +46,7 @@ public:
     void testNeighbourIndicesMinimal();
     void testNeighbourIndicesMinimal2();
     void testNeighbourIndicesLong();
+    void testSupersetNeighbourIndices();
     void testWrap();
     void testWrapLong();
     void testBasisSiteFromIndex();
