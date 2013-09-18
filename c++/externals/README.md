@@ -1,6 +1,6 @@
 External Dependencies
 ======================
-This folder holds all external libraries needed for the c++ part of KMCLib
+This folder holds all external libraries needed for the C++ part of KMCLib
 that are shipped with the distribution.
 
 mersenne-twister
@@ -15,6 +15,14 @@ The patches we have applied to make this mersenne-twister implementation a
    std::mt19937 rng;
    std::generate_canonical<double, 32>(rng);
 can be found in the Makefile.
+
+CppUnit
+--------
+We include CppUnit version 1.12.1 here for convenience since we use it
+for the KMCLib C++ unittests.
+CppUnit is the C++ port of the famous JUnit framework for unit
+testing. < http://cppunit.sourceforge.net >
+
 
 License
 ========

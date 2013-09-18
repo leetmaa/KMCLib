@@ -4,9 +4,11 @@
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 #
 
-# Use the custom search path for the cppunit test library.
+# Use the custom search path for the cppunit test library if given.
 message( STATUS "Custom search path for -lcppunit: ${CPPUNIT_DIR}")
-find_library( CPPUNIT cppunit ${CPPUNIT_DIR} )
+find_library( CPPUNIT NAMES cppunit PATHS
+              ${CPPUNIT_DIR}
+              ${KMCLib_SOURCE_DIR}/externals/lib )
 
 # Find all test files.
 file( GLOB CppSources test_* )
@@ -25,4 +27,3 @@ add_executable( test.x EXCLUDE_FROM_ALL testRunner )
 
 # Define the libraries to link the test.x executable against.
 target_link_libraries( test.x ${CPPUNIT} unittest src )
-

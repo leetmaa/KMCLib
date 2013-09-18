@@ -86,9 +86,14 @@ void Test_MPIRoutines::testDetermineChunks()
 //
 void Test_MPIRoutines::testSumOverProcessesInt()
 {
+#if RUNMPI == true
     int rank, size;
     MPI_Comm_rank( MPI_COMM_WORLD, &rank );
     MPI_Comm_size( MPI_COMM_WORLD, &size );
+#else
+    const int rank = 0;
+    const int size = 1;
+#endif
 
     int sum_value = rank*rank + 3;
 
@@ -112,9 +117,14 @@ void Test_MPIRoutines::testSumOverProcessesInt()
 //
 void Test_MPIRoutines::testSumOverProcessesVectorInt()
 {
+#if RUNMPI == true
     int rank, size;
     MPI_Comm_rank( MPI_COMM_WORLD, &rank );
     MPI_Comm_size( MPI_COMM_WORLD, &size );
+#else
+    const int rank = 0;
+    const int size = 1;
+#endif
 
     std::vector<int> data(size, rank*rank+17);
     data[rank] = 0;
@@ -147,9 +157,14 @@ void Test_MPIRoutines::testSumOverProcessesVectorInt()
 //
 void Test_MPIRoutines::testSumOverProcessesVectorDouble()
 {
+#if RUNMPI == true
     int rank, size;
     MPI_Comm_rank( MPI_COMM_WORLD, &rank );
     MPI_Comm_size( MPI_COMM_WORLD, &size );
+#else
+    const int rank = 0;
+    const int size = 1;
+#endif
 
     std::vector<double> data(size, rank*rank+std::sqrt(2.0));
     data[rank] = 0.0;
@@ -182,9 +197,14 @@ void Test_MPIRoutines::testSumOverProcessesVectorDouble()
 //
 void Test_MPIRoutines::testSplitOverProcesses()
 {
+#if RUNMPI == true
     int rank, size;
     MPI_Comm_rank( MPI_COMM_WORLD, &rank );
     MPI_Comm_size( MPI_COMM_WORLD, &size );
+#else
+    const int rank = 0;
+    const int size = 1;
+#endif
 
     // Setup the global data such that each process gets
     // three elements except the last process which gets two.
@@ -221,9 +241,14 @@ void Test_MPIRoutines::testSplitOverProcesses()
 //
 void Test_MPIRoutines::testJoinOverProcesses()
 {
+#if RUNMPI == true
     int rank, size;
     MPI_Comm_rank( MPI_COMM_WORLD, &rank );
     MPI_Comm_size( MPI_COMM_WORLD, &size );
+#else
+    const int rank = 0;
+    const int size = 1;
+#endif
 
     // Setup global data such that each process gets
     // three elements except the last process which gets two.

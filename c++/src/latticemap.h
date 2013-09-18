@@ -51,7 +51,8 @@ public:
      * \param indices : The vector of indices to get the neighbours for.
      * \return: The list of indices.
      */
-    std::vector<int> supersetNeighbourIndices(const std::vector<int> & indices) const;
+    std::vector<int> supersetNeighbourIndices(const std::vector<int> & indices,
+                                              const int shells) const;
 
     /*! \brief Get the indices from a given cell.
      * \param i : The cell index in the a direction.

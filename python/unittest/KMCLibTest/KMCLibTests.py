@@ -25,6 +25,7 @@ from Utilities import UtilitiesTests
 from Exceptions import ExceptionsTests
 from Backend import BackendTests
 from OnTheFlyMSD import OnTheFlyMSDTests
+from TimeStepDistribution import TimeStepDistributionTests
 
 def suite():
     suite = unittest.TestSuite(
@@ -41,7 +42,8 @@ def suite():
          UtilitiesTests.suite(),
          ExceptionsTests.suite(),
          BackendTests.suite(),
-         OnTheFlyMSDTests.suite()])
+         OnTheFlyMSDTests.suite(),
+         TimeStepDistributionTests.suite()])
     return suite
 
 if __name__ == '__main__':

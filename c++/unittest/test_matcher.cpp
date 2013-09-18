@@ -1498,7 +1498,11 @@ public:
                                        const int len,
                                        const std::vector<std::string> & types_before,
                                        const std::vector<std::string> & types_after,
-                                       const double rate_constant) const
+                                       const double rate_constant,
+                                       const int process_number,
+                                       const double global_x,
+                                       const double global_y,
+                                       const double global_z) const
         {
             // Return.
             return std::sqrt(rate_constant);
@@ -1613,7 +1617,11 @@ public:
                                        const int len,
                                        const std::vector<std::string> & types_before,
                                        const std::vector<std::string> & types_after,
-                                       const double rate_constant) const
+                                       const double rate_constant,
+                                       const int process_number,
+                                       const double global_x,
+                                       const double global_y,
+                                       const double global_z) const
         {
             // Test the geometry.
             CPPUNIT_ASSERT_DOUBLES_EQUAL( geometry[0], 0.0, 1.0e-12 );
@@ -1635,6 +1643,9 @@ public:
             CPPUNIT_ASSERT_EQUAL(static_cast<int>(types_after.size()), 2);
             CPPUNIT_ASSERT_EQUAL(std::string("C"), types_after[0]);
             CPPUNIT_ASSERT_EQUAL(std::string("A"), types_after[1]);
+
+            // Test the process number.
+            CPPUNIT_ASSERT_EQUAL( process_number, 917 );
 
             // Return.
             return std::pow(rate_constant,3.14159);
@@ -1706,7 +1717,7 @@ void Test_Matcher::testUpdateSingleRate()
     // Construct the process with a random rate.
     seedRandom(19, true);
     const double rate = 13.7*randomDouble01();
-    CustomRateProcess process(config1, config2, rate, basis_sites, 12.0);
+    CustomRateProcess process(config1, config2, rate, basis_sites, 12.0, std::vector<int>(0), std::vector<Coordinate>(0), 917);
 
     // Put the process in a vector.
     std::vector<CustomRateProcess> processes(1, process);

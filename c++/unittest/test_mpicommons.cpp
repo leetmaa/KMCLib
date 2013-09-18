@@ -20,8 +20,12 @@
 void Test_MPICommons::testSize()
 {
     // Get the reference size.
+#if RUNMPI == true
     int ref_size;
     MPI_Comm_size( MPI_COMM_WORLD, &ref_size );
+#else
+    const int ref_size = 1;
+#endif
 
     // Call the common interface.
     const int size = MPICommons::size();
@@ -36,8 +40,12 @@ void Test_MPICommons::testSize()
 void Test_MPICommons::testRank()
 {
     // Get the reference rank.
+#if RUNMPI == true
     int ref_rank;
     MPI_Comm_rank( MPI_COMM_WORLD, &ref_rank );
+#else
+    const int ref_rank = 0;
+#endif
 
     // Call the common interface.
     const int rank = MPICommons::myRank();
@@ -52,8 +60,12 @@ void Test_MPICommons::testRank()
 void Test_MPICommons::testIsMaster()
 {
     // Get the reference rank.
+#if RUNMPI == true
     int ref_rank;
     MPI_Comm_rank( MPI_COMM_WORLD, &ref_rank );
+#else
+    const int ref_rank = 0;
+#endif
 
     if (ref_rank == 0)
     {
@@ -70,6 +82,11 @@ void Test_MPICommons::testIsMaster()
 //
 void Test_MPICommons::testBarrier()
 {
+    // Call the barrier function.
+    MPICommons::barrier();
+
+// Only if run in parallel.
+#if RUNMPI == true
     int rank, size;
     MPI_Comm_rank( MPI_COMM_WORLD, &rank );
     MPI_Comm_size( MPI_COMM_WORLD, &size );
@@ -144,5 +161,6 @@ void Test_MPICommons::testBarrier()
         CPPUNIT_ASSERT_EQUAL(time_total, max);
     }
 
+#endif // if RUNMPI == true
 }
 

@@ -44,9 +44,9 @@ void Test_SimulationTimer::testPropagateAndQuery()
     // The resulting delta t should be  dt = [-ln(rnd)/rate]
     for (int i = 0; i < 1000000; ++i)
     {
-        const double rnd   = randomDouble01();
-        const double dt    = -std::log(rnd)/rate;
-        const double index = static_cast<int>(dt);
+        const double rnd = randomDouble01();
+        const double dt  = -std::log(rnd)/rate;
+        const int index  = static_cast<int>(dt);
         if (index < 200)
         {
             ++ref_distribution[index];
@@ -62,7 +62,7 @@ void Test_SimulationTimer::testPropagateAndQuery()
         const double prevoius_t = timer.simulationTime();
         timer.propagateTime(rate);
         const double dt = timer.simulationTime() - prevoius_t;
-        const double index = static_cast<int>(dt);
+        const int index = static_cast<int>(dt);
         if (index < 200)
         {
             ++timer_distribution[index];

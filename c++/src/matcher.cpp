@@ -392,9 +392,18 @@ double Matcher::updateSingleRate(const int index,
 
     // Calculate the rate using the provided rate calculator.
     const double rate_constant = process.rateConstant();
+    const int process_number   = process.processNumber();
+    const double global_x = configuration.coordinates()[index].x();
+    const double global_y = configuration.coordinates()[index].y();
+    const double global_z = configuration.coordinates()[index].z();
+
     return rate_calculator.backendRateCallback(numpy_geo,
                                                len,
                                                types_before,
                                                types_after,
-                                               rate_constant);
+                                               rate_constant,
+                                               process_number,
+                                               global_x,
+                                               global_y,
+                                               global_z);
 }

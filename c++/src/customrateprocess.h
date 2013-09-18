@@ -27,22 +27,23 @@ public:
     CustomRateProcess() {}
 
     /*! \brief Constructor for the process. Note that the configurations given
-               to the process are local configurations and no periodic boundaries
-               will be taken into consideration.
+     *         to the process are local configurations and no periodic boundaries
+     *         will be taken into consideration.
      *  \param first         : The first configuration, to match against the local
-                               coordinates around an active site.
+     *                         coordinates around an active site.
      *  \param second        : The second configuration, to update the local
-                               configuration with if the process is selected.
+     *                         configuration with if the process is selected.
      *  \param rate          : The rate in Hz associated with the process.
      *  \param basis_sites   : The basis sites where this process is applicable.
      *  \param cutoff        : The cutoff distance in primitive cell fractional units.
      *  \param move_origins  : The vector of indices in the local configurations
-                               that the move vectors originate from. This vector
-                               can be empty if no move vectors are used.
+     *                         that the move vectors originate from. This vector
+     *                         can be empty if no move vectors are used.
      *  \param move_vectors  : The vector of coordinates for each moved atom.
-                               This vector can be empty if no move vectors are used,
-                               i.e., if only elements are moved on the lattice and no
-                               atom id moves are considered.
+     *                         This vector can be empty if no move vectors are used,
+     *                         i.e., if only elements are moved on the lattice and no
+     *                         atom id moves are considered.
+     *  \param process_number: The id number of the process.
      */
     CustomRateProcess(const Configuration & first,
                       const Configuration & second,
@@ -50,7 +51,8 @@ public:
                       const std::vector<int> & basis_sites,
                       const double cutoff,
                       const std::vector<int> & move_origins=std::vector<int>(0),
-                      const std::vector<Coordinate> & move_vectors=std::vector<Coordinate>(0));
+                      const std::vector<Coordinate> & move_vectors=std::vector<Coordinate>(0),
+                      const int process_number=-1);
 
     /*! \brief Virtual destructor needed for inheritance.
      */

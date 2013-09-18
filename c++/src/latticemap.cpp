@@ -62,7 +62,7 @@ std::vector<int> LatticeMap::neighbourIndices(const int index,
     const CellIndex & cell = c;
 
     // Setup the return data structure.
-    const int n_neighbours = std::pow((2.0*shells + 1), 3) * n_basis_;
+    const int n_neighbours = static_cast<int>(std::pow((2.0*shells + 1), 3) * n_basis_);
     std::vector<int> neighbours(n_neighbours);
 
     // Get a pointer to the neighbours data for direct write access.
@@ -152,7 +152,8 @@ std::vector<int> LatticeMap::neighbourIndices(const int index,
 
 // -----------------------------------------------------------------------------
 //
-std::vector<int> LatticeMap::supersetNeighbourIndices(const std::vector<int> & indices) const
+std::vector<int> LatticeMap::supersetNeighbourIndices(const std::vector<int> & indices,
+                                                      const int shells) const
 {
     // PERFORMME:
     // We can use several different stategies here and this might
@@ -167,7 +168,7 @@ std::vector<int> LatticeMap::supersetNeighbourIndices(const std::vector<int> & i
         const int index = indices[i];
 
         // And its neighbours.
-        const std::vector<int> neighbours = neighbourIndices(index);
+        const std::vector<int> neighbours = neighbourIndices(index, shells);
 
         // Add its neighbourlist to the superset.
         for (size_t j = 0; j < neighbours.size(); ++j)

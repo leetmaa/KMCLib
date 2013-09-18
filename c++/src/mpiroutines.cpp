@@ -19,6 +19,7 @@
 void sumOverProcesses(int & data,
                       const MPI_Comm & comm)
 {
+#if RUNMPI == true
     const int size = 1;
 
     // Copy the data over to the send buffer.
@@ -31,6 +32,7 @@ void sumOverProcesses(int & data,
                   MPI_SUM,     // Operation to perform.
                   comm);       // The communicator.
     // Done.
+#endif
 }
 
 // -------------------------------------------------------------------------- //
@@ -38,6 +40,7 @@ void sumOverProcesses(int & data,
 void sumOverProcesses(std::vector<int> & data,
                       const MPI_Comm & comm)
 {
+#if RUNMPI == true
     const int size = data.size();
 
     // Copy the data over to the send buffer.
@@ -50,6 +53,7 @@ void sumOverProcesses(std::vector<int> & data,
                   MPI_SUM,     // Operation to perform.
                   comm);       // The communicator.
     // Done.
+#endif
 }
 
 
@@ -58,6 +62,7 @@ void sumOverProcesses(std::vector<int> & data,
 void sumOverProcesses(std::vector<double> & data,
                       const MPI_Comm & comm)
 {
+#if RUNMPI == true
     const int size = data.size();
 
     // Copy the data over to the send buffer.
@@ -70,6 +75,7 @@ void sumOverProcesses(std::vector<double> & data,
                   MPI_SUM,     // Operation to perform.
                   comm);       // The communicator.
     // Done.
+#endif
 }
 
 

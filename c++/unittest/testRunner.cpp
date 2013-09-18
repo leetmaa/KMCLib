@@ -8,11 +8,13 @@
 
 #include <cppunit/ui/text/TestRunner.h>
 #include "testRunner.h"
-#include <mpi.h>
+#include "mpih.h"
 
 int main (int argc, char *argv[])
 {
+#if RUNMPI == true
     MPI_Init(&argc, &argv);
+#endif
 
     CppUnit::Test *test = CppUnit::TestFactoryRegistry::getRegistry().makeTest();
     CppUnit::TextTestRunner runner;
@@ -20,7 +22,9 @@ int main (int argc, char *argv[])
 
     runner.run();
 
+#if RUNMPI == true
     MPI_Finalize();
+#endif
 
     return 0;
 }

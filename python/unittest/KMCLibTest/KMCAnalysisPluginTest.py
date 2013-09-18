@@ -9,7 +9,6 @@
 
 
 import unittest
-import numpy
 
 
 # Import the module to test.

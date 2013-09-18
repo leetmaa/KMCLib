@@ -590,6 +590,82 @@ void Test_LatticeMap::testNeighbourIndicesLong()
 
 // -------------------------------------------------------------------------- //
 //
+void Test_LatticeMap::testSupersetNeighbourIndices()
+{
+    // Construct a 1D map with two basis sites.
+    std::vector<int> repetitions(3);
+    repetitions[0] = 10;
+    repetitions[1] = 1;
+    repetitions[2] = 1;
+    std::vector<bool> periodicity(3, false);
+    periodicity[0] = true;
+    LatticeMap map(2, repetitions, periodicity);
+
+    // Get the neighbours out of these indices, with three shells cutoff.
+    const int index0 = 0;
+
+    const int shells = 2;
+    std::vector<int> neighbours_idx0 = map.neighbourIndices(index0, shells);
+    const int index1 = 1;
+    const std::vector<int> neighbours_idx1 = map.neighbourIndices(index1, shells);
+
+    // Check that these are equal.
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx0[0], neighbours_idx1[0]);
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx0[1], neighbours_idx1[1]);
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx0[2], neighbours_idx1[2]);
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx0[3], neighbours_idx1[3]);
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx0[4], neighbours_idx1[4]);
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx0[5], neighbours_idx1[5]);
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx0[6], neighbours_idx1[6]);
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx0[7], neighbours_idx1[7]);
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx0[8], neighbours_idx1[8]);
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx0[9], neighbours_idx1[9]);
+
+    // Check that their overlap is the same after sorting.
+
+    std::vector<int> indices(2, 0);
+    indices[1] = 1;
+    const std::vector<int> neighbours_idx01 =           \
+        map.supersetNeighbourIndices(indices, shells);
+    std::sort(neighbours_idx0.begin(), neighbours_idx0.end());
+
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx0[0], neighbours_idx01[0]);
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx0[1], neighbours_idx01[1]);
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx0[2], neighbours_idx01[2]);
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx0[3], neighbours_idx01[3]);
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx0[4], neighbours_idx01[4]);
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx0[5], neighbours_idx01[5]);
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx0[6], neighbours_idx01[6]);
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx0[7], neighbours_idx01[7]);
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx0[8], neighbours_idx01[8]);
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx0[9], neighbours_idx01[9]);
+
+    // Adding index 4 should include indices 6,7,8,9 in the overlap.
+    indices.push_back(4);
+    const std::vector<int> neighbours_idx014 =          \
+        map.supersetNeighbourIndices(indices, shells);
+
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx014[0], neighbours_idx01[0]);
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx014[1], neighbours_idx01[1]);
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx014[2], neighbours_idx01[2]);
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx014[3], neighbours_idx01[3]);
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx014[4], neighbours_idx01[4]);
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx014[5], neighbours_idx01[5]);
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx014[6], 6);
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx014[7], 7);
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx014[8], 8);
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx014[9], 9);
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx014[10], neighbours_idx01[6]);
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx014[11], neighbours_idx01[7]);
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx014[12], neighbours_idx01[8]);
+    CPPUNIT_ASSERT_EQUAL( neighbours_idx014[13], neighbours_idx01[9]);
+
+    // DONE
+}
+
+
+// -------------------------------------------------------------------------- //
+//
 void Test_LatticeMap::testWrap()
 {
     // Construct a periodic map.
