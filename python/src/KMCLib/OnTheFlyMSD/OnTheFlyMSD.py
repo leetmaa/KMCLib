@@ -111,6 +111,20 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
         # Get the results from the backend.
         self.__getBackendResults()
 
+
+        # ML: Generate the numerical n_eff curve from the history bin counters.
+        self.__n_eff = numpy.zeros(len(self.__bin_counters))
+
+        # Decompose the total in contributions from different convolutions.
+        for b in range(len(self.__history_bin_counters)):
+
+            # Loop over each bin.
+            for i in range(len(self.__n_eff)):
+
+                if self.__history_bin_counters[b][i] != 0 and self.__bin_counters[i] != 0:
+                    fraction = float(self.__history_bin_counters[b][i]) / float(self.__bin_counters[i])
+                    self.__n_eff[i] += fraction * (b+1.0)
+
         # Remove zeros from the bin counters.
         bin_counters_copy = numpy.array(self.__bin_counters)
         where = bin_counters_copy == 0
@@ -129,36 +143,26 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
 
         # Calculate the standar deviation.
 
-
-        # FIXME: Must go as input or be obtained from the backend.
-        self.__rate = 60.0
-
-        self.__effective_n = numpy.zeros(self.__n_bins, dtype=float)
-
-        self.__a_const = self.__rate * self.__binsize * self.__n_steps
-        print self.__a_const
-
         for i in range(len(self.__results[0])):
-            rate_factor = (1 + self.__rate * self.__time_steps[i])
+            n_eff = self.__n_eff[i]
 
-            self.__effective_n[i] = rate_factor
-            print rate_factor, self.__raw_histogram[i,0]
             if (self.__raw_histogram[i,0] != 0):
 
-                self.__std_dev[0][i] = self.__results[0][i] * numpy.sqrt( ( 2 * rate_factor * rate_factor + 1 ) / ( 3 * rate_factor * self.__bin_counters[i] ) )
+                self.__std_dev[0][i] = self.__results[0][i] * numpy.sqrt( ( 2 * n_eff * n_eff + 1 ) / ( 3 * n_eff * self.__bin_counters[i] ) )
 
-                self.__std_dev[1][i] = self.__results[1][i] * numpy.sqrt( ( 2 * rate_factor * rate_factor + 1 ) / ( 3 * rate_factor * self.__bin_counters[i] ) )
+                self.__std_dev[1][i] = self.__results[1][i] * numpy.sqrt( ( 2 * n_eff * n_eff + 1 ) / ( 3 * n_eff * self.__bin_counters[i] ) )
 
-                self.__std_dev[2][i] = self.__results[2][i] * numpy.sqrt( ( 2 * rate_factor * rate_factor + 1 ) / ( 3 * rate_factor * self.__bin_counters[i] ) )
+                self.__std_dev[2][i] = self.__results[2][i] * numpy.sqrt( ( 2 * n_eff * n_eff + 1 ) / ( 3 * n_eff * self.__bin_counters[i] ) )
 
     def __getBackendResults(self):
         """
         Private helper function to get the backend results.
         """
         # Setup the histogram data in python.
-        self.__raw_histogram     = stdVectorCoordinateToNumpy2DArray(self.__backend.histogramBuffer())
-        self.__raw_histogram_sqr = stdVectorCoordinateToNumpy2DArray(self.__backend.histogramBufferSqr())
-        self.__bin_counters      = self.__backend.histogramBinCounts()
+        self.__raw_histogram        = stdVectorCoordinateToNumpy2DArray(self.__backend.histogramBuffer())
+        self.__raw_histogram_sqr    = stdVectorCoordinateToNumpy2DArray(self.__backend.histogramBufferSqr())
+        self.__bin_counters         = self.__backend.histogramBinCounts()
+        self.__history_bin_counters = self.__backend.historyStepsHistogramBinCounts()
 
     def results(self):
         """
@@ -199,6 +203,17 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
 
         :param stream: The stream to print to. Defaults to 'sys.stdout'.
         """
-        all_results = zip(self.__time_steps, self.__results[0], self.__results[1], self.__results[2], self.__bin_counters, self.__std_dev[0], self.__std_dev[1], self.__std_dev[2], self.__effective_n)
-        for t, x, y, z, c, sx, sy, sz, nn in all_results:
-            stream.write("%10.5f %10.5f %10.5f %10.5f %10i %10.5f %10.5f %10.5f %10.5f %10.5f\n"%(t, x, y, z, c, sx, sy, sz, nn, (self.__a_const - self.__rate*self.__binsize*nn)))
+        all_results = zip(self.__time_steps, self.__results[0], self.__results[1], self.__results[2], self.__bin_counters, self.__std_dev[0], self.__std_dev[1], self.__std_dev[2], self.__n_eff, self.__n_eff)
+        for t, x, y, z, c, sx, sy, sz, nn, nf in all_results:
+            stream.write("%10.5f %10.5f %10.5f %10.5f %10i %10.5f %10.5f %10.5f %10.5f %10.5f %10.5f\n"%(t, x, y, z, c, sx, sy, sz, nn, nf, nf))
+
+
+        with open("conv.data","w") as f:
+            for i,t in enumerate(self.__time_steps):
+                f.write("%10.5f "%(t))
+
+                for hb in self.__history_bin_counters:
+                    f.write("%10i "%(hb[i]))
+                f.write("\n")
+
+

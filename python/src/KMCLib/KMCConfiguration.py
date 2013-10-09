@@ -205,6 +205,12 @@ class KMCConfiguration(object):
         """
         return self._backend().movedAtomIDs()
 
+    def lattice(self):
+        """
+        Query for the lattice.
+        """
+        return self.__lattice
+
     def _backend(self):
         """
         Query function for the c++ backend object.

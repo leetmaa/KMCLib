@@ -173,7 +173,7 @@ must be given as string."""
                 cpp_model.singleStep()
 
                 if ((step)%n_dump == 0):
-                    prettyPrint(" KMCLib: %i steps executed. time: %f "%(step, self.__cpp_timer.simulationTime()))
+                    prettyPrint(" KMCLib: %i steps executed. time: %20.10e "%(step, self.__cpp_timer.simulationTime()))
 
                     # Perform IO using the trajectory object.
                     if use_trajectory:

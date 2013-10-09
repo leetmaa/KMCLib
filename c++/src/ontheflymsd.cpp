@@ -29,7 +29,8 @@ OnTheFlyMSD::OnTheFlyMSD(const Configuration & configuration,
     track_type_(track_type),
     t_max_(t_max),
     bin_size_(t_max/n_bins),
-    history_steps_(history_steps)
+    history_steps_(history_steps),
+    history_steps_bin_counts_(history_steps-1, std::vector<int>(n_bins, 0))
 {
     // Populate the history buffer with initial coordinates for tracked atoms.
     const std::vector<Coordinate> & atom_id_coords = configuration.atomIDCoordinates();
@@ -81,7 +82,8 @@ void OnTheFlyMSD::registerStep(const double time,
                                bin_size_,
                                histogram_buffer_,
                                histogram_buffer_sqr_,
-                               histogram_bin_counts_);
+                               histogram_bin_counts_,
+                               history_steps_bin_counts_);
         }
     }
 }
@@ -93,7 +95,8 @@ void calculateAndBinMSD(const std::vector< std::pair<Coordinate, double> > & his
                         const double binsize,
                         std::vector<Coordinate> & histogram,
                         std::vector<Coordinate> & histogram_sqr,
-                        std::vector<int> & bin_counters)
+                        std::vector<int> & bin_counters,
+                        std::vector< std::vector<int> > & hsteps_bin_counts)
 {
     // Loop over the history buffer.
     for (size_t i = 1; i < history.size(); ++i)
@@ -113,6 +116,7 @@ void calculateAndBinMSD(const std::vector< std::pair<Coordinate, double> > & his
             histogram[bin]     += sqr_diff;
             histogram_sqr[bin] += sqr_diff_sqr;
             ++bin_counters[bin];
+            ++hsteps_bin_counts[i-1][bin];
         }
     }
 }

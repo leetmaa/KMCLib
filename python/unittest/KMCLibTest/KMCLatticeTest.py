@@ -216,6 +216,36 @@ class KMCLatticeTest(unittest.TestCase):
         # Check that the basis is the one from the unitcell.
         self.assertAlmostEqual(numpy.linalg.norm(lattice.basis() - lattice._KMCLattice__unit_cell.basis()), 0.0, 10)
 
+    def testQueryUnitCell(self):
+        """ Test that the unitcell query function returns correctly. """
+        cell_vectors = [[2.3, 0.0, 0.0],
+                        [2.4, 3.0, 0.0],
+                        [0.0, 0.0, 11.8]]
+
+        basis_points = [[0.0, 0.0, 0.0],
+                        [0.5, 0.5, 0.0]]
+
+        unit_cell = KMCUnitCell(cell_vectors=cell_vectors,
+                                basis_points=basis_points)
+
+        # Setup the repetitions.
+        nI = 2
+        nJ = 12
+        nK = 3
+        nB = 2
+        repetitions = (nI,nJ,nK)
+        periodic = (True,True,False)
+
+        # Construct the KMCLattice object.
+        lattice = KMCLattice(unit_cell=unit_cell,
+                             repetitions=repetitions,
+                             periodic=periodic)
+
+        # Query.
+        ret_unit_cell = lattice.unitCell()
+
+        # Test by reference.
+        self.assertTrue( unit_cell == ret_unit_cell )
 
     def testGlobalIndex(self):
         """ Test that the global index function returns correct values. """

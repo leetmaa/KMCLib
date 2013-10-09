@@ -453,6 +453,41 @@ class KMCConfigurationTest(unittest.TestCase):
         self.assertAlmostEqual(atom_id_coords[0].y(), c1_ref, 10)
         self.assertAlmostEqual(atom_id_coords[0].z(), c2_ref, 10)
 
+    def testLatticeQuery(self):
+        """ Test the query function for the lattice. """
+        # Setup a valid KMCUnitCell.
+        unit_cell = KMCUnitCell(cell_vectors=numpy.array([[2.8,0.0,0.0],
+                                                          [0.0,3.2,0.0],
+                                                          [0.0,0.5,3.0]]),
+                                basis_points=[[0.0,0.0,0.0],
+                                              [0.5,0.5,0.5],
+                                              [0.25,0.25,0.75]])
+
+        # Setup the lattice.
+        lattice = KMCLattice(unit_cell=unit_cell,
+                             repetitions=(4,4,1),
+                             periodic=(True,True,False))
+
+        types = ['a','a','a','a','b','b',
+                 'a','a','a','b','b','b',
+                 'b','b','a','a','b','a',
+                 'b','b','b','a','b','a',
+                 'b','a','a','a','b','b',
+                 'b','b','b','b','b','b',
+                 'a','a','a','a','b','b',
+                 'b','b','a','b','b','a']
+
+        # Setup the configuration.
+        config = KMCConfiguration(lattice=lattice,
+                                  types=types,
+                                  possible_types=['a','c','b'])
+
+        # Query for the lattice.
+        ret_lattice = config.lattice()
+
+        # Check by reference.
+        self.assertTrue( lattice == ret_lattice )
+
     def testScript(self):
         """ Test that we can generate a valid script. """
         # Setup a valid KMCUnitCell.

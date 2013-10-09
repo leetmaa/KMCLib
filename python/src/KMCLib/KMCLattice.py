@@ -161,6 +161,14 @@ class KMCLattice(object):
         """
         return self.__unit_cell.basis()
 
+    def unitCell(self):
+        """
+        Query function for the unit cell.
+
+        :returns: The unit cell.
+        """
+        return self.__unit_cell
+
     def _globalIndex(self, i, j, k, b):
         """
         Utility function to calculate the index position in the full arrays (sites, types) given the cell indices.

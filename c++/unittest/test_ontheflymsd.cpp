@@ -877,12 +877,13 @@ void Test_OnTheFlyMSD::testCalculateAndBinMSD()
     std::vector<Coordinate> histogram_sqr(h_size, h_sqr_start);
 
     std::vector<int> bin_counters(h_size, 9);
+    std::vector< std::vector<int> > hsteps_bin_counters(history.size()-1, std::vector<int>(h_size, 8));
 
     // The bin size.
     const double binsize = 1.0;
 
     // Call the binning function with this data.
-    calculateAndBinMSD(history, binsize, histogram, histogram_sqr, bin_counters);
+    calculateAndBinMSD(history, binsize, histogram, histogram_sqr, bin_counters, hsteps_bin_counters);
 
     // Calculate the results by hand.
     Coordinate diff = history[0].first - history[1].first;
@@ -958,12 +959,25 @@ void Test_OnTheFlyMSD::testCalculateAndBinMSD()
     CPPUNIT_ASSERT_EQUAL( bin_counters[bin_0], 10 );
     CPPUNIT_ASSERT_EQUAL( bin_counters[bin_1], 10 );
 
+    // Check the bin counts splitted up on history steps.
+    CPPUNIT_ASSERT_EQUAL( hsteps_bin_counters[0][bin_0], 9 );
+    CPPUNIT_ASSERT_EQUAL( hsteps_bin_counters[1][bin_1], 9 );
+
     for (int i = 0; i < h_size; ++i)
     {
-        if (i != bin_0 && i != bin_1)
+
+        if (i != bin_0)
         {
-            CPPUNIT_ASSERT_EQUAL( bin_counters[i], 9 );
+            CPPUNIT_ASSERT_EQUAL( hsteps_bin_counters[0][i], 8 );
         }
+
+        if (i != bin_1)
+        {
+            CPPUNIT_ASSERT_EQUAL( hsteps_bin_counters[1][i], 8 );
+        }
+
+        CPPUNIT_ASSERT_EQUAL( hsteps_bin_counters[2][i], 8 );
+        CPPUNIT_ASSERT_EQUAL( hsteps_bin_counters[3][i], 8 );
     }
 }
 

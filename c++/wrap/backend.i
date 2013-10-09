@@ -59,6 +59,7 @@
 %template(StdVectorCustomRateProcess) std::vector<CustomRateProcess>;
 %template(StdVectorCoordinate) std::vector<Coordinate>;
 %template(StdVectorMinimalMatchListEntry) std::vector<MinimalMatchListEntry>;
+%template(StdVectorStdVectorInt) std::vector<std::vector<int> >;
 %template(StdVectorStdVectorDouble) std::vector<std::vector<double> >;
 %template(StdMapStringInt) std::map<std::string,int>;
 %template(StdVectorStdPairIntInt) std::vector<std::pair<int, int> >;

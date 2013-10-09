@@ -70,6 +70,12 @@ public:
     const std::vector<int> & histogramBinCounts() const
     { return histogram_bin_counts_; }
 
+    /*! \brief Query for the histogram bin counters per history step.
+     *  \return: The histogram bin counters per history step vector.
+     */
+    const std::vector< std::vector<int> > & historyStepsHistogramBinCounts() const
+    { return history_steps_bin_counts_; }
+
     /*! \brief Query for the history buffer, to facilitate testing.
      *  \return: The history buffer.
      */
@@ -104,22 +110,28 @@ private:
     /// The number of history steps.
     size_t history_steps_;
 
+    /// The bin counts per history step.
+    std::vector< std::vector<int> > history_steps_bin_counts_;
+
 };
 
 
 /*! \brief Function for calculating and binning the MSD values from a
  *         history buffer vector.
- *  \param history (in)          : History buffer with coordiantes and times.
- *  \param binsize (in)          : The bin size of the histogram.
- *  \param histogram (in/out)    : The histogram to store the result in.
- *  \param bin_counters (in/out) : The counters collecting the
- *                                 total number of values added to each bin.
+ *  \param history (in)               : History buffer with coordiantes and times.
+ *  \param binsize (in)               : The bin size of the histogram.
+ *  \param histogram (in/out)         : The histogram to store the result in.
+ *  \param bin_counters (in/out)      : The counters collecting the
+ *                                      total number of values added to each bin.
+ *  \param hsteps_bin_counts (in/out) : The histogram bin counts per history step.
+ *
  */
 void calculateAndBinMSD(const std::vector< std::pair<Coordinate, double> > & history,
                         const double binsize,
                         std::vector<Coordinate> & histogram,
                         std::vector<Coordinate> & histogram_sqr,
-                        std::vector<int> & bin_counters);
+                        std::vector<int> & bin_counters,
+                        std::vector< std::vector<int> > & hsteps_bin_counts);
 
 
 #endif // __ONTHEFLYMSD__
