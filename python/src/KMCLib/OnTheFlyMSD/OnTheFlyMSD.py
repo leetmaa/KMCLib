@@ -112,7 +112,7 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
         self.__getBackendResults()
 
 
-        # ML: Generate the numerical n_eff curve from the history bin counters.
+        # Generate the numerical n_eff curve from the history bin counters.
         self.__n_eff = numpy.zeros(len(self.__bin_counters))
 
         # Decompose the total in contributions from different convolutions.
@@ -142,16 +142,12 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
         self.__std_dev     = numpy.zeros((3,self.__n_bins))
 
         # Calculate the standar deviation.
-
         for i in range(len(self.__results[0])):
             n_eff = self.__n_eff[i]
 
             if (self.__raw_histogram[i,0] != 0):
-
                 self.__std_dev[0][i] = self.__results[0][i] * numpy.sqrt( ( 2 * n_eff * n_eff + 1 ) / ( 3 * n_eff * self.__bin_counters[i] ) )
-
                 self.__std_dev[1][i] = self.__results[1][i] * numpy.sqrt( ( 2 * n_eff * n_eff + 1 ) / ( 3 * n_eff * self.__bin_counters[i] ) )
-
                 self.__std_dev[2][i] = self.__results[2][i] * numpy.sqrt( ( 2 * n_eff * n_eff + 1 ) / ( 3 * n_eff * self.__bin_counters[i] ) )
 
     def __getBackendResults(self):
@@ -197,23 +193,39 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
         """
         return self.__bin_counters
 
+    def safeCutoff(self):
+        """
+        Query function for the safe cutoff as determined by the
+        start of the last contributing convolution.
+
+        :returns: The bin index for the cutoff.
+        """
+        # Return the cutoff based on where the last convolution
+        # is larger than zero.
+        for i,c in enumerate(self.__history_bin_counters[-1]):
+            if c > 0:
+                return i
+
+        # If all values in the last convolution are zero
+        # all values are safe to use.
+        return i+1
+
     def printResults(self, stream=sys.stdout):
         """
         Print the results to a stream.
 
         :param stream: The stream to print to. Defaults to 'sys.stdout'.
         """
-        all_results = zip(self.__time_steps, self.__results[0], self.__results[1], self.__results[2], self.__bin_counters, self.__std_dev[0], self.__std_dev[1], self.__std_dev[2], self.__n_eff, self.__n_eff)
-        for t, x, y, z, c, sx, sy, sz, nn, nf in all_results:
-            stream.write("%10.5f %10.5f %10.5f %10.5f %10i %10.5f %10.5f %10.5f %10.5f %10.5f %10.5f\n"%(t, x, y, z, c, sx, sy, sz, nn, nf, nf))
+        # Bunch the results together and cutoff.
+        cutoff_bin = self.safeCutoff()
+        all_results = zip(self.__time_steps,
+                          self.__results[0],
+                          self.__results[1],
+                          self.__results[2],
+                          self.__std_dev[0],
+                          self.__std_dev[1],
+                          self.__std_dev[2])[:cutoff_bin]
 
-
-        with open("conv.data","w") as f:
-            for i,t in enumerate(self.__time_steps):
-                f.write("%10.5f "%(t))
-
-                for hb in self.__history_bin_counters:
-                    f.write("%10i "%(hb[i]))
-                f.write("\n")
-
-
+        stream.write("%10s %10s %10s %10s %10s %10s %10s\n"%("TIME", "MSD_a", "DSD_b", "MSD_c", "STD_a", "STD_b", "STD_c"))
+        for t, x, y, z, sx, sy, sz in all_results:
+            stream.write("%10.5f %10.5f %10.5f %10.5f %10.5f %10.5f %10.5f\n"%(t, x, y, z, sx, sy, sz))
