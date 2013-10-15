@@ -14,7 +14,8 @@ import time
 
 from KMCLib.Backend.Backend import MPICommons
 
-class Trajectory(object):
+
+class LatticeTrajectory(object):
     """
     Class for handling IO to a trajectory file.
     """
@@ -92,7 +93,7 @@ class Trajectory(object):
         # Set the time counter to zero.
         self.__time_last_dump = 0.0
 
-    def append(self, simulation_time, step, types):
+    def append(self, simulation_time, step, configuration):
         """
         Append the types and time information to the trajectory.
         The trajectory if flushed to file if the flush time limit has passed.
@@ -104,10 +105,10 @@ class Trajectory(object):
         :param step: The step number in the simulation.
         :type step: int
 
-        :param types: The types given as a list of strings.
+        :param configuration: The configuration of the simulation.
         """
         # Store to the local buffers.
-        self.__types_buffer.append(types)
+        self.__types_buffer.append(configuration.types())
         self.__simulation_time_buffer.append(simulation_time)
         self.__step_buffer.append(step)
 

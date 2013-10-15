@@ -9,11 +9,11 @@
 
 import unittest
 
-from TrajectoryTest import TrajectoryTest
+from LatticeTrajectoryTest import LatticeTrajectoryTest
 
 def suite():
     suite = unittest.TestSuite(
-        [unittest.TestLoader().loadTestsFromTestCase(TrajectoryTest)])
+        [unittest.TestLoader().loadTestsFromTestCase(LatticeTrajectoryTest)])
     return suite
 
 

@@ -15,7 +15,7 @@ from KMCLib.KMCInteractions import KMCInteractions
 from KMCLib.KMCControlParameters import KMCControlParameters
 from KMCLib.KMCAnalysisPlugin import KMCAnalysisPlugin
 from KMCLib.Exceptions.Error import Error
-from KMCLib.Utilities.Trajectory.Trajectory import Trajectory
+from KMCLib.Utilities.Trajectory.LatticeTrajectory import LatticeTrajectory
 from KMCLib.Utilities.PrintUtilities import prettyPrint
 from KMCLib.Utilities.CheckUtilities import checkSequenceOf
 from KMCLib.Backend import Backend
@@ -88,6 +88,7 @@ class KMCLatticeModel(object):
     def run(self,
             control_parameters=None,
             trajectory_filename=None,
+            trajectory_type=None,
             analysis=None):
         """
         Run the KMC lattice model simulation with specified parameters.
@@ -97,6 +98,12 @@ class KMCLatticeModel(object):
 
         :param trajectory_filename: The filename of the trajectory. If not given
                                     no trajectory will be saved.
+
+        :param trajectory_type:     The type of trajectory to use. Either 'lattice' or 'xyz'.
+                                    The 'lattice' format shows the types at the latice points.
+                                    The 'xyz' format gives type and coordinate for each particle.
+        :param trajectory_filename: The filename of the trajectory. If not given
+                                    no trajectory will be saved.
         """
         # Check the input.
         if not isinstance(control_parameters, KMCControlParameters):
@@ -104,10 +111,6 @@ class KMCLatticeModel(object):
 The 'control_parameters' input to the KMCLatticeModel run funtion
 must be an instance of type KMCControlParameters."""
             raise Error(msg)
-
-        # Seed the backend random number generator.
-        Backend.seedRandom(control_parameters.timeSeed(),
-                           control_parameters.seed())
 
         # Check the trajectory filename.
         use_trajectory = True
@@ -122,12 +125,25 @@ The 'trajectory_filename' input to the KMCLattice model run function
 must be given as string."""
             raise Error(msg)
 
+        # Check the analysis type.
+        if trajectory_type is None:
+            trajectory_type = 'lattice'
+
+        if not isinstance(trajectory_type, str):
+            raise Error("The 'trajectory_type' input must given as a string.")
+        elif (trajectory_type is not 'lattice') and (trajectory_type is not 'xyz'):
+            raise Error("The 'trajectory_type' input must be either 'lattice' or 'xyz'.")
+
         # Check the analysis.
         if analysis is None:
             analysis = []
         else:
             msg = "Each element in the 'analyis' list must be an instance of KMCAnalysisPlugin."
             analysis = checkSequenceOf(analysis, KMCAnalysisPlugin, msg)
+
+        # Seed the backend random number generator.
+        Backend.seedRandom(control_parameters.timeSeed(),
+                           control_parameters.seed())
 
         # Construct the C++ lattice model.
         prettyPrint(" KMCLib: setting up the backend C++ object.")
@@ -143,12 +159,12 @@ must be given as string."""
 
         # Setup a trajectory object.
         if use_trajectory:
-            trajectory = Trajectory(trajectory_filename=trajectory_filename,
-                                    sites=self.__configuration.sites())
+            trajectory = LatticeTrajectory(trajectory_filename=trajectory_filename,
+                                           sites=self.__configuration.sites())
             # Add the first step.
             trajectory.append(simulation_time  = self.__cpp_timer.simulationTime(),
                               step             = 0,
-                              types            = self.__configuration.types())
+                              configuration    = self.__configuration)
 
         # Setup the analysis objects.
         for ap in analysis:
@@ -184,7 +200,7 @@ must be given as string."""
                     if use_trajectory:
                         trajectory.append(simulation_time  = self.__cpp_timer.simulationTime(),
                                           step             = step,
-                                          types            = self.__configuration.types())
+                                          configuration    = self.__configuration)
 
                 if ((step)%n_analyse == 0):
                     # Run all other python analysis.

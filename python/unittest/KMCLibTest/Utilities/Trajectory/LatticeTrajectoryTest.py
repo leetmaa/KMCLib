@@ -1,4 +1,4 @@
-""" Module for testing the Trajectory object. """
+""" Module for testing the LatticeTrajectory object. """
 
 
 # Copyright (c)  2013  Mikael Leetmaa
@@ -14,13 +14,13 @@ import time
 import sys
 
 # Import from the module we test.
-from KMCLib.Utilities.Trajectory.Trajectory import Trajectory
+from KMCLib.Utilities.Trajectory.LatticeTrajectory import LatticeTrajectory
 
 from KMCLib.Backend.Backend import MPICommons
 
 # Implement the test.
-class TrajectoryTest(unittest.TestCase):
-    """ Class for testing the Trajectory object. """
+class LatticeTrajectoryTest(unittest.TestCase):
+    """ Class for testing the LatticeTrajectory object. """
 
     def setUp(self):
         """ The setUp method for test fixtures. """
@@ -39,7 +39,7 @@ class TrajectoryTest(unittest.TestCase):
             MPICommons.barrier()
 
     def testConstruction(self):
-        """ Test the Trajectory object can be constructed. """
+        """ Test the LatticeTrajectory object can be constructed. """
         # Setup input.
         sites = [[1.0,1.0,2.3],
                  [3.4,4.5,4.3],
@@ -51,22 +51,22 @@ class TrajectoryTest(unittest.TestCase):
         self.__files_to_remove.append(trajectory_filename)
 
         # Construct with default values.
-        dt = Trajectory(trajectory_filename, sites)
+        dt = LatticeTrajectory(trajectory_filename, sites)
 
         # Check the defaults.
-        self.assertAlmostEqual( dt._Trajectory__max_buffer_time,  60*30 )
-        self.assertEqual( dt._Trajectory__max_buffer_size, 1024*1024*10 )
+        self.assertAlmostEqual( dt._LatticeTrajectory__max_buffer_time,  60*30 )
+        self.assertEqual( dt._LatticeTrajectory__max_buffer_size, 1024*1024*10 )
 
         # Construct.
-        t = Trajectory(trajectory_filename,
-                       sites,
-                       max_buffer_time=100.0,
-                       max_buffer_size=100000)
+        t = LatticeTrajectory(trajectory_filename,
+                              sites,
+                              max_buffer_time=100.0,
+                              max_buffer_size=100000)
 
         # Check the stored values.
-        self.assertEqual( t._Trajectory__max_buffer_time,  100.0 )
-        self.assertEqual( t._Trajectory__max_buffer_size, 100000 )
-        self.assertEqual( t._Trajectory__trajectory_filename, trajectory_filename )
+        self.assertEqual( t._LatticeTrajectory__max_buffer_time,  100.0 )
+        self.assertEqual( t._LatticeTrajectory__max_buffer_size, 100000 )
+        self.assertEqual( t._LatticeTrajectory__trajectory_filename, trajectory_filename )
 
         # Open the trajectory file and check that we can read the meta
         # information and sites.
@@ -97,7 +97,7 @@ class TrajectoryTest(unittest.TestCase):
         self.assertEqual( read_types, empty_list )
 
     def testVersion(self):
-        """ Test the Trajectory file version number string. """
+        """ Test the LatticeTrajectory file version number string. """
         # Setup input.
         sites = [[1.0,1.0,2.3],
                  [3.4,4.5,4.3],
@@ -109,7 +109,7 @@ class TrajectoryTest(unittest.TestCase):
         self.__files_to_remove.append(trajectory_filename)
 
         # Construct.
-        t = Trajectory(trajectory_filename, sites)
+        t = LatticeTrajectory(trajectory_filename, sites)
 
         # Open the trajectory file and check that we can read the meta
         # information and sites.
@@ -140,12 +140,12 @@ class TrajectoryTest(unittest.TestCase):
         self.__files_to_remove.append(trajectory_filename)
 
         # Construct.
-        t = Trajectory(trajectory_filename, sites)
+        t = LatticeTrajectory(trajectory_filename, sites)
 
         # Write times, steps and typers.
         times = [1.10045, 2.334156, 3.4516410]
         steps = [12, 25, 52]
-        types = [["ThisIsTheLongestTypeNameIHaveEverEncounteredPerhaps",
+        site_types = [["ThisIsTheLongestTypeNameIHaveEverEncounteredPerhaps",
                   "here", "is", "Next", "Long", "List", "Offffffff", "Names", "now", "this", "one", "is", "longer", "still"],
                  ["A", "B", "C", "D", "E", "F", "G", "H"],
                  ["1", "2", "4", "5", "6", "5" ,"43", "243r2424"]]
@@ -154,16 +154,16 @@ class TrajectoryTest(unittest.TestCase):
         MPICommons.barrier()
 
         # Check that the time is zero before we start.
-        self.assertAlmostEqual( t._Trajectory__time_last_dump, 0.0, 10 )
+        self.assertAlmostEqual( t._LatticeTrajectory__time_last_dump, 0.0, 10 )
 
-        t._Trajectory__writeToFile(times, steps, types)
+        t._LatticeTrajectory__writeToFile(times, steps, site_types)
 
         # Needed to prevent test failure.
         MPICommons.barrier()
 
         # Check that the time stamp was updated.
-        self.assertTrue( 1357651850 < t._Trajectory__time_last_dump )
-        last_time = t._Trajectory__time_last_dump
+        self.assertTrue( 1357651850 < t._LatticeTrajectory__time_last_dump )
+        last_time = t._LatticeTrajectory__time_last_dump
 
         # Check the info stored in the file.
         global_dict = {}
@@ -195,10 +195,10 @@ class TrajectoryTest(unittest.TestCase):
 
         # Sleep for two seconds before we add again.
         time.sleep(1)
-        t._Trajectory__writeToFile(times, steps, types)
+        t._LatticeTrajectory__writeToFile(times, steps, site_types)
 
         # Check the time.
-        self.assertTrue( (t._Trajectory__time_last_dump - last_time > 1) )
+        self.assertTrue( (t._LatticeTrajectory__time_last_dump - last_time > 1) )
 
         # Now, check the file again.
         global_dict = {}
@@ -250,12 +250,16 @@ class TrajectoryTest(unittest.TestCase):
         trajectory_filename = os.path.join(name, "tmp_trajectory_file.py")
         self.__files_to_remove.append(trajectory_filename)
 
+        class DummyConfig:
+            def types(self):
+                return site_types
+
         # Construct.
-        t = Trajectory(trajectory_filename, sites)
+        t = LatticeTrajectory(trajectory_filename, sites)
 
         # Append times, steps and typers.
-        t.append(1.10045, 12,
-                 ["A", "A", "A", "A", "A", "A"] )
+        site_types = ["A", "A", "A", "A", "A", "A"]
+        t.append(1.10045, 12, DummyConfig())
 
         # Since this was the first time it should have triggered a dump to file.
         global_dict = {}
@@ -281,8 +285,8 @@ class TrajectoryTest(unittest.TestCase):
         self.assertEqual( ret_times, ref_times )
 
         # Appending again directly makes no dump.
-        t.append(1.1993, 14,
-                 ["B", "B", "B", "B", "B", "B"] )
+        site_types = ["B", "B", "B", "B", "B", "B"]
+        t.append(1.1993, 14, DummyConfig())
 
         global_dict = {}
         local_dict  = {}
@@ -300,12 +304,13 @@ class TrajectoryTest(unittest.TestCase):
         self.assertEqual( ret_times, ref_times )
 
         # But if we dump again and set the time limit to zero we will trigger a dump.
-        t._Trajectory__max_buffer_time = 0.0
-        t.append(1.199, 19,
-                 ["C", "C", "C", "C", "C", "C"] )
+        t._LatticeTrajectory__max_buffer_time = 0.0
+        site_types = ["C", "C", "C", "C", "C", "C"]
+
+        t.append(1.199, 19, DummyConfig())
 
         # Reset the time to some thing large.
-        t._Trajectory__max_buffer_time = 100000000000.0
+        t._LatticeTrajectory__max_buffer_time = 100000000000.0
 
         global_dict = {}
         local_dict  = {}
@@ -335,12 +340,12 @@ class TrajectoryTest(unittest.TestCase):
         # The buffers are reset after each dump. If we make the
         # max size limit smaller than the size of the appended types
         # list this must trigger a dump.
-        types = ["A","A","A","A","A","B"]
-        size = sys.getsizeof(types)
-        t._Trajectory__max_buffer_size = size
+        size = sys.getsizeof(site_types)
+        t._LatticeTrajectory__max_buffer_size = size
 
         # Append.
-        t.append(1.1995, 43, types )
+        site_types = ["A","A","A","A","A","B"]
+        t.append(1.1995, 43, DummyConfig())
 
         # Check.
         global_dict = {}
@@ -358,11 +363,11 @@ class TrajectoryTest(unittest.TestCase):
         self.assertEqual( ret_types, ref_types )
 
         # Append.
-        t.append(1.1995, 43, types )
-        t.append(1.1995, 43, types )
-        t.append(1.1995, 43, types )
+        t.append(1.1995, 43, DummyConfig() )
+        t.append(1.1995, 43, DummyConfig() )
+        t.append(1.1995, 43, DummyConfig() )
         # This last one triggers the dump.
-        t.append(1.1995, 43, types )
+        t.append(1.1995, 43, DummyConfig() )
 
         # Check.
         global_dict = {}
@@ -404,7 +409,7 @@ class TrajectoryTest(unittest.TestCase):
                  [3.7,7.5,6.5]]
 
         # Construct.
-        t = Trajectory(trajectory_filename, sites)
+        t = LatticeTrajectory(trajectory_filename, sites)
 
         # Check that the file is created but only with meta information.
         global_dict = {}
@@ -423,17 +428,17 @@ class TrajectoryTest(unittest.TestCase):
         self.assertEqual( ret_steps, empty_list )
 
         # Fill the buffers.
-        t._Trajectory__types_buffer           = [["ABC", "123"],["123", "ABC"]]
-        t._Trajectory__simulation_time_buffer = [1.234, 5.678]
-        t._Trajectory__step_buffer = [1, 99]
+        t._LatticeTrajectory__types_buffer           = [["ABC", "123"],["123", "ABC"]]
+        t._LatticeTrajectory__simulation_time_buffer = [1.234, 5.678]
+        t._LatticeTrajectory__step_buffer = [1, 99]
 
         # Flush the buffers.
         t.flush()
 
         # Check that the buffers are empty.
-        self.assertEqual( t._Trajectory__types_buffer, empty_list )
-        self.assertEqual( t._Trajectory__simulation_time_buffer, empty_list )
-        self.assertEqual( t._Trajectory__step_buffer, empty_list )
+        self.assertEqual( t._LatticeTrajectory__types_buffer, empty_list )
+        self.assertEqual( t._LatticeTrajectory__simulation_time_buffer, empty_list )
+        self.assertEqual( t._LatticeTrajectory__step_buffer, empty_list )
 
         # Check that the file has the flushed values.
         global_dict = {}
