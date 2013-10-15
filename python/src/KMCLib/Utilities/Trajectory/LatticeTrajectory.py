@@ -1,4 +1,4 @@
-""" Module for the Trajectory object """
+""" Module for the LatticeTrajectory object """
 
 
 # Copyright (c)  2013  Mikael Leetmaa
@@ -15,14 +15,81 @@ import time
 from KMCLib.Backend.Backend import MPICommons
 
 
-class LatticeTrajectory(object):
+class Trajectory(object):
     """
-    Class for handling IO to a trajectory file.
+    Trajectory base class for defining common trajectory functionality.
     """
 
     def __init__(self,
                  trajectory_filename,
-                 sites,
+                 max_buffer_size=None,
+                 max_buffer_time=None):
+        """
+        Constructor for the Trajectory.
+
+        :param trajectory_filename: The file name to write trajectory information to.
+        :type trajectory_filename: str
+
+        :param max_buffer_size: The max size of the the buffer in memory
+                                before writing to file.
+        :type max_buffer_size: int
+
+        :param max_buffer_time: The max time limit between dumps to file.
+        :type max_buffer_time: float
+        """
+        # Save the file name. Note that this is not a user object. Data is checked.
+        self._trajectory_filename = trajectory_filename
+
+        # Set the defaults.
+        if max_buffer_size is None:
+            # Max buffer size in bytes (10 MB)
+            self.__max_buffer_size = 1024*1024*10
+        else:
+            self.__max_buffer_size = max_buffer_size
+
+        if max_buffer_time is None:
+            # Max time in seconds (30 min)
+            self.__max_buffer_time = 30*60.0
+        else:
+            self.__max_buffer_time = max_buffer_time
+
+        # Set the time counter to zero.
+        self.__time_last_dump = 0.0
+
+    def append(self, simulation_time, step, configuration):
+        """
+        Append to the trajectory. The trajectory if flushed to file if the
+        flush time limit or buffer memory size limit has passed.
+
+        :param simulation_time: The current time of the simulation.
+        :type simulation_time: float
+
+        :param step: The step number in the simulation.
+        :type step: int
+
+        :param configuration: The configuration of the simulation.
+        """
+        # Store the data.
+        self._storeData(simulation_time, step, configuration)
+
+        # Write if the buffer is to large of if enough time has passed.
+        buffer_size = self._bufferSize()
+        if (buffer_size > self.__max_buffer_size) or \
+                ((time.time() - self.__time_last_dump) > self.__max_buffer_time):
+            self.flush()
+
+        # Update the time.
+        self.__time_last_dump = time.time()
+
+
+class LatticeTrajectory(Trajectory):
+    """
+    Class for handling lattice IO to a trajectory file.
+    """
+
+    def __init__(self,
+                 trajectory_filename,
+                 configuration,
                  max_buffer_size=None,
                  max_buffer_time=None):
         """
@@ -40,25 +107,31 @@ class LatticeTrajectory(object):
         :param max_buffer_time: The max time limit between dumps to file.
         :type max_buffer_time: float
         """
-        # Set the defaults.
-        if max_buffer_size is None:
-            self.__max_buffer_size = 1024*1024*10    #   <- Max buffer size in bytes (10 MB)
-        else:
-            self.__max_buffer_size = max_buffer_size
+        # Call the base class constructor.
+        Trajectory.__init__(self,
+                            trajectory_filename,
+                            max_buffer_size,
+                            max_buffer_time)
 
-        if max_buffer_time is None:
-            self.__max_buffer_time = 30*60.0           #   <- Max time in seconds (30 min)
-        else:
-            self.__max_buffer_time = max_buffer_time
+        # Init the member data.
+        self.__types_buffer = []
+        self.__simulation_time_buffer = []
+        self.__step_buffer = []
 
-        # Note that this object is not in the interface, so input is allready checked.
-        self.__trajectory_filename = trajectory_filename
+        # Write the header.
+        self.__writeHeader(configuration.sites())
 
-        # Open the file and write the meta information.
+    def __writeHeader(self, sites):
+        """
+        Write the header to the file.
 
+        :param sites: The sites in the system.
+        """
         # Make sure only master writes.
         if MPICommons.isMaster():
-            with open(self.__trajectory_filename, 'w') as trajectory:
+
+            # Open the file and write the meta information.
+            with open(self._trajectory_filename, 'w') as trajectory:
                 trajectory.write( "# KMCLib Trajectory\n" )
                 trajectory.write( "version=\"2013.1.0\"\n" )
                 trajectory.write( "creation_time=\"%s\"\n"%(time.ctime()) )
@@ -85,19 +158,9 @@ class LatticeTrajectory(object):
         # While the other processes wait.
         MPICommons.barrier()
 
-        # Init the member data.
-        self.__types_buffer = []
-        self.__simulation_time_buffer = []
-        self.__step_buffer = []
-
-        # Set the time counter to zero.
-        self.__time_last_dump = 0.0
-
-    def append(self, simulation_time, step, configuration):
+    def _storeData(self, simulation_time, step, configuration):
         """
-        Append the types and time information to the trajectory.
-        The trajectory if flushed to file if the flush time limit has passed.
-        Or if the buffer memory size limit is exceeded.
+        Append the types and time information to the internal buffers.
 
         :param simulation_time: The current time of the simulation.
         :type simulation_time: float
@@ -112,13 +175,11 @@ class LatticeTrajectory(object):
         self.__simulation_time_buffer.append(simulation_time)
         self.__step_buffer.append(step)
 
-        # Check the size of the types buffer.
-        types_size = sys.getsizeof(self.__types_buffer)
-
-        # Write if the buffer is to large of if enough time has passed.
-        if (types_size > self.__max_buffer_size) or \
-                ((time.time() - self.__time_last_dump) > self.__max_buffer_time):
-            self.flush()
+    def _bufferSize(self):
+        """
+        Calculate and return the buffer size.
+        """
+        return sys.getsizeof(self.__types_buffer)
 
     def flush(self):
         """ Write all buffers to file. """
@@ -148,7 +209,7 @@ class LatticeTrajectory(object):
 
         # Make sure only master writes.
         if MPICommons.isMaster():
-            with open(self.__trajectory_filename, 'a') as trajectory:
+            with open(self._trajectory_filename, 'a') as trajectory:
                 for (sim_time, step, types) in zip(simulation_time_buffer, step_buffer, types_buffer):
                     trajectory.write( "times.append(%f)\n"%sim_time )
                     trajectory.write( "steps.append(%i)\n"%step )
@@ -174,8 +235,5 @@ class LatticeTrajectory(object):
 
         # While the others wait.
         MPICommons.barrier()
-
-        # Update the time.
-        self.__time_last_dump = time.time()
 
 

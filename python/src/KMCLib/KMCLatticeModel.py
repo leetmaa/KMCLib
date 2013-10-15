@@ -160,7 +160,7 @@ must be given as string."""
         # Setup a trajectory object.
         if use_trajectory:
             trajectory = LatticeTrajectory(trajectory_filename=trajectory_filename,
-                                           sites=self.__configuration.sites())
+                                           configuration=self.__configuration)
             # Add the first step.
             trajectory.append(simulation_time  = self.__cpp_timer.simulationTime(),
                               step             = 0,

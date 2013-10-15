@@ -18,6 +18,13 @@ from KMCLib.Utilities.Trajectory.LatticeTrajectory import LatticeTrajectory
 
 from KMCLib.Backend.Backend import MPICommons
 
+
+class Config:
+    def __init__(self, sites):
+        self._sites = sites
+    def sites(self):
+        return self._sites
+
 # Implement the test.
 class LatticeTrajectoryTest(unittest.TestCase):
     """ Class for testing the LatticeTrajectory object. """
@@ -51,22 +58,22 @@ class LatticeTrajectoryTest(unittest.TestCase):
         self.__files_to_remove.append(trajectory_filename)
 
         # Construct with default values.
-        dt = LatticeTrajectory(trajectory_filename, sites)
+        dt = LatticeTrajectory(trajectory_filename, Config(sites))
 
         # Check the defaults.
-        self.assertAlmostEqual( dt._LatticeTrajectory__max_buffer_time,  60*30 )
-        self.assertEqual( dt._LatticeTrajectory__max_buffer_size, 1024*1024*10 )
+        self.assertAlmostEqual( dt._Trajectory__max_buffer_time,  60*30 )
+        self.assertEqual( dt._Trajectory__max_buffer_size, 1024*1024*10 )
 
         # Construct.
         t = LatticeTrajectory(trajectory_filename,
-                              sites,
+                              Config(sites),
                               max_buffer_time=100.0,
                               max_buffer_size=100000)
 
         # Check the stored values.
-        self.assertEqual( t._LatticeTrajectory__max_buffer_time,  100.0 )
-        self.assertEqual( t._LatticeTrajectory__max_buffer_size, 100000 )
-        self.assertEqual( t._LatticeTrajectory__trajectory_filename, trajectory_filename )
+        self.assertEqual( t._Trajectory__max_buffer_time,  100.0 )
+        self.assertEqual( t._Trajectory__max_buffer_size, 100000 )
+        self.assertEqual( t._trajectory_filename, trajectory_filename )
 
         # Open the trajectory file and check that we can read the meta
         # information and sites.
@@ -109,7 +116,7 @@ class LatticeTrajectoryTest(unittest.TestCase):
         self.__files_to_remove.append(trajectory_filename)
 
         # Construct.
-        t = LatticeTrajectory(trajectory_filename, sites)
+        t = LatticeTrajectory(trajectory_filename, Config(sites))
 
         # Open the trajectory file and check that we can read the meta
         # information and sites.
@@ -140,7 +147,7 @@ class LatticeTrajectoryTest(unittest.TestCase):
         self.__files_to_remove.append(trajectory_filename)
 
         # Construct.
-        t = LatticeTrajectory(trajectory_filename, sites)
+        t = LatticeTrajectory(trajectory_filename, Config(sites))
 
         # Write times, steps and typers.
         times = [1.10045, 2.334156, 3.4516410]
@@ -154,16 +161,12 @@ class LatticeTrajectoryTest(unittest.TestCase):
         MPICommons.barrier()
 
         # Check that the time is zero before we start.
-        self.assertAlmostEqual( t._LatticeTrajectory__time_last_dump, 0.0, 10 )
+        self.assertAlmostEqual( t._Trajectory__time_last_dump, 0.0, 10 )
 
         t._LatticeTrajectory__writeToFile(times, steps, site_types)
 
         # Needed to prevent test failure.
         MPICommons.barrier()
-
-        # Check that the time stamp was updated.
-        self.assertTrue( 1357651850 < t._LatticeTrajectory__time_last_dump )
-        last_time = t._LatticeTrajectory__time_last_dump
 
         # Check the info stored in the file.
         global_dict = {}
@@ -193,12 +196,8 @@ class LatticeTrajectoryTest(unittest.TestCase):
         ref_times = [1.10045, 2.334156, 3.451641]
         self.assertEqual( ret_times, ref_times )
 
-        # Sleep for two seconds before we add again.
-        time.sleep(1)
+        # Write again.
         t._LatticeTrajectory__writeToFile(times, steps, site_types)
-
-        # Check the time.
-        self.assertTrue( (t._LatticeTrajectory__time_last_dump - last_time > 1) )
 
         # Now, check the file again.
         global_dict = {}
@@ -255,7 +254,7 @@ class LatticeTrajectoryTest(unittest.TestCase):
                 return site_types
 
         # Construct.
-        t = LatticeTrajectory(trajectory_filename, sites)
+        t = LatticeTrajectory(trajectory_filename, Config(sites))
 
         # Append times, steps and typers.
         site_types = ["A", "A", "A", "A", "A", "A"]
@@ -304,13 +303,13 @@ class LatticeTrajectoryTest(unittest.TestCase):
         self.assertEqual( ret_times, ref_times )
 
         # But if we dump again and set the time limit to zero we will trigger a dump.
-        t._LatticeTrajectory__max_buffer_time = 0.0
+        t._Trajectory__max_buffer_time = 0.0
         site_types = ["C", "C", "C", "C", "C", "C"]
 
         t.append(1.199, 19, DummyConfig())
 
         # Reset the time to some thing large.
-        t._LatticeTrajectory__max_buffer_time = 100000000000.0
+        t._Trajectory__max_buffer_time = 100000000000.0
 
         global_dict = {}
         local_dict  = {}
@@ -341,7 +340,7 @@ class LatticeTrajectoryTest(unittest.TestCase):
         # max size limit smaller than the size of the appended types
         # list this must trigger a dump.
         size = sys.getsizeof(site_types)
-        t._LatticeTrajectory__max_buffer_size = size
+        t._Trajectory__max_buffer_size = size
 
         # Append.
         site_types = ["A","A","A","A","A","B"]
@@ -409,7 +408,7 @@ class LatticeTrajectoryTest(unittest.TestCase):
                  [3.7,7.5,6.5]]
 
         # Construct.
-        t = LatticeTrajectory(trajectory_filename, sites)
+        t = LatticeTrajectory(trajectory_filename, Config(sites))
 
         # Check that the file is created but only with meta information.
         global_dict = {}
