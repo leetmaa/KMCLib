@@ -117,7 +117,8 @@ class OnTheFlyMSDTest(unittest.TestCase):
         # Setup the control parameters.
         control_parameters = KMCControlParameters(number_of_steps=4000,
                                                   dump_interval=100,
-                                                  analysis_interval=1)
+                                                  analysis_interval=1,
+                                                  seed=2013)
         # Run the model.
         model.run(control_parameters=control_parameters,
                   analysis=[msd])

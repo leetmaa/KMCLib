@@ -106,7 +106,8 @@ must be an instance of type KMCControlParameters."""
             raise Error(msg)
 
         # Seed the backend random number generator.
-        Backend.seedRandom(False, 2013)
+        Backend.seedRandom(control_parameters.timeSeed(),
+                           control_parameters.seed())
 
         # Check the trajectory filename.
         use_trajectory = True
