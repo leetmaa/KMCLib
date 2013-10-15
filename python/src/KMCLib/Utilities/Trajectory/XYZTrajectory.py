@@ -120,6 +120,33 @@ class XYZTrajectory(Trajectory):
 
     def flush(self):
         """ Write all buffers to file. """
-        pass
+        if not len(self.__step) < 1:
 
+            # Make sure only master writes.
+            if MPICommons.isMaster():
 
+                # Write data to file.
+                with open(self._trajectory_filename, 'a') as trajectory:
+                    for i in range(len(self.__step)):
+
+                        step = self.__step[i]
+                        time = self.__time[i]
+                        n_atoms = len(self.__atom_id_types[i])
+
+                        trajectory.write("STEP %i\n"%(step))
+                        trajectory.write("          %i\n"%(n_atoms))
+                        trajectory.write("    TIME %15.10e\n"%(time))
+
+                        for j in range(n_atoms):
+                            t = self.__atom_id_types[i][j]
+                            c = self.__atom_id_coordinates[i][j]
+                            trajectory.write(" %16s   %15.10e %15.10e %15.10e  %i\n"%(t, c[0], c[1], c[2], j))
+
+            # While the other processes wait.
+            MPICommons.barrier()
+
+            # Reset the buffers.
+            self.__atom_id_types = []
+            self.__atom_id_coordinates = []
+            self.__time = []
+            self.__step = []
