@@ -29,9 +29,6 @@ LatticeModel::LatticeModel(Configuration & configuration,
     lattice_map_(lattice_map),
     interactions_(interactions)
 {
-    // ML: Temporarily init the random number generator here.
-    seedRandom(false, 2013);
-
     // Setup the mapping between coordinates and processes.
     calculateInitialMatching();
 

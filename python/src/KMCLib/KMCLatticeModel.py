@@ -18,6 +18,7 @@ from KMCLib.Exceptions.Error import Error
 from KMCLib.Utilities.Trajectory.Trajectory import Trajectory
 from KMCLib.Utilities.PrintUtilities import prettyPrint
 from KMCLib.Utilities.CheckUtilities import checkSequenceOf
+from KMCLib.Backend import Backend
 
 class KMCLatticeModel(object):
     """
@@ -103,6 +104,9 @@ class KMCLatticeModel(object):
 The 'control_parameters' input to the KMCLatticeModel run funtion
 must be an instance of type KMCControlParameters."""
             raise Error(msg)
+
+        # Seed the backend random number generator.
+        Backend.seedRandom(False, 2013)
 
         # Check the trajectory filename.
         use_trajectory = True
