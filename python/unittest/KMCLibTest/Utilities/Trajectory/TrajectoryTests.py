@@ -11,11 +11,13 @@ import unittest
 
 from TrajectoryTest import TrajectoryTest
 from LatticeTrajectoryTest import LatticeTrajectoryTest
+from XYZTrajectoryTest import XYZTrajectoryTest
 
 def suite():
     suite = unittest.TestSuite(
-        [unittest.TestLoader().loadTestsFromTestCase(LatticeTrajectoryTest),
-         unittest.TestLoader().loadTestsFromTestCase(TrajectoryTest)])
+        [unittest.TestLoader().loadTestsFromTestCase(TrajectoryTest),
+         unittest.TestLoader().loadTestsFromTestCase(LatticeTrajectoryTest),
+         unittest.TestLoader().loadTestsFromTestCase(XYZTrajectoryTest)])
     return suite
 
 
