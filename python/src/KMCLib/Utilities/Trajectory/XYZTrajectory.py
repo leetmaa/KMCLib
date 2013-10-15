@@ -51,20 +51,37 @@ class XYZTrajectory(Trajectory):
         # NEEDS IMPLEMENTATION
 
         # Write the header.
-        self.__writeHeader()
+        self.__writeHeader(configuration)
 
-    def __writeHeader(self):
+    def __writeHeader(self, configuration):
         """
         Write the header to the file.
 
-        :param sites: The sites in the system.
+        :param configuration: The configuration of the system.
         """
         # Make sure only master writes.
         if MPICommons.isMaster():
 
             # Open the file and write the meta information.
             with open(self._trajectory_filename, 'w') as trajectory:
-                pass
+
+                # Version.
+                trajectory.write("KMCLib XYZ FORMAT VERSION 2013.10.15\n\n")
+
+                # Cellvectors.
+                cell_vectors = configuration.lattice().unitCell().cellVectors()
+                trajectory.write("CELL VECTORS\n")
+                trajectory.write("a: %15.10e %15.10e %15.10e\n"%(cell_vectors[0][0], cell_vectors[0][1], cell_vectors[0][2]))
+                trajectory.write("b: %15.10e %15.10e %15.10e\n"%(cell_vectors[1][0], cell_vectors[1][1], cell_vectors[1][2]))
+                trajectory.write("c: %15.10e %15.10e %15.10e\n\n"%(cell_vectors[2][0], cell_vectors[2][1], cell_vectors[2][2]))
+
+                # Repetitions.
+                repetitions = configuration.lattice().repetitions()
+                trajectory.write("REPETITIONS %i %i %i\n\n"%(repetitions[0], repetitions[2], repetitions[2]))
+
+                # Periodicity.
+                periodicity = configuration.lattice().periodic()
+                trajectory.write("PERIODICITY %s %s %s\n\n"%(str(periodicity[0]), str(periodicity[1]), str(periodicity[2])))
 
         # While the other processes wait.
         MPICommons.barrier()
