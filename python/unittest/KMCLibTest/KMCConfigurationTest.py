@@ -449,9 +449,9 @@ class KMCConfigurationTest(unittest.TestCase):
         self.assertEqual(atom_id_types, ("A","B","F"))
         self.assertEqual(lattice_types, ["B","F","A"])
 
-        self.assertAlmostEqual(atom_id_coords[0].x(), c0_ref, 10)
-        self.assertAlmostEqual(atom_id_coords[0].y(), c1_ref, 10)
-        self.assertAlmostEqual(atom_id_coords[0].z(), c2_ref, 10)
+        self.assertAlmostEqual(atom_id_coords[0][0], c0_ref, 10)
+        self.assertAlmostEqual(atom_id_coords[0][1], c1_ref, 10)
+        self.assertAlmostEqual(atom_id_coords[0][2], c2_ref, 10)
 
     def testLatticeQuery(self):
         """ Test the query function for the lattice. """

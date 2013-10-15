@@ -12,6 +12,7 @@ from KMCLib.KMCLattice import KMCLattice
 from KMCLib.Utilities.CheckUtilities import checkTypes
 from KMCLib.Utilities.ConversionUtilities import stringListToStdVectorString
 from KMCLib.Utilities.ConversionUtilities import numpy2DArrayToStdVectorStdVectorDouble
+from KMCLib.Utilities.ConversionUtilities import stdVectorCoordinateToNumpy2DArray
 from KMCLib.Exceptions.Error import Error
 from KMCLib.Backend import Backend
 
@@ -175,7 +176,7 @@ class KMCConfiguration(object):
         """
         Query for the coordinates per atom id.
         """
-        return self._backend().atomIDCoordinates()
+        return stdVectorCoordinateToNumpy2DArray(self._backend().atomIDCoordinates())
 
     def sites(self):
         """

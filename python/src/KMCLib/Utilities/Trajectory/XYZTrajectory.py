@@ -48,7 +48,10 @@ class XYZTrajectory(Trajectory):
                             max_buffer_time)
 
         # Init the member data.
-        # NEEDS IMPLEMENTATION
+        self.__atom_id_types = []
+        self.__atom_id_coordinates = []
+        self.__time = []
+        self.__step = []
 
         # Write the header.
         self.__writeHeader(configuration)
@@ -99,18 +102,24 @@ class XYZTrajectory(Trajectory):
         :param configuration: The configuration of the simulation.
         """
         # Store to the local buffers.
-        pass
+        self.__time.append(simulation_time)
+        self.__step.append(step)
+        self.__atom_id_coordinates.append(configuration.atomIDCoordinates())
+        self.__atom_id_types.append(configuration.atomIDTypes())
 
     def _bufferSize(self):
         """
         Calculate and return the buffer size.
         """
-        # FIXME
-        return 13.7
+        size =  sys.getsizeof(self.__atom_id_coordinates)
+        size += sys.getsizeof(self.__atom_id_types)
+        size += sys.getsizeof(self.__time)
+        size += sys.getsizeof(self.__step)
+
+        return size
 
     def flush(self):
         """ Write all buffers to file. """
         pass
-
 
 
