@@ -16,6 +16,7 @@ from KMCLib.KMCControlParameters import KMCControlParameters
 from KMCLib.KMCAnalysisPlugin import KMCAnalysisPlugin
 from KMCLib.Exceptions.Error import Error
 from KMCLib.Utilities.Trajectory.LatticeTrajectory import LatticeTrajectory
+from KMCLib.Utilities.Trajectory.XYZTrajectory import XYZTrajectory
 from KMCLib.Utilities.PrintUtilities import prettyPrint
 from KMCLib.Utilities.CheckUtilities import checkSequenceOf
 from KMCLib.Backend import Backend
@@ -131,8 +132,6 @@ must be given as string."""
 
         if not isinstance(trajectory_type, str):
             raise Error("The 'trajectory_type' input must given as a string.")
-        elif (trajectory_type is not 'lattice') and (trajectory_type is not 'xyz'):
-            raise Error("The 'trajectory_type' input must be either 'lattice' or 'xyz'.")
 
         # Check the analysis.
         if analysis is None:
@@ -159,8 +158,15 @@ must be given as string."""
 
         # Setup a trajectory object.
         if use_trajectory:
-            trajectory = LatticeTrajectory(trajectory_filename=trajectory_filename,
+            if trajectory_type == 'lattice':
+                trajectory = LatticeTrajectory(trajectory_filename=trajectory_filename,
+                                               configuration=self.__configuration)
+            elif trajectory_type == 'xyz':
+                trajectory = XYZTrajectory(trajectory_filename=trajectory_filename,
                                            configuration=self.__configuration)
+            else:
+                raise Error("The 'trajectory_type' input must be either 'lattice' or 'xyz'.")
+
             # Add the first step.
             trajectory.append(simulation_time  = self.__cpp_timer.simulationTime(),
                               step             = 0,

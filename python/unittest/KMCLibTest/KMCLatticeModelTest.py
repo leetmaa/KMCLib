@@ -546,6 +546,202 @@ class KMCLatticeModelTest(unittest.TestCase):
                            lambda : ab_flip_model.run(control_parameters,
                                                       analysis=[AnalysisProxy1(), "AP3"]) )
 
+    def testRunTrajectory(self):
+        """ Test the run of an A-B flip model with trajectory output. """
+        # Cell.
+        cell_vectors = [[   1.000000e+00,   0.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   1.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   0.000000e+00,   1.000000e+00]]
+
+        basis_points = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+
+        unit_cell = KMCUnitCell(
+            cell_vectors=cell_vectors,
+            basis_points=basis_points)
+
+        # Lattice.
+        lattice = KMCLattice(
+            unit_cell=unit_cell,
+            repetitions=(4,4,1),
+            periodic=(True, True, False))
+
+        # Configuration.
+        types = ['B']*16
+        possible_types = ['A','B']
+        configuration = KMCConfiguration(
+            lattice=lattice,
+            types=types,
+            possible_types=possible_types)
+
+        # Interactions.
+        coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+        process_0 = KMCProcess(coordinates,
+                               ['A'],
+                               ['B'],
+                               basis_sites=[0],
+                               rate_constant=4.0)
+        process_1 = KMCProcess(coordinates,
+                               ['B'],
+                               ['A'],
+                               basis_sites=[0],
+                               rate_constant=1.0)
+
+        processes = [process_0, process_1]
+        interactions = KMCInteractions(processes)
+
+        # Setup the model.
+        ab_flip_model = KMCLatticeModel(configuration, interactions)
+
+        # Construct the trajectory fileames.
+        name = os.path.abspath(os.path.dirname(__file__))
+        name = os.path.join(name, "TestUtilities", "Scratch")
+
+        lattice_trajectory_filename = os.path.join(name, "ab_flip_traj_lattice.py")
+        xyz_trajectory_filename = os.path.join(name, "ab_flip_traj_xyz.xyz")
+
+        self.__files_to_remove.append(lattice_trajectory_filename)
+        self.__files_to_remove.append(xyz_trajectory_filename)
+
+        # The control parameters.
+        control_parameters = KMCControlParameters(number_of_steps=1000,
+                                                  dump_interval=500,
+                                                  seed=2013)
+
+        # Run the model for 1000 steps with a lattice trajectory.
+        ab_flip_model.run(control_parameters,
+                          trajectory_filename=lattice_trajectory_filename,
+                          trajectory_type='lattice')
+
+        # Check the file content.
+        ref_lattice = """
+sites=[[       0.000000,       0.000000,       0.000000],
+       [       0.000000,       1.000000,       0.000000],
+       [       0.000000,       2.000000,       0.000000],
+       [       0.000000,       3.000000,       0.000000],
+       [       1.000000,       0.000000,       0.000000],
+       [       1.000000,       1.000000,       0.000000],
+       [       1.000000,       2.000000,       0.000000],
+       [       1.000000,       3.000000,       0.000000],
+       [       2.000000,       0.000000,       0.000000],
+       [       2.000000,       1.000000,       0.000000],
+       [       2.000000,       2.000000,       0.000000],
+       [       2.000000,       3.000000,       0.000000],
+       [       3.000000,       0.000000,       0.000000],
+       [       3.000000,       1.000000,       0.000000],
+       [       3.000000,       2.000000,       0.000000],
+       [       3.000000,       3.000000,       0.000000]]
+times=[]
+steps=[]
+types=[]
+times.append(0.000000)
+steps.append(0)
+types.append(["B","B","B","B","B","B","B","B","B","B","B","B","B","B","B","B"])
+times.append(18.999855)
+steps.append(500)
+types.append(["A","B","B","B","A","A","B","B","A","B","B","B","B","B","B","B"])
+times.append(40.629999)
+steps.append(1000)
+types.append(["B","B","B","A","A","B","B","B","B","A","B","B","B","A","B","B"])
+"""
+
+        with open(lattice_trajectory_filename, "r") as t:
+            lattice_data = t.read()
+
+        # Check with "in" to avoid comparing dates.
+        self.assertTrue(ref_lattice in lattice_data)
+
+        # Run the model for 1000 steps with an xyz trajectory.
+        ab_flip_model.run(control_parameters,
+                          trajectory_filename=xyz_trajectory_filename,
+                          trajectory_type='xyz')
+
+
+        ref_xyz = """KMCLib XYZ FORMAT VERSION 2013.10.15
+
+CELL VECTORS
+a: 1.0000000000e+00 0.0000000000e+00 0.0000000000e+00
+b: 0.0000000000e+00 1.0000000000e+00 0.0000000000e+00
+c: 0.0000000000e+00 0.0000000000e+00 1.0000000000e+00
+
+REPETITIONS 4 1 1
+
+PERIODICITY True True False
+
+STEP 0
+          16
+    TIME 4.0629999382e+01
+                B   0.0000000000e+00 0.0000000000e+00 0.0000000000e+00  0
+                B   0.0000000000e+00 1.0000000000e+00 0.0000000000e+00  1
+                B   0.0000000000e+00 2.0000000000e+00 0.0000000000e+00  2
+                A   0.0000000000e+00 3.0000000000e+00 0.0000000000e+00  3
+                A   1.0000000000e+00 0.0000000000e+00 0.0000000000e+00  4
+                B   1.0000000000e+00 1.0000000000e+00 0.0000000000e+00  5
+                B   1.0000000000e+00 2.0000000000e+00 0.0000000000e+00  6
+                B   1.0000000000e+00 3.0000000000e+00 0.0000000000e+00  7
+                B   2.0000000000e+00 0.0000000000e+00 0.0000000000e+00  8
+                A   2.0000000000e+00 1.0000000000e+00 0.0000000000e+00  9
+                B   2.0000000000e+00 2.0000000000e+00 0.0000000000e+00  10
+                B   2.0000000000e+00 3.0000000000e+00 0.0000000000e+00  11
+                B   3.0000000000e+00 0.0000000000e+00 0.0000000000e+00  12
+                A   3.0000000000e+00 1.0000000000e+00 0.0000000000e+00  13
+                B   3.0000000000e+00 2.0000000000e+00 0.0000000000e+00  14
+                B   3.0000000000e+00 3.0000000000e+00 0.0000000000e+00  15
+STEP 500
+          16
+    TIME 5.9575098655e+01
+                B   0.0000000000e+00 0.0000000000e+00 0.0000000000e+00  0
+                B   0.0000000000e+00 1.0000000000e+00 0.0000000000e+00  1
+                B   0.0000000000e+00 2.0000000000e+00 0.0000000000e+00  2
+                A   0.0000000000e+00 3.0000000000e+00 0.0000000000e+00  3
+                B   1.0000000000e+00 0.0000000000e+00 0.0000000000e+00  4
+                B   1.0000000000e+00 1.0000000000e+00 0.0000000000e+00  5
+                B   1.0000000000e+00 2.0000000000e+00 0.0000000000e+00  6
+                B   1.0000000000e+00 3.0000000000e+00 0.0000000000e+00  7
+                A   2.0000000000e+00 0.0000000000e+00 0.0000000000e+00  8
+                B   2.0000000000e+00 1.0000000000e+00 0.0000000000e+00  9
+                A   2.0000000000e+00 2.0000000000e+00 0.0000000000e+00  10
+                A   2.0000000000e+00 3.0000000000e+00 0.0000000000e+00  11
+                B   3.0000000000e+00 0.0000000000e+00 0.0000000000e+00  12
+                B   3.0000000000e+00 1.0000000000e+00 0.0000000000e+00  13
+                B   3.0000000000e+00 2.0000000000e+00 0.0000000000e+00  14
+                B   3.0000000000e+00 3.0000000000e+00 0.0000000000e+00  15
+STEP 1000
+          16
+    TIME 8.1205242739e+01
+                B   0.0000000000e+00 0.0000000000e+00 0.0000000000e+00  0
+                B   0.0000000000e+00 1.0000000000e+00 0.0000000000e+00  1
+                B   0.0000000000e+00 2.0000000000e+00 0.0000000000e+00  2
+                B   0.0000000000e+00 3.0000000000e+00 0.0000000000e+00  3
+                A   1.0000000000e+00 0.0000000000e+00 0.0000000000e+00  4
+                B   1.0000000000e+00 1.0000000000e+00 0.0000000000e+00  5
+                A   1.0000000000e+00 2.0000000000e+00 0.0000000000e+00  6
+                A   1.0000000000e+00 3.0000000000e+00 0.0000000000e+00  7
+                A   2.0000000000e+00 0.0000000000e+00 0.0000000000e+00  8
+                B   2.0000000000e+00 1.0000000000e+00 0.0000000000e+00  9
+                B   2.0000000000e+00 2.0000000000e+00 0.0000000000e+00  10
+                B   2.0000000000e+00 3.0000000000e+00 0.0000000000e+00  11
+                B   3.0000000000e+00 0.0000000000e+00 0.0000000000e+00  12
+                B   3.0000000000e+00 1.0000000000e+00 0.0000000000e+00  13
+                B   3.0000000000e+00 2.0000000000e+00 0.0000000000e+00  14
+                B   3.0000000000e+00 3.0000000000e+00 0.0000000000e+00  15
+"""
+
+        with open(xyz_trajectory_filename, "r") as t:
+            xyz_data = t.read()
+
+        self.assertEqual(ref_xyz, xyz_data)
+
+        # Running with wrong trajectory_type input fails.
+        self.assertRaises( Error,
+                           lambda : ab_flip_model.run(control_parameters,
+                                                      trajectory_filename=xyz_trajectory_filename,
+                                                      trajectory_type='abc') )
+
+        self.assertRaises( Error,
+                           lambda : ab_flip_model.run(control_parameters,
+                                                      trajectory_filename=xyz_trajectory_filename,
+                                                      trajectory_type=123) )
+
     def testBackend(self):
         """ Test that the backend object is correctly constructed. """
         # Setup a unitcell.
