@@ -88,6 +88,11 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
                                              time,
                                              self.__track_type)
 
+        # Save the unit cell to transform results to cartesian coordinates.
+        self.__unit_cell = configuration.lattice().unitCell()
+
+        print self.__unit_cell
+
     def registerStep(self, step, time, configuration):
         """
         Recieves the step call from the MC loop.

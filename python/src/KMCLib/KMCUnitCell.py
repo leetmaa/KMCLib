@@ -60,6 +60,14 @@ class KMCUnitCell(object):
         """
         return self.__cell_vectors
 
+    def transformToCartesian(self, r):
+        """
+        Transform an internal coordinate list to cartesian coordinates.
+
+        :returns: The coordinates in cartesian units.
+        """
+        return numpy.dot(r, self.__cell_vectors)
+
     def _script(self, variable_name="unit_cell"):
         """
         Generate a script representation of an instance.

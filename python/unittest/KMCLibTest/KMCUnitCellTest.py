@@ -111,6 +111,37 @@ class KMCUnitCellTest(unittest.TestCase):
                         vector_c]
         self.assertRaises(Error, lambda: KMCUnitCell(cell_vectors=cell_vectors, basis_points=basis_points))
 
+    def testTransformToCartesian(self):
+        """
+        Test the transformation from internal to cartesian coordinates.
+        """
+        # Setup a simple reference system.
+        a = numpy.array([[1.0, 2.0, 3.0],
+                         [1.1, 0.4, 3.7],
+                         [1.2, 2.5, 0.8]])
+
+        r = numpy.array([[1.2, 2.5, 3.8],
+                         [3.2, 4.5, 5.8]])
+
+        ref_xyz = numpy.dot(r, a)
+
+        # Cell vectors.
+        vector_a = [1.0, 2.0, 3.0]
+        vector_b = [1.1, 0.4, 3.7]
+        vector_c = [1.2, 2.5, 0.8]
+
+        cell_vectors = [vector_a,
+                        vector_b,
+                        vector_c]
+
+        cell = KMCUnitCell(cell_vectors=cell_vectors,
+                           basis_points=[[0.0, 0.0, 0.0]])
+
+        # Transform r to cartesian coordinates.
+        xyz = cell.transformToCartesian(r)
+        diff = numpy.linalg.norm(xyz - ref_xyz)
+        self.assertAlmostEqual(diff, 0.0, 10)
+
     def testScript(self):
         """ Test that a valid script can be generated. """
         # Setup a valid cell.
