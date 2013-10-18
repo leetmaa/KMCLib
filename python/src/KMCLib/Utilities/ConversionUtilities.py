@@ -12,6 +12,7 @@ import numpy
 
 from KMCLib.Backend import Backend
 
+
 def stringListToStdVectorString(string_list):
     """
     Converts a list of strings to a std::vector<std::string> object.
@@ -71,3 +72,27 @@ def stdVectorCoordinateToNumpy2DArray(cpp_vector):
         py_data[i][2] = cpp_vector[i].z()
 
     return py_data
+
+
+def numpy2DArrayToStdVectorCoordinate(array):
+    """
+    Convert a Nx3 2D numpy array to a std::vector<Coordinate> representation.
+
+    :param array: The array to convert.
+
+    :returns: A corresponding std::vector<Coordinate> object.
+    """
+    # Get the shape of the array.
+    shape = numpy.shape(array)
+    nI = shape[0]
+
+    # Setup the c++ object.
+    cpp_vector = Backend.StdVectorCoordinate()
+
+    # Copy the values over.
+    for i in range(nI):
+        cpp_vector.push_back(Backend.Coordinate(array[i][0],
+                                                array[i][1],
+                                                array[i][2]))
+    # Done.
+    return cpp_vector

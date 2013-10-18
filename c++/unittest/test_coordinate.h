@@ -30,8 +30,10 @@ public:
     CPPUNIT_TEST( testEqualsOperator );
     CPPUNIT_TEST( testDistance );
     CPPUNIT_TEST( testMinusOperator );
+    CPPUNIT_TEST( testMultiplicationOperator );
     CPPUNIT_TEST( testAccessOperator );
     CPPUNIT_TEST( testOuterProdDiag );
+    CPPUNIT_TEST( testDotProduct );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstructionAndQuery();
@@ -40,8 +42,11 @@ public:
     void testEqualsOperator();
     void testDistance();
     void testMinusOperator();
+    void testMultiplicationOperator();
     void testAccessOperator();
     void testOuterProdDiag();
+    void testDotProduct();
+
 };
 
 #endif

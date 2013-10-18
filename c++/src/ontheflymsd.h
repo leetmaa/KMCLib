@@ -37,13 +37,16 @@ public:
      *  \param t_max         : The starting time value of the last bin.
      *  \param t0            : The starting time of the simulation.
      *  \param track_type    : The atomic type to track.
+     *  \param abc_to_xyz    : The columns of the transformation matrix to
+                               cartesian coordinates.
      */
     OnTheFlyMSD(const Configuration & configuration,
                 const int history_steps,
                 const int n_bins,
                 const double t_max,
                 const double t0,
-                const std::string track_type);
+                const std::string track_type,
+                const std::vector<Coordinate> & abc_to_xyz);
 
     /*! \brief Register a step.
      *  \param time          : The time of the configuration snapshot.
@@ -113,12 +116,18 @@ private:
     /// The bin counts per history step.
     std::vector< std::vector<int> > history_steps_bin_counts_;
 
+    /// The transformation matrix to cartesian coordinates.
+    std::vector<Coordinate> abc_to_xyz_;
+
 };
 
 
 /*! \brief Function for calculating and binning the MSD values from a
  *         history buffer vector.
  *  \param history (in)               : History buffer with coordiantes and times.
+ *  \param abc_to_xyz (in)            : Transformation matrix from abc to xyz coordinates,
+                                        where each Coordinate is a column from the Python
+                                        unit cell cell-vectors matrix.
  *  \param binsize (in)               : The bin size of the histogram.
  *  \param histogram (in/out)         : The histogram to store the result in.
  *  \param bin_counters (in/out)      : The counters collecting the
@@ -127,6 +136,7 @@ private:
  *
  */
 void calculateAndBinMSD(const std::vector< std::pair<Coordinate, double> > & history,
+                        const std::vector<Coordinate> & abc_to_xyz,
                         const double binsize,
                         std::vector<Coordinate> & histogram,
                         std::vector<Coordinate> & histogram_sqr,

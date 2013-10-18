@@ -16,7 +16,9 @@ from KMCLib.Backend import Backend
 # Import from the module we test.
 from KMCLib.Utilities.ConversionUtilities import stringListToStdVectorString
 from KMCLib.Utilities.ConversionUtilities import numpy2DArrayToStdVectorStdVectorDouble
+from KMCLib.Utilities.ConversionUtilities import numpy2DArrayToStdVectorCoordinate
 from KMCLib.Utilities.ConversionUtilities import stdVectorCoordinateToNumpy2DArray
+
 
 # Implement the test.
 class ConversionUtilitiesTest(unittest.TestCase):
@@ -75,6 +77,25 @@ class ConversionUtilitiesTest(unittest.TestCase):
         # Check.
         diff = numpy.linalg.norm(ref_array - py_array)
         self.assertAlmostEqual( diff, 0.0, 10 )
+
+    def testNumpy2DArrayToStdVectorCoordinate(self):
+        """ Test the conversion of a Nx3 2D numpy array to a std::vector<Coordinate> representation. """
+        nI = 12;
+        nJ = 3;
+        array = numpy.random.rand(nI,nJ)
+
+        # Convert to c++
+        cpp_vector = numpy2DArrayToStdVectorCoordinate(array)
+
+        # Check the size.
+        self.assertEqual(cpp_vector.size(), nI)
+
+        # Check the type.
+        self.assertTrue( isinstance(cpp_vector, Backend.StdVectorCoordinate) )
+
+        # Convert back and check values.
+        converted = stdVectorCoordinateToNumpy2DArray(cpp_vector)
+        self.assertAlmostEqual(numpy.linalg.norm(array-converted), 0.0, 10)
 
 
 if __name__ == '__main__':

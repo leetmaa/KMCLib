@@ -14,6 +14,7 @@ from KMCLib.KMCAnalysisPlugin import KMCAnalysisPlugin
 from KMCLib.Utilities.CheckUtilities import checkPositiveInteger
 from KMCLib.Utilities.CheckUtilities import checkPositiveFloat
 from KMCLib.Utilities.ConversionUtilities import stdVectorCoordinateToNumpy2DArray
+from KMCLib.Utilities.ConversionUtilities import numpy2DArrayToStdVectorCoordinate
 from KMCLib.Exceptions.Error import Error
 from KMCLib.Backend import Backend
 
@@ -80,18 +81,18 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
         if not self.__track_type in configuration.possibleTypes():
             raise Error("The track type of the MSD calculator is not one of the valid types of the configuration.")
 
+        # Get the cell vectors out.
+        abc_to_xyz = numpy.array(configuration.lattice().unitCell().cellVectors()).transpose()
+        abc_to_xyz_cpp = numpy2DArrayToStdVectorCoordinate(abc_to_xyz)
+
         # Setup the backend.
         self.__backend = Backend.OnTheFlyMSD(configuration._backend(),
                                              self.__history_steps,
                                              self.__n_bins,
                                              self.__t_max,
                                              time,
-                                             self.__track_type)
-
-        # Save the unit cell to transform results to cartesian coordinates.
-        self.__unit_cell = configuration.lattice().unitCell()
-
-        print self.__unit_cell
+                                             self.__track_type,
+                                             abc_to_xyz_cpp)
 
     def registerStep(self, step, time, configuration):
         """
@@ -115,7 +116,6 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
         """
         # Get the results from the backend.
         self.__getBackendResults()
-
 
         # Generate the numerical n_eff curve from the history bin counters.
         self.__n_eff = numpy.zeros(len(self.__bin_counters))

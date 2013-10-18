@@ -41,13 +41,22 @@ public:
     double norm() const;
 
     /*! \brief Calculate the diagonal of the outer product of this
-     *         coordinate with the other
+     *         coordinate with the other.
      *  \param other : The other coordinate.
      *  \return : The diagonal of the outer product of this and the other
                   coordinate.
      */
     inline
     Coordinate outerProdDiag(const Coordinate & other) const;
+
+    /*! \brief Calculate the dot product of this
+     *         coordinate with the other.
+     *  \param other : The other coordinate.
+     *  \return : The dot product of this and the other
+                  coordinate.
+     */
+    inline
+    double dot(const Coordinate & other) const;
 
     /*! \brief 'less than' for sorting.
      *  \param other : The Coordinate to compare.
@@ -87,6 +96,13 @@ public:
      */
     inline
     void operator+=(const Coordinate & other);
+
+    /*! \brief 'times' operator.
+     *  \param scalar : The scalar to multiply with.
+     *  \return : this times the scalar.
+     */
+    inline
+    Coordinate operator*(const double scalar) const;
 
     /*! \brief 'access' operator.
      *  \param i : The index to get out (0,1 or 2) corresponding to x,y,z
@@ -180,6 +196,14 @@ Coordinate Coordinate::outerProdDiag(const Coordinate & other) const
 
 // -----------------------------------------------------------------------------
 //
+double Coordinate::dot(const Coordinate & other) const
+{
+    return x_*other.x_ + y_*other.y_ + z_*other.z_;
+}
+
+
+// -----------------------------------------------------------------------------
+//
 bool Coordinate::operator<(const Coordinate & other) const
 {
     if ( x_ < other.x_)
@@ -251,6 +275,16 @@ void Coordinate::operator+=(const Coordinate & other)
     x_ += other.x_;
     y_ += other.y_;
     z_ += other.z_;
+}
+
+
+// -----------------------------------------------------------------------------
+//
+Coordinate Coordinate::operator*(const double scalar) const
+{
+    return Coordinate(x_ * scalar,
+                      y_ * scalar,
+                      z_ * scalar);
 }
 
 

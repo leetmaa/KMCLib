@@ -21,7 +21,8 @@ OnTheFlyMSD::OnTheFlyMSD(const Configuration & configuration,
                          const int n_bins,
                          const double t_max,
                          const double t0,
-                         const std::string track_type) :
+                         const std::string track_type,
+                         const std::vector<Coordinate> & abc_to_xyz) :
     history_buffer_(configuration.elements().size(), std::vector<std::pair<Coordinate, double> >(0)),
     histogram_buffer_(n_bins, Coordinate(0.0, 0.0, 0.0)),
     histogram_buffer_sqr_(n_bins, Coordinate(0.0, 0.0, 0.0)),
@@ -30,7 +31,8 @@ OnTheFlyMSD::OnTheFlyMSD(const Configuration & configuration,
     t_max_(t_max),
     bin_size_(t_max/n_bins),
     history_steps_(history_steps),
-    history_steps_bin_counts_(history_steps-1, std::vector<int>(n_bins, 0))
+    history_steps_bin_counts_(history_steps-1, std::vector<int>(n_bins, 0)),
+    abc_to_xyz_(abc_to_xyz)
 {
     // Populate the history buffer with initial coordinates for tracked atoms.
     const std::vector<Coordinate> & atom_id_coords = configuration.atomIDCoordinates();
@@ -79,6 +81,7 @@ void OnTheFlyMSD::registerStep(const double time,
 
             // Calculate and bin the values.
             calculateAndBinMSD(history_buffer_[id],
+                               abc_to_xyz_,
                                bin_size_,
                                histogram_buffer_,
                                histogram_buffer_sqr_,
@@ -92,6 +95,7 @@ void OnTheFlyMSD::registerStep(const double time,
 // -----------------------------------------------------------------------------
 //
 void calculateAndBinMSD(const std::vector< std::pair<Coordinate, double> > & history,
+                        const std::vector<Coordinate> & abc_to_xyz,
                         const double binsize,
                         std::vector<Coordinate> & histogram,
                         std::vector<Coordinate> & histogram_sqr,
@@ -108,7 +112,13 @@ void calculateAndBinMSD(const std::vector< std::pair<Coordinate, double> > & his
         if (bin < histogram.size())
         {
             // If within range, calculate the squared diff and the squared diff squared.
-            const Coordinate diff = history[i].first - history[0].first;
+            const Coordinate diff_abc = (history[i].first - history[0].first);
+
+            // Transform the abc difference to xyz.
+            const Coordinate diff(diff_abc.dot(abc_to_xyz[0]),
+                                  diff_abc.dot(abc_to_xyz[1]),
+                                  diff_abc.dot(abc_to_xyz[2]));
+
             const Coordinate sqr_diff = diff.outerProdDiag(diff);
             const Coordinate sqr_diff_sqr = sqr_diff.outerProdDiag(sqr_diff);
 

@@ -29,6 +29,7 @@ public:
     CPPUNIT_TEST( testStepY );
     CPPUNIT_TEST( testStepZ );
     CPPUNIT_TEST( testCalculateAndBinMSD );
+    CPPUNIT_TEST( testCalculateAndBinMSDTransformation );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstruction();
@@ -36,6 +37,7 @@ public:
     void testStepY();
     void testStepZ();
     void testCalculateAndBinMSD();
+    void testCalculateAndBinMSDTransformation();
 
 };
 

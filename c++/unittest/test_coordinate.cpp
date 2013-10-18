@@ -185,8 +185,32 @@ void Test_Coordinate::testMinusOperator()
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c3.y(), c1.y() - c2.y(), 1.0e-14 );
     CPPUNIT_ASSERT_DOUBLES_EQUAL( c3.z(), c1.z() - c2.z(), 1.0e-14 );
 
-
 }
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Coordinate::testMultiplicationOperator()
+{
+    const Coordinate c1(std::sqrt(2.0),-std::sqrt(8),1.0/3.0);
+    const double scalar1 = 123.234;
+    const Coordinate c2 = c1 * scalar1;
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( c2.x(), c1.x()*scalar1, 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( c2.y(), c1.y()*scalar1, 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( c2.z(), c1.z()*scalar1, 1.0e-14 );
+
+
+    const double scalar2 = std::sqrt(2.0);
+    const Coordinate c3 = c2 * scalar2;
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( c3.x(), c2.x()*scalar2, 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( c3.y(), c2.y()*scalar2, 1.0e-14 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( c3.z(), c2.z()*scalar2, 1.0e-14 );
+
+    // DONE
+}
+
 
 // -------------------------------------------------------------------------- //
 //
@@ -256,4 +280,28 @@ void Test_Coordinate::testOuterProdDiag()
     CPPUNIT_ASSERT_DOUBLES_EQUAL( prod_2.x(), ref.x(), 1.0e-12 );
     CPPUNIT_ASSERT_DOUBLES_EQUAL( prod_2.y(), ref.y(), 1.0e-12 );
     CPPUNIT_ASSERT_DOUBLES_EQUAL( prod_2.z(), ref.z(), 1.0e-12 );
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Coordinate::testDotProduct()
+{
+    const Coordinate c1(0.1, -1.2, 3.3);
+    const Coordinate c2(-0.123, 0.2, 99.3);
+
+    // Get the trace.
+    const double dot1 = c1.dot(c2);
+    const double dot2 = c2.dot(c1);
+
+    // Get the reference.
+    const Coordinate prod_1 = c1.outerProdDiag(c2);
+    const Coordinate prod_2 = c2.outerProdDiag(c1);
+
+    const double ref1 = prod_1.x() + prod_1.y() + prod_1.z();
+    const double ref2 = prod_2.x() + prod_2.y() + prod_2.z();
+
+    // Check against the reference.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( dot1, ref1, 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( dot2, ref2, 1.0e-12 );
 }

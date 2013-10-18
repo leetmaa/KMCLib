@@ -16,6 +16,7 @@
 #include "latticemap.h"
 #include "process.h"
 
+
 // -------------------------------------------------------------------------- //
 //
 void Test_OnTheFlyMSD::testConstruction()
@@ -39,13 +40,19 @@ void Test_OnTheFlyMSD::testConstruction()
     const double t0 = 1.23;
     const std::string track_type("AA");
 
+    std::vector<Coordinate> abc_to_xyz;
+    abc_to_xyz.push_back(Coordinate(1.0, 0.0, 0.0));
+    abc_to_xyz.push_back(Coordinate(0.5, 1.0, 0.0));
+    abc_to_xyz.push_back(Coordinate(0.0, 0.0, 1.0));
+
     // Construct.
     OnTheFlyMSD msd(configuration,
                     history_steps,
                     n_bins,
                     t_max,
                     t0,
-                    track_type);
+                    track_type,
+                    abc_to_xyz);
 
     // Check that the setup was completed correctly.
     const std::vector< std::vector< std::pair<Coordinate, double> > > & history_buffer = msd.historyBuffer();
@@ -154,12 +161,19 @@ void Test_OnTheFlyMSD::testStepX()
     const double t_max = 10.0;
     const double t0 = 1.2;
     const std::string track_type("V");
+
+    std::vector<Coordinate> abc_to_xyz;
+    abc_to_xyz.push_back(Coordinate(1.1234, 0.0, 0.0));
+    abc_to_xyz.push_back(Coordinate(0.9987, 1.0, 0.0));
+    abc_to_xyz.push_back(Coordinate(0.0123, 0.0, 1.0));
+
     OnTheFlyMSD msd(configuration,
                     history_steps,
                     n_bins,
                     t_max,
                     t0,
-                    track_type);
+                    track_type,
+                    abc_to_xyz);
     const std::vector<int> & atom_id = configuration.atomID();
 
     // Peform the process.
@@ -219,9 +233,9 @@ void Test_OnTheFlyMSD::testStepX()
         }
     }
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[bin].x(), 1.0, 1.0e-12 );
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[bin].y(), 0.0, 1.0e-12 );
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[bin].z(), 0.0, 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[bin].x(), 1.1234*1.1234, 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[bin].y(), 0.9987*0.9987, 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[bin].z(), 0.0123*0.0123, 1.0e-12 );
 
     // ---------------------------------------------------------------------
 
@@ -420,12 +434,19 @@ void Test_OnTheFlyMSD::testStepY()
     const double t_max = 10.0;
     const double t0 = 1.2;
     const std::string track_type("V");
+
+    std::vector<Coordinate> abc_to_xyz;
+    abc_to_xyz.push_back(Coordinate(1.0, 0.11, 0.0));
+    abc_to_xyz.push_back(Coordinate(0.0, 11.1, 0.0));
+    abc_to_xyz.push_back(Coordinate(0.0, 1.1, 1.0));
+
     OnTheFlyMSD msd(configuration,
                     history_steps,
                     n_bins,
                     t_max,
                     t0,
-                    track_type);
+                    track_type,
+                    abc_to_xyz);
     const std::vector<int> & atom_id = configuration.atomID();
 
     // Peform the process.
@@ -484,9 +505,9 @@ void Test_OnTheFlyMSD::testStepY()
         }
     }
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[bin].x(), 0.0, 1.0e-12 );
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[bin].y(), 1.0, 1.0e-12 );
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[bin].z(), 0.0, 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[bin].x(), 0.11*0.11, 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[bin].y(), 11.1*11.1, 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[bin].z(), 1.1*1.1,   1.0e-12 );
 
     // ---------------------------------------------------------------------
 
@@ -684,12 +705,19 @@ void Test_OnTheFlyMSD::testStepZ()
     const double t_max = 10.0;
     const double t0 = 1.2;
     const std::string track_type("V");
+
+    std::vector<Coordinate> abc_to_xyz;
+    abc_to_xyz.push_back(Coordinate(1.0, 0.0,12.0));
+    abc_to_xyz.push_back(Coordinate(0.0, 1.0, 3.0));
+    abc_to_xyz.push_back(Coordinate(0.0, 0.0, 1.3));
+
     OnTheFlyMSD msd(configuration,
                     history_steps,
                     n_bins,
                     t_max,
                     t0,
-                    track_type);
+                    track_type,
+                    abc_to_xyz);
     const std::vector<int> & atom_id = configuration.atomID();
 
     // Peform the process.
@@ -748,9 +776,9 @@ void Test_OnTheFlyMSD::testStepZ()
         }
     }
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[bin].x(), 0.0, 1.0e-12 );
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[bin].y(), 0.0, 1.0e-12 );
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[bin].z(), 1.0, 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[bin].x(), 12.0*12.0, 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[bin].y(), 3.0*3.0, 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[bin].z(), 1.3*1.3, 1.0e-12 );
 
     // ---------------------------------------------------------------------
 
@@ -882,8 +910,20 @@ void Test_OnTheFlyMSD::testCalculateAndBinMSD()
     // The bin size.
     const double binsize = 1.0;
 
-    // Call the binning function with this data.
-    calculateAndBinMSD(history, binsize, histogram, histogram_sqr, bin_counters, hsteps_bin_counters);
+    // The unit transformation matrix.
+    std::vector<Coordinate> transformation(3);
+    transformation[0] = Coordinate(1.0, 0.0, 0.0);
+    transformation[1] = Coordinate(0.0, 1.0, 0.0);
+    transformation[2] = Coordinate(0.0, 0.0, 1.0);
+
+    // Call the binning function with this data and a unit transformation matrix.
+    calculateAndBinMSD(history,
+                       transformation,
+                       binsize,
+                       histogram,
+                       histogram_sqr,
+                       bin_counters,
+                       hsteps_bin_counters);
 
     // Calculate the results by hand.
     Coordinate diff = history[0].first - history[1].first;
@@ -981,3 +1021,165 @@ void Test_OnTheFlyMSD::testCalculateAndBinMSD()
     }
 }
 
+
+// -------------------------------------------------------------------------- //
+//
+void Test_OnTheFlyMSD::testCalculateAndBinMSDTransformation()
+{
+    // Setup input.
+    std::vector< std::pair<Coordinate, double> > history;
+    history.push_back(std::pair<Coordinate, double>(Coordinate( 1.1, 1.3, 7.8), 7.3));
+    history.push_back(std::pair<Coordinate, double>(Coordinate( 1.3, 1.9, 7.6), 6.3));
+    history.push_back(std::pair<Coordinate, double>(Coordinate(-0.2, 1.0,-4.6), 2.1));
+    history.push_back(std::pair<Coordinate, double>(Coordinate( 1.0,-1.8, 3.5), 1.3));
+    history.push_back(std::pair<Coordinate, double>(Coordinate( 2.1, 1.3,-5.5), 0.3));
+
+    // The histogram and histogram squared, filled with some initial values.
+    const int h_size = 6;
+
+    const Coordinate h_start(2.2, 3.1, 1.4);
+    std::vector<Coordinate> histogram(h_size, h_start);
+
+    const Coordinate h_sqr_start(4.48, 9.61, 1.96);
+    std::vector<Coordinate> histogram_sqr(h_size, h_sqr_start);
+
+    std::vector<int> bin_counters(h_size, 9);
+    std::vector< std::vector<int> > hsteps_bin_counters(history.size()-1, std::vector<int>(h_size, 8));
+
+    // The bin size.
+    const double binsize = 1.0;
+
+    // The non-trivial transformation matrix.
+    std::vector<Coordinate> transformation(3);
+    transformation[0] = Coordinate(13.4,   1.13,  0.9 );
+    transformation[1] = Coordinate( 0.6,   14.2,  0.01);
+    transformation[2] = Coordinate( 0.1,   0.02,  11.0 );
+
+    // Call the binning function.
+    calculateAndBinMSD(history,
+                       transformation,
+                       binsize,
+                       histogram,
+                       histogram_sqr,
+                       bin_counters,
+                       hsteps_bin_counters);
+
+    // Calculate the results by hand including the transformation.
+    Coordinate diff_abc = history[0].first - history[1].first;
+
+    // Transform.
+    Coordinate diff(diff_abc.x() * transformation[0].x() +
+                    diff_abc.y() * transformation[0].y() +
+                    diff_abc.z() * transformation[0].z(),
+                    diff_abc.x() * transformation[1].x() +
+                    diff_abc.y() * transformation[1].y() +
+                    diff_abc.z() * transformation[1].z(),
+                    diff_abc.x() * transformation[2].x() +
+                    diff_abc.y() * transformation[2].y() +
+                    diff_abc.z() * transformation[2].z());
+
+    const Coordinate diff_0(diff.x()*diff.x(),
+                            diff.y()*diff.y(),
+                            diff.z()*diff.z());
+    const Coordinate diff_0_sqr(diff_0.x()*diff_0.x(),
+                                diff_0.y()*diff_0.y(),
+                                diff_0.z()*diff_0.z());
+    const double dt_0 = history[0].second - history[1].second;
+    const int bin_0 = static_cast<size_t>(dt_0 / binsize);
+
+    // This should result in bin 1.
+    CPPUNIT_ASSERT_EQUAL( bin_0, 1 );
+
+    diff_abc = history[0].first - history[2].first;
+
+    // Transform.
+    diff = Coordinate(diff_abc.x() * transformation[0].x() +
+                      diff_abc.y() * transformation[0].y() +
+                      diff_abc.z() * transformation[0].z(),
+                      diff_abc.x() * transformation[1].x() +
+                      diff_abc.y() * transformation[1].y() +
+                      diff_abc.z() * transformation[1].z(),
+                      diff_abc.x() * transformation[2].x() +
+                      diff_abc.y() * transformation[2].y() +
+                      diff_abc.z() * transformation[2].z());
+
+    const Coordinate diff_1(diff.x()*diff.x(),
+                            diff.y()*diff.y(),
+                            diff.z()*diff.z());
+    const Coordinate diff_1_sqr(diff_1.x()*diff_1.x(),
+                                diff_1.y()*diff_1.y(),
+                                diff_1.z()*diff_1.z());
+    const double dt_1 = history[0].second - history[2].second;
+    const int bin_1 = static_cast<size_t>(dt_1 / binsize);
+
+    // This should result in bin 5.
+    CPPUNIT_ASSERT_EQUAL( bin_1, 5 );
+
+    const double dt_2 = history[0].second - history[3].second;
+    const int bin_2 = static_cast<size_t>(dt_2 / binsize);
+
+    // This should result in bin 6.
+    CPPUNIT_ASSERT_EQUAL( bin_2, 6 );
+
+    const double dt_3 = history[0].second - history[4].second;
+    const int bin_3 = static_cast<size_t>(dt_3 / binsize);
+
+    // This should result in bin 7.
+    CPPUNIT_ASSERT_EQUAL( bin_3, 7 );
+
+    // Check the results.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[bin_0].x(), h_start.x() + diff_0.x(), 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[bin_0].y(), h_start.y() + diff_0.y(), 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[bin_0].z(), h_start.z() + diff_0.z(), 1.0e-12 );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram_sqr[bin_0].x(), h_sqr_start.x() + diff_0_sqr.x(), 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram_sqr[bin_0].y(), h_sqr_start.y() + diff_0_sqr.y(), 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram_sqr[bin_0].z(), h_sqr_start.z() + diff_0_sqr.z(), 1.0e-12 );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[bin_1].x(), h_start.x() + diff_1.x(), 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[bin_1].y(), h_start.y() + diff_1.y(), 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[bin_1].z(), h_start.z() + diff_1.z(), 1.0e-12 );
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram_sqr[bin_1].x(), h_sqr_start.x() + diff_1_sqr.x(), 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram_sqr[bin_1].y(), h_sqr_start.y() + diff_1_sqr.y(), 1.0e-12 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram_sqr[bin_1].z(), h_sqr_start.z() + diff_1_sqr.z(), 1.0e-12 );
+
+    for (int i = 0; i < h_size; ++i)
+    {
+        if (i != bin_0 && i != bin_1)
+        {
+            CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[i].x(), h_start.x(), 1.0e-12 );
+            CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[i].y(), h_start.y(), 1.0e-12 );
+            CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram[i].z(), h_start.z(), 1.0e-12 );
+
+            CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram_sqr[i].x(), h_sqr_start.x(), 1.0e-12 );
+            CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram_sqr[i].y(), h_sqr_start.y(), 1.0e-12 );
+            CPPUNIT_ASSERT_DOUBLES_EQUAL( histogram_sqr[i].z(), h_sqr_start.z(), 1.0e-12 );
+        }
+    }
+
+    // Check the bin counts.
+    CPPUNIT_ASSERT_EQUAL( bin_counters[bin_0], 10 );
+    CPPUNIT_ASSERT_EQUAL( bin_counters[bin_1], 10 );
+
+    // Check the bin counts splitted up on history steps.
+    CPPUNIT_ASSERT_EQUAL( hsteps_bin_counters[0][bin_0], 9 );
+    CPPUNIT_ASSERT_EQUAL( hsteps_bin_counters[1][bin_1], 9 );
+
+    for (int i = 0; i < h_size; ++i)
+    {
+
+        if (i != bin_0)
+        {
+            CPPUNIT_ASSERT_EQUAL( hsteps_bin_counters[0][i], 8 );
+        }
+
+        if (i != bin_1)
+        {
+            CPPUNIT_ASSERT_EQUAL( hsteps_bin_counters[1][i], 8 );
+        }
+
+        CPPUNIT_ASSERT_EQUAL( hsteps_bin_counters[2][i], 8 );
+        CPPUNIT_ASSERT_EQUAL( hsteps_bin_counters[3][i], 8 );
+    }
+}
