@@ -7,6 +7,7 @@
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 #
 
+import numpy
 
 from KMCLib.KMCLattice import KMCLattice
 from KMCLib.Utilities.CheckUtilities import checkTypes
@@ -311,4 +312,80 @@ class KMCConfiguration(object):
         # Return the script.
         return lattice_script + comment_string + types_string + "\n" + \
             possible_types_string + "\n" + configuration_string
+
+
+
+    def _atkScript(self, types_map):
+        """
+        Generate an ATK 12.8.2 compatible BulkConfiguration script of
+        this configuration.
+
+        :param types_map: A map between our types and atk type names as
+                          a dict, where keys are the type names used in this
+                          configuration and the corresponding values are the
+                          ATK types to be used given as strings. Any
+                          type not specified in the mapping will be left out
+                          in the ATK configuration.
+
+        :returns: An ATK script as a string representing this configuration.
+        """
+        header = """# ----------------------------------------------------------
+# ATK 12.8.2 BulkConfiguration script generated from KMCLib
+# configuration version 1.0.
+# ----------------------------------------------------------
+
+"""
+        # Get the primitive cell vectors.
+        cell_vectors = self.__lattice.unitCell().cellVectors()
+
+        # Generate the ATK lattice vectors by multiplying with the
+        # repetitions.
+        vector_a = cell_vectors[0] * self.__lattice.repetitions()[0]
+        vector_b = cell_vectors[1] * self.__lattice.repetitions()[1]
+        vector_c = cell_vectors[2] * self.__lattice.repetitions()[2]
+
+        cell_script = "# Specify the lattice parameters.\n"
+        cell_script += "vector_a = [ %12.8f, %12.8f, %12.8f]*Angstrom\n"%(vector_a[0], vector_a[1], vector_a[2])
+        cell_script += "vector_b = [ %12.8f, %12.8f, %12.8f]*Angstrom\n"%(vector_b[0], vector_b[1], vector_b[2])
+        cell_script += "vector_c = [ %12.8f, %12.8f, %12.8f]*Angstrom\n"%(vector_c[0], vector_c[1], vector_c[2])
+        cell_script += "lattice = UnitCell(vector_a, vector_b, vector_c)\n\n"
+
+        # Parse the types and positions to ATK format.
+        one_over_rep = numpy.array([1.0/self.__lattice.repetitions()[0],
+                                    1.0/self.__lattice.repetitions()[1],
+                                    1.0/self.__lattice.repetitions()[2]], dtype=float)
+        atoms = [ (types_map[t],c*one_over_rep) for t,c in zip(self.atomIDTypes(), self.atomIDCoordinates()) if t in types_map.keys() ]
+
+        # Generate the ATK elements and coordinates script.
+        elements_script    = "# Define the elements.\nelements = ["
+        coordinates_script = "# Define the coordinates.\ncoordinates = ["
+        last = len(atoms)-1
+        this_row = 0
+        full_row = 6
+        for i,(t,c) in enumerate(atoms):
+            this_row += 1
+            if i == last:
+                elements_script    += "%s]\n\n"%(t)
+                coordinates_script += "[ %15.8e, %15.8e, %15.8e]]\n\n"%(c[0],c[1],c[2])
+            else:
+                coordinates_script += "[ %15.8e, %15.8e, %15.8e],\n               "%(c[0],c[1],c[2])
+
+                if this_row == full_row:
+                    elements_script += "%s,\n            "%(t)
+                    this_row = 0
+                else:
+                    elements_script += "%s, "%(t)
+
+        # Generate the configuration script.
+        config_script ="""# Setup the configuration.
+bulk_configuration = BulkConfiguration(
+    bravais_lattice=lattice,
+    elements=elements,
+    fractional_coordinates=coordinates )
+
+# ----------------------------------------------------------
+"""
+
+        # Setup and return the whole script.
+        return header + cell_script + elements_script + coordinates_script + config_script
 

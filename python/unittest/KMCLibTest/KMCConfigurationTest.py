@@ -623,6 +623,261 @@ config = KMCConfiguration(
 """
         self.assertEqual(script, ref_script)
 
+    def testATKScript1(self):
+        """ Test that we can generate an ATK script from the configuration. """
+        # Setup a valid KMCUnitCell.
+        unit_cell = KMCUnitCell(cell_vectors=numpy.array([[2.8,0.0,0.0],
+                                                          [0.0,3.2,0.0],
+                                                          [0.0,0.5,3.0]]),
+                                basis_points=[[0.0, 0.0, 0.0],
+                                              [0.0, 0.5, 0.5],
+                                              [0.5,0.75,0.75]])
+
+        # Setup the lattice and types.
+        lattice = KMCLattice(unit_cell=unit_cell,
+                             repetitions=(1,1,1),
+                             periodic=(False,False,False))
+        types = ['B','A','C']
+        possible_types = ['C', "A", "B", "D"]
+
+        # Setup the configuration.
+        config = KMCConfiguration(lattice=lattice,
+                                  types=types,
+                                  possible_types=possible_types)
+
+        # Determine a mapping between our types and valid ATK types.
+        # Types not present in the mapping are ignored in the ATK script.
+        types_mapping = { 'A' : 'Copper',
+                          'C' : 'Iron',
+                          'D' : 'Vanadium',
+                          }
+
+        # Get the ATK script.
+        atk_script = config._atkScript(types_mapping)
+
+        # Check that it looks as we expect.
+
+        ref_script = """# ----------------------------------------------------------
+# ATK 12.8.2 BulkConfiguration script generated from KMCLib
+# configuration version 1.0.
+# ----------------------------------------------------------
+
+# Specify the lattice parameters.
+vector_a = [   2.80000000,   0.00000000,   0.00000000]*Angstrom
+vector_b = [   0.00000000,   3.20000000,   0.00000000]*Angstrom
+vector_c = [   0.00000000,   0.50000000,   3.00000000]*Angstrom
+lattice = UnitCell(vector_a, vector_b, vector_c)
+
+# Define the elements.
+elements = [Copper, Iron]
+
+# Define the coordinates.
+coordinates = [[  0.00000000e+00,  5.00000000e-01,  5.00000000e-01],
+               [  5.00000000e-01,  7.50000000e-01,  7.50000000e-01]]
+
+# Setup the configuration.
+bulk_configuration = BulkConfiguration(
+    bravais_lattice=lattice,
+    elements=elements,
+    fractional_coordinates=coordinates )
+
+# ----------------------------------------------------------
+"""
+        self.assertEqual(atk_script, ref_script)
+
+    def testATKScript2(self):
+        """ Test that we can generate an ATK script from the configuration. """
+        # Setup a valid KMCUnitCell.
+
+        cell_vectors = [[   5.640000e+00,   0.330000e+00,   0.120000e+00],
+                        [   0.110000e+00,   5.460000e+00,   0.100000e+00],
+                        [   0.500000e+00,   0.430000e+00,   5.410000e+00]]
+
+        basis_points = [[   0.200000e+00,   0.300000e+00,   0.400000e+00],
+                        [   5.200000e-01,   5.400000e-01,   5.010000e-01]]
+
+        unit_cell = KMCUnitCell(
+            cell_vectors=cell_vectors,
+            basis_points=basis_points)
+
+        # Setup the lattice and types.
+        lattice = KMCLattice(
+            unit_cell=unit_cell,
+            repetitions=(4,4,4),
+            periodic=(True, True, True))
+
+        types = ['Ce3','O','Empty','O','Ce','O','Empty','O','Empty',
+                 'O','Ce','O','Empty','Vacancy','Ce','O','Ce','O','Empty',
+                 'O','Ce','O','Empty','O','Empty','O','Ce','O','Empty',
+                 'O','Ce','O','Empty','O','Ce','O','Empty','O','Ce',
+                 'O','Ce3','O','Empty','O','Ce','O','Empty','O','Empty',
+                 'O','Ce','O','Empty','O','Ce','O','Ce','O','Empty',
+                 'O','Ce','O','Empty','O','Ce','O','Empty','O','Ce',
+                 'O','Empty','O','Empty','O','Ce','O','Empty','O','Ce',
+                 'O','Ce','O','Empty','O','Ce','O','Empty','O','Empty',
+                 'O','Ce','O','Empty','O','Ce','O','Empty','O','Ce',
+                 'O','Empty','O','Ce','O','Ce','O','Empty','O','Ce',
+                 'O','Empty','O','Empty','O','Ce','O','Empty','O','Ce',
+                 'O','Ce','O','Empty','O','Ce','O','Empty','O']
+
+        possible_types = ['Ce3','Empty','O','Ce','Vacancy']
+
+        # Setup the configuration.
+        configuration = KMCConfiguration(
+            lattice=lattice,
+            types=types,
+            possible_types=possible_types)
+
+        # Determine a mapping between our types and valid ATK types.
+        # Types not present in the mapping are ignored in the ATK script.
+
+        type_map = {
+            "Ce3" : "Vanadium",
+            "Ce"  : "Cerium",
+            "O"   : "Oxygen",
+            }
+
+        # Get the ATK script.
+        atk_script = configuration._atkScript(type_map)
+
+        # Check that it looks as we expect.
+        ref_script = """# ----------------------------------------------------------
+# ATK 12.8.2 BulkConfiguration script generated from KMCLib
+# configuration version 1.0.
+# ----------------------------------------------------------
+
+# Specify the lattice parameters.
+vector_a = [  22.56000000,   1.32000000,   0.48000000]*Angstrom
+vector_b = [   0.44000000,  21.84000000,   0.40000000]*Angstrom
+vector_c = [   2.00000000,   1.72000000,  21.64000000]*Angstrom
+lattice = UnitCell(vector_a, vector_b, vector_c)
+
+# Define the elements.
+elements = [Vanadium, Oxygen, Oxygen, Cerium, Oxygen, Oxygen,
+            Oxygen, Cerium, Oxygen, Cerium, Oxygen, Cerium,
+            Oxygen, Oxygen, Cerium, Oxygen, Oxygen, Oxygen,
+            Cerium, Oxygen, Oxygen, Cerium, Oxygen, Oxygen,
+            Cerium, Oxygen, Oxygen, Cerium, Oxygen, Vanadium,
+            Oxygen, Oxygen, Cerium, Oxygen, Oxygen, Oxygen,
+            Cerium, Oxygen, Oxygen, Cerium, Oxygen, Cerium,
+            Oxygen, Oxygen, Cerium, Oxygen, Oxygen, Cerium,
+            Oxygen, Oxygen, Cerium, Oxygen, Oxygen, Oxygen,
+            Cerium, Oxygen, Oxygen, Cerium, Oxygen, Cerium,
+            Oxygen, Oxygen, Cerium, Oxygen, Oxygen, Oxygen,
+            Cerium, Oxygen, Oxygen, Cerium, Oxygen, Oxygen,
+            Cerium, Oxygen, Oxygen, Cerium, Oxygen, Cerium,
+            Oxygen, Oxygen, Cerium, Oxygen, Oxygen, Oxygen,
+            Cerium, Oxygen, Oxygen, Cerium, Oxygen, Cerium,
+            Oxygen, Oxygen, Cerium, Oxygen, Oxygen]
+
+# Define the coordinates.
+coordinates = [[  5.00000000e-02,  7.50000000e-02,  1.00000000e-01],
+               [  1.30000000e-01,  1.35000000e-01,  1.25250000e-01],
+               [  1.30000000e-01,  1.35000000e-01,  3.75250000e-01],
+               [  5.00000000e-02,  7.50000000e-02,  6.00000000e-01],
+               [  1.30000000e-01,  1.35000000e-01,  6.25250000e-01],
+               [  1.30000000e-01,  1.35000000e-01,  8.75250000e-01],
+               [  1.30000000e-01,  3.85000000e-01,  1.25250000e-01],
+               [  5.00000000e-02,  3.25000000e-01,  3.50000000e-01],
+               [  1.30000000e-01,  3.85000000e-01,  3.75250000e-01],
+               [  5.00000000e-02,  3.25000000e-01,  8.50000000e-01],
+               [  1.30000000e-01,  3.85000000e-01,  8.75250000e-01],
+               [  5.00000000e-02,  5.75000000e-01,  1.00000000e-01],
+               [  1.30000000e-01,  6.35000000e-01,  1.25250000e-01],
+               [  1.30000000e-01,  6.35000000e-01,  3.75250000e-01],
+               [  5.00000000e-02,  5.75000000e-01,  6.00000000e-01],
+               [  1.30000000e-01,  6.35000000e-01,  6.25250000e-01],
+               [  1.30000000e-01,  6.35000000e-01,  8.75250000e-01],
+               [  1.30000000e-01,  8.85000000e-01,  1.25250000e-01],
+               [  5.00000000e-02,  8.25000000e-01,  3.50000000e-01],
+               [  1.30000000e-01,  8.85000000e-01,  3.75250000e-01],
+               [  1.30000000e-01,  8.85000000e-01,  6.25250000e-01],
+               [  5.00000000e-02,  8.25000000e-01,  8.50000000e-01],
+               [  1.30000000e-01,  8.85000000e-01,  8.75250000e-01],
+               [  3.80000000e-01,  1.35000000e-01,  1.25250000e-01],
+               [  3.00000000e-01,  7.50000000e-02,  3.50000000e-01],
+               [  3.80000000e-01,  1.35000000e-01,  3.75250000e-01],
+               [  3.80000000e-01,  1.35000000e-01,  6.25250000e-01],
+               [  3.00000000e-01,  7.50000000e-02,  8.50000000e-01],
+               [  3.80000000e-01,  1.35000000e-01,  8.75250000e-01],
+               [  3.00000000e-01,  3.25000000e-01,  1.00000000e-01],
+               [  3.80000000e-01,  3.85000000e-01,  1.25250000e-01],
+               [  3.80000000e-01,  3.85000000e-01,  3.75250000e-01],
+               [  3.00000000e-01,  3.25000000e-01,  6.00000000e-01],
+               [  3.80000000e-01,  3.85000000e-01,  6.25250000e-01],
+               [  3.80000000e-01,  3.85000000e-01,  8.75250000e-01],
+               [  3.80000000e-01,  6.35000000e-01,  1.25250000e-01],
+               [  3.00000000e-01,  5.75000000e-01,  3.50000000e-01],
+               [  3.80000000e-01,  6.35000000e-01,  3.75250000e-01],
+               [  3.80000000e-01,  6.35000000e-01,  6.25250000e-01],
+               [  3.00000000e-01,  5.75000000e-01,  8.50000000e-01],
+               [  3.80000000e-01,  6.35000000e-01,  8.75250000e-01],
+               [  3.00000000e-01,  8.25000000e-01,  1.00000000e-01],
+               [  3.80000000e-01,  8.85000000e-01,  1.25250000e-01],
+               [  3.80000000e-01,  8.85000000e-01,  3.75250000e-01],
+               [  3.00000000e-01,  8.25000000e-01,  6.00000000e-01],
+               [  3.80000000e-01,  8.85000000e-01,  6.25250000e-01],
+               [  3.80000000e-01,  8.85000000e-01,  8.75250000e-01],
+               [  5.50000000e-01,  7.50000000e-02,  1.00000000e-01],
+               [  6.30000000e-01,  1.35000000e-01,  1.25250000e-01],
+               [  6.30000000e-01,  1.35000000e-01,  3.75250000e-01],
+               [  5.50000000e-01,  7.50000000e-02,  6.00000000e-01],
+               [  6.30000000e-01,  1.35000000e-01,  6.25250000e-01],
+               [  6.30000000e-01,  1.35000000e-01,  8.75250000e-01],
+               [  6.30000000e-01,  3.85000000e-01,  1.25250000e-01],
+               [  5.50000000e-01,  3.25000000e-01,  3.50000000e-01],
+               [  6.30000000e-01,  3.85000000e-01,  3.75250000e-01],
+               [  6.30000000e-01,  3.85000000e-01,  6.25250000e-01],
+               [  5.50000000e-01,  3.25000000e-01,  8.50000000e-01],
+               [  6.30000000e-01,  3.85000000e-01,  8.75250000e-01],
+               [  5.50000000e-01,  5.75000000e-01,  1.00000000e-01],
+               [  6.30000000e-01,  6.35000000e-01,  1.25250000e-01],
+               [  6.30000000e-01,  6.35000000e-01,  3.75250000e-01],
+               [  5.50000000e-01,  5.75000000e-01,  6.00000000e-01],
+               [  6.30000000e-01,  6.35000000e-01,  6.25250000e-01],
+               [  6.30000000e-01,  6.35000000e-01,  8.75250000e-01],
+               [  6.30000000e-01,  8.85000000e-01,  1.25250000e-01],
+               [  5.50000000e-01,  8.25000000e-01,  3.50000000e-01],
+               [  6.30000000e-01,  8.85000000e-01,  3.75250000e-01],
+               [  6.30000000e-01,  8.85000000e-01,  6.25250000e-01],
+               [  5.50000000e-01,  8.25000000e-01,  8.50000000e-01],
+               [  6.30000000e-01,  8.85000000e-01,  8.75250000e-01],
+               [  8.80000000e-01,  1.35000000e-01,  1.25250000e-01],
+               [  8.00000000e-01,  7.50000000e-02,  3.50000000e-01],
+               [  8.80000000e-01,  1.35000000e-01,  3.75250000e-01],
+               [  8.80000000e-01,  1.35000000e-01,  6.25250000e-01],
+               [  8.00000000e-01,  7.50000000e-02,  8.50000000e-01],
+               [  8.80000000e-01,  1.35000000e-01,  8.75250000e-01],
+               [  8.00000000e-01,  3.25000000e-01,  1.00000000e-01],
+               [  8.80000000e-01,  3.85000000e-01,  1.25250000e-01],
+               [  8.80000000e-01,  3.85000000e-01,  3.75250000e-01],
+               [  8.00000000e-01,  3.25000000e-01,  6.00000000e-01],
+               [  8.80000000e-01,  3.85000000e-01,  6.25250000e-01],
+               [  8.80000000e-01,  3.85000000e-01,  8.75250000e-01],
+               [  8.80000000e-01,  6.35000000e-01,  1.25250000e-01],
+               [  8.00000000e-01,  5.75000000e-01,  3.50000000e-01],
+               [  8.80000000e-01,  6.35000000e-01,  3.75250000e-01],
+               [  8.80000000e-01,  6.35000000e-01,  6.25250000e-01],
+               [  8.00000000e-01,  5.75000000e-01,  8.50000000e-01],
+               [  8.80000000e-01,  6.35000000e-01,  8.75250000e-01],
+               [  8.00000000e-01,  8.25000000e-01,  1.00000000e-01],
+               [  8.80000000e-01,  8.85000000e-01,  1.25250000e-01],
+               [  8.80000000e-01,  8.85000000e-01,  3.75250000e-01],
+               [  8.00000000e-01,  8.25000000e-01,  6.00000000e-01],
+               [  8.80000000e-01,  8.85000000e-01,  6.25250000e-01],
+               [  8.80000000e-01,  8.85000000e-01,  8.75250000e-01]]
+
+# Setup the configuration.
+bulk_configuration = BulkConfiguration(
+    bravais_lattice=lattice,
+    elements=elements,
+    fractional_coordinates=coordinates )
+
+# ----------------------------------------------------------
+"""
+        self.assertEqual(atk_script, ref_script)
+
+
 if __name__ == '__main__':
     unittest.main()
 
