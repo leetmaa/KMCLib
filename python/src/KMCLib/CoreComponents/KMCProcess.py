@@ -18,7 +18,7 @@ from KMCLib.Utilities.CheckUtilities import checkSequenceOfFloats
 from KMCLib.Utilities.CheckUtilities import checkSequenceOfPositiveIntegers
 from KMCLib.Utilities.CheckUtilities import checkPositiveInteger
 from KMCLib.Utilities.CheckUtilities import checkPositiveFloat
-from KMCLib.KMCLocalConfiguration import KMCLocalConfiguration
+from KMCLib.CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
 from KMCLib.Exceptions.Error import Error
 
 class KMCProcess(object):

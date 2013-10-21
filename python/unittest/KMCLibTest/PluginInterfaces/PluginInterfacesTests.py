@@ -9,11 +9,13 @@
 
 import unittest
 
-from OnTheFlyMSDTest import OnTheFlyMSDTest
+from KMCAnalysisPluginTest import KMCAnalysisPluginTest
+from KMCRateCalculatorPluginTest import KMCRateCalculatorPluginTest
 
 def suite():
     suite = unittest.TestSuite(
-        [unittest.TestLoader().loadTestsFromTestCase(OnTheFlyMSDTest),
+        [unittest.TestLoader().loadTestsFromTestCase(KMCAnalysisPluginTest),
+         unittest.TestLoader().loadTestsFromTestCase(KMCRateCalculatorPluginTest),
          ])
     return suite
 

@@ -8,7 +8,7 @@
 #
 
 
-from KMCLib.KMCLattice import KMCLattice
+from KMCLib.CoreComponents.KMCLattice import KMCLattice
 from KMCLib.Utilities.CheckUtilities import checkTypes
 from KMCLib.Utilities.ConversionUtilities import stringListToStdVectorString
 from KMCLib.Utilities.ConversionUtilities import numpy2DArrayToStdVectorStdVectorDouble

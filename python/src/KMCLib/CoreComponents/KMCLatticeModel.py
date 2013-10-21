@@ -10,10 +10,10 @@
 
 from KMCLib.Backend import Backend
 
-from KMCLib.KMCConfiguration import KMCConfiguration
-from KMCLib.KMCInteractions import KMCInteractions
-from KMCLib.KMCControlParameters import KMCControlParameters
-from KMCLib.KMCAnalysisPlugin import KMCAnalysisPlugin
+from KMCLib.CoreComponents.KMCConfiguration import KMCConfiguration
+from KMCLib.CoreComponents.KMCInteractions import KMCInteractions
+from KMCLib.CoreComponents.KMCControlParameters import KMCControlParameters
+from KMCLib.PluginInterfaces.KMCAnalysisPlugin import KMCAnalysisPlugin
 from KMCLib.Exceptions.Error import Error
 from KMCLib.Utilities.Trajectory.LatticeTrajectory import LatticeTrajectory
 from KMCLib.Utilities.Trajectory.XYZTrajectory import XYZTrajectory

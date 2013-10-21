@@ -8,9 +8,9 @@
 #
 
 from KMCLib.Exceptions.Error import Error
-from KMCLib.KMCConfiguration import KMCConfiguration
-from KMCLib.KMCInteractions import KMCInteractions
-from KMCLib.KMCLatticeModel import KMCLatticeModel
+from KMCLib.CoreComponents.KMCConfiguration import KMCConfiguration
+from KMCLib.CoreComponents.KMCInteractions import KMCInteractions
+from KMCLib.CoreComponents.KMCLatticeModel import KMCLatticeModel
 
 def KMCConfigurationFromScript(script_file_path):
     """

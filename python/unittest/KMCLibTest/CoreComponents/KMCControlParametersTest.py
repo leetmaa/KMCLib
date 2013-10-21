@@ -13,7 +13,7 @@ import unittest
 from KMCLib.Exceptions.Error import Error
 
 # Import from the module we test.
-from KMCLib.KMCControlParameters import KMCControlParameters
+from KMCLib.CoreComponents.KMCControlParameters import KMCControlParameters
 
 
 # Implement the test.

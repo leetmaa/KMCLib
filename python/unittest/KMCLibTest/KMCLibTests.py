@@ -9,41 +9,21 @@
 
 import unittest
 
-
-from KMCLocalConfigurationTest import KMCLocalConfigurationTest
-from KMCInteractionsTest import KMCInteractionsTest
-from KMCConfigurationTest import KMCConfigurationTest
-from KMCUnitCellTest import KMCUnitCellTest
-from KMCLatticeTest import KMCLatticeTest
-from KMCLatticeModelTest import KMCLatticeModelTest
-from KMCControlParametersTest import KMCControlParametersTest
-from KMCRateCalculatorPluginTest import KMCRateCalculatorPluginTest
-from KMCAnalysisPluginTest import KMCAnalysisPluginTest
-from KMCProcessTest import KMCProcessTest
-
-from Utilities import UtilitiesTests
-from Exceptions import ExceptionsTests
+from Analysis import AnalysisTests
 from Backend import BackendTests
-from OnTheFlyMSD import OnTheFlyMSDTests
-from TimeStepDistribution import TimeStepDistributionTests
+from CoreComponents import CoreComponentsTests
+from Exceptions import ExceptionsTests
+from PluginInterfaces import PluginInterfacesTests
+from Utilities import UtilitiesTests
 
 def suite():
     suite = unittest.TestSuite(
-        [unittest.TestLoader().loadTestsFromTestCase(KMCLocalConfigurationTest),
-         unittest.TestLoader().loadTestsFromTestCase(KMCInteractionsTest),
-         unittest.TestLoader().loadTestsFromTestCase(KMCConfigurationTest),
-         unittest.TestLoader().loadTestsFromTestCase(KMCUnitCellTest),
-         unittest.TestLoader().loadTestsFromTestCase(KMCLatticeTest),
-         unittest.TestLoader().loadTestsFromTestCase(KMCLatticeModelTest),
-         unittest.TestLoader().loadTestsFromTestCase(KMCControlParametersTest),
-         unittest.TestLoader().loadTestsFromTestCase(KMCRateCalculatorPluginTest),
-         unittest.TestLoader().loadTestsFromTestCase(KMCAnalysisPluginTest),
-         unittest.TestLoader().loadTestsFromTestCase(KMCProcessTest),
-         UtilitiesTests.suite(),
-         ExceptionsTests.suite(),
+        [AnalysisTests.suite(),
          BackendTests.suite(),
-         OnTheFlyMSDTests.suite(),
-         TimeStepDistributionTests.suite()])
+         CoreComponentsTests.suite(),
+         ExceptionsTests.suite(),
+         PluginInterfacesTests.suite(),
+         UtilitiesTests.suite()])
     return suite
 
 if __name__ == '__main__':

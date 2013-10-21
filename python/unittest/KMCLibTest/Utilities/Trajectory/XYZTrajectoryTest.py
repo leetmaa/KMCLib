@@ -12,9 +12,9 @@ import os
 import sys
 import numpy
 
-from KMCLib.KMCUnitCell import KMCUnitCell
-from KMCLib.KMCLattice import KMCLattice
-from KMCLib.KMCConfiguration import KMCConfiguration
+from KMCLib.CoreComponents.KMCUnitCell import KMCUnitCell
+from KMCLib.CoreComponents.KMCLattice import KMCLattice
+from KMCLib.CoreComponents.KMCConfiguration import KMCConfiguration
 
 # Import from the module we test.
 from KMCLib.Utilities.Trajectory.XYZTrajectory import XYZTrajectory
@@ -36,6 +36,12 @@ class XYZTrajectoryTest(unittest.TestCase):
     def testConstruction(self):
         """ Test that the XYZTrajectory object can be constructed. """
         filename = "abc123.xyz"
+        name = os.path.abspath(os.path.dirname(__file__))
+        name = os.path.join(name, "..", "..")
+        name = os.path.join(name, "TestUtilities", "Scratch")
+        filename = os.path.join(name, filename)
+        self.__files_to_remove.append(filename)
+
         unit_cell = KMCUnitCell(cell_vectors=[[1.0, 0.0, 0.0],
                                               [0.0, 1.0, 0.0],
                                               [0.0, 0.0, 1.0]],
