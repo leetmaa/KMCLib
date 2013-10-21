@@ -154,7 +154,7 @@ must be given as string."""
 
         # Check that we have at least one available process to  run the KMC simulation.
         if cpp_model.interactions().totalAvailableSites() == 0:
-            raise Error("No available processes. None of the processes you have defined as input match any position in the configuration. Change your initial configuration or processes to run KMC.")
+            raise Error("No available processes. None of the processes defined as input match any position in the configuration. Change the initial configuration or processes to run KMC.")
 
         # Setup a trajectory object.
         if use_trajectory:
@@ -183,7 +183,7 @@ must be given as string."""
         n_steps   = control_parameters.numberOfSteps()
         n_dump    = control_parameters.dumpInterval()
         n_analyse = control_parameters.analysisInterval()
-        prettyPrint(" KMCLib: Runing for %i steps, starting from time: %f\n"%(n_steps,self.__cpp_timer.simulationTime()))
+        prettyPrint(" KMCLib: Runing for %i steps, starting from time: %f\n"%(n_steps, self.__cpp_timer.simulationTime()))
 
         # Run the KMC simulation.
         try:
@@ -217,14 +217,13 @@ must be given as string."""
 
         finally:
 
-            # Perform the analysis post processing.
-            for ap in analysis:
-                ap.finalize();
-
-            # Flush the buffers when done.
+            # Flush the trajectory buffers when done.
             if use_trajectory:
                 trajectory.flush()
 
+            # Perform the analysis post processing.
+            for ap in analysis:
+                ap.finalize();
 
     def _script(self, variable_name="model"):
         """
