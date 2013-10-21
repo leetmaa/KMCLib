@@ -23,7 +23,7 @@ from KMCLib.Backend import Backend
 from KMCLib.CoreComponents.KMCInteractions import KMCInteractions
 
 # Import the test helpers.
-sys.path.insert(0, os.path.join(sys.path[0], '..'))
+sys.path.insert(0, os.path.join(os.path.abspath(os.path.dirname(__file__)), ".."))
 from TestUtilities.Plugins.CustomRateCalculator.CustomRateCalculator import CustomRateCalculator
 
 # Implementing the tests.

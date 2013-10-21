@@ -313,8 +313,6 @@ class KMCConfiguration(object):
         return lattice_script + comment_string + types_string + "\n" + \
             possible_types_string + "\n" + configuration_string
 
-
-
     def _atkScript(self, types_map):
         """
         Generate an ATK 12.8.2 compatible BulkConfiguration script of
