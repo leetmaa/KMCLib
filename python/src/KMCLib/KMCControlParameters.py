@@ -38,7 +38,7 @@ class KMCControlParameters(object):
 
         :param seed: The seed value to use for the backend random number generator.
                      If no seed value is given the random numnber generator will be
-                     seeded based on the wall-clock trime.
+                     seeded based on the wall-clock time.
         :type seed: int
 
         """
