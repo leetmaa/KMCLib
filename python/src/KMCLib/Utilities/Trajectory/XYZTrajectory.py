@@ -91,7 +91,8 @@ class XYZTrajectory(Trajectory):
 
     def _storeData(self, simulation_time, step, configuration):
         """
-        Append the types and time information to the internal buffers.
+        Append the coordinate, types and time information to the
+        internal buffers.
 
         :param simulation_time: The current time of the simulation.
         :type simulation_time: float
