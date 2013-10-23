@@ -188,8 +188,11 @@ must be given as string."""
         # Run the KMC simulation.
         try:
             # Loop over the steps.
-            for s in range(n_steps):
-                step = s+1
+            step = 0
+            while(step < n_steps):
+                step += 1
+#            for s in range(n_steps):
+#                step = s+1
 
                 # Check if it is possible to take a step.
                 nP = cpp_model.interactions().totalAvailableSites()
