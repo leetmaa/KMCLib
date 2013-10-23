@@ -11,11 +11,11 @@ import unittest
 import os
 import numpy
 
-from KMCLib.KMCConfiguration import KMCConfiguration
-from KMCLib.KMCLattice import KMCLattice
-from KMCLib.KMCUnitCell import KMCUnitCell
-from KMCLib.KMCLatticeModel import KMCLatticeModel
-from KMCLib.KMCInteractions import KMCInteractions
+from KMCLib.CoreComponents.KMCConfiguration import KMCConfiguration
+from KMCLib.CoreComponents.KMCLattice import KMCLattice
+from KMCLib.CoreComponents.KMCUnitCell import KMCUnitCell
+from KMCLib.CoreComponents.KMCLatticeModel import KMCLatticeModel
+from KMCLib.CoreComponents.KMCInteractions import KMCInteractions
 from KMCLib.Exceptions.Error import Error
 
 # Import from the module we test.

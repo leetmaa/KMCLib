@@ -13,7 +13,7 @@ import numpy
 
 
 # Import the module to test.
-from KMCLib.KMCRateCalculatorPlugin import KMCRateCalculatorPlugin
+from KMCLib.PluginInterfaces.KMCRateCalculatorPlugin import KMCRateCalculatorPlugin
 from KMCLib.Backend import Backend
 
 # Implementing the tests.

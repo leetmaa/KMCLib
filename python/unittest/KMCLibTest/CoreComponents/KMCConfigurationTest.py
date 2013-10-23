@@ -12,12 +12,12 @@ import unittest
 import numpy
 
 from KMCLib.Exceptions.Error import Error
-from KMCLib.KMCUnitCell import KMCUnitCell
-from KMCLib.KMCLattice import KMCLattice
+from KMCLib.CoreComponents.KMCUnitCell import KMCUnitCell
+from KMCLib.CoreComponents.KMCLattice import KMCLattice
 from KMCLib.Backend import Backend
 
 # Import the module to test.
-from KMCLib.KMCConfiguration import KMCConfiguration
+from KMCLib.CoreComponents.KMCConfiguration import KMCConfiguration
 
 # Implementing the tests.
 class KMCConfigurationTest(unittest.TestCase):

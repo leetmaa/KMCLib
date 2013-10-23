@@ -12,14 +12,14 @@ import numpy
 import StringIO
 
 # Import from the module we test.
-from KMCLib.OnTheFlyMSD.OnTheFlyMSD import OnTheFlyMSD
-from KMCLib.KMCUnitCell import KMCUnitCell
-from KMCLib.KMCLattice import KMCLattice
-from KMCLib.KMCConfiguration import KMCConfiguration
-from KMCLib.KMCProcess import KMCProcess
-from KMCLib.KMCInteractions import KMCInteractions
-from KMCLib.KMCLatticeModel import KMCLatticeModel
-from KMCLib.KMCControlParameters import KMCControlParameters
+from KMCLib.Analysis.OnTheFlyMSD import OnTheFlyMSD
+from KMCLib.CoreComponents.KMCUnitCell import KMCUnitCell
+from KMCLib.CoreComponents.KMCLattice import KMCLattice
+from KMCLib.CoreComponents.KMCConfiguration import KMCConfiguration
+from KMCLib.CoreComponents.KMCProcess import KMCProcess
+from KMCLib.CoreComponents.KMCInteractions import KMCInteractions
+from KMCLib.CoreComponents.KMCLatticeModel import KMCLatticeModel
+from KMCLib.CoreComponents.KMCControlParameters import KMCControlParameters
 from KMCLib.Backend import Backend
 
 # Implement the test.

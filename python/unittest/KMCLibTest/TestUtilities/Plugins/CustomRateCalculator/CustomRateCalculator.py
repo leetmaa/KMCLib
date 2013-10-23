@@ -8,7 +8,7 @@
 #
 
 
-from KMCLib.KMCRateCalculatorPlugin import KMCRateCalculatorPlugin
+from KMCLib.PluginInterfaces.KMCRateCalculatorPlugin import KMCRateCalculatorPlugin
 
 class CustomRateCalculator(KMCRateCalculatorPlugin):
     """ An example of a custom rate calculator plugin. """

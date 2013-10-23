@@ -12,7 +12,7 @@ import numpy
 import StringIO
 
 # Import from the module we test.
-from KMCLib.TimeStepDistribution.TimeStepDistribution import TimeStepDistribution
+from KMCLib.Analysis.TimeStepDistribution import TimeStepDistribution
 
 # Implement the test.
 class TimeStepDistributionTest(unittest.TestCase):

@@ -11,12 +11,12 @@
 import unittest
 import numpy
 
-from KMCLib.KMCUnitCell import KMCUnitCell
+from KMCLib.CoreComponents.KMCUnitCell import KMCUnitCell
 from KMCLib.Exceptions.Error import Error
 from KMCLib.Backend import Backend
 
 # Import from the module we test.
-from KMCLib.KMCLattice import KMCLattice
+from KMCLib.CoreComponents.KMCLattice import KMCLattice
 
 
 # Implement the test.

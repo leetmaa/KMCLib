@@ -10,10 +10,10 @@
 
 from KMCLib.Backend import Backend
 
-from KMCLib.KMCConfiguration import KMCConfiguration
-from KMCLib.KMCInteractions import KMCInteractions
-from KMCLib.KMCControlParameters import KMCControlParameters
-from KMCLib.KMCAnalysisPlugin import KMCAnalysisPlugin
+from KMCLib.CoreComponents.KMCConfiguration import KMCConfiguration
+from KMCLib.CoreComponents.KMCInteractions import KMCInteractions
+from KMCLib.CoreComponents.KMCControlParameters import KMCControlParameters
+from KMCLib.PluginInterfaces.KMCAnalysisPlugin import KMCAnalysisPlugin
 from KMCLib.Exceptions.Error import Error
 from KMCLib.Utilities.Trajectory.LatticeTrajectory import LatticeTrajectory
 from KMCLib.Utilities.Trajectory.XYZTrajectory import XYZTrajectory
@@ -154,7 +154,7 @@ must be given as string."""
 
         # Check that we have at least one available process to  run the KMC simulation.
         if cpp_model.interactions().totalAvailableSites() == 0:
-            raise Error("No available processes. None of the processes you have defined as input match any position in the configuration. Change your initial configuration or processes to run KMC.")
+            raise Error("No available processes. None of the processes defined as input match any position in the configuration. Change the initial configuration or processes to run KMC.")
 
         # Setup a trajectory object.
         if use_trajectory:
@@ -183,13 +183,16 @@ must be given as string."""
         n_steps   = control_parameters.numberOfSteps()
         n_dump    = control_parameters.dumpInterval()
         n_analyse = control_parameters.analysisInterval()
-        prettyPrint(" KMCLib: Runing for %i steps, starting from time: %f\n"%(n_steps,self.__cpp_timer.simulationTime()))
+        prettyPrint(" KMCLib: Runing for %i steps, starting from time: %f\n"%(n_steps, self.__cpp_timer.simulationTime()))
 
         # Run the KMC simulation.
         try:
             # Loop over the steps.
-            for s in range(n_steps):
-                step = s+1
+            step = 0
+            while(step < n_steps):
+                step += 1
+#            for s in range(n_steps):
+#                step = s+1
 
                 # Check if it is possible to take a step.
                 nP = cpp_model.interactions().totalAvailableSites()
@@ -217,14 +220,13 @@ must be given as string."""
 
         finally:
 
-            # Perform the analysis post processing.
-            for ap in analysis:
-                ap.finalize();
-
-            # Flush the buffers when done.
+            # Flush the trajectory buffers when done.
             if use_trajectory:
                 trajectory.flush()
 
+            # Perform the analysis post processing.
+            for ap in analysis:
+                ap.finalize();
 
     def _script(self, variable_name="model"):
         """

@@ -10,17 +10,20 @@
 
 import unittest
 import numpy
+import sys
+import os
 
-from KMCLib.KMCLocalConfiguration import KMCLocalConfiguration
-from KMCLib.KMCProcess import KMCProcess
-from KMCLib.KMCRateCalculatorPlugin import KMCRateCalculatorPlugin
+from KMCLib.CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
+from KMCLib.CoreComponents.KMCProcess import KMCProcess
+from KMCLib.PluginInterfaces.KMCRateCalculatorPlugin import KMCRateCalculatorPlugin
 from KMCLib.Exceptions.Error import Error
 from KMCLib.Backend import Backend
 
 # Import the module to test.
-from KMCLib.KMCInteractions import KMCInteractions
+from KMCLib.CoreComponents.KMCInteractions import KMCInteractions
 
 # Import the test helpers.
+sys.path.insert(0, os.path.join(os.path.abspath(os.path.dirname(__file__)), ".."))
 from TestUtilities.Plugins.CustomRateCalculator.CustomRateCalculator import CustomRateCalculator
 
 # Implementing the tests.

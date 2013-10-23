@@ -9,11 +9,13 @@
 
 import unittest
 
+from OnTheFlyMSDTest import OnTheFlyMSDTest
 from TimeStepDistributionTest import TimeStepDistributionTest
 
 def suite():
     suite = unittest.TestSuite(
-        [unittest.TestLoader().loadTestsFromTestCase(TimeStepDistributionTest),
+        [unittest.TestLoader().loadTestsFromTestCase(OnTheFlyMSDTest),
+         unittest.TestLoader().loadTestsFromTestCase(TimeStepDistributionTest),
          ])
     return suite
 

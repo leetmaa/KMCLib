@@ -9,7 +9,7 @@
 
 import numpy
 
-from KMCLib.KMCLattice import KMCLattice
+from KMCLib.CoreComponents.KMCLattice import KMCLattice
 from KMCLib.Utilities.CheckUtilities import checkTypes
 from KMCLib.Utilities.ConversionUtilities import stringListToStdVectorString
 from KMCLib.Utilities.ConversionUtilities import numpy2DArrayToStdVectorStdVectorDouble
@@ -312,8 +312,6 @@ class KMCConfiguration(object):
         # Return the script.
         return lattice_script + comment_string + types_string + "\n" + \
             possible_types_string + "\n" + configuration_string
-
-
 
     def _atkScript(self, types_map):
         """

@@ -11,12 +11,12 @@
 import numpy
 import inspect
 
-from KMCLib.KMCLocalConfiguration import KMCLocalConfiguration
-from KMCLib.KMCProcess import KMCProcess
+from KMCLib.CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
+from KMCLib.CoreComponents.KMCProcess import KMCProcess
 from KMCLib.Utilities.CheckUtilities import checkSequence
 from KMCLib.Utilities.CheckUtilities import checkPositiveInteger
 from KMCLib.Utilities.CheckUtilities import checkSequenceOf
-from KMCLib.KMCRateCalculatorPlugin import KMCRateCalculatorPlugin
+from KMCLib.PluginInterfaces.KMCRateCalculatorPlugin import KMCRateCalculatorPlugin
 from KMCLib.Exceptions.Error import Error
 from KMCLib.Backend import Backend
 

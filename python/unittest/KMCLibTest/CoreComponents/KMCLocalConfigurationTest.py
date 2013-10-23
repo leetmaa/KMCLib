@@ -15,7 +15,7 @@ from KMCLib.Exceptions.Error import Error
 from KMCLib.Backend import Backend
 
 # Import the module to test.
-from KMCLib.KMCLocalConfiguration import KMCLocalConfiguration
+from KMCLib.CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
 
 # Implementing the tests.
 class KMCLocalConfigurationTest(unittest.TestCase):

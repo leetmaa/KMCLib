@@ -10,7 +10,7 @@
 import numpy
 import sys
 
-from KMCLib.KMCAnalysisPlugin import KMCAnalysisPlugin
+from KMCLib.PluginInterfaces.KMCAnalysisPlugin import KMCAnalysisPlugin
 from KMCLib.Utilities.CheckUtilities import checkPositiveInteger
 from KMCLib.Utilities.CheckUtilities import checkPositiveFloat
 from KMCLib.Utilities.ConversionUtilities import stdVectorCoordinateToNumpy2DArray

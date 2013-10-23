@@ -12,7 +12,7 @@ import unittest
 
 
 # Import the module to test.
-from KMCLib.KMCAnalysisPlugin import KMCAnalysisPlugin
+from KMCLib.PluginInterfaces.KMCAnalysisPlugin import KMCAnalysisPlugin
 
 # Implementing the tests.
 class KMCAnalysisPluginTest(unittest.TestCase):

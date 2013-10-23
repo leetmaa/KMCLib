@@ -12,10 +12,10 @@ import unittest
 import numpy
 
 from KMCLib.Exceptions.Error import Error
-from KMCLib.KMCLocalConfiguration import KMCLocalConfiguration
+from KMCLib.CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
 
 # Import the module to test.
-from KMCLib.KMCProcess import KMCProcess
+from KMCLib.CoreComponents.KMCProcess import KMCProcess
 
 # Implementing the tests.
 class KMCProcessTest(unittest.TestCase):

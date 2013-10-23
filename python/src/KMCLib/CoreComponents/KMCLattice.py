@@ -11,7 +11,7 @@
 import numpy
 
 from KMCLib.Backend import Backend
-from KMCLib.KMCUnitCell import KMCUnitCell
+from KMCLib.CoreComponents.KMCUnitCell import KMCUnitCell
 from KMCLib.Utilities.CheckUtilities import checkSequence
 from KMCLib.Exceptions.Error import Error
 

@@ -10,23 +10,26 @@
 
 import unittest
 import numpy
+import sys
 import os
 
-from KMCLib.KMCInteractions import KMCInteractions
-from KMCLib.KMCProcess import KMCProcess
-from KMCLib.KMCConfiguration import KMCConfiguration
-from KMCLib.KMCLocalConfiguration import KMCLocalConfiguration
-from KMCLib.KMCControlParameters import KMCControlParameters
-from KMCLib.KMCUnitCell import KMCUnitCell
-from KMCLib.KMCLattice  import KMCLattice
-from KMCLib.KMCAnalysisPlugin import KMCAnalysisPlugin
+from KMCLib.CoreComponents.KMCInteractions import KMCInteractions
+from KMCLib.CoreComponents.KMCProcess import KMCProcess
+from KMCLib.CoreComponents.KMCConfiguration import KMCConfiguration
+from KMCLib.CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
+from KMCLib.CoreComponents.KMCControlParameters import KMCControlParameters
+from KMCLib.CoreComponents.KMCUnitCell import KMCUnitCell
+from KMCLib.CoreComponents.KMCLattice  import KMCLattice
+from KMCLib.PluginInterfaces.KMCAnalysisPlugin import KMCAnalysisPlugin
 from KMCLib.Exceptions.Error import Error
 
 # Import from the module we test.
-from KMCLib.KMCLatticeModel import KMCLatticeModel
+from KMCLib.CoreComponents.KMCLatticeModel import KMCLatticeModel
 
 # Test helpers.
+sys.path.insert(0, os.path.join(os.path.abspath(os.path.dirname(__file__)), ".."))
 from TestUtilities.Plugins.CustomRateCalculator.CustomRateCalculator import CustomRateCalculator
+
 from KMCLib.Backend.Backend import MPICommons
 
 # Implement the test.
@@ -261,7 +264,7 @@ class KMCLatticeModelTest(unittest.TestCase):
 
         # Run the model with a trajectory file.
         name = os.path.abspath(os.path.dirname(__file__))
-        name = os.path.join(name, "TestUtilities", "Scratch")
+        name = os.path.join(name, "..", "TestUtilities", "Scratch")
         trajectory_filename = os.path.join(name, "ab_flip_traj.py")
         self.__files_to_remove.append(trajectory_filename)
 
@@ -343,7 +346,7 @@ class KMCLatticeModelTest(unittest.TestCase):
 
         # Run the model with a trajectory file.
         name = os.path.abspath(os.path.dirname(__file__))
-        name = os.path.join(name, "TestUtilities", "Scratch")
+        name = os.path.join(name, "..", "TestUtilities", "Scratch")
         trajectory_filename = os.path.join(name, "ab_flip_traj.py")
         self.__files_to_remove.append(trajectory_filename)
 
@@ -428,7 +431,7 @@ class KMCLatticeModelTest(unittest.TestCase):
 
         # Run the model with a trajectory file.
         name = os.path.abspath(os.path.dirname(__file__))
-        name = os.path.join(name, "TestUtilities", "Scratch")
+        name = os.path.join(name, "..", "TestUtilities", "Scratch")
         trajectory_filename = os.path.join(name, "ab_flip_traj.py")
         self.__files_to_remove.append(trajectory_filename)
 
@@ -594,7 +597,7 @@ class KMCLatticeModelTest(unittest.TestCase):
 
         # Construct the trajectory fileames.
         name = os.path.abspath(os.path.dirname(__file__))
-        name = os.path.join(name, "TestUtilities", "Scratch")
+        name = os.path.join(name, "..", "TestUtilities", "Scratch")
 
         lattice_trajectory_filename = os.path.join(name, "ab_flip_traj_lattice.py")
         xyz_trajectory_filename = os.path.join(name, "ab_flip_traj_xyz.xyz")

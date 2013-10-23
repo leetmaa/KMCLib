@@ -15,7 +15,7 @@ import numpy
 from KMCLib.Exceptions.Error import Error
 
 # Import from the module we test.
-from KMCLib.KMCUnitCell import KMCUnitCell
+from KMCLib.CoreComponents.KMCUnitCell import KMCUnitCell
 
 
 # Implement the test.
