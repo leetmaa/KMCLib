@@ -14,6 +14,7 @@ from KMCLib.PluginInterfaces.KMCAnalysisPlugin import KMCAnalysisPlugin
 from KMCLib.Utilities.CheckUtilities import checkPositiveInteger
 from KMCLib.Utilities.CheckUtilities import checkPositiveFloat
 from KMCLib.Utilities.ConversionUtilities import stdVectorCoordinateToNumpy2DArray
+from KMCLib.Utilities.ConversionUtilities import stdVectorPairCoordinateToNumpy2DArray
 from KMCLib.Utilities.ConversionUtilities import numpy2DArrayToStdVectorCoordinate
 from KMCLib.Exceptions.Error import Error
 from KMCLib.Backend import Backend
@@ -64,6 +65,9 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
         # Set the step counter to zero.
         self.__n_steps = 0
 
+        # Set the blocksize to zero.
+        self.__blocksize = 0
+
     def setup(self, step, time, configuration):
         """
         Recieves the setup call from the before the MC loop.
@@ -92,7 +96,8 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
                                              self.__t_max,
                                              time,
                                              self.__track_type,
-                                             abc_to_xyz_cpp)
+                                             abc_to_xyz_cpp,
+                                             self.__blocksize)
 
     def registerStep(self, step, time, configuration):
         """
@@ -128,32 +133,103 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
 
                 if self.__history_bin_counters[b][i] != 0 and self.__bin_counters[i] != 0:
                     fraction = float(self.__history_bin_counters[b][i]) / float(self.__bin_counters[i])
-                    self.__n_eff[i] += fraction * (b+1.0)
+                    n_value = (b+1.0)
+                    self.__n_eff[i] += fraction * n_value
 
         # Remove zeros from the bin counters.
         bin_counters_copy = numpy.array(self.__bin_counters)
         where = bin_counters_copy == 0
         bin_counters_copy[where] = 1
 
-        # Produce the final results by dividing with the bin counters
-        # and calculate the standard deviation in each point.
-        self.__results    = numpy.zeros((3,self.__n_bins))
+        # Produce the mean square displacement results by dividing with the bin counters.
+        self.__results    = numpy.zeros((7, self.__n_bins))
         self.__results[0] = self.__raw_histogram[:,0] / bin_counters_copy
         self.__results[1] = self.__raw_histogram[:,1] / bin_counters_copy
         self.__results[2] = self.__raw_histogram[:,2] / bin_counters_copy
+        self.__results[3] = (self.__raw_histogram[:,0] + self.__raw_histogram[:,1]) / bin_counters_copy
+        self.__results[4] = (self.__raw_histogram[:,0] + self.__raw_histogram[:,2]) / bin_counters_copy
+        self.__results[5] = (self.__raw_histogram[:,1] + self.__raw_histogram[:,2]) / bin_counters_copy
+        self.__results[6] = (self.__raw_histogram[:,0] + self.__raw_histogram[:,1] + self.__raw_histogram[:,2]) / bin_counters_copy
         self.__time_steps = (numpy.arange(self.__n_bins)+1)*self.__binsize - self.__binsize / 2.0
 
-        # Calculate the standard deviation (of the mean, i.e. the value) in each point.
-        self.__std_dev     = numpy.zeros((3,self.__n_bins))
+        # Calculate the standard deviation of the mean square displacment in each point.
+        self.__std_dev = numpy.zeros((7, self.__n_bins))
 
-        # Calculate the standar deviation.
+        # Do the calculation bin wise.
         for i in range(len(self.__results[0])):
-            n_eff = self.__n_eff[i]
 
-            if (self.__raw_histogram[i,0] != 0):
-                self.__std_dev[0][i] = self.__results[0][i] * numpy.sqrt( ( 2 * n_eff * n_eff + 1 ) / ( 3 * n_eff * self.__bin_counters[i] ) )
-                self.__std_dev[1][i] = self.__results[1][i] * numpy.sqrt( ( 2 * n_eff * n_eff + 1 ) / ( 3 * n_eff * self.__bin_counters[i] ) )
-                self.__std_dev[2][i] = self.__results[2][i] * numpy.sqrt( ( 2 * n_eff * n_eff + 1 ) / ( 3 * n_eff * self.__bin_counters[i] ) )
+            # Get the effecive n for this bin.
+            n1 = self.__n_eff[i]
+
+            # Proceed only if the effective n is well defined and
+            # fits within the history buffer.
+            if int(n1+1.0) < len(self.__hstep_counts) and n1 > 1.0e-12:
+
+                # Set the values.
+                K1 = self.__hstep_counts[int(n1+1.0)]
+                if K1 > 0:
+                    n2 = n1 * n1
+                    n3 = n2 * n1
+                    n4 = n3 * n1
+                    K2 = K1 * K1
+                    K3 = K2 * K1
+
+                    # Calculate the factor.
+                    if (n1 <= K1):
+                        factor = numpy.sqrt(2.0) * numpy.sqrt((4*n2*K1 + 2*K1 + n1 - n3)/(n1*6*K2))
+                    else:
+                        factor = numpy.sqrt(2.0) * numpy.sqrt( 1 + (K3 - 4*n1*K2 + 4*n1 - K1)/(6*n2*K1) )
+
+                    # Get the standard deviation.
+                    print i, K1, n1, factor
+                    self.__std_dev[0][i] = self.__results[0][i] * factor
+                    self.__std_dev[1][i] = self.__results[1][i] * factor
+                    self.__std_dev[2][i] = self.__results[2][i] * factor
+
+                    # Set the correct dimensionality factor for the 2D...
+                    two_d = numpy.sqrt(1.0/2.0)
+                    self.__std_dev[3][i] = self.__results[3][i] * factor * two_d
+                    self.__std_dev[4][i] = self.__results[4][i] * factor * two_d
+                    self.__std_dev[5][i] = self.__results[5][i] * factor * two_d
+                    # ...and 3D cases.
+                    three_d = numpy.sqrt(1.0/3.0)
+                    self.__std_dev[6][i] = self.__results[6][i] * factor * three_d
+
+        # Get all values from the blocker.
+        self.__sigma_data = stdVectorPairCoordinateToNumpy2DArray(self.__backend.printBlockerValues())
+
+    def _printSigmaValues1(self, bins, stream=sys.stdout):
+        """
+        ML: Print the sigma values.
+        """
+        stream.write("%6i "%(self.__blocksize))
+
+        # FIXME - prototyping.
+        for bb in bins:
+            stream.write("   %20.10e %20.10e"%(self.__sigma_data[bb,0],self.__sigma_data[bb,3]))
+        stream.write("\n")
+
+    def _printSigmaValues2(self, bins, stream=sys.stdout):
+        """
+        ML: Print the sigma values.
+        """
+        stream.write("%6i "%(self.__blocksize))
+
+        # FIXME - prototyping.
+        for bb in bins:
+            stream.write("   %20.10e %20.10e"%(self.__sigma_data[bb,1],self.__sigma_data[bb,4]))
+        stream.write("\n")
+
+    def _printSigmaValues3(self, bins, stream=sys.stdout):
+        """
+        ML: Print the sigma values.
+        """
+        stream.write("%6i "%(self.__blocksize))
+
+        # FIXME - prototyping.
+        for bb in bins:
+            stream.write("   %20.10e %20.10e"%(self.__sigma_data[bb,2],self.__sigma_data[bb,5]))
+        stream.write("\n")
 
     def __getBackendResults(self):
         """
@@ -161,9 +237,9 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
         """
         # Setup the histogram data in python.
         self.__raw_histogram        = stdVectorCoordinateToNumpy2DArray(self.__backend.histogramBuffer())
-        self.__raw_histogram_sqr    = stdVectorCoordinateToNumpy2DArray(self.__backend.histogramBufferSqr())
         self.__bin_counters         = self.__backend.histogramBinCounts()
         self.__history_bin_counters = self.__backend.historyStepsHistogramBinCounts()
+        self.__hstep_counts         = self.__backend.hstepCounts()
 
     def results(self):
         """
@@ -205,10 +281,11 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
 
         :returns: The bin index for the cutoff.
         """
-        # Return the cutoff based on where the last convolution
-        # is larger than zero.
+        # Find the cutoff based on where the last convolution
+        # is smaller greater than 1 % of its maximum value.
+        limit = 0.01 * max(self.__history_bin_counters[-1])
         for i,c in enumerate(self.__history_bin_counters[-1]):
-            if c > 0:
+            if c > limit:
                 return i
 
         # If all values in the last convolution are zero
@@ -227,10 +304,18 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
                           self.__results[0],
                           self.__results[1],
                           self.__results[2],
+                          self.__results[3],
+                          self.__results[4],
+                          self.__results[5],
+                          self.__results[6],
                           self.__std_dev[0],
                           self.__std_dev[1],
-                          self.__std_dev[2])[:cutoff_bin]
-
-        stream.write("%10s %10s %10s %10s %10s %10s %10s\n"%("TIME", "MSD_a", "DSD_b", "MSD_c", "STD_a", "STD_b", "STD_c"))
-        for t, x, y, z, sx, sy, sz in all_results:
-            stream.write("%10.5f %10.5f %10.5f %10.5f %10.5f %10.5f %10.5f\n"%(t, x, y, z, sx, sy, sz))
+                          self.__std_dev[2],
+                          self.__std_dev[3],
+                          self.__std_dev[4],
+                          self.__std_dev[5],
+                          self.__std_dev[6],
+                          self.__n_eff)[:cutoff_bin]
+        stream.write("%11s %11s %11s %11s %11s %11s %11s %11s %11s %11s %11s %11s %11s %11s %11s %11s\n"%("TIME ", "MSD_x ", "DSD_y ", "MSD_z ", "MSD_xy ", "MSD_xz ", "MSD_yz ", "MSD_xyz ", "STD_x ", "STD_y ", "STD_z ", "STD_xy ", "STD_xz ", "STD_yz ", "STD_xyz ", "N_eff"))
+        for t, x, y, z, xy, xz, yz, xyz, sx, sy, sz, sxy, sxz, syz, sxyz, nf in all_results:
+            stream.write("%11.5e %11.5e %11.5e %11.5e %11.5e %11.5e %11.5e %11.5e %11.5e %11.5e %11.5e %11.5e %11.5e %11.5e %11.5e %11.5e\n"%(t, x, y, z, xy, xz, yz, xyz, sx, sy, sz, sxy, sxz, syz, sxyz, nf))
