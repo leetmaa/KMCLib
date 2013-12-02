@@ -358,8 +358,24 @@ void Test_Configuration::testPerformProcessVectors()
         CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.z(), id_coord.z(), 1.0e-12);
     }
 
+    // Check that the recent move vectors are of length zero.
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(configuration.recentMoveVectors().size()), 0);
+
     // Peform the process.
     configuration.performProcess(p, 1434, lattice_map);
+
+    // This move changes place on atom IDs 1434 and 350.
+    CPPUNIT_ASSERT_EQUAL( configuration.atomID()[1434],  350 );
+    CPPUNIT_ASSERT_EQUAL( configuration.atomID()[350],  1434 );
+
+    // Check that the recent move vectors are of length two.
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(configuration.recentMoveVectors().size()), 2);
+
+    // Check that the norm of the difference is zero.
+    const double norm0 = Coordinate(move_vectors[0] - configuration.recentMoveVectors()[0]).norm();
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(norm0, 0.0, 1.0e-12);
+    const double norm1 = Coordinate(move_vectors[1] - configuration.recentMoveVectors()[1]).norm();
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(norm1, 0.0, 1.0e-12);
 
     // Now, check the ID's again.
     for (int i = 0; i < static_cast<int>(atom_id.size()); ++i)
@@ -391,10 +407,6 @@ void Test_Configuration::testPerformProcessVectors()
         CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.y(), id_coord.y(), 1.0e-12);
         CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.z(), id_coord.z(), 1.0e-12);
     }
-
-    CPPUNIT_ASSERT_EQUAL( configuration.atomID()[1434],  350 );
-    CPPUNIT_ASSERT_EQUAL( configuration.atomID()[350],  1434 );
-
 }
 
 // -------------------------------------------------------------------------- //

@@ -74,7 +74,7 @@ void Test_OnTheFlyMSD::testStepX()
     // Setup a minimal realistic system.
     std::vector< std::vector<double> > basis(1, std::vector<double>(3,0.0));
 
-    // Make a 13x11 structure.
+    // Make a 6x1x1x1 structure.
     const int nI = 6;
     const int nJ = 1;
     const int nK = 1;

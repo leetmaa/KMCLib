@@ -78,6 +78,12 @@ public:
     inline
     std::vector<int> movedAtomIDs() const;
 
+    /*! \brief Const query for the moved atoms move vectors, in the same order as the id's.
+     *  \return : A copy of the recent move vectors, resized to correct length.
+     */
+    inline
+    std::vector<Coordinate> recentMoveVectors() const;
+
     /*! \brief Construct and return the match list for the given list of
      *         indices.
      *  \param origin_index : The index to treat as the origin.
@@ -155,6 +161,9 @@ private:
     /// The first n_moved_ elements hold the moved atom ids.
     std::vector<int> moved_atom_ids_;
 
+    /// The first n_moved_ elements hold the moved atoms move vectors (listed on id).
+    std::vector<Coordinate> recent_move_vectors_;
+
     /// The mapping from type integers to names.
     std::vector<std::string> type_names_;
 
@@ -168,12 +177,26 @@ private:
 // Inlined function definitions follow.
 // -----------------------------------------------------------------------------
 
+
+// -----------------------------------------------------------------------------
+//
 std::vector<int> Configuration::movedAtomIDs() const
 {
     // PERFORMME
     std::vector<int> moved(moved_atom_ids_);
     moved.resize(n_moved_);
     return moved;
+}
+
+
+// -----------------------------------------------------------------------------
+//
+std::vector<Coordinate> Configuration::recentMoveVectors() const
+{
+    // PERFORMME
+    std::vector<Coordinate> move_vectors(recent_move_vectors_);
+    move_vectors.resize(n_moved_);
+    return move_vectors;
 }
 
 

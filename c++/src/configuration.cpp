@@ -94,6 +94,7 @@ void Configuration::initMatchLists( const LatticeMap & lattice_map,
     // memory for the moved_atom_ids_ vector.
     const size_t size = match_lists_[0].size();
     moved_atom_ids_.resize(size);
+    recent_move_vectors_.resize(size);
 }
 
 
@@ -247,6 +248,7 @@ void Configuration::performProcess(Process & process,
     // Iterators to the info storages.
     std::vector<int>::iterator it3 = process.affectedIndices().begin();
     std::vector<int>::iterator it4 = moved_atom_ids_.begin();
+    std::vector<Coordinate>::iterator it5 = recent_move_vectors_.begin();
 
     // Reset the moved counter.
     n_moved_ = 0;
@@ -287,6 +289,10 @@ void Configuration::performProcess(Process & process,
             (*it4) = atom_id;
             ++it4;
             ++n_moved_;
+
+            // Save this move vector.
+            (*it5) = (*it1).move_coordinate;
+            ++it5;
         }
     }
 
