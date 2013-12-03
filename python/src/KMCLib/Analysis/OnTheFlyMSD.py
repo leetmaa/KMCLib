@@ -181,7 +181,6 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
                         factor = numpy.sqrt(2.0) * numpy.sqrt( 1 + (K3 - 4*n1*K2 + 4*n1 - K1)/(6*n2*K1) )
 
                     # Get the standard deviation.
-                    print i, K1, n1, factor
                     self.__std_dev[0][i] = self.__results[0][i] * factor
                     self.__std_dev[1][i] = self.__results[1][i] * factor
                     self.__std_dev[2][i] = self.__results[2][i] * factor
@@ -194,42 +193,6 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
                     # ...and 3D cases.
                     three_d = numpy.sqrt(1.0/3.0)
                     self.__std_dev[6][i] = self.__results[6][i] * factor * three_d
-
-        # Get all values from the blocker.
-        self.__sigma_data = stdVectorPairCoordinateToNumpy2DArray(self.__backend.printBlockerValues())
-
-    def _printSigmaValues1(self, bins, stream=sys.stdout):
-        """
-        ML: Print the sigma values.
-        """
-        stream.write("%6i "%(self.__blocksize))
-
-        # FIXME - prototyping.
-        for bb in bins:
-            stream.write("   %20.10e %20.10e"%(self.__sigma_data[bb,0],self.__sigma_data[bb,3]))
-        stream.write("\n")
-
-    def _printSigmaValues2(self, bins, stream=sys.stdout):
-        """
-        ML: Print the sigma values.
-        """
-        stream.write("%6i "%(self.__blocksize))
-
-        # FIXME - prototyping.
-        for bb in bins:
-            stream.write("   %20.10e %20.10e"%(self.__sigma_data[bb,1],self.__sigma_data[bb,4]))
-        stream.write("\n")
-
-    def _printSigmaValues3(self, bins, stream=sys.stdout):
-        """
-        ML: Print the sigma values.
-        """
-        stream.write("%6i "%(self.__blocksize))
-
-        # FIXME - prototyping.
-        for bb in bins:
-            stream.write("   %20.10e %20.10e"%(self.__sigma_data[bb,2],self.__sigma_data[bb,5]))
-        stream.write("\n")
 
     def __getBackendResults(self):
         """
