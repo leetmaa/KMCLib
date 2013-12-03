@@ -156,9 +156,9 @@ class BattaileModelRates(KMCRateCalculatorPlugin):
         # The number of bonds before is the same number as the number
         # neighbours of A type. It can be between zero and three.
 
-        # Before move is concerend with the type of indices 1, 2, 3, 4.
+        # Before move the central particle has neighbour indices 1, 2, 3, 4.
 
-        # After the move is concerned with the type of indices,
+        # After the move the central particle has meighbour indices,
         # if we move to the right, 0, 7, 8, 12
         # if we move up,           0, 6, 8, 11
         # if we move down,         0, 5, 7, 10
