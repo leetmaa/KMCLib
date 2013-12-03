@@ -99,134 +99,6 @@ void OnTheFlyMSD::registerStep(const double time,
 
 // -----------------------------------------------------------------------------
 //
-std::vector< std::pair<Coordinate, Coordinate> > OnTheFlyMSD::printBlockerValues() const
-{
-    printf("This is where we place the first blocker output\n");
-
-    // Setup the data per bin.
-    std::vector< std::pair<Coordinate, Coordinate> > \
-        data_per_bin(histogram_bin_counts_.size(),
-                     std::pair<Coordinate,Coordinate>(Coordinate(0.0, 0.0, 0.0),
-                                                      Coordinate(0.0, 0.0, 0.0)));
-
-    const Blocker & blocker = blocker_;
-
-    // Get the block data.
-    const std::vector< std::vector<Coordinate> > & block_data = blocker.hstBlocks();
-    const double blocksize = blocker.blocksize();
-    const size_t nbins     = block_data.size();
-
-    // For each bin.
-    for (size_t i = 0; i < nbins; ++i)
-    {
-        // Get the MSD value at this bin.
-        const int bincount = (histogram_bin_counts_[i] != 0) ? histogram_bin_counts_[i] : 1;
-
-        // FIXME
-        const Coordinate rho_run((histogram_buffer_[i].x()+histogram_buffer_[i].y())/bincount,
-                                 histogram_buffer_[i].y()/bincount,
-                                 (histogram_buffer_[i].x()+histogram_buffer_[i].y()+histogram_buffer_[i].z())/bincount);
-
-        // For each block at this bin.
-        const int nblocks = static_cast<int>(block_data[i].size());
-
-        // If there are any blocks that is.
-        std::pair<Coordinate,Coordinate>sigma(Coordinate(-1.0, -1.0, -1.0), Coordinate(-1.0, -1.0, -1.0));
-
-        if (nblocks > 0)
-        {
-            Coordinate bin_sum(0.0, 0.0, 0.0);
-            for (int j = 0; j < nblocks; ++j)
-            {
-                // Divide the block data with the blocksize.
-                // FIXME
-                const Coordinate tmp0((block_data[i][j].x()+block_data[i][j].y())/blocksize,
-                                      block_data[i][j].y()/blocksize,
-                                      (block_data[i][j].x()+block_data[i][j].y() + block_data[i][j].z())/blocksize);
-
-                // Subtract the value for the whole run.
-                const Coordinate tmp1 = tmp0 - rho_run;
-
-                // Square this value.
-                const Coordinate sqr(tmp1.x()*tmp1.x(),
-                                     tmp1.y()*tmp1.y(),
-                                     tmp1.z()*tmp1.z());
-                // And sum.
-                bin_sum += sqr;
-            }
-
-            // Get the c0 value according to the blocking algorithm.
-            const Coordinate c0_value(bin_sum.x()/nblocks,
-                                      bin_sum.y()/nblocks,
-                                      bin_sum.z()/nblocks);
-
-            // Calculate the estimate of the standard deviation.
-            const double std_x = std::sqrt(c0_value.x()/(nblocks-1.0));
-            const double std_y = std::sqrt(c0_value.y()/(nblocks-1.0));
-            const double std_z = std::sqrt(c0_value.z()/(nblocks-1.0));
-            const Coordinate std(std_x, std_y, std_z);
-
-            // Calculate the standard deviation of the standard deviation estimate.
-            const double std_std_x = std_x / std::sqrt(2*nblocks-2.0);
-            const double std_std_y = std_y / std::sqrt(2*nblocks-2.0);
-            const double std_std_z = std_z / std::sqrt(2*nblocks-2.0);
-            const Coordinate std_std(std_std_x, std_std_y, std_std_z);
-
-            sigma = std::pair<Coordinate,Coordinate>(std, std_std);
-
-        }
-
-        // Store the data.
-        data_per_bin[i] = sigma;
-    }
-
-    // Return the data.
-    return data_per_bin;
-}
-
-
-// -----------------------------------------------------------------------------
-//
-void calculateAndBinMSD(const std::vector< std::pair<Coordinate, double> > & history,
-                        const std::vector<Coordinate> & abc_to_xyz,
-                        const double binsize,
-                        std::vector<Coordinate> & histogram,
-                        std::vector<Coordinate> & histogram_sqr,
-                        std::vector<int> & bin_counters,
-                        std::vector< std::vector<int> > & hsteps_bin_counts)
-{
-    // Loop over the history buffer.
-    for (size_t i = 1; i < history.size(); ++i)
-    {
-        // Calculat the bin.
-        const double dt  = history[0].second - history[i].second;
-        const size_t bin = static_cast<int>(dt/binsize);
-
-        if (bin < histogram.size())
-        {
-            // If within range, calculate the squared diff and the squared diff squared.
-            const Coordinate diff_abc = (history[i].first - history[0].first);
-
-            // Transform the abc difference to xyz.
-            const Coordinate diff(diff_abc.dot(abc_to_xyz[0]),
-                                  diff_abc.dot(abc_to_xyz[1]),
-                                  diff_abc.dot(abc_to_xyz[2]));
-
-            const Coordinate sqr_diff = diff.outerProdDiag(diff);
-            const Coordinate sqr_diff_sqr = sqr_diff.outerProdDiag(sqr_diff);
-
-            // Store in the histograms.
-            histogram[bin]     += sqr_diff;
-            histogram_sqr[bin] += sqr_diff_sqr;
-            ++bin_counters[bin];
-            ++hsteps_bin_counts[i-1][bin];
-        }
-    }
-}
-
-
-// -----------------------------------------------------------------------------
-//
 void calculateAndBinMSD(const std::vector< std::pair<Coordinate, double> > & history,
                         const std::vector<Coordinate> & abc_to_xyz,
                         const double binsize,
@@ -240,7 +112,7 @@ void calculateAndBinMSD(const std::vector< std::pair<Coordinate, double> > & his
     // Loop over the history buffer.
     for (size_t i = 1; i < history.size(); ++i)
     {
-        // ML: FIXME
+        // Add to the step count.
         ++hstep_counts[i-1];
 
         // Calculat the bin.
@@ -266,39 +138,8 @@ void calculateAndBinMSD(const std::vector< std::pair<Coordinate, double> > & his
             ++bin_counters[bin];
             ++hsteps_bin_counts[i-1][bin];
 
-            // ML:
+            // Register the step at the blocker.
             blocker.registerStep(bin, sqr_diff);
         }
-    }
-}
-
-
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
-//
-Blocker::Blocker(const int nbins, const int blocksize) :
-    blocksize_(blocksize),
-    counts_since_last_block_(nbins, 0),
-    histogram_block_(nbins, Coordinate(0.0, 0.0, 0.0)),
-    hst_blocks_(nbins, std::vector<Coordinate>(0))
-{
-    // NOTHING HERE
-}
-
-// -----------------------------------------------------------------------------
-//
-void Blocker::registerStep(const int bin, const Coordinate value)
-{
-    histogram_block_[bin] += value;
-    counts_since_last_block_[bin] += 1;
-
-    if (counts_since_last_block_[bin] == blocksize_)
-    {
-        // This is the block histogram value for this bin.
-        hst_blocks_[bin].push_back(histogram_block_[bin]);
-
-        // Reset the count.
-        counts_since_last_block_[bin] = 0;
-        histogram_block_[bin] = Coordinate(0.0, 0.0, 0.0);
     }
 }

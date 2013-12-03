@@ -7,7 +7,7 @@
 
 
 /*! \file  ontheflymsd.h
- *  \brief File for the Process class definition.
+ *  \brief File for the MSD calculator class definition.
  */
 
 #ifndef __ONTHEFLYMSD__
@@ -18,61 +18,10 @@
 #include <utility>
 
 #include "coordinate.h"
-
+#include "blocker.h"
 
 // Forward declarations.
 class Configuration;
-
-
-/// Helper class for handling block averages.
-class Blocker {
-
-public:
-
-    /*! \brief Constructor for the blocker class.
-     *  \param nbins     : The number of bins in the histograms.
-     *  \param blocksize : The number of elements in each block.
-     */
-    Blocker(const int nbins, const int blocksize);
-
-    /*! \brief Register the step with bin and value.
-     *  \param bin   : The bin to add at.
-     *  \param value : The value to add.
-     */
-    void registerStep(const int bin, const Coordinate value);
-
-    /*! \brief Query for blocksize.
-     *  \returns : The blocksize.
-     */
-    double blocksize() const { return blocksize_; }
-
-    /*! \brief Query for the accumulative block histogram values per bin.
-     *  \returns : A const reference to the histogram blocks data.
-     */
-    const std::vector< std::vector<Coordinate> > & hstBlocks() const { return hst_blocks_; }
-
-protected:
-
-private:
-
-    /// The size of each block.
-    int blocksize_;
-
-    /// The counts since last block for each bin.
-    std::vector<int> counts_since_last_block_;
-
-    /// The accumulative histogram value for the current block.
-    std::vector<Coordinate> histogram_block_;
-
-    /// The histogram values for all finnished blocks for each bin.
-    std::vector< std::vector<Coordinate> > hst_blocks_;
-
-};
-
-
-// ----------------------------------------------------------------------------
-// ----------------------------------------------------------------------------
-
 
 
 /*! \brief Class for performing on-the-fly mean square displacement analysis.
@@ -138,15 +87,18 @@ public:
     const std::vector< std::vector< std::pair<Coordinate, double> > > & historyBuffer() const
     { return history_buffer_; }
 
-    // FIXME:
     /*! \brief Query for the history step counts.
      *  \return: The history step counts.
      */
     const std::vector< int > & hstepCounts() const
     { return hstep_counts_; }
 
-    /// FIXME: Prototyping.
-    std::vector< std::pair<Coordinate, Coordinate> > printBlockerValues() const;
+    /*! \brief Calculate the blocker values.
+     *  \return: The estimated standard deviations in x, y and z and their
+     *           estimated errors, for each bin.
+     */
+    std::vector< std::pair<Coordinate, Coordinate> > blockerValues() const
+    { return blocker_.values(histogram_bin_counts_, histogram_buffer_); }
 
 protected:
 
@@ -182,10 +134,10 @@ private:
     /// The transformation matrix to cartesian coordinates.
     std::vector<Coordinate> abc_to_xyz_;
 
-    /// FIXME: The number of counts per history step.
+    /// The number of counts per history step.
     std::vector<int> hstep_counts_;
 
-    /// FIXME: The blocker.
+    /// The blocker.
     Blocker blocker_;
 
 };
@@ -206,16 +158,9 @@ private:
  *  \param bin_counters (in/out)      : The counters collecting the
  *                                      total number of values added to each bin.
  *  \param hsteps_bin_counts (in/out) : The histogram bin counts per history step.
- *
+ *  \param hstep_counts (in/out)      : The counts per history step.
+ *  \param blocker (in/out)           : The blocker to use for block average analysis.
  */
-void calculateAndBinMSD(const std::vector< std::pair<Coordinate, double> > & history,
-                        const std::vector<Coordinate> & abc_to_xyz,
-                        const double binsize,
-                        std::vector<Coordinate> & histogram,
-                        std::vector<Coordinate> & histogram_sqr,
-                        std::vector<int> & bin_counters,
-                        std::vector< std::vector<int> > & hsteps_bin_counts);
-
 void calculateAndBinMSD(const std::vector< std::pair<Coordinate, double> > & history,
                         const std::vector<Coordinate> & abc_to_xyz,
                         const double binsize,

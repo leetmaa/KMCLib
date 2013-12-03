@@ -906,6 +906,10 @@ void Test_OnTheFlyMSD::testCalculateAndBinMSD()
 
     std::vector<int> bin_counters(h_size, 9);
     std::vector< std::vector<int> > hsteps_bin_counters(history.size()-1, std::vector<int>(h_size, 8));
+    std::vector<int> hstep_counts(history.size()-1, 2);
+
+    // A blocker with zero block size and the correct number of bins.
+    Blocker blocker(h_size, 2);
 
     // The bin size.
     const double binsize = 1.0;
@@ -923,7 +927,9 @@ void Test_OnTheFlyMSD::testCalculateAndBinMSD()
                        histogram,
                        histogram_sqr,
                        bin_counters,
-                       hsteps_bin_counters);
+                       hsteps_bin_counters,
+                       hstep_counts,
+                       blocker);
 
     // Calculate the results by hand.
     Coordinate diff = history[0].first - history[1].first;
@@ -1005,7 +1011,6 @@ void Test_OnTheFlyMSD::testCalculateAndBinMSD()
 
     for (int i = 0; i < h_size; ++i)
     {
-
         if (i != bin_0)
         {
             CPPUNIT_ASSERT_EQUAL( hsteps_bin_counters[0][i], 8 );
@@ -1019,6 +1024,47 @@ void Test_OnTheFlyMSD::testCalculateAndBinMSD()
         CPPUNIT_ASSERT_EQUAL( hsteps_bin_counters[2][i], 8 );
         CPPUNIT_ASSERT_EQUAL( hsteps_bin_counters[3][i], 8 );
     }
+
+    // Check the h-step counts.
+    CPPUNIT_ASSERT_EQUAL( hstep_counts[0], 3 );
+    CPPUNIT_ASSERT_EQUAL( hstep_counts[1], 3 );
+    CPPUNIT_ASSERT_EQUAL( hstep_counts[2], 3 );
+    CPPUNIT_ASSERT_EQUAL( hstep_counts[3], 3 );
+
+    // Check the content of the blocker.
+    std::vector< std::vector<Coordinate> > hst_blocks = blocker.hstBlocks();
+
+    // Check the size.
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(hst_blocks.size()), 6);
+    for (size_t i = 0; i < hst_blocks.size(); ++i)
+    {
+        CPPUNIT_ASSERT_EQUAL(static_cast<int>(hst_blocks[i].size()), 0);
+    }
+
+    // Call the calc and bin again.
+    calculateAndBinMSD(history,
+                       transformation,
+                       binsize,
+                       histogram,
+                       histogram_sqr,
+                       bin_counters,
+                       hsteps_bin_counters,
+                       hstep_counts,
+                       blocker);
+
+    // Check the content. We should now have steps registred.
+    hst_blocks = blocker.hstBlocks();
+
+    for (int i = 0; i < static_cast<int>(hst_blocks.size()); ++i)
+    {
+        if (i != bin_0 && i != bin_1)
+        {
+            CPPUNIT_ASSERT_EQUAL(static_cast<int>(hst_blocks[i].size()), 0);
+        }
+    }
+
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(hst_blocks[bin_0].size()), 1);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(hst_blocks[bin_1].size()), 1);
 }
 
 
@@ -1045,6 +1091,10 @@ void Test_OnTheFlyMSD::testCalculateAndBinMSDTransformation()
 
     std::vector<int> bin_counters(h_size, 9);
     std::vector< std::vector<int> > hsteps_bin_counters(history.size()-1, std::vector<int>(h_size, 8));
+    std::vector<int> hstep_counts(history.size()-1, 2);
+
+    // A blocker with zero block size and the correct number of bins.
+    Blocker blocker(h_size, 0);
 
     // The bin size.
     const double binsize = 1.0;
@@ -1062,7 +1112,9 @@ void Test_OnTheFlyMSD::testCalculateAndBinMSDTransformation()
                        histogram,
                        histogram_sqr,
                        bin_counters,
-                       hsteps_bin_counters);
+                       hsteps_bin_counters,
+                       hstep_counts,
+                       blocker);
 
     // Calculate the results by hand including the transformation.
     Coordinate diff_abc = history[0].first - history[1].first;
