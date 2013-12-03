@@ -63,15 +63,15 @@ model = KMCLatticeModel(configuration=config,
 # a seed value will result in the wall clock time seeding,
 # so we would expect slightly different results each time
 # we run this test.
-control_parameters = KMCControlParameters(number_of_steps=250000000,
-                                          dump_interval=1000,
+control_parameters = KMCControlParameters(number_of_steps=2500000,
+                                          dump_interval=10000,
                                           analysis_interval=100,
-                                          seed=100)
+                                          seed=None)
 
 # Setup the mean square displacement analysis.
-msd_analysis = OnTheFlyMSD(history_steps=2000,
-                           n_bins=1000,
-                           t_max=250000.0,
+msd_analysis = OnTheFlyMSD(history_steps=200,
+                           n_bins=100,
+                           t_max=2500.0,
                            track_type="B")
 
 # Implement the test.
@@ -101,51 +101,77 @@ class Diffusion1DTest(unittest.TestCase):
         # Fit a straight line to the data to get the diffusion coefficient.
         time = raw_data[:,0]
         msd  = raw_data[:,1]
-        std  = raw_data[:,4]
+        std  = raw_data[:,8]
 
         # Setup the properly weighted least square fit problem.
         A = numpy.vstack([time, numpy.ones(len(time))]).T
         A = numpy.vstack([A[:,0]/std, A[:,1]/std]).T
+        covariance = numpy.linalg.inv(numpy.dot(A.T,A))
         b = msd / std
 
+        # Make the fit.
+        fit = numpy.linalg.lstsq(A, b)
+
         # Get the diffusion coefficient and offset.
-        D,offset = numpy.linalg.lstsq(A, b)[0]
+        D,offset  = fit[0]
 
-        print D, offset
+        # Get the residuals.
+        residuals = fit[1][0]
 
-        # Results from running 250000 steps with 2000 steps history and
-        # n_bins=1000, t_max=25000.0
-        #
-        #results = numpy.array([[82.6837068639,  54.261838519],
-        #                       [86.5362326057, -55.9715804318],
-        #                       [84.9635281076, -47.879847881],
-        #                       [79.916652932 ,  35.4019518935],
-        #                       [78.8206354785,  55.6999374782],
-        #                       [85.1208671296, -34.9492897414],
-        #                       [81.1387647664,  31.1402457678],
-        #                       [80.6873741906,  25.3224272086],
-        #                       [79.8158843209,  35.7711225873],
-        #                       [87.4714115363, -73.1463067339]])
-        # mean_D = sum(results[:,0])/len(results[:,0])
-        # mean_offset = sum(results[:,1])/len(results[:,1])
-        # 82.7155057931 2.56504986663
+        # Calculate the standard deviation of D.
+        std_dev_D = numpy.sqrt(covariance[0,0] * residuals / (float(len(time)-2)))
 
-        # Results from running 2500000 steps with 2000 steps history and
-        # n_bins=1000, t_max=25000.0
-        # results = numpy.array([[79.0072155514, 47.7091837968],
-        #                       [80.1695629233, 39.5531038871],
-        #                       [83.0929585558, 6.45145889059],
-        #                       [82.4971868124, 11.6262487783],
-        #                       [79.9680707384, 36.152047566],
-        #                       [81.6999382529, 18.8548968346],
-        #                       [80.8642220369, 33.8065773959],
-        #                       [82.1722742903, 16.8027196243],
-        #                       [81.9871679636, 20.1542031522],
-        #                       [79.9211352831, 31.2985453246]])
-        #mean_D = sum(results[:,0])/len(results[:,0])
-        #mean_offset = sum(results[:,1])/len(results[:,1])
-        #print mean_D, mean_offset
-        # 81.1379732408 26.240898525
+        # Calculate the standard deviation of the offset.
+        std_dev_offset = numpy.sqrt(covariance[1,1] * residuals / (float(len(time)-2)))
+
+        # print "[", D,",", offset,",", std_dev_D,",",std_dev_offset, "],"
+        # Results from running the test several times with different seed values.
+        results = numpy.array([[78.0988867187,  755.171438570, 2.25791330688, 150.7354059410],
+                               [72.7368256248,  880.147443244, 1.73843101852, 116.3536556430],
+                               [70.5977713569,  941.310653009, 1.41401143957,  93.3614358073],
+                               [77.6769956876,  772.810589646, 1.69869328439, 105.3189492430],
+                               [73.1090345846,  966.323452557, 1.86000016312, 129.8734748640],
+                               [76.2778051313,  694.090234485, 1.62207453876,  97.7777662451],
+                               [75.0672695992,  661.516187893, 1.35782209771,  78.5319533459],
+                               [77.0892757225,  671.603530818, 1.21776951195,  68.6146562997],
+                               [72.0285316265,  991.900289461, 1.98703833274, 143.8695303770],
+                               [76.0471461070,  884.490882096, 1.85763227041, 123.6274325190],
+                               [73.9135364736,  831.627688526, 1.61333123625, 103.5172709000],
+                               [73.0875151593,  869.207618413, 1.47134336245,  94.2281655223],
+                               [75.1563895771,  902.245502697, 1.70793889981, 112.4333018870],
+                               [74.4132715742,  711.818819874, 1.28334435742,  75.2930669159],
+                               [76.6591469495,  610.081433489, 1.36589976011,  76.7434023114],
+                               [72.9957345559,  883.962983177, 1.85286664489, 125.9164794120],
+                               [74.5376479586,  842.171393324, 1.67062853156, 107.8071690770],
+                               [78.1138320689,  648.900172236, 1.61903227321,  94.3144612738],
+                               [75.8776117412,  844.597049474, 2.17588165704, 150.2954225890],
+                               [71.6892473565, 1035.882536680, 2.04077221728, 151.2769147800],
+                               [72.2184440838,  948.540399846, 1.72098059269, 117.8501570350],
+                               [76.0425903175,  786.133121472, 1.61231054779, 100.3629115530],
+                               [76.0534894055,  851.329911170, 2.04113245958, 137.9356021100],
+                               [77.5446972928,  605.758653061, 1.42893357104,  80.3909427002],
+                               [77.3792735847,  729.695855993, 1.58829977343,  95.8039934268],
+                               [72.6246860882,  846.506663791, 1.45058932652,  92.2514872505],
+                               [76.9296878453,  809.534804563, 2.25559389800, 154.8579531090],
+                               [77.6296177486,  730.908052866, 1.75706746900, 108.2313254510],
+                               [73.3512776008,  916.182818139, 1.64139624023, 108.9108582280]])
+
+        # Get the mean slope and the standard deviation from the series of tests.
+        mean_slope = numpy.mean(results[:,0])
+        stdev_mean_slope = numpy.std(results[:,0])
+        mean_stdev = numpy.mean(results[:,2])
+        stdev_mean_stdev = numpy.std(results[:,2])
+
+        # Check that the slope is within two standard deviations from the mean.
+        self.assertTrue( numpy.abs(mean_slope - D) < stdev_mean_slope*2.0 )
+
+        # Make the same check for the estimated standard deviation.
+        self.assertTrue( numpy.abs(mean_stdev - std_dev_D) < stdev_mean_stdev*2.0 )
+
+        # Finally, check that the estimated standard deviation is close enough to the
+        # standard deviation from the series of tests.
+        self.assertTrue( numpy.abs(stdev_mean_slope - std_dev_D) < stdev_mean_stdev*2.0 )
+
 
 if __name__ == '__main__':
     unittest.main()
