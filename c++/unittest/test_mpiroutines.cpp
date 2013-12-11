@@ -79,6 +79,19 @@ void Test_MPIRoutines::testDetermineChunks()
         CPPUNIT_ASSERT_EQUAL( chunks[4].first, 3 );
         CPPUNIT_ASSERT_EQUAL( chunks[4].second, 0 );
     }
+
+    {
+        // 13 elements and 2 processes makes 7 elements for the first
+        // processes and 6 elemenst for the second.
+        std::vector< std::pair<int,int> > chunks = determineChunks(2,13);
+        CPPUNIT_ASSERT_EQUAL( static_cast<int>(chunks.size()), 2);
+
+        CPPUNIT_ASSERT_EQUAL( chunks[0].first, 0 );
+        CPPUNIT_ASSERT_EQUAL( chunks[0].second, 7 );
+
+        CPPUNIT_ASSERT_EQUAL( chunks[1].first, 7 );
+        CPPUNIT_ASSERT_EQUAL( chunks[1].second, 6 );
+    }
 }
 
 

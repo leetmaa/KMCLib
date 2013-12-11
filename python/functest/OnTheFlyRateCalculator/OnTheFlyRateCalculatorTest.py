@@ -67,6 +67,11 @@ class OnTheFlyRateCalculatorTest(unittest.TestCase):
         nTot = 10000
         nA   = 2000
         n    = 0
+
+        # To work in parallel we need to have the seed set to the same value
+        # for all processes.
+        numpy.random.seed( 143605 )
+
         for i in range(nA):
             # find a site which is not yet occupied by an "A" type.
             pos = int(numpy.random.rand()*nTot)
@@ -85,7 +90,8 @@ class OnTheFlyRateCalculatorTest(unittest.TestCase):
         model = KMCLatticeModel(config, interactions)
 
         control_parameters = KMCControlParameters(number_of_steps=100000,
-                                                  dump_interval=1000)
+                                                  dump_interval=1000,
+                                                  seed=13324591)
 
         model.run(control_parameters, trajectory_filename="traj.py")
 
