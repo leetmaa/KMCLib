@@ -83,40 +83,35 @@ void Matcher::calculateMatching(Interactions & interactions,
                               update_tasks,
                               add_tasks);
 
-    // Calculate the new rates.
+    // Calculate the new rates in needed.
 
     if (interactions.useCustomRates())
     {
-        // Split up the add tasks.
-        std::vector<RateTask> local_add_tasks = splitOverProcesses(add_tasks);
-        std::vector<double> local_add_tasks_rates(local_add_tasks.size(), 0.0);
+        // Create a common task list for getting a good load balance.
+        std::vector<RateTask> global_tasks(add_tasks.size()+update_tasks.size());
+        std::copy( update_tasks.begin(), update_tasks.end(),
+                   std::copy( add_tasks.begin(), add_tasks.end(), global_tasks.begin()) );
+
+        // Split up the tasks.
+        std::vector<RateTask> local_tasks = splitOverProcesses(global_tasks);
+        std::vector<double> local_tasks_rates(local_tasks.size(), 0.0);
 
         // Update.
-        updateRates(local_add_tasks_rates, local_add_tasks, interactions, configuration);
-
-        // Split up the update tasks.
-        std::vector<RateTask> local_update_tasks = splitOverProcesses(update_tasks);
-        std::vector<double> local_update_tasks_rates(local_update_tasks.size(), 0.0);
-
-        // Update.
-        updateRates(local_update_tasks_rates, local_update_tasks, interactions, configuration);
+        updateRates(local_tasks_rates, local_tasks, interactions, configuration);
 
         // Join the results.
-        const std::vector<double> add_tasks_rates = joinOverProcesses(local_add_tasks_rates);
+        const std::vector<double> global_tasks_rates = joinOverProcesses(local_tasks_rates);
 
-        // Copy over the add tasks rates to the global tasks list.
+        // Copy the results over.
         for (size_t i = 0; i < add_tasks.size(); ++i)
         {
-            add_tasks[i].rate = add_tasks_rates[i];
+            add_tasks[i].rate = global_tasks_rates[i];
         }
 
-        // Join the results.
-        const std::vector<double> update_tasks_rates = joinOverProcesses(local_update_tasks_rates);
-
-        // Copy over the update tasks rates to the global tasks list.
+        const size_t offset = add_tasks.size();
         for (size_t i = 0; i < update_tasks.size(); ++i)
         {
-            update_tasks[i].rate = update_tasks_rates[i];
+            update_tasks[i].rate = global_tasks_rates[offset + i];
         }
     }
 
