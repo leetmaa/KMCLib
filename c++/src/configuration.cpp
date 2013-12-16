@@ -79,7 +79,7 @@ Configuration::Configuration(std::vector<std::vector<double> > const & coordinat
 void Configuration::initMatchLists( const LatticeMap & lattice_map,
                                     const int range )
 {
-    // Loop over all indices.
+    // Loop over all lattice sites.
     for (size_t i = 0; i < types_.size(); ++i)
     {
         // Calculate and store the match list.

@@ -59,6 +59,7 @@ std::vector<int> LatticeMap::neighbourIndices(const int index,
     // Get the cell index.
     CellIndex c;
     indexToCell(index, c.i, c.j, c.k);
+
     const CellIndex & cell = c;
 
     // Setup the return data structure.
@@ -278,41 +279,25 @@ void LatticeMap::indexToCell(const int index,
                              int & cell_k) const
 {
     // Given an index, calculate the cell i,j,k.
-    const int idx = index / n_basis_ + 1;
-
-    // Increment until cell_i is correct.
-    cell_i = 0;
+    const double eps   = 1.0e-9;
+    const int idx      = index / n_basis_ + 1;
     const int factor_i = repetitions_[1] * repetitions_[2];
-    int cmp = factor_i;
-    while(cmp < idx)
-    {
-        ++cell_i;
-        cmp += factor_i;
-    }
+    const int ii       = static_cast<int>((idx - eps) / factor_i);
 
-    // Increment until cell_j is correct.
-    cell_j = 0;
-    const int ci = cell_i * factor_i;
+    const int ci       = ii * factor_i;
     const int factor_j = repetitions_[2];
-    const int idx_j = idx - ci;
-    cmp = factor_j;
-    while( cmp < idx_j )
-    {
-        ++cell_j;
-        cmp += factor_j;
-    }
+    const int idx_j    = idx - ci;
+    const int jj       = static_cast<int>((idx_j - eps) / factor_j);
 
-    // Increment until cell_k is correct.
-    cell_k = 1;
-    const int cij = ci + cell_j * factor_j;
-    const int idx_k = idx - cij;
-    while(cell_k < idx_k)
-    {
-        ++cell_k;
-    }
-    --cell_k;
+    const int cij      = ci + jj * factor_j;
+    const int idx_k    = idx - cij;
+    const int kk       = static_cast<int>(idx_k - eps);
+
+    // Set the result.
+    cell_i = ii;
+    cell_j = jj;
+    cell_k = kk;
 
     // DONE
 }
-
 

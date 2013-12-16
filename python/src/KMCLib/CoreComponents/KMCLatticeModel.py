@@ -78,7 +78,7 @@ class KMCLatticeModel(object):
             # Construct a timer.
             self.__cpp_timer = Backend.SimulationTimer()
 
-            # Construct the backend iobject.
+            # Construct the backend object.
             self.__backend = Backend.LatticeModel(cpp_config,
                                                   self.__cpp_timer,
                                                   cpp_lattice_map,
@@ -146,6 +146,7 @@ must be given as string."""
 
         # Construct the C++ lattice model.
         prettyPrint(" KMCLib: setting up the backend C++ object.")
+
         cpp_model = self._backend()
 
         # Print the initial matching information if above the verbosity threshold.
