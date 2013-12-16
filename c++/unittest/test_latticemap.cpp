@@ -65,6 +65,8 @@ void Test_LatticeMap::testConstructionAndQuery()
 //
 void Test_LatticeMap::testIndicesFromCell()
 {
+    // This also tests the reverse mapping LatticeMap::indexToCell(...)
+
     {
         // A map with 1 in the basis.
         const int basis = 1;
