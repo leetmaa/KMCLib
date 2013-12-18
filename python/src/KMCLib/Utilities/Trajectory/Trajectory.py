@@ -73,6 +73,6 @@ class Trajectory(object):
                 ((time.time() - self.__time_last_dump) > self.__max_buffer_time):
             self.flush()
 
-        # Update the time.
-        self.__time_last_dump = time.time()
+            # Update the time.
+            self.__time_last_dump = time.time()
 

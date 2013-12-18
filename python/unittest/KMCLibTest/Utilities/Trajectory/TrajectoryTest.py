@@ -8,6 +8,7 @@
 #
 
 import unittest
+import time
 
 # Import from the module we test.
 from KMCLib.Utilities.Trajectory.Trajectory import Trajectory
@@ -130,7 +131,7 @@ class TrajectoryTest(unittest.TestCase):
         self.assertTrue(d.fc)
 
     def testAppendAndFlushTime(self):
-        """ Test that the append function flushes when the buffer size is large. """
+        """ Test that the append function flushes when enough time has passed. """
         # Setup data.
         simulation_time = 12.3
         step = 14
@@ -180,6 +181,73 @@ class TrajectoryTest(unittest.TestCase):
 
         # Check.
         self.assertTrue(d.fc)
+
+    def testAppendTimeUpdate(self):
+        """ Test that the append function updates the time only when it flushes. """
+        # Setup data.
+        simulation_time = 12.3
+        step = 14
+        class Config:
+            def __init__(self):
+                pass
+        configuration = Config()
+
+        # Instantiate a trajectory.
+        t = Trajectory(trajectory_filename="filename")
+
+        # Add the needed functions.
+        def storeData(*args, **kwargs):
+            pass
+        t._storeData = storeData
+
+        ret_buffer = 10.0
+        def bufferSize(*args, **kwargs):
+            return ret_buffer
+        t._bufferSize = bufferSize
+
+        class Dummy:
+            self.fc = False
+
+        d = Dummy()
+        def flush():
+            d.fc = True
+
+        t.flush = flush
+
+        # Append.
+        t.append(simulation_time, step, configuration)
+
+        # The first time allways flushes.
+        self.assertTrue(d.fc)
+
+        # This updates the time last dump variable.
+        ref_time_last_dump = t._Trajectory__time_last_dump
+
+        # Sleep 10 ms.
+        time.sleep(0.01)
+
+        # Append again.
+        d.fc = False
+        t.append(simulation_time, step, configuration)
+        self.assertFalse(d.fc)
+
+        # This does not update the time last dump.
+        self.assertAlmostEqual(ref_time_last_dump,  t._Trajectory__time_last_dump, 10)
+
+        # Change the value of the max buffer time so that flush() gets called.
+        t._Trajectory__max_buffer_time = 0.0
+
+        # Sleep 10 ms.
+        time.sleep(0.01)
+
+        # Append.
+        t.append(simulation_time, step, configuration)
+
+        # Check.
+        self.assertTrue(d.fc)
+
+        # The time last dump should have been updated.
+        self.assertTrue( (t._Trajectory__time_last_dump - ref_time_last_dump) > 0.0001 )
 
 
 if __name__ == '__main__':
