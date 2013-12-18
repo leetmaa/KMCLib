@@ -59,7 +59,7 @@ all: ./src/mersenne-twister-master/INSTALL_STAMP ./src/cppunit-1.12.1/INSTALL_ST
 	cd ./src/mersenne-twister-master/ && \
 	echo "namespace mt {\n" > tmp.h && \
 	cat mersenne-twister.h >> tmp.h && \
-	echo "\n} // Namespace KMCLib patch" >> tmp.h && \
+	echo "} // Namespace KMCLib patch" >> tmp.h && \
 	cat tmp.h | sed s/"RAND_MAX"/"RAND_MAX_MT"/g | sed s/"float"/"double"/g > cslarsenmt.h && \
 	echo "// Patching\n#include <stdio.h>\n#include <stdint.h>\n#include \"cslarsenmt.h\"\n#include <limits>\n#ifndef UINT32_MAX\n#define UINT32_MAX  (std::numeric_limits<uint32_t>::max())\n#endif\nusing namespace mt;\n" > tmp.cpp &&\
 	cat mersenne-twister.cpp >> tmp.cpp &&\
