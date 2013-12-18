@@ -62,7 +62,16 @@ all: ./src/mersenne-twister-master/INSTALL_STAMP ./src/cppunit-1.12.1/INSTALL_ST
 	cat mersenne-twister.h >> tmp.h && \
 	echo "} // Namespace KMCLib patch" >> tmp.h && \
 	cat tmp.h | sed s/"RAND_MAX"/"RAND_MAX_MT"/g | sed s/"float"/"double"/g > cslarsenmt.h && \
-	echo "// Patching\n#include <stdio.h>\n#include <stdint.h>\n#include \"cslarsenmt.h\"\n#include <limits>\n#ifndef UINT32_MAX\n#define UINT32_MAX  (std::numeric_limits<uint32_t>::max())\n#endif\nusing namespace mt;\n" > tmp.cpp &&\
+	echo "// Patching" > tmp.cpp &&\
+	echo "#include <stdio.h>" >> tmp.cpp &&\
+	echo "#include <stdint.h>" >> tmp.cpp &&\
+	echo "#include \"cslarsenmt.h\"" >> tmp.cpp &&\
+	echo "#include <limits>" >> tmp.cpp &&\
+	echo "#ifndef UINT32_MAX" >> tmp.cpp &&\
+	echo "#define UINT32_MAX  (std::numeric_limits<uint32_t>::max())" >> tmp.cpp &&\
+	echo "#endif" >> tmp.cpp &&\
+	echo "using namespace mt;" >> tmp.cpp &&\
+	echo "" >> tmp.cpp &&\
 	cat mersenne-twister.cpp >> tmp.cpp &&\
 	cat tmp.cpp | sed s/"#include \"mersenne-twister.h\""/""/g | sed s/"MT\[0\] = value;"/"index = 0; MT\[0\] = value;"/g | sed s/"float"/"double"/g | sed s/"1.0f"/"1.0"/g > cslarsenmt.cpp && \
 	touch PATCH_STAMP && \
