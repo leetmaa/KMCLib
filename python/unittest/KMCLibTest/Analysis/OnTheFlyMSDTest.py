@@ -20,6 +20,7 @@ from KMCLib.CoreComponents.KMCProcess import KMCProcess
 from KMCLib.CoreComponents.KMCInteractions import KMCInteractions
 from KMCLib.CoreComponents.KMCLatticeModel import KMCLatticeModel
 from KMCLib.CoreComponents.KMCControlParameters import KMCControlParameters
+from KMCLib.Backend.Backend import MPICommons
 from KMCLib.Backend import Backend
 
 # Implement the test.
@@ -515,7 +516,11 @@ class OnTheFlyMSDTest(unittest.TestCase):
 1.37500e+01 3.00911e+01 2.94610e+01 3.94610e+01 2.90511e+01 2.40911e+01 4.54610e+01 2.90511e+01 1.49010e-01 1.80700e-01 1.68948e-01 4.16895e+00 3.14901e+00 1.18070e+00 1.16895e+00 7.70000e+00
 1.62500e+01 3.66220e+01 3.66073e+01 5.66073e+01 7.76554e+01 8.86220e+01 3.46073e+01 3.36554e+01 1.82655e-01 2.34162e-01 1.95853e-01 3.19585e+00 3.18265e+00 5.23416e+00 7.19585e+00 8.00000e-01
 """
-        self.assertEqual(stream.getvalue(), ref_value)
+        if MPICommons.isMaster():
+            self.assertEqual(stream.getvalue(), ref_value)
+        else:
+            self.assertEqual(stream.getvalue(), "")
+
 
     def testFinalizeNoCoordinateTransform(self):
         """ Test finalization. """

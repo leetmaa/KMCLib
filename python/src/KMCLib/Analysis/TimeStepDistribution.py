@@ -12,6 +12,7 @@ import sys
 
 from KMCLib.PluginInterfaces.KMCAnalysisPlugin import KMCAnalysisPlugin
 from KMCLib.Utilities.CheckUtilities import checkPositiveFloat
+from KMCLib.Backend.Backend import MPICommons
 
 class TimeStepDistribution(KMCAnalysisPlugin):
     """
@@ -96,6 +97,9 @@ class TimeStepDistribution(KMCAnalysisPlugin):
 
         :param stream: The stream to print to.
         """
-        all_results = zip(self.__time_steps, self.__histogram, self.__normalized_histogram)
-        for t, v, n in all_results:
-            stream.write("%10.5f %10i %20.15f\n"%(t, v, n))
+        # Only master writes.
+        if MPICommons.isMaster():
+
+            all_results = zip(self.__time_steps, self.__histogram, self.__normalized_histogram)
+            for t, v, n in all_results:
+                stream.write("%10.5f %10i %20.15f\n"%(t, v, n))

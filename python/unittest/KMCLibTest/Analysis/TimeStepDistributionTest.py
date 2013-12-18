@@ -13,6 +13,8 @@ import StringIO
 
 # Import from the module we test.
 from KMCLib.Analysis.TimeStepDistribution import TimeStepDistribution
+from KMCLib.Backend.Backend import MPICommons
+
 
 # Implement the test.
 class TimeStepDistributionTest(unittest.TestCase):
@@ -150,7 +152,10 @@ class TimeStepDistributionTest(unittest.TestCase):
   24.49500         93    0.155258764607679
 """
         # Check the values.
-        self.assertEqual(stream.getvalue(), ref_value)
+        if MPICommons.isMaster():
+            self.assertEqual(stream.getvalue(), ref_value)
+        else:
+            self.assertEqual(stream.getvalue(), "")
 
 
 if __name__ == '__main__':
