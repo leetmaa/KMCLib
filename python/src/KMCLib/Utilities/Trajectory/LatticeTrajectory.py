@@ -145,7 +145,7 @@ class LatticeTrajectory(Trajectory):
         if MPICommons.isMaster():
             with open(self._trajectory_filename, 'a') as trajectory:
                 for (sim_time, step, types) in zip(simulation_time_buffer, step_buffer, types_buffer):
-                    trajectory.write( "times.append(%f)\n"%sim_time )
+                    trajectory.write( "times.append(%18.10e)\n"%sim_time )
                     trajectory.write( "steps.append(%i)\n"%step )
 
                     # Write the types.
