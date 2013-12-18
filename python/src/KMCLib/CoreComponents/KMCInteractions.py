@@ -124,6 +124,12 @@ the KMCRateCalculatorPlugin class itself. """
         """
         if self.__backend is None:
 
+            # Check the possible_types against the types in the processes.
+            for process_number, process in enumerate(self.__processes):
+                all_elements = list(set(process.elementsBefore() + process.elementsAfter()))
+                if (not all([(e in possible_types) for e in all_elements])):
+                    raise Error("Process %i contains elements not present in the list of possible types of the configuration."%(process_number))
+
             # Setup the correct type of backend process objects
             # depending on the presence of a rate calculator.
 

@@ -76,7 +76,7 @@ class KMCProcess(object):
         center = 0
         self.__coordinates = centerCoordinates(coordinates, center)
 
-        # Check the tyeps.
+        # Check the types.
         elements_before = checkTypes(elements_before, len(coordinates))
         elements_after  = checkTypes(elements_after,  len(coordinates))
 
@@ -381,6 +381,22 @@ coordinates defining where the moved index goes."""
         :returns: The move vectors stored on the class.
         """
         return self.__move_vectors
+
+    def elementsBefore(self):
+        """
+        Query for the elements before.
+
+        :returns: The elements before stored on the class.
+        """
+        return self.__elements_before
+
+    def elementsAfter(self):
+        """
+        Query for the elements before.
+
+        :returns: The elements before stored on the class.
+        """
+        return self.__elements_after
 
     def _script(self, variable_name="process"):
         """

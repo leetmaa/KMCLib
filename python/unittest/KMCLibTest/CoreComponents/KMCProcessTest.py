@@ -785,6 +785,22 @@ process = KMCProcess(
         self.assertAlmostEqual( c1.types(), ref_c1.types() )
         self.assertAlmostEqual( c2.types(), ref_c2.types() )
 
+    def testElementsBefore(self):
+        """ Test the elements before query function. """
+        process = KMCProcess.__new__(KMCProcess)
+        ref = ["123"]
+        process.__elements_before = ref
+        # Check by reference.
+        self.assertTrue( process.__elements_before == ref )
+
+    def testElementsAfter(self):
+        """ Test the elements after query function. """
+        process = KMCProcess.__new__(KMCProcess)
+        ref = ["123"]
+        process.__elements_after = ref
+        # Check by reference.
+        self.assertTrue( process.__elements_after == ref )
+
     def testConstructionFailWildcardMove(self):
         """ Test for failure if wildcards change place in the move. """
         # This should fail.

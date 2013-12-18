@@ -169,7 +169,7 @@ class KMCInteractionsTest(unittest.TestCase):
         # A first process.
         coords = [[1.0,2.0,3.4],[12.0,13.0,-1.0],[1.1,1.2,1.3]]
         types0 = ["A","D","B"]
-        types1 = ["B","D","A"]
+        types1 = ["B","F","A"]
         rate_0_1 = 3.5
         process_0 = KMCProcess(coords, types0, types1, basis_sites=[0,1,3], rate_constant=rate_0_1)
 
@@ -188,11 +188,37 @@ class KMCInteractionsTest(unittest.TestCase):
         # Setup a dict with the possible types.
         possible_types = {
             "A" : 13,
-            "D" : 2,
             "B" : 3,
             "J" : 4,
             "C" : 5,
             }
+
+        # Check that setting up the backend fails if we have types in the processes that do
+        # not corresponds to a type in the list of possible types.
+        self.assertRaises( Error, lambda : kmc_interactions._backend(possible_types, 2) )
+
+        possible_types = {
+            "A" : 13,
+            "B" : 3,
+            "D" : 2,
+            "J" : 4,
+            "C" : 5,
+            }
+
+        self.assertRaises( Error, lambda : kmc_interactions._backend(possible_types, 2) )
+
+        possible_types = {
+            "A" : 13,
+            "B" : 3,
+            "F" : 2,
+            "J" : 4,
+            "C" : 5,
+            }
+
+        self.assertRaises( Error, lambda : kmc_interactions._backend(possible_types, 2) )
+
+        # Both "D" and "F" must be present.
+        possible_types["D"] = 123
 
         # Get the backend.
         cpp_interactions = kmc_interactions._backend(possible_types, 2)
