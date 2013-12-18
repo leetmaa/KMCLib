@@ -16,6 +16,31 @@
 
 // -------------------------------------------------------------------------- //
 //
+void distributeToAll(int & data,
+                     const MPI_Comm & comm)
+{
+#if RUNMPI == true
+
+    // Only one integer is sent.
+    const int size = 1;
+
+    // This is master communicating.
+    const int root = 0;
+
+    // Send and recieve.
+    MPI_Bcast(&data,         // The send and recieve buffer.
+              size,          // The number of elements to communicate.
+              MPI_INT,       // The type of data.
+              root,          // The sender (master).
+              comm);         // The communicator we use.
+
+    // Done.
+#endif
+}
+
+
+// -------------------------------------------------------------------------- //
+//
 void sumOverProcesses(int & data,
                       const MPI_Comm & comm)
 {

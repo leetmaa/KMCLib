@@ -28,6 +28,12 @@
 std::vector< std::pair<int,int> > determineChunks(const int mpi_size,
                                                   const int vector_size);
 
+/*! \brief Distribute and integer from master to all other ranks.
+ *  \param data : The data to distrubite from master to all others.
+ *  \param comm : The communicator to use.
+ */
+void distributeToAll(int & data,
+                     const MPI_Comm & comm=MPI_COMM_WORLD);
 
 
 /*! \brief Sum the data over all processors.

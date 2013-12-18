@@ -97,6 +97,36 @@ void Test_MPIRoutines::testDetermineChunks()
 
 // -------------------------------------------------------------------------- //
 //
+void Test_MPIRoutines::testDistributeToAll()
+{
+#if RUNMPI == true
+    int rank;
+    MPI_Comm_rank( MPI_COMM_WORLD, &rank );
+#else
+    const int rank = 0;
+#endif
+
+    // Set the data to zero on all processes.
+    int data = 0;
+
+    // Set the data on master to the reference.
+    const int reference = 23456765;
+    if (rank == 0)
+    {
+        data = reference;
+    }
+
+    // Send to all other nodes.
+    distributeToAll(data, MPI_COMM_WORLD);
+
+    // Check.
+    CPPUNIT_ASSERT_EQUAL( data, reference );
+
+}
+
+
+// -------------------------------------------------------------------------- //
+//
 void Test_MPIRoutines::testSumOverProcessesInt()
 {
 #if RUNMPI == true

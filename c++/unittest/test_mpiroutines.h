@@ -25,6 +25,7 @@ public:
 
     CPPUNIT_TEST_SUITE( Test_MPIRoutines );
     CPPUNIT_TEST( testDetermineChunks );
+    CPPUNIT_TEST( testDistributeToAll );
     CPPUNIT_TEST( testSumOverProcessesInt );
     CPPUNIT_TEST( testSumOverProcessesVectorInt );
     CPPUNIT_TEST( testSumOverProcessesVectorDouble );
@@ -33,6 +34,7 @@ public:
     CPPUNIT_TEST_SUITE_END();
 
     void testDetermineChunks();
+    void testDistributeToAll();
     void testSumOverProcessesInt();
     void testSumOverProcessesVectorInt();
     void testSumOverProcessesVectorDouble();

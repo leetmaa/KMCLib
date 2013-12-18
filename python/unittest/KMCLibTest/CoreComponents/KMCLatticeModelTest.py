@@ -636,13 +636,13 @@ sites=[[       0.000000,       0.000000,       0.000000],
 times=[]
 steps=[]
 types=[]
-times.append(0.000000)
+times.append(  0.0000000000e+00)
 steps.append(0)
 types.append(["B","B","B","B","B","B","B","B","B","B","B","B","B","B","B","B"])
-times.append(18.999855)
+times.append(  1.8999855298e+01)
 steps.append(500)
 types.append(["A","B","B","B","A","A","B","B","A","B","B","B","B","B","B","B"])
-times.append(40.629999)
+times.append(  4.0629999382e+01)
 steps.append(1000)
 types.append(["B","B","B","A","A","B","B","B","B","A","B","B","B","A","B","B"])
 """

@@ -14,6 +14,8 @@
 //#define __CPP11__
 
 #include "random.h"
+#include "mpicommons.h"
+#include "mpiroutines.h"
 #include <ctime>
 
 // c++11
@@ -39,9 +41,21 @@ void seedRandom(const bool time_seed, int seed)
     // Seed with time.
     if (time_seed)
     {
-        static time_t seconds;
-        time(&seconds);
-        seed += seconds;
+        int time_seed = 0;
+
+        // Make sure all processes gets the same seed value.
+        if ( MPICommons::isMaster() )
+        {
+            static time_t seconds;
+            time(&seconds);
+            time_seed = static_cast<int>(seconds);
+        }
+
+        // Distribute over all processes.
+        distributeToAll(time_seed);
+
+        // Set the seed, now equal on all processes.
+        seed += time_seed;
     }
 
     // Seed.
