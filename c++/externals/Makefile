@@ -57,7 +57,8 @@ all: ./src/mersenne-twister-master/INSTALL_STAMP ./src/cppunit-1.12.1/INSTALL_ST
 ./src/mersenne-twister-master/PATCH_STAMP: ./src/mersenne-twister-master/UNPACK_STAMP
 # Patch the .cpp and .h files.
 	cd ./src/mersenne-twister-master/ && \
-	echo "namespace mt {\n" > tmp.h && \
+	echo "namespace mt {" > tmp.h && \
+	echo "" >> tmp.h && \
 	cat mersenne-twister.h >> tmp.h && \
 	echo "} // Namespace KMCLib patch" >> tmp.h && \
 	cat tmp.h | sed s/"RAND_MAX"/"RAND_MAX_MT"/g | sed s/"float"/"double"/g > cslarsenmt.h && \
