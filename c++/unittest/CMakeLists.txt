@@ -8,7 +8,8 @@
 message( STATUS "Custom search path for -lcppunit: ${CPPUNIT_DIR}")
 find_library( CPPUNIT NAMES cppunit PATHS
               ${CPPUNIT_DIR}
-              ${KMCLib_SOURCE_DIR}/externals/lib )
+              ${KMCLib_SOURCE_DIR}/externals/lib/cppunit/lib )
+message( STATUS "Found cppunit:  ${CPPUNIT}")
 
 # Find all test files.
 file( GLOB CppSources test_* )
