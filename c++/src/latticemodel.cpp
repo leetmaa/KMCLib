@@ -45,7 +45,7 @@ void LatticeModel::calculateInitialMatching()
     configuration_.initMatchLists(lattice_map_, interactions_.maxRange());
 
     // Update the interactions matchlists.
-    interactions_.updateProcessMatchLists(configuration_);
+    interactions_.updateProcessMatchLists(configuration_, lattice_map_);
 
    // Match all centeres.
     std::vector<int> indices;

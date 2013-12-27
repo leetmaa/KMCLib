@@ -23,6 +23,7 @@
 
 // Forward declarations.
 class Configuration;
+class LatticeMap;
 
 /*! \brief Class for holding information about all interactions and possible
  *         processes in the system.
@@ -59,9 +60,11 @@ public:
     bool useCustomRates() const { return use_custom_rates_; }
 
     /*! \brief Update the process matchlists with implicit wildcards if needed.
-     *  \param lattice_map : The lattice map to determine wildcard positions.
+     *  \param configuration : The configuration needed to determine wildcard positions.
+     *  \param lattice_map   : The lattice map to determine wildcard positions.
      */
-    void updateProcessMatchLists( const Configuration & configuration);
+    void updateProcessMatchLists( const Configuration & configuration,
+                                  const LatticeMap & lattice_map);
 
     /*! \brief Query for the processes.
      *  \return : The processes of the system.
