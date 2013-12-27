@@ -15,6 +15,7 @@ from KMCLib.Backend.Backend import MPICommons
 
 # Import from the module we test.
 from KMCLib.Utilities.PrintUtilities import prettyPrint
+from KMCLib.Utilities.PrintUtilities import printHeader
 
 
 # Implement the test.
@@ -56,6 +57,50 @@ class PrintUtilitiesTest(unittest.TestCase):
             ref_str = ""
 
         self.assertEqual(stream_2.getvalue(), ref_str)
+
+    def testPrintHeader(self):
+        """ Test the print header function. """
+        # Print to stdout.
+        original_sys_stdout = sys.stdout
+        try:
+            stream_1   = StringIO.StringIO()
+            sys.stdout = stream_1
+
+            # Print to stdout.
+            printHeader()
+
+            # Check.
+            if MPICommons.myRank() == 0:
+                ref_str = """ ------------------------------------------------------------------------------
+ KMCLib version 1.0 BETA
+ Distributed under the GPLv3 license
+ Copyright (C) 2013 Mikael Leetmaa
+ Developed by Mikael Leetmaa <leetmaa@kth.se>
+
+ This program is distributed in the hope that it will be useful
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ LICENSE for more details.
+
+ You should have received a copy of the GNU General Public License version 3
+ (GPLv3) along with this program. If not, see <http://www.gnu.org/licenses/>.
+ ------------------------------------------------------------------------------
+"""
+            else:
+                ref_str = ""
+            self.assertTrue(ref_str in stream_1.getvalue())
+
+        finally:
+            # Put the original stdout back.
+            sys.stdout = original_sys_stdout
+
+        # Print to another stream.
+        stream_2 = StringIO.StringIO()
+        prettyPrint(ref_str, output=stream_2)
+
+        # Check.
+        self.assertTrue(ref_str in stream_2.getvalue())
+
 
 if __name__ == '__main__':
     unittest.main()

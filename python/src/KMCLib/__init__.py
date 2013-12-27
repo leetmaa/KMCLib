@@ -23,6 +23,9 @@ __all__ = ['KMCLocalConfiguration', 'KMCInteractions', 'KMCConfiguration',
            'KMCAnalysisPlugin', 'KMCProcess', 'OnTheFlyMSD',
            'TimeStepDistribution', 'MPICommons']
 
+# Print the header when the module is loaded.
+Utilities.PrintUtilities.printHeader()
+
 # Trick to intialize and finalize MPI only once.
 MPICommons.init()
 
