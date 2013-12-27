@@ -53,7 +53,7 @@ def printHeader(output=None):
     prettyPrint(" This program is distributed in the hope that it will be useful", output);
     prettyPrint(" but WITHOUT ANY WARRANTY; without even the implied warranty of", output);
     prettyPrint(" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the", output);
-    prettyPrint(" LICENSE for more details.", output);
+    prettyPrint(" LICENSE and README files, and the source code, for details.", output);
     prettyPrint("", output);
     prettyPrint(" You should have received a copy of the GNU General Public License version 3", output);
     prettyPrint(" (GPLv3) along with this program. If not, see <http://www.gnu.org/licenses/>.", output);
