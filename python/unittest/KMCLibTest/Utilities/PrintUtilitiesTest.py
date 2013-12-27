@@ -11,6 +11,8 @@ import unittest
 import StringIO
 import sys
 
+from KMCLib.Backend.Backend import MPICommons
+
 # Import from the module we test.
 from KMCLib.Utilities.PrintUtilities import prettyPrint
 
@@ -32,7 +34,10 @@ class PrintUtilitiesTest(unittest.TestCase):
             prettyPrint(ref_str)
 
             # Check.
-            ref_str = ref_str + "\n"
+            if MPICommons.myRank() == 0:
+                ref_str = ref_str + "\n"
+            else:
+                ref_str = ""
             self.assertEqual(stream_1.getvalue(), ref_str)
 
         finally:
@@ -45,7 +50,11 @@ class PrintUtilitiesTest(unittest.TestCase):
         prettyPrint(ref_str, output=stream_2)
 
         # Check.
-        ref_str = ref_str + "\n"
+        if MPICommons.myRank() == 0:
+            ref_str = ref_str + "\n"
+        else:
+            ref_str = ""
+
         self.assertEqual(stream_2.getvalue(), ref_str)
 
 if __name__ == '__main__':

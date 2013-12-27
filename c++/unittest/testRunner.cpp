@@ -14,6 +14,7 @@
 
 #include "testRunner.h"
 #include "mpih.h"
+#include "mpicommons.h"
 
 
 /// Outputter for custom test results message.
@@ -27,13 +28,30 @@ public:
     /// Overrides the print header with a nicer message.
     void printHeader()
     {
-        if ( m_result->wasSuccessful() )
-            m_stream << std::endl << "     ALL (" << m_result->runTests () << " tests) OK" << std::endl ;
-        else
+        // This is no guarantee, but it can help to give sorted output.
+        MPICommons::barrier();
+
+        for (int i = 0; i < MPICommons::size(); ++i)
         {
-            m_stream << std::endl;
-            printFailureWarning();
-            printStatistics();
+            if (MPICommons::myRank() == i)
+            {
+
+#if RUNMPI == true
+                m_stream << std::endl << "Test results from MPI rank " << i << std::endl;
+#endif
+
+                if ( m_result->wasSuccessful() )
+                {
+                    m_stream << std::endl << "     ALL (" << m_result->runTests () << " tests) OK" << std::endl ;
+                    m_stream << std::endl;
+                }
+                else
+                {
+                    printFailureWarning();
+                    printStatistics();
+                }
+                m_stream.flush();
+            }
         }
     }
 };
@@ -47,34 +65,53 @@ public:
     /// Print the name of the test running.
     void startTest( CppUnit::Test *test )
     {
-        CppUnit::stdCOut() << "[ " << test->getName() << " ]";
-        CppUnit::stdCOut().flush();
+        if (MPICommons::isMaster())
+        {
+            CppUnit::stdCOut() << "[ " << test->getName() << " ]";
+            CppUnit::stdCOut().flush();
+        }
     }
 
     /// New line, and make sure to flush.
     void endTest( CppUnit::Test *test )
     {
-        CppUnit::stdCOut() << std::endl;
-        CppUnit::stdCOut().flush();
+        MPICommons::barrier();
+        if (MPICommons::isMaster())
+        {
+            CppUnit::stdCOut() << std::endl;
+            CppUnit::stdCOut().flush();
+        }
     }
 
     /// Clear FAILURE and ERROR markers.
     void addFailure( const CppUnit::TestFailure &failure )
     {
+#if RUNMPI == true
+        CppUnit::stdCOut() << std::endl << "!!! "
+                           << failure.failedTest()->getName()
+                           << ( failure.isError() ? "- ERROR" : "- FAIL" )
+                           << " on MPI rank " << MPICommons::myRank()
+                           << std::endl;
+        CppUnit::stdCOut().flush();
+#else
         const int padding_length = 60 - failure.failedTest()->getName().length();
         const std::string padding(padding_length, '-');
         CppUnit::stdCOut() << "   <" << padding << ( failure.isError() ? "- ERROR" : "- FAIL" );
         CppUnit::stdCOut().flush();
+#endif
     }
 
     /// Flush.
     void endTestRun( CppUnit::Test *test,
                      CppUnit::TestResult *eventManager )
-   {
-       CppUnit::stdCOut()  <<  std::endl;
-       CppUnit::stdCOut().flush();
-   }
-
+    {
+        MPICommons::barrier();
+        if (MPICommons::isMaster())
+        {
+            CppUnit::stdCOut()  <<  std::endl;
+            CppUnit::stdCOut().flush();
+        }
+    }
 };
 
 
@@ -88,7 +125,15 @@ int main (int argc, char *argv[])
 #endif
 
     // Print a header message.
-    CppUnit::stdCOut() << std::endl << "Running KMCLib C++ unit tests:" << std::endl;
+#if RUNMPI == true
+    if (MPICommons::isMaster())
+    {
+        CppUnit::stdCOut() << std::endl << "Running KMCLib C++ unit tests on " << MPICommons::size() << " MPI processes." << std::endl;
+    }
+#else
+    CppUnit::stdCOut() << std::endl << "Running KMCLib C++ unit tests." << std::endl;
+
+#endif
 
     // Setup the tests.
     CppUnit::Test *test = CppUnit::TestFactoryRegistry::getRegistry().makeTest();
