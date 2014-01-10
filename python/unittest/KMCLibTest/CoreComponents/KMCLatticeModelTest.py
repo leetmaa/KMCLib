@@ -46,7 +46,7 @@ class KMCLatticeModelTest(unittest.TestCase):
         for f in self.__files_to_remove:
             if MPICommons.isMaster():
                 os.remove(f)
-            MPICommons.barrier()
+        MPICommons.barrier()
 
     def testConstruction(self):
         """ Test the construction of the lattice model """
@@ -349,7 +349,7 @@ class KMCLatticeModelTest(unittest.TestCase):
         # Run the model with a trajectory file.
         name = os.path.abspath(os.path.dirname(__file__))
         name = os.path.join(name, "..", "TestUtilities", "Scratch")
-        trajectory_filename = os.path.join(name, "ab_flip_traj.py")
+        trajectory_filename = os.path.join(name, "ab_flip_traj_custom.py")
         self.__files_to_remove.append(trajectory_filename)
 
         # The control parameters.
