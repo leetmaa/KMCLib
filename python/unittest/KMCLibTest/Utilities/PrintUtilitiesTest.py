@@ -62,6 +62,7 @@ class PrintUtilitiesTest(unittest.TestCase):
         """ Test the print header function. """
         # Print to stdout.
         original_sys_stdout = sys.stdout
+
         try:
             stream_1   = StringIO.StringIO()
             sys.stdout = stream_1
@@ -80,15 +81,18 @@ class PrintUtilitiesTest(unittest.TestCase):
  This program is distributed in the hope that it will be useful
  but WITHOUT ANY WARRANTY; without even the implied warranty of
  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- LICENSE for more details.
+ LICENSE and README files, and the source code, for details.
 
  You should have received a copy of the GNU General Public License version 3
  (GPLv3) along with this program. If not, see <http://www.gnu.org/licenses/>.
  ------------------------------------------------------------------------------
+
 """
             else:
                 ref_str = ""
-            self.assertTrue(ref_str in stream_1.getvalue())
+
+            # Check.
+            self.assertEqual(ref_str, stream_1.getvalue())
 
         finally:
             # Put the original stdout back.
