@@ -209,8 +209,9 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
         """
         Query function for the result.
 
-        :returns: The results as a 3*N numpy array with the MSD data in the
-                  x, y and z directions (expressed in fractional coordinates).
+        :returns: The results as a 7*N numpy array with the MSD data in the
+                  x, y and z, direction and averaged over the xy, xz, and yz
+                  planes finally over all space xyz (expressed in cartesian coordinates).
         """
         return self.__results
 
@@ -226,7 +227,9 @@ class OnTheFlyMSD(KMCAnalysisPlugin):
         """
         Query function for the standard deviation.
 
-        :returns: The standard deviation of the results, as a 3*N numpy array.
+        :returns: The standard deviation of the results, as a 7*N numpy array
+                   where the columns correspond to the directions in the
+                   results data.
         """
         return self.__std_dev
 
