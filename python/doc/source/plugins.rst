@@ -1,6 +1,9 @@
+.. currentmodule:: KMCLib
+
+
 Plugin Interfaces
 =======================
-KMCLib can easily be extended through the use of plugins,
+:py:mod:`KMCLib` can easily be extended through the use of plugins,
 where the user can write extension to the code and get them easily
 integrated with the core functionality simply by deriving from a
 specified plugin base class and overloading certain functions
@@ -24,9 +27,10 @@ language. Such techniques will however not be covered here.
 
 KMCRateCalculatorPlugin
 -------------------------
-The KMCRateCalculatorPluin is used to customize the calculation of
-rates in the KMC simulation. A user defined RateCalculator plugin must
-inherit from the KMCRateCalculatorPlugin base class as in this example:
+The :py:class:`KMCRateCalculatorPluin` is used to customize the calculation of
+rates in the KMC simulation. A user defined :py:class:`RateCalculator`
+plugin must
+inherit from the :py:class:`KMCRateCalculatorPlugin` base class as in this example:
 
 .. code-block:: python
 
@@ -42,7 +46,7 @@ inherit from the KMCRateCalculatorPlugin base class as in this example:
         # Override the other base class API functions if needed.
         ...
 
-The derived class is then given to the KMCInteractions
+The derived class is then given to the :py:class:`KMCInteractions`
 object to be used in the KMC simulation.
 
 .. code-block:: python
@@ -57,16 +61,16 @@ object to be used in the KMC simulation.
     model = KMCLatticeModel(interactions=interactions, ... )
 
 When running a KMC simulation with a custom rate calculator defined,
-its rate( ... ) function will be called each time the rate of an available
-process is needed. The rate( ... ) function receives information about
+its :py:meth:`rate<KMCRateCalculatorPlugin.rate>` method will be called each time the rate of an available
+process is needed. The :py:meth:`rate<KMCRateCalculatorPlugin.rate>` method receives information about
 the geometry and the types before and after the process, as well as
 the unmodified rate constant associated with the process. It is then
 up to the user to handle the geometric and types information to
 compute a new rate based on the given information. The
-rate( ... ) function should return a valid rate for the particular
+:py:meth:`rate<KMCRateCalculatorPlugin.rate>` method should return a valid rate for the particular
 process for the given geometry.
 
-Note that the rate(...) function of the custom rate calculator plugin
+Note that the :py:meth:`rate<KMCRateCalculatorPlugin.rate>` method of the custom rate calculator plugin
 could be called millions of times during a typical KMC
 simulation production run. It is therefore highly recommendable that
 code efficiency is kept in mind when implementing this type of custom
@@ -85,9 +89,9 @@ KMCAnalysisPlugin
 -------------------------
 The KMCAnalysisPlugin is used to perform on-the-fly custom analysis
 during the KMC simulation. A list of instantiated KMCAnalysisPlugin
-objects can be given to the run(...) function of the KMCLatticeModel.
+objects can be given to the :py:meth:`run<KMCLatticeModel.run>` function of the :py:class:`KMCLatticeModel`.
 Each user-defined custom analysis object must inherit from the
-KMCAnalysisPlugin base class.
+:py:class:`KMCAnalysisPlugin` base class.
 Three functions are available to overload for setting up, handling
 updates after a step and finalizing the analysis.
 Here is an example:
@@ -130,10 +134,9 @@ Here is an example:
                                                            analysis_interval=10)
                   analysis=analysis)
 
-.. NOTE::
-   How often the registerStep(...) function is called during the
-   simulation is controlled via the 'analysis_interval' parameter given
-   to the KMCControlParameters.
+Note that how often the :py:meth:`registerStep<KMCAnalysisPlugin.registerStep>`
+function is called during the simulation is controlled via the
+:py:obj:`analysis_interval` parameter given to the :py:class:`KMCControlParameters`.
 
 
 Interface
