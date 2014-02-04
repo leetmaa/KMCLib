@@ -17,7 +17,7 @@ You should have received a copy of the GNU General Public License version 3
 
 Credit
 -----------
-KMCLib is designed and developed by **Dr. Mikael Leetmaa**
+KMCLib was designed and developed by **Dr. Mikael Leetmaa**
 (leetmaa@kth.se) at the Royal
 Institute of Technology - KTH, Sweden, in the
 Multiscale Materials Modelling research group headed by
