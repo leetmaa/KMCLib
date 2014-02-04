@@ -8,6 +8,7 @@
 
 import unittest
 import numpy
+import os
 
 # Import the interface.
 from KMCLib import *
@@ -20,10 +21,12 @@ class Diffusion3DTest(unittest.TestCase):
 
     def testRun(self):
         """ Run the model and check the results. """
-
         # Load the basic interactions and the initial configuration.
-        interactions  = KMCInteractionsFromScript("processes.py")
-        configuration = KMCConfigurationFromScript("config.py")
+        directory = os.path.abspath(os.path.dirname(__file__))
+        p_file    = os.path.join(directory, "processes.py")
+        c_file    = os.path.join(directory,"config.py")
+        interactions  = KMCInteractionsFromScript(p_file)
+        configuration = KMCConfigurationFromScript(c_file)
 
         # Set the parameters.
         control_parameters = KMCControlParameters(number_of_steps=300000,
