@@ -1,3 +1,5 @@
+.. _`usage examples`:
+
 .. currentmodule:: KMCLib
 
 ================
