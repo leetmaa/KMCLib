@@ -43,19 +43,19 @@ def printHeader(output=None):
         output = sys.stdout
 
     # Write.
-    prettyPrint(" ------------------------------------------------------------------------------", output)
-    prettyPrint(" KMCLib version 1.0 BETA", output)
-    prettyPrint(" Distributed under the GPLv3 license", output)
-    prettyPrint(" Copyright (C) 2013 Mikael Leetmaa", output)
-    prettyPrint(" Developed by Mikael Leetmaa <leetmaa@kth.se>", output)
+    prettyPrint("# -----------------------------------------------------------------------------", output)
+    prettyPrint("# KMCLib version 1.0 BETA", output)
+    prettyPrint("# Distributed under the GPLv3 license", output)
+    prettyPrint("# Copyright (C) 2013 Mikael Leetmaa", output)
+    prettyPrint("# Developed by Mikael Leetmaa <leetmaa@kth.se>", output)
 
-    prettyPrint("", output)
-    prettyPrint(" This program is distributed in the hope that it will be useful", output);
-    prettyPrint(" but WITHOUT ANY WARRANTY; without even the implied warranty of", output);
-    prettyPrint(" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the", output);
-    prettyPrint(" LICENSE and README files, and the source code, for details.", output);
-    prettyPrint("", output);
-    prettyPrint(" You should have received a copy of the GNU General Public License version 3", output);
-    prettyPrint(" (GPLv3) along with this program. If not, see <http://www.gnu.org/licenses/>.", output);
-    prettyPrint(" ------------------------------------------------------------------------------", output)
+    prettyPrint("#", output)
+    prettyPrint("# This program is distributed in the hope that it will be useful", output);
+    prettyPrint("# but WITHOUT ANY WARRANTY; without even the implied warranty of", output);
+    prettyPrint("# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the", output);
+    prettyPrint("# LICENSE and README files, and the source code, for details.", output);
+    prettyPrint("#", output);
+    prettyPrint("# You should have received a copy of the GNU General Public License version 3", output);
+    prettyPrint("# (GPLv3) along with this program. If not, see <http://www.gnu.org/licenses/>.", output);
+    prettyPrint("# -----------------------------------------------------------------------------", output)
     prettyPrint("", output)

@@ -72,20 +72,20 @@ class PrintUtilitiesTest(unittest.TestCase):
 
             # Check.
             if MPICommons.myRank() == 0:
-                ref_str = """ ------------------------------------------------------------------------------
- KMCLib version 1.0 BETA
- Distributed under the GPLv3 license
- Copyright (C) 2013 Mikael Leetmaa
- Developed by Mikael Leetmaa <leetmaa@kth.se>
-
- This program is distributed in the hope that it will be useful
- but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- LICENSE and README files, and the source code, for details.
-
- You should have received a copy of the GNU General Public License version 3
- (GPLv3) along with this program. If not, see <http://www.gnu.org/licenses/>.
- ------------------------------------------------------------------------------
+                ref_str = """# -----------------------------------------------------------------------------
+# KMCLib version 1.0 BETA
+# Distributed under the GPLv3 license
+# Copyright (C) 2013 Mikael Leetmaa
+# Developed by Mikael Leetmaa <leetmaa@kth.se>
+#
+# This program is distributed in the hope that it will be useful
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# LICENSE and README files, and the source code, for details.
+#
+# You should have received a copy of the GNU General Public License version 3
+# (GPLv3) along with this program. If not, see <http://www.gnu.org/licenses/>.
+# -----------------------------------------------------------------------------
 
 """
             else:
