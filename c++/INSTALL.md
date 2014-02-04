@@ -26,7 +26,7 @@ Mac with g++ and python from macports: "cmake -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C
 "make install"
 
 ## 4) Run the Python tests.
-Place "your KMCLib/python/src" directory in your PYTHONPATH variable and run
+Place your "KMCLib/python/src" directory in your PYTHONPATH variable and run
 "python KMCLib/python/unittest/utest.py" and each of the tests under
 "KMCLib/python/functest/". We have used *python 2.7* for all development and
 testing.

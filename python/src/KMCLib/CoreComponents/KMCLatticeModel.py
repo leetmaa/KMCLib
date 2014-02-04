@@ -103,8 +103,8 @@ class KMCLatticeModel(object):
         :param trajectory_type:     The type of trajectory to use. Either 'lattice' or 'xyz'.
                                     The 'lattice' format shows the types at the latice points.
                                     The 'xyz' format gives type and coordinate for each particle.
-        :param trajectory_filename: The filename of the trajectory. If not given
-                                    no trajectory will be saved.
+                                    The default type is 'lattice'.
+        :param analysis:            A list of instantiated analysis objects that should be used for on-the-fly analysis.
         """
         # Check the input.
         if not isinstance(control_parameters, KMCControlParameters):

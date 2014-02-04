@@ -239,13 +239,14 @@ class KMCConfiguration(object):
 
     def _script(self, variable_name="configuration"):
         """
-        Generate a script representation of an instance.
+        Generate a KMCLib Python script representation of this configuration.
 
         :param variable_name: A name to use as variable name for
                               the KMCConfiguration in the generated script.
         :type variable_name: str
 
-        :returns: A script that can generate this configuration.
+        :returns: A KMCLib Python script, as a string,
+                  that can generate this configuration.
         """
         # Get the lattice script.
         lattice_script = self.__lattice._script(variable_name="lattice")
@@ -318,8 +319,9 @@ class KMCConfiguration(object):
         Generate an ATK 12.8.2 compatible BulkConfiguration script of
         this configuration.
 
-        :param types_map: A map between our types and atk type names as
-                          a dict, where keys are the type names used in this
+        :param types_map: A map between the KMCLib types used in this
+                          configuration and ATK type names as a dict,
+                          where keys are the type names used in this
                           configuration and the corresponding values are the
                           ATK types to be used given as strings. Any
                           type not specified in the mapping will be left out
