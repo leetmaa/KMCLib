@@ -130,10 +130,10 @@ void Interactions::updateProcessMatchLists(const Configuration & configuration,
 
         // Get the configuration match list for this basis position in the
         // most central cell.
-        const int i     = lattice_map.repetitionsA() / 2;
-        const int j     = lattice_map.repetitionsB() / 2;
-        const int k     = lattice_map.repetitionsC() / 2;
-        const int index = lattice_map.indicesFromCell(i, j, k)[basis_position];
+        const int ii    = lattice_map.repetitionsA() / 2;
+        const int jj    = lattice_map.repetitionsB() / 2;
+        const int kk    = lattice_map.repetitionsC() / 2;
+        const int index = lattice_map.indicesFromCell(ii, jj, kk)[basis_position];
         const std::vector<MinimalMatchListEntry> config_matchlist = configuration.minimalMatchList(index);
 
         // Perform the match where we add wildcards to fill the vacancies in the
