@@ -8,6 +8,8 @@
 
 import unittest
 import numpy
+import time
+
 
 # Import the interface.
 from KMCLib import *
@@ -52,6 +54,8 @@ class IsingSpinTest(unittest.TestCase):
         # --------------------------------------------------------------------
         # Setup a calculation with custom rates.
 
+        t1 = time.clock()
+
         # Load the configuration and interactions.
         configuration = KMCConfigurationFromScript("config.py")
         interactions  = KMCInteractionsFromScript("custom_processes.py")
@@ -70,6 +74,8 @@ class IsingSpinTest(unittest.TestCase):
         # Run the simulation - save trajectory to 'custom_traj.py'
         model.run(control_parameters, trajectory_filename="custom_traj.py")
 
+        t2 = time.clock()
+
         # --------------------------------------------------------------------
         # Setup the same calculation with fixed rates.
 
@@ -87,6 +93,7 @@ class IsingSpinTest(unittest.TestCase):
         # Run the simulation - save trajectory to 'fixed_traj.py'
         model.run(control_parameters, trajectory_filename="fixed_traj.py")
 
+        t3 = time.clock()
         # --------------------------------------------------------------------
         # Check that the results are the same.
         global_dict = {}
@@ -112,6 +119,9 @@ class IsingSpinTest(unittest.TestCase):
 
         self.assertEqual(u1, 5938)
         self.assertEqual(u2, 5680)
+
+        print "Time for custom run (s):", t2-t1
+        print "Time for fixed run  (s):", t3-t2
 
         # --------------------------------------------------------------------
         # Now, plot the last configuration from each trajectory and compare
