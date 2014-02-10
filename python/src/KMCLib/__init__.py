@@ -1,5 +1,13 @@
 """ Module for easy KMC from python. """
 
+
+# Copyright (c)  2013  Mikael Leetmaa
+#
+# This file is part of the KMCLib project distributed under the terms of the
+# GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
+#
+
+
 from CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
 from CoreComponents.KMCInteractions import KMCInteractions
 from CoreComponents.KMCProcess import KMCProcess
@@ -14,23 +22,24 @@ from Utilities.SaveAndReadUtilities import KMCInteractionsFromScript
 from Utilities.SaveAndReadUtilities import KMCConfigurationFromScript
 from PluginInterfaces.KMCRateCalculatorPlugin import KMCRateCalculatorPlugin
 from PluginInterfaces.KMCAnalysisPlugin import KMCAnalysisPlugin
+from Backend.Backend import MPICommons
 
 __all__ = ['KMCLocalConfiguration', 'KMCInteractions', 'KMCConfiguration',
            'KMCLattice', 'KMCLatticeModel', 'KMCUnitCell',
            'KMCControlParameters', 'KMCInteractionsFromScript',
            'KMCConfigurationFromScript', 'KMCRateCalculatorPlugin',
            'KMCAnalysisPlugin', 'KMCProcess', 'OnTheFlyMSD',
-           'TimeStepDistribution']
+           'TimeStepDistribution', 'MPICommons']
 
-# Trick to intialize and finalize MPI only once.
-from Backend import Backend
+# Trick to initialize and finalize MPI only once.
+MPICommons.init()
 
-# Init MPI.
-Backend.MPICommons.init()
+# Print the header when the module is loaded.
+Utilities.PrintUtilities.printHeader()
 
 # Make sure to finalize MPI on exit.
 def killme():
-    Backend.MPICommons.finalize()
+    MPICommons.finalize()
 
 import atexit
 atexit.register(killme)

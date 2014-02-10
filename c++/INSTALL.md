@@ -18,7 +18,7 @@ This includeds CppUnit and a mersenne-twister implementation.
 "cd KMCLib/c++",
 "mkdir build",
 "cd build",
-Linux: "cmake -DMPI=mpiwrapper .." for the MPI version or "cmake -DMPI=FALSE .." for
+Linux: "cmake -DMPI=mpiwrapper .." for the MPI version or "cmake .." for
  the serial version. Replace "mpiwrapper" with the mpi compiler wrapper script you want to use, e.g. "mpicxx".
 Mac with g++ and python from macports: "cmake -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc -DMACPORT=TRUE .." or leave -DMACPORT out to use machine Python.
 "make test.x",
@@ -26,7 +26,7 @@ Mac with g++ and python from macports: "cmake -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C
 "make install"
 
 ## 4) Run the Python tests.
-Place "your KMCLib/python/src" directory in your PYTHONPATH variable and run
+Place your "KMCLib/python/src" directory in your PYTHONPATH variable and run
 "python KMCLib/python/unittest/utest.py" and each of the tests under
 "KMCLib/python/functest/". We have used *python 2.7* for all development and
 testing.
@@ -37,4 +37,3 @@ the functionality tests in python to get a hint at how to do it, and check the
 source manual if needed.
 
 *Good luck!*
-

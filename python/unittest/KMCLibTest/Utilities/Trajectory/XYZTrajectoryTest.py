@@ -15,6 +15,7 @@ import numpy
 from KMCLib.CoreComponents.KMCUnitCell import KMCUnitCell
 from KMCLib.CoreComponents.KMCLattice import KMCLattice
 from KMCLib.CoreComponents.KMCConfiguration import KMCConfiguration
+from KMCLib.Backend.Backend import MPICommons
 
 # Import from the module we test.
 from KMCLib.Utilities.Trajectory.XYZTrajectory import XYZTrajectory
@@ -40,7 +41,9 @@ class XYZTrajectoryTest(unittest.TestCase):
         name = os.path.join(name, "..", "..")
         name = os.path.join(name, "TestUtilities", "Scratch")
         filename = os.path.join(name, filename)
-        self.__files_to_remove.append(filename)
+
+        if MPICommons.isMaster():
+            self.__files_to_remove.append(filename)
 
         unit_cell = KMCUnitCell(cell_vectors=[[1.0, 0.0, 0.0],
                                               [0.0, 1.0, 0.0],
@@ -71,7 +74,9 @@ class XYZTrajectoryTest(unittest.TestCase):
         name = os.path.join(name, "..", "..")
         name = os.path.join(name, "TestUtilities", "Scratch")
         trajectory_filename = os.path.join(name, "tmp_trajectory.xyz")
-        self.__files_to_remove.append(trajectory_filename)
+
+        if MPICommons.isMaster():
+            self.__files_to_remove.append(trajectory_filename)
 
         # Setup the trajectory object.
         unit_cell = KMCUnitCell(cell_vectors=[[1.0, 0.0, 0.0],
@@ -90,14 +95,16 @@ class XYZTrajectoryTest(unittest.TestCase):
                           max_buffer_size=12345,
                           max_buffer_time=123.0)
 
-        # Check that the header was written.
-        self.assertTrue(os.path.exists(trajectory_filename))
+        if MPICommons.isMaster():
 
-        # Check the content of the header.
-        with open(trajectory_filename, "r") as f:
-            content = f.read()
+            # Check that the header was written.
+            self.assertTrue(os.path.exists(trajectory_filename))
 
-        ref_content = """KMCLib XYZ FORMAT VERSION 2013.10.15
+            # Check the content of the header.
+            with open(trajectory_filename, "r") as f:
+                content = f.read()
+
+            ref_content = """KMCLib XYZ FORMAT VERSION 2013.10.15
 
 CELL VECTORS
 a: 1.0000000000e+00 0.0000000000e+00 0.0000000000e+00
@@ -109,7 +116,7 @@ REPETITIONS 4 4 4
 PERIODICITY True True True
 
 """
-        self.assertEqual( content, ref_content )
+            self.assertEqual( content, ref_content )
 
     def testStoreData(self):
         """ Test the data storage function. """
@@ -118,7 +125,9 @@ PERIODICITY True True True
         name = os.path.join(name, "..", "..")
         name = os.path.join(name, "TestUtilities", "Scratch")
         trajectory_filename = os.path.join(name, "tmp_trajectory.xyz")
-        self.__files_to_remove.append(trajectory_filename)
+
+        if MPICommons.isMaster():
+            self.__files_to_remove.append(trajectory_filename)
 
         # Setup the trajectory object.
         unit_cell = KMCUnitCell(cell_vectors=[[1.0, 0.0, 0.0],
@@ -185,7 +194,9 @@ PERIODICITY True True True
         name = os.path.join(name, "..", "..")
         name = os.path.join(name, "TestUtilities", "Scratch")
         trajectory_filename = os.path.join(name, "tmp_trajectory.xyz")
-        self.__files_to_remove.append(trajectory_filename)
+
+        if MPICommons.isMaster():
+            self.__files_to_remove.append(trajectory_filename)
 
         # Setup the trajectory object.
         unit_cell = KMCUnitCell(cell_vectors=[[1.0, 0.0, 0.0],
@@ -248,7 +259,9 @@ PERIODICITY True True True
         name = os.path.join(name, "..", "..")
         name = os.path.join(name, "TestUtilities", "Scratch")
         trajectory_filename = os.path.join(name, "tmp_trajectory.xyz")
-        self.__files_to_remove.append(trajectory_filename)
+
+        if MPICommons.isMaster():
+            self.__files_to_remove.append(trajectory_filename)
 
         # Setup the trajectory object.
         unit_cell = KMCUnitCell(cell_vectors=[[1.0, 0.0, 0.0],
@@ -356,10 +369,11 @@ STEP 123
                 C   3.0000000000e+00 3.0000000000e+00 2.0000000000e+00  62
                 D   3.0000000000e+00 3.0000000000e+00 3.0000000000e+00  63
 """
-        with open(trajectory_filename, "r") as f:
-            content = f.read()
 
-        self.assertEqual( content, ref_content )
+        if MPICommons.isMaster():
+            with open(trajectory_filename, "r") as f:
+                content = f.read()
+            self.assertEqual( content, ref_content )
 
         # Check that the buffers are empty.
         self.assertEqual(t._XYZTrajectory__atom_id_types, [])
@@ -374,7 +388,9 @@ STEP 123
         name = os.path.join(name, "..", "..")
         name = os.path.join(name, "TestUtilities", "Scratch")
         trajectory_filename = os.path.join(name, "tmp_trajectory.xyz")
-        self.__files_to_remove.append(trajectory_filename)
+
+        if MPICommons.isMaster():
+            self.__files_to_remove.append(trajectory_filename)
 
         # Setup the trajectory object.
         unit_cell = KMCUnitCell(cell_vectors=[[1.0, 0.0, 0.0],
@@ -436,10 +452,10 @@ STEP 12
              step   1.2340000000e+00 1.2340000000e+00 1.2340000000e+00  4
 """
 
-        with open(trajectory_filename, "r") as f:
-            content = f.read()
-
-        self.assertEqual( content, ref_content )
+        if MPICommons.isMaster():
+            with open(trajectory_filename, "r") as f:
+                content = f.read()
+            self.assertEqual( content, ref_content )
 
         # Check that the buffers are empty.
         self.assertEqual(t._XYZTrajectory__atom_id_types, [])

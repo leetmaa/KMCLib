@@ -32,18 +32,11 @@ class LatticeTrajectoryTest(unittest.TestCase):
     def setUp(self):
         """ The setUp method for test fixtures. """
         self.__files_to_remove = []
-        # Make sure to start simultaneously.
-        MPICommons.barrier()
 
     def tearDown(self):
         """ The tearDown method for test fixtures. """
-        # Make sure to stop simultaneously.
-        MPICommons.barrier()
         for f in self.__files_to_remove:
-            # Make sure only master delets files, while slaves wait.
-            if MPICommons.isMaster():
-                os.remove(f)
-            MPICommons.barrier()
+            os.remove(f)
 
     def testConstruction(self):
         """ Test the LatticeTrajectory object can be constructed. """
@@ -55,7 +48,9 @@ class LatticeTrajectoryTest(unittest.TestCase):
         name = os.path.join(name, "..", "..")
         name = os.path.join(name, "TestUtilities", "Scratch")
         trajectory_filename = os.path.join(name, "tmp_trajectory_file.py")
-        self.__files_to_remove.append(trajectory_filename)
+
+        if MPICommons.isMaster():
+            self.__files_to_remove.append(trajectory_filename)
 
         # Construct with default values.
         dt = LatticeTrajectory(trajectory_filename, Config(sites))
@@ -77,31 +72,32 @@ class LatticeTrajectoryTest(unittest.TestCase):
 
         # Open the trajectory file and check that we can read the meta
         # information and sites.
-        global_dict = {}
-        local_dict  = {}
-        execfile(trajectory_filename, global_dict, local_dict)
+        if MPICommons.isMaster():
+            global_dict = {}
+            local_dict  = {}
+            execfile(trajectory_filename, global_dict, local_dict)
 
-        # Get the version and creation time.
-        read_version  = local_dict["version"]
-        read_creation = local_dict["creation_time"]
+            # Get the version and creation time.
+            read_version  = local_dict["version"]
+            read_creation = local_dict["creation_time"]
 
-        # Check that they are of corect type.
-        self.assertTrue( isinstance(read_version, str) )
-        self.assertTrue( isinstance(read_creation, str) )
+            # Check that they are of corect type.
+            self.assertTrue( isinstance(read_version, str) )
+            self.assertTrue( isinstance(read_creation, str) )
 
-        # Check the sites.
-        read_sites = numpy.array(local_dict["sites"])
-        ref_sites  = numpy.array(sites)
-        self.assertAlmostEqual( numpy.linalg.norm(read_sites - ref_sites), 0.0, 10 )
+            # Check the sites.
+            read_sites = numpy.array(local_dict["sites"])
+            ref_sites  = numpy.array(sites)
+            self.assertAlmostEqual( numpy.linalg.norm(read_sites - ref_sites), 0.0, 10 )
 
-        # Check the empty lists.
-        read_times = local_dict["times"]
-        read_steps = local_dict["steps"]
-        read_types = local_dict["types"]
-        empty_list = []
-        self.assertEqual( read_times, empty_list )
-        self.assertEqual( read_steps, empty_list )
-        self.assertEqual( read_types, empty_list )
+            # Check the empty lists.
+            read_times = local_dict["times"]
+            read_steps = local_dict["steps"]
+            read_types = local_dict["types"]
+            empty_list = []
+            self.assertEqual( read_times, empty_list )
+            self.assertEqual( read_steps, empty_list )
+            self.assertEqual( read_types, empty_list )
 
     def testVersion(self):
         """ Test the LatticeTrajectory file version number string. """
@@ -113,21 +109,24 @@ class LatticeTrajectoryTest(unittest.TestCase):
         name = os.path.join(name, "..", "..")
         name = os.path.join(name, "TestUtilities", "Scratch")
         trajectory_filename = os.path.join(name, "tmp_trajectory_file.py")
-        self.__files_to_remove.append(trajectory_filename)
+
+        if MPICommons.isMaster():
+            self.__files_to_remove.append(trajectory_filename)
 
         # Construct.
         t = LatticeTrajectory(trajectory_filename, Config(sites))
 
         # Open the trajectory file and check that we can read the meta
         # information and sites.
-        global_dict = {}
-        local_dict  = {}
-        execfile(trajectory_filename, global_dict, local_dict)
+        if MPICommons.isMaster():
+            global_dict = {}
+            local_dict  = {}
+            execfile(trajectory_filename, global_dict, local_dict)
 
-        # Get the version and check.
-        read_version  = local_dict["version"]
-        ref_version = "2013.1.0"
-        self.assertEqual( read_version, ref_version )
+            # Get the version and check.
+            read_version  = local_dict["version"]
+            ref_version = "2013.1.0"
+            self.assertEqual( read_version, ref_version )
 
     def testWriteToFile(self):
         """ Test writing the buffers to file. """
@@ -144,7 +143,9 @@ class LatticeTrajectoryTest(unittest.TestCase):
         name = os.path.join(name, "..", "..")
         name = os.path.join(name, "TestUtilities", "Scratch")
         trajectory_filename = os.path.join(name, "tmp_trajectory_file.py")
-        self.__files_to_remove.append(trajectory_filename)
+
+        if MPICommons.isMaster():
+            self.__files_to_remove.append(trajectory_filename)
 
         # Construct.
         t = LatticeTrajectory(trajectory_filename, Config(sites))
@@ -157,80 +158,72 @@ class LatticeTrajectoryTest(unittest.TestCase):
                  ["A", "B", "C", "D", "E", "F", "G", "H"],
                  ["1", "2", "4", "5", "6", "5" ,"43", "243r2424"]]
 
-        # Needed to prevent test failure.
-        MPICommons.barrier()
-
         # Check that the time is zero before we start.
-        self.assertAlmostEqual( t._Trajectory__time_last_dump, 0.0, 10 )
+        if MPICommons.isMaster():
+            self.assertAlmostEqual( t._Trajectory__time_last_dump, 0.0, 10 )
 
+        # This function should be MPI safe.
         t._LatticeTrajectory__writeToFile(times, steps, site_types)
 
-        # Needed to prevent test failure.
-        MPICommons.barrier()
-
         # Check the info stored in the file.
-        global_dict = {}
-        local_dict  = {}
-        execfile(trajectory_filename, global_dict, local_dict)
+        if MPICommons.isMaster():
+            global_dict = {}
+            local_dict  = {}
+            execfile(trajectory_filename, global_dict, local_dict)
 
-        # Check the types.
-        ret_types = local_dict['types']
-        ref_types = [['ThisIsTheLongestTypeNameIHaveEverEncounteredPerhaps',
-                      'here', 'is', 'Next', 'Long', 'List', 'Offffffff',
-                      'Names', 'now', 'this', 'one', 'is', 'longer', 'still'],
-                     ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'],
-                     ['1', '2', '4', '5', '6', '5', '43', '243r2424']]
+            # Check the types.
+            ret_types = local_dict['types']
+            ref_types = [['ThisIsTheLongestTypeNameIHaveEverEncounteredPerhaps',
+                          'here', 'is', 'Next', 'Long', 'List', 'Offffffff',
+                          'Names', 'now', 'this', 'one', 'is', 'longer', 'still'],
+                         ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'],
+                         ['1', '2', '4', '5', '6', '5', '43', '243r2424']]
 
-        # Needed to prevent test failure.
-        MPICommons.barrier()
+            self.assertEqual( ret_types, ref_types )
 
-        self.assertEqual( ret_types, ref_types )
+            # Check the steps.
+            ret_steps = local_dict['steps']
+            ref_steps = [12, 25, 52]
+            self.assertEqual( ret_steps, ref_steps )
 
-        # Check the steps.
-        ret_steps = local_dict['steps']
-        ref_steps = [12, 25, 52]
-        self.assertEqual( ret_steps, ref_steps )
+            # Check the times.
+            ret_times = local_dict['times']
+            ref_times = [1.10045, 2.334156, 3.451641]
+            self.assertEqual( ret_times, ref_times )
 
-        # Check the times.
-        ret_times = local_dict['times']
-        ref_times = [1.10045, 2.334156, 3.451641]
-        self.assertEqual( ret_times, ref_times )
-
-        # Write again.
+        # Write again - MPI safe.
         t._LatticeTrajectory__writeToFile(times, steps, site_types)
 
         # Now, check the file again.
-        global_dict = {}
-        local_dict  = {}
-        execfile(trajectory_filename, global_dict, local_dict)
+        if MPICommons.isMaster():
+            global_dict = {}
+            local_dict  = {}
+            execfile(trajectory_filename, global_dict, local_dict)
 
-        # Check the types.
-        ret_types = local_dict['types']
-        ref_types = [['ThisIsTheLongestTypeNameIHaveEverEncounteredPerhaps',
-                      'here', 'is', 'Next', 'Long', 'List', 'Offffffff',
-                      'Names', 'now', 'this', 'one', 'is', 'longer', 'still'],
-                     ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'],
-                     ['1', '2', '4', '5', '6', '5', '43', '243r2424'],
-                     ['ThisIsTheLongestTypeNameIHaveEverEncounteredPerhaps',
-                      'here', 'is', 'Next', 'Long', 'List', 'Offffffff',
-                      'Names', 'now', 'this', 'one', 'is', 'longer', 'still'],
-                     ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'],
-                     ['1', '2', '4', '5', '6', '5', '43', '243r2424']]
+            # Check the types.
+            ret_types = local_dict['types']
+            ref_types = [['ThisIsTheLongestTypeNameIHaveEverEncounteredPerhaps',
+                          'here', 'is', 'Next', 'Long', 'List', 'Offffffff',
+                          'Names', 'now', 'this', 'one', 'is', 'longer', 'still'],
+                         ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'],
+                         ['1', '2', '4', '5', '6', '5', '43', '243r2424'],
+                         ['ThisIsTheLongestTypeNameIHaveEverEncounteredPerhaps',
+                          'here', 'is', 'Next', 'Long', 'List', 'Offffffff',
+                          'Names', 'now', 'this', 'one', 'is', 'longer', 'still'],
+                         ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'],
+                         ['1', '2', '4', '5', '6', '5', '43', '243r2424']]
 
-        # Needed to prevent test failure.
-        MPICommons.barrier()
+            self.assertEqual( ret_types, ref_types )
 
-        self.assertEqual( ret_types, ref_types )
+            # Check the steps.
+            ret_steps = local_dict['steps']
+            ref_steps = [12, 25, 52, 12, 25, 52]
+            self.assertEqual( ret_steps, ref_steps )
 
-        # Check the steps.
-        ret_steps = local_dict['steps']
-        ref_steps = [12, 25, 52, 12, 25, 52]
-        self.assertEqual( ret_steps, ref_steps )
-
-        # Check the times.
-        ret_times = local_dict['times']
-        ref_times = [1.10045, 2.334156, 3.451641, 1.10045, 2.334156, 3.451641]
-        self.assertEqual( ret_times, ref_times )
+            # Check the times.
+            ret_times = local_dict['times']
+            ref_times = [1.10045, 2.334156, 3.451641, 1.10045, 2.334156, 3.451641]
+            self.assertEqual( ret_times, ref_times )
 
     def testAppend(self):
         """ Test appending to the trajectory. """
@@ -247,7 +240,9 @@ class LatticeTrajectoryTest(unittest.TestCase):
         name = os.path.join(name, "..", "..")
         name = os.path.join(name, "TestUtilities", "Scratch")
         trajectory_filename = os.path.join(name, "tmp_trajectory_file.py")
-        self.__files_to_remove.append(trajectory_filename)
+
+        if MPICommons.isMaster():
+            self.__files_to_remove.append(trajectory_filename)
 
         class DummyConfig:
             def types(self):
@@ -261,80 +256,73 @@ class LatticeTrajectoryTest(unittest.TestCase):
         t.append(1.10045, 12, DummyConfig())
 
         # Since this was the first time it should have triggered a dump to file.
-        global_dict = {}
-        local_dict  = {}
-        execfile(trajectory_filename, global_dict, local_dict)
+        if MPICommons.isMaster():
+            global_dict = {}
+            local_dict  = {}
+            execfile(trajectory_filename, global_dict, local_dict)
 
-        # Needed to prevent test failure.
-        MPICommons.barrier()
+            # Check the types.
+            ret_types = local_dict['types']
+            ref_types = [["A", "A", "A", "A", "A", "A"]]
+            self.assertEqual( ret_types, ref_types )
 
-        # Check the types.
-        ret_types = local_dict['types']
-        ref_types = [["A", "A", "A", "A", "A", "A"]]
-        self.assertEqual( ret_types, ref_types )
+            # Check the steps.
+            ret_steps = local_dict['steps']
+            ref_steps = [12]
+            self.assertEqual( ret_steps, ref_steps )
 
-        # Check the steps.
-        ret_steps = local_dict['steps']
-        ref_steps = [12]
-        self.assertEqual( ret_steps, ref_steps )
-
-        # Check the times.
-        ret_times = local_dict['times']
-        ref_times = [1.10045]
-        self.assertEqual( ret_times, ref_times )
+            # Check the times.
+            ret_times = local_dict['times']
+            ref_times = [1.10045]
+            self.assertEqual( ret_times, ref_times )
 
         # Appending again directly makes no dump.
         site_types = ["B", "B", "B", "B", "B", "B"]
         t.append(1.1993, 14, DummyConfig())
 
-        global_dict = {}
-        local_dict  = {}
-        execfile(trajectory_filename, global_dict, local_dict)
+        if MPICommons.isMaster():
+            global_dict = {}
+            local_dict  = {}
+            execfile(trajectory_filename, global_dict, local_dict)
 
-        # Needed to prevent test failure.
-        MPICommons.barrier()
-
-        # Check.
-        ret_types = local_dict['types']
-        self.assertEqual( ret_types, ref_types )
-        ret_steps = local_dict['steps']
-        self.assertEqual( ret_steps, ref_steps )
-        ret_times = local_dict['times']
-        self.assertEqual( ret_times, ref_times )
+            # Check.
+            ret_types = local_dict['types']
+            self.assertEqual( ret_types, ref_types )
+            ret_steps = local_dict['steps']
+            self.assertEqual( ret_steps, ref_steps )
+            ret_times = local_dict['times']
+            self.assertEqual( ret_times, ref_times )
 
         # But if we dump again and set the time limit to zero we will trigger a dump.
         t._Trajectory__max_buffer_time = 0.0
         site_types = ["C", "C", "C", "C", "C", "C"]
-
         t.append(1.199, 19, DummyConfig())
 
         # Reset the time to some thing large.
         t._Trajectory__max_buffer_time = 100000000000.0
 
-        global_dict = {}
-        local_dict  = {}
-        execfile(trajectory_filename, global_dict, local_dict)
+        if MPICommons.isMaster():
+            global_dict = {}
+            local_dict  = {}
+            execfile(trajectory_filename, global_dict, local_dict)
 
-        # Check the types.
-        ret_types = local_dict['types']
-        ref_types = [["A","A","A","A","A","A"],
-                     ["B","B","B","B","B","B"],
-                     ["C","C","C","C","C","C"]]
+            # Check the types.
+            ret_types = local_dict['types']
+            ref_types = [["A","A","A","A","A","A"],
+                         ["B","B","B","B","B","B"],
+                         ["C","C","C","C","C","C"]]
 
-        # Needed to prevent test failure.
-        MPICommons.barrier()
+            self.assertEqual( ret_types, ref_types )
 
-        self.assertEqual( ret_types, ref_types )
+            # Check the steps.
+            ret_steps = local_dict['steps']
+            ref_steps = [12,14,19]
+            self.assertEqual( ret_steps, ref_steps )
 
-        # Check the steps.
-        ret_steps = local_dict['steps']
-        ref_steps = [12,14,19]
-        self.assertEqual( ret_steps, ref_steps )
-
-        # Check the times.
-        ret_times = local_dict['times']
-        ref_times = [1.10045, 1.1993, 1.199]
-        self.assertEqual( ret_times, ref_times )
+            # Check the times.
+            ret_times = local_dict['times']
+            ref_times = [1.10045, 1.1993, 1.199]
+            self.assertEqual( ret_times, ref_times )
 
         # The buffers are reset after each dump. If we make the
         # max size limit smaller than the size of the appended types
@@ -347,19 +335,17 @@ class LatticeTrajectoryTest(unittest.TestCase):
         t.append(1.1995, 43, DummyConfig())
 
         # Check.
-        global_dict = {}
-        local_dict  = {}
-        execfile(trajectory_filename, global_dict, local_dict)
+        if MPICommons.isMaster():
+            global_dict = {}
+            local_dict  = {}
+            execfile(trajectory_filename, global_dict, local_dict)
 
-        ret_types = local_dict['types']
-        ref_types = [["A","A","A","A","A","A"],
-                     ["B","B","B","B","B","B"],
-                     ["C","C","C","C","C","C"]]
+            ret_types = local_dict['types']
+            ref_types = [["A","A","A","A","A","A"],
+                         ["B","B","B","B","B","B"],
+                         ["C","C","C","C","C","C"]]
 
-        # Needed to prevent test failure.
-        MPICommons.barrier()
-
-        self.assertEqual( ret_types, ref_types )
+            self.assertEqual( ret_types, ref_types )
 
         # Append.
         t.append(1.1995, 43, DummyConfig() )
@@ -369,24 +355,22 @@ class LatticeTrajectoryTest(unittest.TestCase):
         t.append(1.1995, 43, DummyConfig() )
 
         # Check.
-        global_dict = {}
-        local_dict  = {}
-        execfile(trajectory_filename, global_dict, local_dict)
+        if MPICommons.isMaster():
+            global_dict = {}
+            local_dict  = {}
+            execfile(trajectory_filename, global_dict, local_dict)
 
-        ret_types = local_dict['types']
-        ref_types = [["A","A","A","A","A","A"],
-                     ["B","B","B","B","B","B"],
-                     ["C","C","C","C","C","C"],
-                     ["A","A","A","A","A","B"],
-                     ["A","A","A","A","A","B"],
-                     ["A","A","A","A","A","B"],
-                     ["A","A","A","A","A","B"],
-                     ["A","A","A","A","A","B"]]
+            ret_types = local_dict['types']
+            ref_types = [["A","A","A","A","A","A"],
+                         ["B","B","B","B","B","B"],
+                         ["C","C","C","C","C","C"],
+                         ["A","A","A","A","A","B"],
+                         ["A","A","A","A","A","B"],
+                         ["A","A","A","A","A","B"],
+                         ["A","A","A","A","A","B"],
+                         ["A","A","A","A","A","B"]]
 
-        # Needed to prevent test failure.
-        MPICommons.barrier()
-
-        self.assertEqual( ret_types, ref_types )
+            self.assertEqual( ret_types, ref_types )
 
     def testFlush(self):
         """ Make sure we can flush the buffer as expected. """
@@ -395,7 +379,9 @@ class LatticeTrajectoryTest(unittest.TestCase):
         name = os.path.join(name, "..", "..")
         name = os.path.join(name, "TestUtilities", "Scratch")
         trajectory_filename = os.path.join(name, "tmp_trajectory_file.py")
-        self.__files_to_remove.append(trajectory_filename)
+
+        if MPICommons.isMaster():
+            self.__files_to_remove.append(trajectory_filename)
 
         # Construct the trajecctory object.
         sites = [[0.0,1.0,2.3],
@@ -410,21 +396,23 @@ class LatticeTrajectoryTest(unittest.TestCase):
         # Construct.
         t = LatticeTrajectory(trajectory_filename, Config(sites))
 
-        # Check that the file is created but only with meta information.
-        global_dict = {}
-        local_dict  = {}
-        execfile(trajectory_filename, global_dict, local_dict)
-
+        # To check against.
         empty_list = []
 
-        ret_types = local_dict['types']
-        self.assertEqual( ret_types, empty_list )
+        # Check that the file is created but only with meta information.
+        if MPICommons.isMaster():
+            global_dict = {}
+            local_dict  = {}
+            execfile(trajectory_filename, global_dict, local_dict)
 
-        ret_times = local_dict['times']
-        self.assertEqual( ret_times, empty_list )
+            ret_types = local_dict['types']
+            self.assertEqual( ret_types, empty_list )
 
-        ret_steps = local_dict['steps']
-        self.assertEqual( ret_steps, empty_list )
+            ret_times = local_dict['times']
+            self.assertEqual( ret_times, empty_list )
+
+            ret_steps = local_dict['steps']
+            self.assertEqual( ret_steps, empty_list )
 
         # Fill the buffers.
         t._LatticeTrajectory__types_buffer           = [["ABC", "123"],["123", "ABC"]]
@@ -440,18 +428,19 @@ class LatticeTrajectoryTest(unittest.TestCase):
         self.assertEqual( t._LatticeTrajectory__step_buffer, empty_list )
 
         # Check that the file has the flushed values.
-        global_dict = {}
-        local_dict  = {}
-        execfile(trajectory_filename, global_dict, local_dict)
+        if MPICommons.isMaster():
+            global_dict = {}
+            local_dict  = {}
+            execfile(trajectory_filename, global_dict, local_dict)
 
-        ret_types = local_dict['types']
-        self.assertEqual( ret_types, [["ABC", "123"],["123", "ABC"]] )
+            ret_types = local_dict['types']
+            self.assertEqual( ret_types, [["ABC", "123"],["123", "ABC"]] )
 
-        ret_times = local_dict['times']
-        self.assertAlmostEqual( ret_times, [1.234, 5.678], 10 )
+            ret_times = local_dict['times']
+            self.assertAlmostEqual( ret_times, [1.234, 5.678], 10 )
 
-        ret_steps = local_dict['steps']
-        self.assertEqual( ret_steps, [1, 99] )
+            ret_steps = local_dict['steps']
+            self.assertEqual( ret_steps, [1, 99] )
 
 
 if __name__ == '__main__':

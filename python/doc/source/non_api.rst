@@ -51,5 +51,25 @@ Trajectory
 
 .. autoclass:: KMCLib.Utilities.Trajectory.Trajectory.Trajectory
    :members:
+   :private-members:
    :special-members:
+
+
+LatticeTrajectory
+---------------------
+
+.. autoclass:: KMCLib.Utilities.Trajectory.LatticeTrajectory.LatticeTrajectory
+   :members:
+   :private-members:
+   :special-members:
+
+
+XYZTrajectory
+---------------------
+
+.. autoclass:: KMCLib.Utilities.Trajectory.XYZTrajectory.XYZTrajectory
+   :members:
+   :private-members:
+   :special-members:
+
 

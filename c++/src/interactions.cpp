@@ -15,6 +15,7 @@
 #include "interactions.h"
 #include "random.h"
 #include "configuration.h"
+#include "latticemap.h"
 #include "ratecalculator.h"
 
 
@@ -101,7 +102,8 @@ int Interactions::maxRange() const
 
 // -----------------------------------------------------------------------------
 //
-void Interactions::updateProcessMatchLists(const Configuration & configuration)
+void Interactions::updateProcessMatchLists(const Configuration & configuration,
+                                           const LatticeMap & lattice_map)
 {
     // Skip if we are not using implicit wildcards.
     if (!implicit_wildcards_)
@@ -127,12 +129,15 @@ void Interactions::updateProcessMatchLists(const Configuration & configuration)
         const int  basis_position = p.basisSites()[0];
 
         // Get the configuration match list for this basis position in the
-        // first cell.
-        const std::vector<MinimalMatchListEntry> config_matchlist = configuration.minimalMatchList(basis_position);
+        // most central cell.
+        const int ii    = lattice_map.repetitionsA() / 2;
+        const int jj    = lattice_map.repetitionsB() / 2;
+        const int kk    = lattice_map.repetitionsC() / 2;
+        const int index = lattice_map.indicesFromCell(ii, jj, kk)[basis_position];
+        const std::vector<MinimalMatchListEntry> config_matchlist = configuration.minimalMatchList(index);
 
         // Perform the match where we add wildcards to fill the vacancies in the
         // process match list.
-
         std::vector<MinimalMatchListEntry>::iterator it1 = process_matchlist.begin();
         std::vector<MinimalMatchListEntry>::const_iterator it2 = config_matchlist.begin();
 

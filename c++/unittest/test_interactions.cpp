@@ -671,7 +671,10 @@ void Test_Interactions::testUpdateProcessMatchLists()
 
     // Get the config and lattice map.
     Configuration config(config_coordinates, elements, possible_types);
-    const LatticeMap lattice_map(2, std::vector<int>(3,5), std::vector<bool>(3,true));
+
+    // Make sure we do this on a non-periodic lattice map, to make sure
+    // the most central cell is choosen for determining wildcard positions.
+    const LatticeMap lattice_map(2, std::vector<int>(3,5), std::vector<bool>(3,false));
 
     // Now, setup the matchlists in the configuration.
     config.initMatchLists(lattice_map, interactions.maxRange());
@@ -682,7 +685,7 @@ void Test_Interactions::testUpdateProcessMatchLists()
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[2]->minimalMatchList().size()), 3);
 
     // Update the interactions according to the configuration match lists.
-    interactions.updateProcessMatchLists(config);
+    interactions.updateProcessMatchLists(config, lattice_map);
 
     // Check a few coordinates and match types.
     {
@@ -912,7 +915,7 @@ void Test_Interactions::testUpdateProcessIDMoves()
 
     // Update the interactions according to the configuration match lists.
     // This also updates the id moves on the processes.
-    interactions.updateProcessMatchLists(config);
+    interactions.updateProcessMatchLists(config, lattice_map);
 
     // Check the id moves after update.
     {

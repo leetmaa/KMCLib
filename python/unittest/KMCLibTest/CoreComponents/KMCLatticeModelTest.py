@@ -22,6 +22,7 @@ from KMCLib.CoreComponents.KMCUnitCell import KMCUnitCell
 from KMCLib.CoreComponents.KMCLattice  import KMCLattice
 from KMCLib.PluginInterfaces.KMCAnalysisPlugin import KMCAnalysisPlugin
 from KMCLib.Exceptions.Error import Error
+from KMCLib.Backend.Backend import MPICommons
 
 # Import from the module we test.
 from KMCLib.CoreComponents.KMCLatticeModel import KMCLatticeModel
@@ -45,7 +46,7 @@ class KMCLatticeModelTest(unittest.TestCase):
         for f in self.__files_to_remove:
             if MPICommons.isMaster():
                 os.remove(f)
-            MPICommons.barrier()
+        MPICommons.barrier()
 
     def testConstruction(self):
         """ Test the construction of the lattice model """
@@ -279,28 +280,29 @@ class KMCLatticeModelTest(unittest.TestCase):
 
         # Read the first last frames from the trajectory file and check that
         # the fraction of A is close to 20% in the last, and 0 in the first.
-        global_dict = {}
-        local_dict  = {}
-        execfile(trajectory_filename, global_dict, local_dict)
+        if MPICommons.isMaster():
+            global_dict = {}
+            local_dict  = {}
+            execfile(trajectory_filename, global_dict, local_dict)
 
-        # Count the first frame.
-        elem = local_dict["types"][0]
-        nA = len([ ee for ee in elem if ee == "A" ])
-        nB = len([ ee for ee in elem if ee == "B" ])
-        self.assertEqual(nA, 0)
-        self.assertEqual(nB, 100)
+            # Count the first frame.
+            elem = local_dict["types"][0]
+            nA = len([ ee for ee in elem if ee == "A" ])
+            nB = len([ ee for ee in elem if ee == "B" ])
+            self.assertEqual(nA, 0)
+            self.assertEqual(nB, 100)
 
-        # Count the last frame.
-        elem = local_dict["types"][-1]
-        nA = len([ ee for ee in elem if ee == "A" ])
-        nB = len([ ee for ee in elem if ee == "B" ])
+            # Count the last frame.
+            elem = local_dict["types"][-1]
+            nA = len([ ee for ee in elem if ee == "A" ])
+            nB = len([ ee for ee in elem if ee == "B" ])
 
-        # Note that the average should be 20.0% over a long run.
-        # It is pure luck that it is exact at this particular
-        # step with the presently used random number seed.
-        fraction =  nA * 100.0 / (nA + nB)
-        target = 20.0
-        self.assertAlmostEqual(fraction, target, 3)
+            # Note that the average should be 20.0% over a long run.
+            # It is pure luck that it is exact at this particular
+            # step with the presently used random number seed.
+            fraction =  nA * 100.0 / (nA + nB)
+            target = 20.0
+            self.assertAlmostEqual(fraction, target, 3)
 
     def testCustomRatesRun(self):
         """ Test the run of an A-B flip model with custom rates. """
@@ -347,7 +349,7 @@ class KMCLatticeModelTest(unittest.TestCase):
         # Run the model with a trajectory file.
         name = os.path.abspath(os.path.dirname(__file__))
         name = os.path.join(name, "..", "TestUtilities", "Scratch")
-        trajectory_filename = os.path.join(name, "ab_flip_traj.py")
+        trajectory_filename = os.path.join(name, "ab_flip_traj_custom.py")
         self.__files_to_remove.append(trajectory_filename)
 
         # The control parameters.
@@ -361,27 +363,28 @@ class KMCLatticeModelTest(unittest.TestCase):
 
         # Read the first last frames from the trajectory file and check that
         # the fraction of A is close to 75% in the last, and 0 in the first.
-        global_dict = {}
-        local_dict  = {}
-        execfile(trajectory_filename, global_dict, local_dict)
+        if MPICommons.isMaster():
+            global_dict = {}
+            local_dict  = {}
+            execfile(trajectory_filename, global_dict, local_dict)
 
-        # Count the first frame.
-        elem = local_dict["types"][0]
-        nA = len([ ee for ee in elem if ee == "A" ])
-        nB = len([ ee for ee in elem if ee == "B" ])
-        self.assertEqual(nA, 0)
-        self.assertEqual(nB, 100)
+            # Count the first frame.
+            elem = local_dict["types"][0]
+            nA = len([ ee for ee in elem if ee == "A" ])
+            nB = len([ ee for ee in elem if ee == "B" ])
+            self.assertEqual(nA, 0)
+            self.assertEqual(nB, 100)
 
-        # Count the last frame.
-        elem = local_dict["types"][-1]
-        nA = len([ ee for ee in elem if ee == "A" ])
-        nB = len([ ee for ee in elem if ee == "B" ])
+            # Count the last frame.
+            elem = local_dict["types"][-1]
+            nA = len([ ee for ee in elem if ee == "A" ])
+            nB = len([ ee for ee in elem if ee == "B" ])
 
-        # Note that the average over a long simulation should be
-        # 75% A using the modified rate function. In this particular
-        # step the A population is 74%.
-        value = 1.0 * nA / (nA + nB)
-        self.assertAlmostEqual(0.74, value, 2)
+            # Note that the average over a long simulation should be
+            # 75% A using the modified rate function. In this particular
+            # step the A population is 74%.
+            value = 1.0 * nA / (nA + nB)
+            self.assertAlmostEqual(0.74, value, 2)
 
     def testRunWithAnalysis(self):
         """ Test that the analyis plugins get called correctly. """

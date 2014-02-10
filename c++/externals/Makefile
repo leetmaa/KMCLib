@@ -98,8 +98,7 @@ all: ./src/mersenne-twister-master/INSTALL_STAMP ./src/cppunit-1.12.1/INSTALL_ST
 # Build cppunit.
 ./src/cppunit-1.12.1/BUILD_STAMP: ./src/cppunit-1.12.1/PATCH_STAMP
 	cd ./src/cppunit-1.12.1/ && \
-	mkdir installdir && \
-	./configure LDFLAGS="-ldl" --prefix="${CURDIR}/src/cppunit-1.12.1/installdir" && \
+	./configure LDFLAGS="-ldl" --prefix="${CURDIR}/lib/cppunit" && \
 	make && \
 	make check && \
 	make install && \
@@ -123,8 +122,7 @@ all: ./src/mersenne-twister-master/INSTALL_STAMP ./src/cppunit-1.12.1/INSTALL_ST
 
 # Install cppunit.
 ./src/cppunit-1.12.1/INSTALL_STAMP: ./src/cppunit-1.12.1/BUILD_STAMP
-	cd ./src/cppunit-1.12.1/ && \
-	mv installdir/lib/libcppunit* ../../lib && \
+	cd lib/cppunit && \
 	mv include/cppunit/ ../../include/ && \
 	touch INSTALL_STAMP && \
 	cd -

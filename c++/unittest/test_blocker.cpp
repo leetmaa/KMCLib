@@ -178,5 +178,3 @@ void Test_Blocker::testValues()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(values[2].second.z(), -1.0, 1.0e-12);
 
 }
-
-

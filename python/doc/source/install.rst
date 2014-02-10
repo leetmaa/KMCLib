@@ -2,108 +2,154 @@
 Installation
 =============
 
-The installation of KMCLib should be straight forward once you have
-a **C++ compiler** wrapped in an **mpicxx**
-script, as well as **cppunit**, **SWIG**,
-**mpi** and **Python2.7** with **numpy** installed on your
-system. This table shows on which systems we have successfully
-installed and tested the current version of KMCLib.
+The installation of :py:mod:`KMCLib` is fairly simple and we have tried
+to keep the external dependencies to a minimum. These install
+instructions works for the different Linux and Mac systems we have
+installed and tested on. If you have successfully installed on another
+system we would be happy to receive your updates to these install
+instructions.
+
+This table shows on which systems we have successfully
+installed and tested the current version of KMCLib. If you have
+information for other systems, compilers or library versions please
+let us know.
 
 +--------------------+------------+---------------------+-----------+------------+------------+
-| OS                 | compiler   | mpi                 | cppunit   | Python     | SWIG       |
+| OS                 | Compiler   | MPI                 | cppunit   | Python     | SWIG       |
 +====================+============+=====================+===========+============+============+
 | Ubuntu 12.4 LTS    | GCC 4.6.3  | MPICH2 3.0.2        | 1.12.1    | 2.7.3      | 2.0.4      |
 +--------------------+------------+---------------------+-----------+------------+------------+
 | CentOS release 5.9 | GCC 4.6.3  | Intel MPI 4.0.3.008 | 1.12.1    | 2.7.2      | 2.0.4      |
 +--------------------+------------+---------------------+-----------+------------+------------+
-
-.. NOTE::
-   At present **g++** is the only supported compiler
-
-
-Compile and test KMCLib
-------------------------
-KMCLib consists of a Python frontend, with a compiled C++ backend
-wrapped in Python using SWIG. To install KMCLib you thus have to
-build, test and wrap the C++ part of the code before you can use
-KMCLib in Python. This is fortunately a relatively fast and easy
-procedure. Please follow the below steps carefully.
+| Mac OSX 10.5.8     | GCC 4.2.1  | Open MPI 1.2.3      | 1.12.1    | 2.7.2      | 1.3.31     |
++--------------------+------------+---------------------+-----------+------------+------------+
+| Mac OSX 10.8.5     | GCC 4.2.1  | --                  | 1.12.1    | 2.7.2      | 2.0.9      |
++--------------------+------------+---------------------+-----------+------------+------------+
+| Mac OSX 10.9.1     | GCC 4.7.3  | --                  | 1.12.1    | 2.7.6      | 2.0.11     |
++--------------------+------------+---------------------+-----------+------------+------------+
 
 
-Step #0: Fix dependencies
-..........................
-Needless to say, without the above mentioned dependencies you will
-not get far. Please install them properly.
-
-The mersenne-twister pseudo random number generator used is
-included in the distribution. You will have to prepare this by
-typing ::
-
-    make
-
-in the KMCLib/c++/externals/ directory.
-
-Please make sure all your external dependencies are in place before
-you go to the next step.
+Compiler
+-----------
+To compile :py:mod:`KMCLib` you will need a **C++ compiler** installed on your
+system. The current version only supports the **g++** compiler. If
+you want to use another compiler you will have to modify the make
+system accordingly. If you compile :py:mod:`KMCLib` using
+another compiler please let us know so we can include your updates in
+the official release.
 
 
-Step #1: Run CMake
-...................
-With all external dependencies in place, go to the KMCLib/c++/
-directory, create a build directory, e.g. KMCLib/c++/build/ and from
-the build directory type ::
+MPI
+------
+To build the *parallel* version of the code you will also need an **MPI**
+implementation installed on your system, and you will be asked to
+specify the compiler wrapper script you want to use, such as e.g. **mpicxx**.
+
+
+Make system
+-----------
+The make system is based on **CMake**. Installing **CMake**
+can be done by typing on Linux::
+
+    sudo apt-get install swig
+
+and on Mac OSX using macports::
+
+    sudo port install swig && sudo port install swig-python
+
+
+SWIG
+-----------
+To generate the Python wrappings for the C++ code you must have
+**SWIG** with python extensions installed.
+On Linux::
+
+    sudo apt-get install swig
+
+On Mac OSX with macports::
+
+    sudo port install swig && sudo port install swig-python
+
+
+
+Build the externals
+----------------------
+All other external dependencies are included with
+:py:mod:`KMCLib`. These are the **CPPUNIT** library for C++ unit tests,
+and a Mersenne-Twister implementation.
+
+You can build the externals by typing::
+
+    cd KMCLib/c++/externals
+    CXX=g++ make
+
+
+Build C++ and test the backend
+--------------------------------
+For the build to work (on both Linux and Mac OSX) you will have to make
+sure that **CMAke** can find your python headers. This could be
+done by finding where they are located and placing them in your
+``CPLUS_INCLUDE_PATH``. Some thing like::
+
+    export CPLUS_INCLUDE_PATH=/usr/include/python2.7:${CPLUS_INCLUDE_PATH}
+
+in your ``.bashrc`` file typically helps. Note that the exact path may
+vary on different systems.
+
+Now, go to the ``KMCLib/c++`` directory and create the build director::
+
+    cd KMCLib/c++
+    mkdir build
+    cd build
+
+On Linux::
+
+    cmake -DMPI=mpiwrapper ..
+
+for the MPI version or::
 
     cmake ..
 
-If you have installed **cppunit** in a non standard location you
-will have to give the search path to cmake using the -DCPPUNIT_DIR flag::
+for the serial version. Replace ``mpiwrapper`` with the mpi compiler wrapper script you want to use, e.g. ``mpicxx``.
 
-    cmake -DCPPUNIT_DIR="path/to/cppunit/library/directory" ..
+Mac with g++ and Python from macports instead do::
 
-.. NOTE::
+    cmake -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc -DMACPORT=TRUE ..
 
-   The present version of the build system assumes that your
-   **mpicxx** uses **g++**. No other compilers are yet supported.
-   You can check what the mpicxx
-   command does on your machine by typing "mpicxx -show" in a terminal.
+or leave ``-DMACPORT`` out to use machine Python. Add the
+``-DMPI=mpiwrapper`` option to build the parallel version.
 
+On all systems you then type::
 
-Step #2: Run make
-......................
-After CMake has created the necessary make files,
-build the C++ unit tests by typing ::
-
-    make tests.x
-
-and run the tests with ::
-
-    ./unittest/tests.x
-
-If the tests run without error messages, build the backend
-library and Python wrappings by typing ::
-
+    make test.x
+    ./unittest/test.x
     make install
 
-This will create the files Backend.py and _Backend.so in the
-KMCLib/python/src/KMCLib/Backend/ directory, needed to run the code
-from Python.
-
-.. NOTE::
-   It is possible to build and install the Python wrappings also if
-   the unit tests in C++ fails to run or even compile,
-   although we strongly recommend that you
-   take these tests seriously.
+To make the tests, run the tests and install the ``Backend.py`` module.
 
 
-Step #3: Run the Python unit tests
-.....................................
-After building and wrapping the C++ backend you are ready to run the tests in
-Python. With the KMCLib/python/src directory in your
-PYTHONPATH system variable, go to KMCLib/python/unittest and type ::
+Run the Python tests
+-----------------------
 
-    python utest.py
+Put your ``KMCLib/python/src`` in your ``PYTHONPATH``. If you use bash
+this can be done by putting::
+
+   export PYTHONPATH=/home/leetmaa/projects/KMCLib/python/src:${PYTHONPATH}
+
+in your ``.bashrc`` file.
+
+Now you should run the test by typing::
+
+    python KMCLib/python/unittest/utest.py
+
+and finally run each of the tests in the ``KMCLib/python/functest/``
+directory.
 
 If the Python unit tests run without errors or failures your
 installation is finished and ready to use for performing
 KMC simulations.
+Have a look at the functionality tests in ``KMCLib/python/functest/``
+to get a hint at how to do it, and you should also check this manual,
+particular the introductory usage example.
+
 
