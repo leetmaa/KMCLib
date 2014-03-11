@@ -7,6 +7,13 @@
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 #
 
+# Check for ATK-Python support.
+
+__atkpython__ = True
+try:
+    from NanoLanguage import *
+except:
+    __atkpython__ = False
 
 from CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
 from CoreComponents.KMCInteractions import KMCInteractions

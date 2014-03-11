@@ -17,7 +17,6 @@ from KMCLib.Utilities.ConversionUtilities import stdVectorCoordinateToNumpy2DArr
 from KMCLib.Exceptions.Error import Error
 from KMCLib.Backend import Backend
 
-
 class KMCConfiguration(object):
     """
     Class for representing the configuration in a KMC simulation.
