@@ -7,7 +7,13 @@
 
 
 # Installing is the last task, so this one goes here.
-all: ./src/mersenne-twister-master/INSTALL_STAMP ./src/cppunit-1.12.1/INSTALL_STAMP
+all: ./src/mersenne-twister-master/INSTALL_STAMP ./src/cppunit-1.12.1/INSTALL_STAMP ./src/md5/INSTALL_STAMP
+
+md5: ./src/md5/INSTALL_STAMP
+
+mt: ./src/mersenne-twister-master/INSTALL_STAMP
+
+cppunit: ./src/cppunit-1.12.1/INSTALL_STAMP
 
 
 # -----------------------------------------------------------------------------
@@ -34,6 +40,15 @@ all: ./src/mersenne-twister-master/INSTALL_STAMP ./src/cppunit-1.12.1/INSTALL_ST
 	tar -xzvf cppunit-1.12.1.tar.gz && \
 	rm  cppunit-1.12.1.tar.gz && \
 	touch cppunit-1.12.1/UNPACK_STAMP && \
+	cd -
+
+# Unpack the md5 code.
+./src/md5/UNPACK_STAMP: ./zip/md5.tar.gz ./zip/FORCE_UNPACK
+	cp ./zip/md5.tar.gz ./src && \
+	cd ./src/ && \
+	tar -xzvf md5.tar.gz && \
+	rm md5.tar.gz && \
+	touch md5/UNPACK_STAMP && \
 	cd -
 
 # -----------------------------------------------------------------------------
@@ -105,6 +120,13 @@ all: ./src/mersenne-twister-master/INSTALL_STAMP ./src/cppunit-1.12.1/INSTALL_ST
 	touch BUILD_STAMP && \
 	cd -
 
+# Build the md5 code.
+./src/md5/BUILD_STAMP: ./src/md5/UNPACK_STAMP
+	cd ./src/md5/ && \
+	$(CXX) -O3 -fPIC -o md5.o -c md5.c && \
+	touch BUILD_STAMP && \
+	cd -
+
 
 # -----------------------------------------------------------------------------
 # Install.
@@ -115,7 +137,7 @@ all: ./src/mersenne-twister-master/INSTALL_STAMP ./src/cppunit-1.12.1/INSTALL_ST
 ./src/mersenne-twister-master/INSTALL_STAMP: ./src/mersenne-twister-master/BUILD_STAMP
 # Generate the header and copy the files over.
 	cd ./src/mersenne-twister-master/ && \
-	cp cslarsenmt.o ../../obj/ && \
+	mv cslarsenmt.o ../../obj/ && \
 	cp cslarsenmt.h ../../include/externals/ && \
 	touch INSTALL_STAMP && \
 	cd -
@@ -127,6 +149,14 @@ all: ./src/mersenne-twister-master/INSTALL_STAMP ./src/cppunit-1.12.1/INSTALL_ST
 	touch INSTALL_STAMP && \
 	cd -
 
+# Install md5.
+./src/md5/INSTALL_STAMP: ./src/md5/BUILD_STAMP
+	cd ./src/md5/ && \
+	mv md5.o ../../obj/ && \
+	cp md5.h ../../include/externals/ && \
+	touch INSTALL_STAMP && \
+	cd -
+
 
 # -----------------------------------------------------------------------------
 # Cleanup.
@@ -135,7 +165,25 @@ all: ./src/mersenne-twister-master/INSTALL_STAMP ./src/cppunit-1.12.1/INSTALL_ST
 clean:
 	rm -r ./src/mersenne-twister-master/ && \
 	rm -r ./src/cppunit-1.12.1/ && \
-	rm ./obj/*.o && \
-	rm ./lib/*.a && \
+	rm -r ./src/md5/ && \
 	rm ./include/externals/*.h &&\
-	rm -r ./include/cppunit
+	rm -r ./include/cppunit && \
+	rm -r ./lib/cppunit/ && \
+	rm ./obj/*.o
+
+clean-md5:
+	rm -r ./src/md5/ && \
+	rm ./include/externals/md5.h &&\
+	rm ./obj/md5.o
+
+clean-cppunit:
+	rm -r ./src/cppunit-1.12.1/ && \
+	rm -r ./include/cppunit/ && \
+	rm -r ./lib/cppunit/
+
+clean-mt:
+	rm -r ./src/mersenne-twister-master/ && \
+	rm ./include/externals/cslarsenmt.h && \
+	rm ./obj/cslarsenmt.o
+
+
