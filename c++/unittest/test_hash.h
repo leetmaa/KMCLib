@@ -25,9 +25,13 @@ public:
 
     CPPUNIT_TEST_SUITE( Test_Hash );
     CPPUNIT_TEST( testMD5String );
+    CPPUNIT_TEST( test64MD5String );
+    CPPUNIT_TEST( testHashCustomRateInput );
     CPPUNIT_TEST_SUITE_END();
 
     void testMD5String();
+    void test64MD5String();
+    void testHashCustomRateInput();
 
 };
 
