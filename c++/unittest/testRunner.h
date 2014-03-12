@@ -24,6 +24,7 @@
 #include "test_mpiroutines.h"
 #include "test_ontheflymsd.h"
 #include "test_blocker.h"
+#include "test_hash.h"
 
 // -------------------------------------------------------------------------- //
 // Add tests.
@@ -43,3 +44,5 @@ CPPUNIT_TEST_SUITE_REGISTRATION( Test_MPICommons );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_MPIRoutines );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_OnTheFlyMSD );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_Blocker );
+CPPUNIT_TEST_SUITE_REGISTRATION( Test_Hash );
+
