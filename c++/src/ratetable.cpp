@@ -11,10 +11,46 @@
  */
 
 #include "ratetable.h"
+#include <stdexcept>
+
 
 // -----------------------------------------------------------------------------
 //
 RateTable::RateTable()
 {
-    // NOTHING HERE YET
+    // NOTHING HERE
 }
+
+
+// -----------------------------------------------------------------------------
+//
+bool RateTable::stored(const ratekey key)
+{
+    return table_.find(key) != table_.end();
+}
+
+
+// -----------------------------------------------------------------------------
+//
+void RateTable::store(const ratekey key, const double value)
+{
+    // PERFORMME:
+    // This is slow, but a necessary meassure before we know
+    // how good the hash key generation works.
+
+    if (stored(key))
+    {
+        throw std::runtime_error("Key clash error in RateTable.");
+    }
+
+    table_[key] = value;
+}
+
+
+// -----------------------------------------------------------------------------
+//
+double RateTable::retrieve(const ratekey key)
+{
+    return table_.at(key);
+}
+

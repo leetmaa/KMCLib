@@ -14,8 +14,13 @@
 #ifndef __RATETABLE__
 #define __RATETABLE__
 
+#include <unordered_map>
 
-// Forward declarations.
+// NOTE: This implementation is based on the c++11 std::unordered_map.
+
+
+// Define the ratekey type.
+typedef unsigned long ratekey;
 
 
 /*! \brief Class for storing and retrieving calculated rates.
@@ -28,9 +33,30 @@ public:
      */
     RateTable();
 
+    /*! \brief Check if a key has a stored value.
+     *  \param key : The key to check for.
+     *  \returns : True or false if the key has a stored value or not.
+     */
+    bool stored(const ratekey key);
+
+    /*! \brief Store a key value pair.
+     *  \param key   : The key to store for.
+     *  \param value : The value to store.
+     */
+    void store(const ratekey key, const double value);
+
+    /*! \brief Retrieve a stored value.
+     *  \param key   : The key.
+     *  \returns : The stored value.
+     */
+    double retrieve(const ratekey key);
+
 protected:
 
 private:
+
+    /// The map to store key-value pairs in.
+    std::unordered_map<ratekey, double> table_;
 
 };
 

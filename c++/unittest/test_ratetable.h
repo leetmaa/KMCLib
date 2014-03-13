@@ -25,10 +25,17 @@ public:
 
     CPPUNIT_TEST_SUITE( Test_RateTable );
     CPPUNIT_TEST( testConstruction );
+    CPPUNIT_TEST( testStored );
+    CPPUNIT_TEST( testStoreAndRetrieve );
+    CPPUNIT_TEST( testRetrieveFail );
+    CPPUNIT_TEST( testStoreFail );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstruction();
-
+    void testStored();
+    void testStoreAndRetrieve();
+    void testRetrieveFail();
+    void testStoreFail();
 };
 
 #endif

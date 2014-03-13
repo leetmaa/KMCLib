@@ -53,14 +53,14 @@ if (CMAKE_COMPILER_IS_GNUCXX)
 
   # Do not use -Bsymbolic-functions with g++ on Mac OS X
   if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC -Wall -Wextra -Werror -pedantic")
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC -Wall -Wextra -Werror -pedantic -std=c++0x")
   else()
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-Bsymbolic -O3 -fPIC -Wall -Wextra -Werror -pedantic")
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-Bsymbolic -O3 -fPIC -Wall -Wextra -Werror -pedantic -std=c++0x")
   endif()
 
   set( CMAKE_CXX_FLAGS_DEBUG "-g -pg" )
   set( CMAKE_CXX_FLAGS_RELEASE  "" )
-  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO  "-g -pg" )
+  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO  "" )
 
   # Allow for unused parameters.
   add_definitions( -Wno-unused-parameter )
