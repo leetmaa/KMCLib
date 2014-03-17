@@ -19,6 +19,7 @@
 #include "latticemap.h"
 #include "configuration.h"
 #include "latticemap.h"
+#include "hash.h"
 
 #include "mpicommons.h"
 #include "mpiroutines.h"
@@ -36,7 +37,7 @@ Matcher::Matcher()
 void Matcher::calculateMatching(Interactions & interactions,
                                 Configuration & configuration,
                                 const LatticeMap & lattice_map,
-                                const std::vector<int> & indices) const
+                                const std::vector<int> & indices)
 {
     // Build the list of indices and processes to match.
 
@@ -83,7 +84,7 @@ void Matcher::calculateMatching(Interactions & interactions,
                               update_tasks,
                               add_tasks);
 
-    // Calculate the new rates in needed.
+    // Calculate the new rates if needed.
 
     if (interactions.useCustomRates())
     {
@@ -91,6 +92,9 @@ void Matcher::calculateMatching(Interactions & interactions,
         std::vector<RateTask> global_tasks(add_tasks.size()+update_tasks.size());
         std::copy( update_tasks.begin(), update_tasks.end(),
                    std::copy( add_tasks.begin(), add_tasks.end(), global_tasks.begin()) );
+
+        // ML: FIXME:
+        // This is where we have to screen for allready calculated rates for the parallelism to work well.
 
         // Split up the tasks.
         std::vector<RateTask> local_tasks = splitOverProcesses(global_tasks);
@@ -292,11 +296,10 @@ void Matcher::updateProcesses(const std::vector<RemoveTask> & remove_tasks,
 void Matcher::updateRates(std::vector<double>         & new_rates,
                           const std::vector<RateTask> & tasks,
                           const Interactions          & interactions,
-                          const Configuration         & configuration) const
+                          const Configuration         & configuration)
 {
     // Use the backendCallBack function on the RateCalculator stored on the
     // interactions object, to get an updated rate for each process.
-
     const RateCalculator & rate_calculator = interactions.rateCalculator();
 
     for (size_t i = 0; i < tasks.size(); ++i)
@@ -307,8 +310,20 @@ void Matcher::updateRates(std::vector<double>         & new_rates,
         // Get the coordinate index.
         const int index = tasks[i].index;
 
-        // Send this information to the updateSingleRate function.
-        new_rates[i] = updateSingleRate(index, process, configuration, rate_calculator);
+        // Try to retrieve the key form earlier calculation.
+        const ratekey key = hashCustomRateInput(index, process, configuration);
+        if (rate_table_.stored(key))
+        {
+            new_rates[i] = rate_table_.retrieve(key);
+        }
+        else
+        {
+            // Calculate the new rate.
+            new_rates[i] = updateSingleRate(index, process, configuration, rate_calculator);
+
+            // Store the rate for future usage.
+            rate_table_.store(key, new_rates[i]);
+        }
     }
 }
 

@@ -34,9 +34,10 @@ bool RateTable::stored(const ratekey key)
 //
 void RateTable::store(const ratekey key, const double value)
 {
+    // ML: This is where we can disable storing when we need to.
+
     // PERFORMME:
-    // This is slow, but a necessary meassure before we know
-    // how good the hash key generation works.
+    // This is slow but necessary to prevent errors.
 
     if (stored(key))
     {
@@ -51,6 +52,8 @@ void RateTable::store(const ratekey key, const double value)
 //
 double RateTable::retrieve(const ratekey key)
 {
+    // Add one to the counter of this key.
+    counters_[key] += 1;
     return table_.at(key);
 }
 

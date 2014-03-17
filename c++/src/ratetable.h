@@ -58,6 +58,9 @@ private:
     /// The map to store key-value pairs in.
     std::unordered_map<ratekey, double> table_;
 
+    /// Count how often a key is retrieved.
+    std::unordered_map<ratekey, int> counters_;
+
 };
 
 
