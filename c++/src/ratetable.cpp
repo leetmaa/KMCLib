@@ -16,7 +16,11 @@
 
 // -----------------------------------------------------------------------------
 //
-RateTable::RateTable()
+RateTable::RateTable() :
+    n_tables_(8),
+    max_size_(1024),
+    current_table_(0),
+    tables_(std::vector< std::unordered_map<ratekey, double> >(n_tables_))
 {
     // NOTHING HERE
 }
@@ -24,9 +28,17 @@ RateTable::RateTable()
 
 // -----------------------------------------------------------------------------
 //
-bool RateTable::stored(const ratekey key)
+int RateTable::stored(const ratekey key)
 {
-    return table_.find(key) != table_.end();
+    // Check all tables and see if we find the key.
+    for (size_t i = 0; i < tables_.size(); ++i)
+    {
+        if (tables_[i].find(key) != tables_[i].end())
+        {
+            return i;
+        }
+    }
+    return -1;
 }
 
 
@@ -34,17 +46,25 @@ bool RateTable::stored(const ratekey key)
 //
 void RateTable::store(const ratekey key, const double value)
 {
-    // ML: This is where we can disable storing when we need to.
-
     // PERFORMME:
     // This is slow but necessary to prevent errors.
-
-    if (stored(key))
+    if (stored(key) != -1)
     {
         throw std::runtime_error("Key clash error in RateTable.");
     }
 
-    table_[key] = value;
+    // Add the value to the current table.
+    tables_[current_table_][key] = value;
+
+    // Check if it is time to switch table.
+    if (tables_[current_table_].size() == max_size_)
+    {
+        // Take the next current table.
+        current_table_ = (current_table_ + 1) % n_tables_;
+
+        // Clear its content.
+        tables_[current_table_].clear();
+    }
 }
 
 
@@ -52,8 +72,8 @@ void RateTable::store(const ratekey key, const double value)
 //
 double RateTable::retrieve(const ratekey key)
 {
-    // Add one to the counter of this key.
-    counters_[key] += 1;
-    return table_.at(key);
+    // Find which table this key is stored in.
+    const int nt = stored(key);
+    return tables_.at(nt).at(key);
 }
 

@@ -30,7 +30,7 @@ void Test_RateTable::testStored()
     RateTable rt;
 
     ratekey key = 8765434567643;
-    CPPUNIT_ASSERT( !rt.stored(key) );
+    CPPUNIT_ASSERT_EQUAL( rt.stored(key), -1 );
 }
 
 
@@ -45,7 +45,7 @@ void Test_RateTable::testStoreAndRetrieve()
     rt.store(key, value);
 
     // Check that the key was added.
-    CPPUNIT_ASSERT( rt.stored(key) );
+    CPPUNIT_ASSERT( rt.stored(key) != -1 );
 
     // Get the value.
     const double ret_value = rt.retrieve(key);

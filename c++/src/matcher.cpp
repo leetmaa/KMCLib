@@ -312,7 +312,7 @@ void Matcher::updateRates(std::vector<double>         & new_rates,
 
         // Try to retrieve the key form earlier calculation.
         const ratekey key = hashCustomRateInput(index, process, configuration);
-        if (rate_table_.stored(key))
+        if (rate_table_.stored(key) != -1)
         {
             new_rates[i] = rate_table_.retrieve(key);
         }

@@ -15,6 +15,7 @@
 #define __RATETABLE__
 
 #include <unordered_map>
+#include <vector>
 
 // NOTE: This implementation is based on the c++11 std::unordered_map.
 
@@ -35,9 +36,9 @@ public:
 
     /*! \brief Check if a key has a stored value.
      *  \param key : The key to check for.
-     *  \returns : True or false if the key has a stored value or not.
+     *  \returns : -1 if not stored, otherwise the table number where it is stored.
      */
-    bool stored(const ratekey key);
+    int stored(const ratekey key);
 
     /*! \brief Store a key value pair.
      *  \param key   : The key to store for.
@@ -55,11 +56,17 @@ protected:
 
 private:
 
-    /// The map to store key-value pairs in.
-    std::unordered_map<ratekey, double> table_;
+    /// The number of tables.
+    int n_tables_;
 
-    /// Count how often a key is retrieved.
-    std::unordered_map<ratekey, int> counters_;
+    /// The maximum size of each table.
+    unsigned int max_size_;
+
+    /// The current working table to fill.
+    int current_table_;
+
+    /// The maps to store key-value pairs in.
+    std::vector< std::unordered_map<ratekey, double> > tables_;
 
 };
 
