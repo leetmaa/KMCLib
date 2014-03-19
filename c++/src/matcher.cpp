@@ -26,7 +26,8 @@
 
 // -----------------------------------------------------------------------------
 //
-Matcher::Matcher()
+Matcher::Matcher() :
+    rate_table_()
 {
     // NOTHING HERE YET
 }
@@ -89,38 +90,99 @@ void Matcher::calculateMatching(Interactions & interactions,
     if (interactions.useCustomRates())
     {
         // Create a common task list for getting a good load balance.
-        std::vector<RateTask> global_tasks(add_tasks.size()+update_tasks.size());
-        std::copy( update_tasks.begin(), update_tasks.end(),
-                   std::copy( add_tasks.begin(), add_tasks.end(), global_tasks.begin()) );
 
-        // ML: FIXME:
-        // This is where we have to screen for allready calculated rates for the parallelism to work well.
+// ML:
+// This is what we do if we do not want task rate caching.
+//        std::vector<RateTask> global_tasks(add_tasks.size()+update_tasks.size());
+//        std::copy( update_tasks.begin(), update_tasks.end(),
+//                   std::copy( add_tasks.begin(), add_tasks.end(), global_tasks.begin()) );
 
+
+        std::vector<RateTask> global_tasks;
+        std::vector<ratekey>  global_keys;
+
+        // Find out which tasks are allready calculated and stored.
+        std::vector<int> add_task_indices;
+        for (size_t i = 0; i < add_tasks.size(); ++i)
+        {
+            // Calculate the key.
+            const Process & process = (*interactions.processes()[add_tasks[i].process]);
+            const int index   = add_tasks[i].index;
+            const ratekey key = hashCustomRateInput(index, process, configuration);
+
+            // Check if the key has a stored value.
+            if (rate_table_.stored(key) != -1)
+            {
+                add_tasks[i].rate = rate_table_.retrieve(key);
+            }
+            else
+            {
+                global_tasks.push_back(add_tasks[i]);
+                global_keys.push_back(key);
+                add_task_indices.push_back(i);
+            }
+        }
+
+        // The same procedure for the update tasks.
+        std::vector<int> update_task_indices;
+        for (size_t i = 0; i < update_tasks.size(); ++i)
+        {
+            // Calculate the key.
+            const Process & process = (*interactions.processes()[update_tasks[i].process]);
+            const int index   = update_tasks[i].index;
+            const ratekey key = hashCustomRateInput(index, process, configuration);
+
+            // Check if the key has a stored value.
+            if (rate_table_.stored(key) != -1)
+            {
+                update_tasks[i].rate = rate_table_.retrieve(key);
+            }
+            else
+            {
+                global_tasks.push_back(update_tasks[i]);
+                global_keys.push_back(key);
+                update_task_indices.push_back(i);
+            }
+        }
+
+        // ------------------------------------------------------------------------
+        // Here comes the MPI parallelism
+        // ------------------------------------------------------------------------
         // Split up the tasks.
         std::vector<RateTask> local_tasks = splitOverProcesses(global_tasks);
         std::vector<double> local_tasks_rates(local_tasks.size(), 0.0);
 
-        // Update.
+        // Update in parallel.
         updateRates(local_tasks_rates, local_tasks, interactions, configuration);
 
         // Join the results.
         const std::vector<double> global_tasks_rates = joinOverProcesses(local_tasks_rates);
+        // ------------------------------------------------------------------------
 
-        // Copy the results over.
-        for (size_t i = 0; i < add_tasks.size(); ++i)
+        // Copy the results over to the tasks vectors.
+        for (size_t i = 0; i < add_task_indices.size(); ++i)
         {
-            add_tasks[i].rate = global_tasks_rates[i];
+            const int index = add_task_indices[i];
+            add_tasks[index].rate = global_tasks_rates[i];
         }
 
-        const size_t offset = add_tasks.size();
-        for (size_t i = 0; i < update_tasks.size(); ++i)
+        const size_t offset = add_task_indices.size();
+        for (size_t i = 0; i < update_task_indices.size(); ++i)
         {
-            update_tasks[i].rate = global_tasks_rates[offset + i];
+            const int index = update_task_indices[i];
+            update_tasks[index].rate = global_tasks_rates[offset + i];
+        }
+
+        // Store the calculated key value pairs.
+        for (size_t i = 0; i < global_tasks_rates.size(); ++i)
+        {
+            const ratekey key = global_keys[i];
+            const double rate = global_tasks_rates[i];
+            rate_table_.store(key, rate);
         }
     }
 
     // Update the processes.
-
     updateProcesses(remove_tasks,
                     update_tasks,
                     add_tasks,
@@ -310,20 +372,8 @@ void Matcher::updateRates(std::vector<double>         & new_rates,
         // Get the coordinate index.
         const int index = tasks[i].index;
 
-        // Try to retrieve the key form earlier calculation.
-        const ratekey key = hashCustomRateInput(index, process, configuration);
-        if (rate_table_.stored(key) != -1)
-        {
-            new_rates[i] = rate_table_.retrieve(key);
-        }
-        else
-        {
-            // Calculate the new rate.
-            new_rates[i] = updateSingleRate(index, process, configuration, rate_calculator);
-
-            // Store the rate for future usage.
-            rate_table_.store(key, new_rates[i]);
-        }
+        // Calculate the new rate.
+        new_rates[i] = updateSingleRate(index, process, configuration, rate_calculator);
     }
 }
 
