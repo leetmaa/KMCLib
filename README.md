@@ -3,7 +3,7 @@
 ## License and Copying
 Developed by Mikael Leetmaa at the Royal Institute of Technology (KTH), Sweden.
 
-Copyright (c)  2012-2013  Mikael Leetmaa. Released under the GPLv3 license, see 'LICENSE.txt' for details.
+Copyright (c)  2012-2014  Mikael Leetmaa. Released under the GPLv3 license, see 'LICENSE.txt' for details.
 
 ## KMCLib
 KMCLib is a collection of Python front-end functions, classes and interfaces for performing efficient lattice KMC simulations, with all computationally heavy back-end functionality implemented in C++.
