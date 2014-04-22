@@ -15,5 +15,5 @@ References
 
 .. [Ref.7] *M. Leetmaa, Natalia V. Skorodumova*, "Mean square displacements with error estimates from non-equidistant time-step kinetic Monte Carlo simulations", *(submitted)*
 
-.. [Ref.8] *M. Leetmaa, Natalia V. Skorodumova*, "KMCLib: A general framework for lattice kinetic Monte Carlo (KMC) simulations", *(submitted)*
+.. [Ref.8] *M. Leetmaa, Natalia V. Skorodumova*, "KMCLib: A general framework for lattice kinetic Monte Carlo (KMC) simulations", *Comput. Phys. Commun. (2014) (accepted)*
 
