@@ -8,7 +8,7 @@ All built in analysis in :py:mod:`KMCLib` is implemented using the
 during the simulation. At present there are two analysis options
 included, the :py:class:`OnTheFlyMSD` for mean square displacement
 analysis and the :py:class:`TimeStepDistribution` analysis for
-recoding the distribution time steps during the simulation. On-the-fly
+recoding the distribution of time steps during the simulation. On-the-fly
 analysis objects are used by giving them as as a arguments to the
 :py:meth:`run<KMCLatticeModel.run>` function of the
 :py:class:`KMCLatticeModel`. Have a look at the :ref:`usage examples`
