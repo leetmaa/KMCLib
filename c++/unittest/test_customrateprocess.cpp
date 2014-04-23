@@ -577,3 +577,81 @@ void Test_CustomRateProcess::testProcessNumber()
 
     // DONE
 }
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_CustomRateProcess::testCacheRate()
+{
+    // Setup a valid possible types map.
+    std::map<std::string,int> possible_types;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["C"] = 0;
+
+    // Setup the two configurations.
+    std::vector<std::string> elements1;
+    elements1.push_back("A");
+    elements1.push_back("B");
+
+    std::vector<std::string> elements2;
+    elements2.push_back("C");
+    elements2.push_back("B");
+
+    // Setup coordinates.
+    std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
+    coords[1][0] =  1.0;
+    coords[1][1] =  1.3;
+    coords[1][2] = -4.4;
+
+    // The configurations.
+    const Configuration config1(coords, elements1, possible_types);
+    const Configuration config2(coords, elements2, possible_types);
+
+    // Setup an empty move vector.
+    const std::vector<int> move_origins(0);
+    const std::vector<Coordinate> move_vectors(0);
+
+    // Give the process its number.
+    const int p_number = 198;
+
+    // Construct the process.
+    const double rate = 13.7;
+    const std::vector<int> basis_sites(1,0);
+    const CustomRateProcess p0(config1,
+                               config2,
+                               rate,
+                               basis_sites,
+                               2.0,
+                               move_origins,
+                               move_vectors,
+                               p_number);
+
+    // Check that the default behavior is no caching.
+    CPPUNIT_ASSERT( !p0.cacheRate() );
+
+    // Construct with explicit values and check again.
+    const CustomRateProcess p1(config1,
+                               config2,
+                               rate,
+                               basis_sites,
+                               2.0,
+                               move_origins,
+                               move_vectors,
+                               p_number,
+                               false);
+    CPPUNIT_ASSERT( !p1.cacheRate() );
+
+    const CustomRateProcess p2(config1,
+                               config2,
+                               rate,
+                               basis_sites,
+                               2.0,
+                               move_origins,
+                               move_vectors,
+                               p_number,
+                               true);
+    CPPUNIT_ASSERT( p2.cacheRate() );
+
+    // DONE
+}

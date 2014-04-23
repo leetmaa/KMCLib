@@ -40,6 +40,10 @@ void Matcher::calculateMatching(Interactions & interactions,
                                 const LatticeMap & lattice_map,
                                 const std::vector<int> & indices)
 {
+    // PERFORMME: Many fixes but no timing yet. Probably room for
+    //            improvements. What happens in this function is
+    //            highly performance critical.
+
     // Build the list of indices and processes to match.
 
     std::vector<std::pair<int,int> > index_process_to_match;
@@ -90,16 +94,9 @@ void Matcher::calculateMatching(Interactions & interactions,
     if (interactions.useCustomRates())
     {
         // Create a common task list for getting a good load balance.
-
-// ML:
-// This is what we do if we do not want task rate caching.
-//        std::vector<RateTask> global_tasks(add_tasks.size()+update_tasks.size());
-//        std::copy( update_tasks.begin(), update_tasks.end(),
-//                   std::copy( add_tasks.begin(), add_tasks.end(), global_tasks.begin()) );
-
-
         std::vector<RateTask> global_tasks;
         std::vector<ratekey>  global_keys;
+        std::vector<int>      global_process_numbers;
 
         // Find out which tasks are allready calculated and stored.
         std::vector<int> add_task_indices;
@@ -119,6 +116,7 @@ void Matcher::calculateMatching(Interactions & interactions,
             {
                 global_tasks.push_back(add_tasks[i]);
                 global_keys.push_back(key);
+                global_process_numbers.push_back(process.processNumber());
                 add_task_indices.push_back(i);
             }
         }
@@ -141,6 +139,7 @@ void Matcher::calculateMatching(Interactions & interactions,
             {
                 global_tasks.push_back(update_tasks[i]);
                 global_keys.push_back(key);
+                global_process_numbers.push_back(process.processNumber());
                 update_task_indices.push_back(i);
             }
         }
@@ -176,9 +175,14 @@ void Matcher::calculateMatching(Interactions & interactions,
         // Store the calculated key value pairs.
         for (size_t i = 0; i < global_tasks_rates.size(); ++i)
         {
-            const ratekey key = global_keys[i];
-            const double rate = global_tasks_rates[i];
-            rate_table_.store(key, rate);
+            // But only if the procees can safely be cached.
+            const int process_number = global_process_numbers[i];
+            if ((*interactions.processes()[process_number]).cacheRate())
+            {
+                const ratekey key = global_keys[i];
+                const double rate = global_tasks_rates[i];
+                rate_table_.store(key, rate);
+            }
         }
     }
 

@@ -1,7 +1,7 @@
 """ Module for the KMCRateCalculatorPlugin class """
 
 
-# Copyright (c)  2013  Mikael Leetmaa
+# Copyright (c)  2013-2014  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -104,4 +104,32 @@ class KMCRateCalculatorPlugin(Backend.RateCalculator):
         """
         # Returning None results in default behaviour.
         return None
+
+    def cacheRates(self):
+        """
+        Method for determining if custom rates should be cached.
+        If caching is used for a process, the process will only be evaluated once
+        for each particular environment, not allowing for changes of the rate with
+        the global index or with the simulation time. If cached rates are used
+        processes can be exluded from the caching using the excludeFromCaching function.
+
+        :returns: True for caching or False for no caching. Defaults to False.
+        :rtype: bool
+        """
+        return False
+
+    def excludeFromCaching(self):
+        """
+        Method for exluding processes from the rate caching.
+        Overload for custom behavior. The method only takes effect if caching
+        is enabled with the cacheRates function.
+
+        :returns: A tuple of process numbers to exclue from caching.
+        :rtype: tuple
+        """
+        return ()
+
+
+
+
 

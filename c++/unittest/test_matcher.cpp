@@ -1490,7 +1490,7 @@ void Test_Matcher::testCalculateMatchingInteractions()
 }
 
 // -------------------------------------------------------------------------- //
-// This proxy class is part needed for the UpdateRates test below.
+// This proxy class is needed for the UpdateRates test below.
 class CustRateCalc : public RateCalculator {
 public:
     virtual ~CustRateCalc() {}

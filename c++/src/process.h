@@ -88,6 +88,11 @@ public:
      */
     virtual void updateRateTable() {}
 
+    /*! \brief Returns true if the process rates can be cached.
+     *  \return : True of rates can be cached. False if no caching is allowed.
+     */
+    bool cacheRate() const { return cache_rate_; }
+
     /*! \brief Query for the rate constant associated with the process.
      *  \return : The rate constant part of the of rate for the process.
      */
@@ -163,6 +168,9 @@ public:
     int processNumber() const { return process_number_; }
 
 protected:
+
+    // If the process rate can be cached.
+    bool cache_rate_;
 
     /// The process number.
     int process_number_;

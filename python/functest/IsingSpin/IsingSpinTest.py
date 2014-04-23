@@ -14,6 +14,12 @@ import time
 # Import the interface.
 from KMCLib import *
 
+def trueFunction(obj):
+    return True
+
+def falseFunction(obj):
+    return False
+
 class CustomRateCalculator(KMCRateCalculatorPlugin):
     """ Class for defining the custom rates function for the KMCLib paper. """
 
@@ -52,8 +58,10 @@ class IsingSpinTest(unittest.TestCase):
     def testWithAndWithoutCustomRates(self):
         """ Test the Ising model with custom rates. """
         # --------------------------------------------------------------------
-        # Setup a calculation with custom rates.
+        # Setup a calculation with custom rates and no caching.
 
+        # FIXME: Find out a less hacky way to do this.
+        CustomRateCalculator.cacheRates = falseFunction
         t1 = time.clock()
 
         # Load the configuration and interactions.
@@ -77,6 +85,32 @@ class IsingSpinTest(unittest.TestCase):
         t2 = time.clock()
 
         # --------------------------------------------------------------------
+        # Setup a calculation with custom rates and caching.
+
+        # FIXME: Find out a less hacky way to do this.
+        CustomRateCalculator.cacheRates = trueFunction
+
+        # Load the configuration and interactions.
+        configuration = KMCConfigurationFromScript("config.py")
+        interactions  = KMCInteractionsFromScript("custom_processes.py")
+
+        # Set the rate calculator.
+        interactions.setRateCalculator(rate_calculator=CustomRateCalculator)
+
+        # Create the model.
+        model = KMCLatticeModel(configuration, interactions)
+
+        # Define the parameters.
+        control_parameters = KMCControlParameters(number_of_steps=1000000,
+                                                  dump_interval=10000,
+                                                  seed=13997)
+
+        # Run the simulation - save trajectory to 'custom_traj_cache.py'
+        model.run(control_parameters, trajectory_filename="custom_traj_cache.py")
+
+        t3 = time.clock()
+
+        # --------------------------------------------------------------------
         # Setup the same calculation with fixed rates.
 
         configuration = KMCConfigurationFromScript("config.py")
@@ -93,7 +127,7 @@ class IsingSpinTest(unittest.TestCase):
         # Run the simulation - save trajectory to 'fixed_traj.py'
         model.run(control_parameters, trajectory_filename="fixed_traj.py")
 
-        t3 = time.clock()
+        t4 = time.clock()
         # --------------------------------------------------------------------
         # Check that the results are the same.
         global_dict = {}
@@ -103,25 +137,37 @@ class IsingSpinTest(unittest.TestCase):
 
         global_dict = {}
         local_dict  = {}
+        execfile("custom_traj_cache.py", global_dict, local_dict)
+        elem_cache  = local_dict["types"][-1]
+
+        global_dict = {}
+        local_dict  = {}
         execfile("fixed_traj.py", global_dict, local_dict)
         elem_fixed  = local_dict["types"][-1]
 
-        d1 = len([e for e in elem_custom if e == "D"] )
-        u1 = len([e for e in elem_custom if e == "U"] )
+        d0 = len([e for e in elem_custom if e == "D"] )
+        u0 = len([e for e in elem_custom if e == "U"] )
+
+        d1 = len([e for e in elem_cache if e == "D"] )
+        u1 = len([e for e in elem_cache if e == "U"] )
 
         d2 = len([e for e in elem_fixed if e == "D"] )
         u2 = len([e for e in elem_fixed if e == "U"] )
 
         # Excact values will depend on the seed. Check against hardcoded
         # values.
+        print "Time for custom run (s):", t2-t1
+        print "Time for cache run  (s):", t3-t2
+        print "Time for fixed run  (s):", t4-t3
+
+        self.assertEqual(d0, 4062)
         self.assertEqual(d1, 4062)
         self.assertEqual(d2, 4320)
 
+        self.assertEqual(u0, 5938)
         self.assertEqual(u1, 5938)
         self.assertEqual(u2, 5680)
 
-        print "Time for custom run (s):", t2-t1
-        print "Time for fixed run  (s):", t3-t2
 
         # --------------------------------------------------------------------
         # Now, plot the last configuration from each trajectory and compare

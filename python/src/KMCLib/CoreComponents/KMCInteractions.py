@@ -172,6 +172,10 @@ the KMCRateCalculatorPlugin class itself. """
                     if cutoff is None:
                         cutoff = 1.0
 
+                    # Get the cache_rate flag.
+                    cache_rate = (self.__rate_calculator.cacheRates() and \
+                                      not process_number in self.__rate_calculator.excludeFromCaching())
+
                     cpp_processes.push_back(Backend.CustomRateProcess(cpp_config1,
                                                                       cpp_config2,
                                                                       rate_constant,
@@ -179,7 +183,8 @@ the KMCRateCalculatorPlugin class itself. """
                                                                       cutoff,
                                                                       cpp_move_origins,
                                                                       cpp_move_vectors,
-                                                                      process_number))
+                                                                      process_number,
+                                                                      cache_rate))
                 else:
                     cpp_processes.push_back(Backend.Process(cpp_config1,
                                                             cpp_config2,

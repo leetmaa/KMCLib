@@ -26,6 +26,7 @@ Process::Process(const Configuration & first,
                  const std::vector<int> & move_origins,
                  const std::vector<Coordinate> & move_vectors,
                  const int process_number) :
+    cache_rate_(false),
     process_number_(process_number),
     range_(1),
     rate_(rate),

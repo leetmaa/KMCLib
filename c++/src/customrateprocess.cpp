@@ -27,9 +27,13 @@ CustomRateProcess::CustomRateProcess(const Configuration & first,
                                      const double cutoff,
                                      const std::vector<int> & move_origins,
                                      const std::vector<Coordinate> & move_vectors,
-                                     const int process_number) :
+                                     const int process_number,
+                                     const bool cache_rate) :
     Process(first, second, rate, basis_sites, move_origins, move_vectors, process_number)
 {
+    // Set the cache rate flag.
+    cache_rate_ = cache_rate;
+
     // Save the cutoff if it is larger than what we have allready.
     if (cutoff > cutoff_)
     {

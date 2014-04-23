@@ -32,6 +32,7 @@ public:
     CPPUNIT_TEST( testAffectedIndices );
     CPPUNIT_TEST( testCutoffAndRange );
     CPPUNIT_TEST( testProcessNumber );
+    CPPUNIT_TEST( testCacheRate );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstruction();
@@ -42,6 +43,7 @@ public:
     void testAffectedIndices();
     void testCutoffAndRange();
     void testProcessNumber();
+    void testCacheRate();
 
 };
 

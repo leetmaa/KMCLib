@@ -48,10 +48,10 @@ void RateTable::store(const ratekey key, const double value)
 {
     // PERFORMME:
     // This is slow but necessary to prevent errors.
-//    if (stored(key) != -1)
-//    {
-//        throw std::runtime_error("Key clash error in RateTable.");
-//    }
+    // if (stored(key) != -1)
+    // {
+    //     throw std::runtime_error("Key clash error in RateTable.");
+    // }
 
     // Add the value to the current table.
     tables_[current_table_][key] = value;

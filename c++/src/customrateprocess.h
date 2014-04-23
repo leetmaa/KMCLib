@@ -52,7 +52,8 @@ public:
                       const double cutoff,
                       const std::vector<int> & move_origins=std::vector<int>(0),
                       const std::vector<Coordinate> & move_vectors=std::vector<Coordinate>(0),
-                      const int process_number=-1);
+                      const int process_number=-1,
+                      const bool cache_rate=false);
 
     /*! \brief Virtual destructor needed for inheritance.
      */
