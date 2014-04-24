@@ -19,12 +19,17 @@ class KMCRateCalculatorPlugin(Backend.RateCalculator):
     the behaviour of the calculation of individual rates in the KMC simulation.
     """
 
-    def __init__(self):
+    def __init__(self, configuration):
         """
         Base class constructor.
+
+        :param configuration: The KMCConfiguration
         """
         # Call the C++ base class constructor.
         Backend.RateCalculator.__init__(self)
+
+        # Store member data on the class.
+        self.configuration = configuration
 
         # Call the custom setup.
         self.initialize()

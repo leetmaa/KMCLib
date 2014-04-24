@@ -92,14 +92,8 @@ class KMCInteractionsTest(unittest.TestCase):
         # Test that it fails if the rate calculator is of wrong type.
         self.assertRaises( Error, lambda : interactions.setRateCalculator(rate_calculator="CustomRateCalculator") )
 
-        # Test that it fails if the rate calculator is of wrong class.
-        self.assertRaises( Error, lambda : interactions.setRateCalculator(rate_calculator=Error) )
-
         # Test that it fails if the rate calculator is instantiated.
-        self.assertRaises( Error, lambda : interactions.setRateCalculator(rate_calculator=CustomRateCalculator()) )
-
-        # Test that it fails if the rate calculator is the base class.
-        self.assertRaises( Error, lambda : interactions.setRateCalculator(rate_calculator=KMCRateCalculatorPlugin) )
+        self.assertRaises( Error, lambda : interactions.setRateCalculator(rate_calculator=CustomRateCalculator("DummyConfig")) )
 
         # Construct the interactions object with a custom rate calculator class.
         kmc_interactions = KMCInteractions(processes=processes,
@@ -109,8 +103,8 @@ class KMCInteractionsTest(unittest.TestCase):
         # Test the stored name.
         self.assertEqual(kmc_interactions._KMCInteractions__rate_calculator_str, "CustomRateCalculator")
 
-        # Test the stored rate calculator.
-        self.assertTrue(isinstance(kmc_interactions._KMCInteractions__rate_calculator, CustomRateCalculator) )
+        # Test the stored rate calculator class.
+        self.assertTrue(kmc_interactions._KMCInteractions__rate_calculator_class == CustomRateCalculator)
 
     def testConstructionFailNoList(self):
         """ Test that the construction fails if the interactions list is not a list. """
@@ -193,9 +187,13 @@ class KMCInteractionsTest(unittest.TestCase):
             "C" : 5,
             }
 
+
+        # Use a dummy argument for the configuration.
+        config = "DummyConfig"
+
         # Check that setting up the backend fails if we have types in the processes that do
         # not corresponds to a type in the list of possible types.
-        self.assertRaises( Error, lambda : kmc_interactions._backend(possible_types, 2) )
+        self.assertRaises( Error, lambda : kmc_interactions._backend(possible_types, 2, config) )
 
         possible_types = {
             "A" : 13,
@@ -205,7 +203,7 @@ class KMCInteractionsTest(unittest.TestCase):
             "C" : 5,
             }
 
-        self.assertRaises( Error, lambda : kmc_interactions._backend(possible_types, 2) )
+        self.assertRaises( Error, lambda : kmc_interactions._backend(possible_types, 2, config) )
 
         possible_types = {
             "A" : 13,
@@ -215,13 +213,13 @@ class KMCInteractionsTest(unittest.TestCase):
             "C" : 5,
             }
 
-        self.assertRaises( Error, lambda : kmc_interactions._backend(possible_types, 2) )
+        self.assertRaises( Error, lambda : kmc_interactions._backend(possible_types, 2, config) )
 
         # Both "D" and "F" must be present.
         possible_types["D"] = 123
 
         # Get the backend.
-        cpp_interactions = kmc_interactions._backend(possible_types, 2)
+        cpp_interactions = kmc_interactions._backend(possible_types, 2, config)
 
         # Check the type.
         self.assertTrue( isinstance(cpp_interactions, Backend.Interactions) )
@@ -268,56 +266,85 @@ class KMCInteractionsTest(unittest.TestCase):
         # Set the custom rates class to use.
         custom_rates_class = CustomRateCalculator
 
-        # Construct the interactions object.
-        kmc_interactions = KMCInteractions(processes=processes,
-                                           implicit_wildcards=False)
-        kmc_interactions.setRateCalculator(rate_calculator=custom_rates_class)
-
         # Set the rate function on the custom rates calculator for testing.
         ref_rnd = numpy.random.uniform(0.0,1.0)
-        def testRateFunction(coords, types_before, types_after, rate_const, process_number, global_coordinate):
+        def testRateFunction(obj, coords, types_before, types_after, rate_const, process_number, global_coordinate):
             return ref_rnd
-        kmc_interactions._KMCInteractions__rate_calculator.rate = testRateFunction
 
-        # Setup a dict with the possible types.
-        possible_types = {
-            "A" : 13,
-            "D" : 2,
-            "B" : 3,
-            "J" : 4,
-            "C" : 5,
-            }
+        # Store the original.
+        custom_rate_function = custom_rates_class.rate
+        try:
+            custom_rates_class.rate = testRateFunction
 
-        # Construct the backend.
-        cpp_interactions = kmc_interactions._backend(possible_types, 2)
+            # Construct the interactions object.
+            kmc_interactions = KMCInteractions(processes=processes,
+                                               implicit_wildcards=False)
 
-        # Get the rate calculator reference out of the C++ object and
-        # check that a call from C++ calls the Python extension.
-        cpp_coords = Backend.StdVectorDouble()
-        cpp_types1 = Backend.StdVectorString()
-        cpp_types2 = Backend.StdVectorString()
-        rate_constant = 543.2211
-        process_number = 33
-        coordinate = (1.2,3.4,5.6)
+            # Setup a dict with the possible types.
+            possible_types = {
+                "A" : 13,
+                "D" : 2,
+                "B" : 3,
+                "J" : 4,
+                "C" : 5,
+                }
 
-        self.assertAlmostEqual( cpp_interactions.rateCalculator().backendRateCallback(cpp_coords,
-                                                                                      cpp_coords.size()/3,
-                                                                                      cpp_types1,
-                                                                                      cpp_types2,
-                                                                                      rate_constant,
-                                                                                      process_number,
-                                                                                      coordinate[0],
-                                                                                      coordinate[1],
-                                                                                      coordinate[2]), ref_rnd, 12 )
-        self.assertAlmostEqual( kmc_interactions._KMCInteractions__rate_calculator.backendRateCallback(cpp_coords,
-                                                                                                       cpp_coords.size()/3,
-                                                                                                       cpp_types1,
-                                                                                                       cpp_types2,
-                                                                                                       rate_constant,
-                                                                                                       process_number,
-                                                                                                       coordinate[0],
-                                                                                                       coordinate[1],
-                                                                                                       coordinate[2]), ref_rnd, 12 )
+            # Use a dummy argument for the configuration.
+            config = "DummyConfig"
+
+            # Test that it fails if the rate calculator is of wrong class.
+            kmc_interactions.setRateCalculator(rate_calculator=Error)
+            self.assertRaises( Error, lambda : kmc_interactions._backend(possible_types, 2, config) )
+
+            # Test that it fails if the rate calculator is the base class.
+            kmc_interactions.setRateCalculator(rate_calculator=KMCRateCalculatorPlugin)
+            self.assertRaises( Error, lambda : kmc_interactions._backend(possible_types, 2, config) )
+
+            # But this should work.
+            kmc_interactions.setRateCalculator(rate_calculator=custom_rates_class)
+
+            # Construct the backend.
+            cpp_interactions = kmc_interactions._backend(possible_types, 2, config)
+
+            # Test that the configuration on the custom rate class is the one given.
+            self.assertTrue(kmc_interactions._KMCInteractions__rate_calculator.configuration == config) #  <-  Check by reference.
+
+            # Get the rate calculator reference out of the C++ object and
+            # check that a call from C++ calls the Python extension.
+            cpp_coords = Backend.StdVectorDouble()
+            cpp_types1 = Backend.StdVectorString()
+            cpp_types2 = Backend.StdVectorString()
+            rate_constant = 543.2211
+            process_number = 33
+            coordinate = (1.2,3.4,5.6)
+
+            self.assertAlmostEqual( cpp_interactions.rateCalculator().backendRateCallback(cpp_coords,
+                                                                                          cpp_coords.size()/3,
+                                                                                          cpp_types1,
+                                                                                          cpp_types2,
+                                                                                          rate_constant,
+                                                                                          process_number,
+                                                                                          coordinate[0],
+                                                                                          coordinate[1],
+                                                                                          coordinate[2]), ref_rnd, 12 )
+            self.assertAlmostEqual( kmc_interactions._KMCInteractions__rate_calculator.backendRateCallback(cpp_coords,
+                                                                                                           cpp_coords.size()/3,
+                                                                                                           cpp_types1,
+                                                                                                           cpp_types2,
+                                                                                                           rate_constant,
+                                                                                                           process_number,
+                                                                                                           coordinate[0],
+                                                                                                           coordinate[1],
+                                                                                                           coordinate[2]), ref_rnd, 12 )
+
+
+        finally:
+            # Reset the class.
+            custom_rates_class.rate = custom_rate_function
+
+
+
+
 
         # Construct a C++ RateCalculator object directly and check that this object
         # returns the rate given to it.
@@ -361,8 +388,11 @@ class KMCInteractionsTest(unittest.TestCase):
             "C" : 5,
             }
 
+        # Use a dummy argument for the configuration.
+        config = "DummyConfig"
+
         # Get the backend - The [0,4] sites list for process_0 is simply ignored.
-        cpp_interactions = kmc_interactions._backend(possible_types, 2)
+        cpp_interactions = kmc_interactions._backend(possible_types, 2, config)
 
         self.assertEqual( len(cpp_interactions.processes()[0].basisSites()), 1 )
         self.assertEqual( cpp_interactions.processes()[0].basisSites()[0], 0 )

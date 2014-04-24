@@ -55,6 +55,7 @@ class KMCInteractions(object):
 
         # Set the rate calculator.
         self.__rate_calculator = None
+        self.__rate_calculator_class = None
 
     def rateCalculator(self):
         """
@@ -80,27 +81,15 @@ class KMCInteractions(object):
             # Check if this is a class.
             if not inspect.isclass(rate_calculator):
                 msg = """
-The 'rate_calculator' input to the KMCInteractions constructor must
+The 'rate_calculator' given to the KMCInteractions object must
 be a class (not instantiated) inheriting from the KMCRateCalculatorPlugin. """
                 raise Error(msg)
 
             # Save the class name for use in scripting.
             self.__rate_calculator_str = str(rate_calculator).replace("'>","").split('.')[-1]
-            # Instantiate.
-            rate_calculator = rate_calculator()
-            if not isinstance(rate_calculator, KMCRateCalculatorPlugin):
-                msg = """
-The 'rate_calculator' input to the KMCInteractions constructor must
-be a class inheriting from the KMCRateCalculatorPlugin. """
-                raise Error(msg)
-            elif rate_calculator.__class__ == KMCRateCalculatorPlugin().__class__:
-                msg = """
-The 'rate_calculator' input to the KMCInteractions constructor must
-be inheriting from the KMCRateCalculatorPlugin class. It may not be
-the KMCRateCalculatorPlugin class itself. """
-                raise Error(msg)
-        # All tests passed. Save the instantiated rate calculator on the class.
-        self.__rate_calculator = rate_calculator
+
+            # Store the class for later instantiation.
+            self.__rate_calculator_class = rate_calculator
 
     def implicitWildcards(self):
         """
@@ -110,7 +99,7 @@ the KMCRateCalculatorPlugin class itself. """
         """
         return self.__implicit_wildcards
 
-    def _backend(self, possible_types, n_basis):
+    def _backend(self, possible_types, n_basis, configuration):
         """
         Query for the interactions backend object.
 
@@ -119,6 +108,9 @@ the KMCRateCalculatorPlugin class itself. """
 
         :param n_basis: The size of the configuration basis is.
         :type n_basis: int
+
+        :param configuration: The configuration of the systm, to be passed
+                              on to any attached custom rate calculator.
 
         :returns: The interactions object in C++
         """
@@ -133,9 +125,28 @@ the KMCRateCalculatorPlugin class itself. """
             # Setup the correct type of backend process objects
             # depending on the presence of a rate calculator.
 
-            if self.__rate_calculator is not None:
+            if self.__rate_calculator_class is not None:
+
+                # Instantiate the rate calculator.
+                rate_calculator = self.__rate_calculator_class(configuration)
+                if not isinstance(rate_calculator, KMCRateCalculatorPlugin):
+                    msg = """
+The 'rate_calculator' given to the KMCInteractions class must
+inherit from the KMCRateCalculatorPlugin. """
+                    raise Error(msg)
+                elif rate_calculator.__class__ == KMCRateCalculatorPlugin(configuration).__class__:
+                    msg = """
+The 'rate_calculator' given to the KMCInteractions class must
+inherit from the KMCRateCalculatorPlugin class. It may not be
+the KMCRateCalculatorPlugin class itself. """
+                    raise Error(msg)
+                # Tests passed. Save the instantiated rate calculator on the class.
+                self.__rate_calculator = rate_calculator
+
+                # Generate the process vector.
                 cpp_processes = Backend.StdVectorCustomRateProcess()
             else:
+                # Generate the process vector.
                 cpp_processes = Backend.StdVectorProcess()
 
             # For each interaction.
