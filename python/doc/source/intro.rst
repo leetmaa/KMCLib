@@ -9,11 +9,14 @@ Welcome to the :py:mod:`KMCLib` documentation!
 Python/C++ implementation of the *lattice* KMC method distributed
 under the GPLv3 license. See the :ref:`about` section for details.
 
-
-You can always find the latest stable version
+You can always find the latest stable version of the program
 here: https://github.com/leetmaa/KMCLib/releases
 
+If you use KMCLib in your research please **cite** the
+scientific paper describing the program [Ref.8]_.
+
 This documentation describes version 1.0.0
+
 
 Why KMC?
 ---------------------------
@@ -102,7 +105,6 @@ particularly well equipped for
   scheme over process-site pairs to match is most efficient.
 
   '
-
 
 Other KMC codes
 ................

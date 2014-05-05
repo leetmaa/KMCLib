@@ -23,6 +23,14 @@ Institute of Technology - KTH, Sweden, in the
 Multiscale Materials Modelling research group headed by
 **Prof. Natalia V. Skorodumova**.
 
+How to cite?
+-------------
+If you use KMCLib in your research please cite the scientific paper
+describing the program [Ref.8]_, and if you use the built in mean square
+displacement (MSD) :ref:`analysis` we ask you to cite the paper describing the
+MSD algorithm [Ref.7]_.
+
+
 Contact
 ---------
 Please send any inquiries, comments or questions to leetmaa@kth.se

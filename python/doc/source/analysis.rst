@@ -1,3 +1,6 @@
+.. _`analysis`:
+
+
 .. currentmodule:: KMCLib
 
 Analysis
