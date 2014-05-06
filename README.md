@@ -30,7 +30,7 @@ When you use KMCLib in your research please **cite** the paper describing the co
 
 
 ## Well documented with usage examples and install instructions
-The code manual (https://github.com/leetmaa/KMCLib/manual/index.html) includes full documentation of the Python interface and several usage examples, as well as installation instructions for both Linux and Mac.
+The code manual (http://leetmaa.github.io/KMCLib/manual-v1.0/) includes full documentation of the Python interface and several usage examples, as well as installation instructions for both Linux and Mac.
 
 ## No known issues
 After carefully testing the code and removing bugs and issues before the release of version 1.0 there are *no* known bugs or issues at the time of writing. This is of course no guarantee that there are none left to be found. So if you find any bugs or issues, or if you have suggestions for improvements, please let me know.
