@@ -25,7 +25,6 @@ When you use *KMCLib* in your research please **cite** the paper describing the 
 * Built in on-the-fly mean square displacement (MSD) analysis to facilitate diffusion studies.
 * MPI parallelism without loss of accuracy.
 
-
 ### Well documented with usage examples and install instructions
 The code manual (http://leetmaa.github.io/KMCLib/manual-v1.0/) includes full documentation of the Python interface and several usage examples, as well as installation instructions for both Linux and Mac.
 
