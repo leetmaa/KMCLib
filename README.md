@@ -6,7 +6,7 @@
     Copyright (c)  2012-2014  Mikael Leetmaa
     Released under the GPLv3 license, see 'LICENSE.txt' for details.
 
-When you use KMCLib in your research please **cite** the paper describing the code
+When you use *KMCLib* in your research please **cite** the paper describing the code
 
     Mikael Leetmaa and Natalia V. Skorodumova
     “KMCLib: A general framework for lattice kinetic Monte Carlo (KMC) simulations”
@@ -35,7 +35,7 @@ After carefully testing the code and removing bugs and issues before the release
 ### Obtain a copy
 The program is distributed under the GPLv3 license and can be obtained from the *KMCLib* git repository https://github.com/leetmaa/KMCLib/releases/tag/v1.0
 
-### Use KMCLib in your own research
+### Use *KMCLib* in your own research
 If you would be interested to use this code in your research and need any assistance, or if you are interested in collaborations, please don't hesitate to send me an e-mail: leetmaa@kth.se
 
 
