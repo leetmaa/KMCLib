@@ -13,19 +13,12 @@ When you use KMCLib in your research please **cite** the paper describing the co
 
 
 ##The combination of features makes *KMCLib* unique
-
 * Python user interface - well documented, easily extended.
-
 * C++ backend library for maximizing efficiency.
-
 * Easy to prototype KMC models - no need to recompile source to run new models.
-
 * Arbitrarily complex elementary processes can be used.
-
 * On-the-fly evaluation of custom rate expressions written in Python.
-
 * Built in on-the-fly mean square displacement (MSD) analysis to facilitate diffusion studies.
-
 * MPI parallelism without loss of accuracy.
 
 
