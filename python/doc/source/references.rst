@@ -13,7 +13,7 @@ References
 
 .. [Ref.6] *Daniel T. Gillespie, Andreas Hellander, Linda R. Petzold*, "Perspective: Stochastic algorithms for chemical kinetics", *J. Chem. Phys. 138 (2013) 170901*
 
-.. [Ref.7] *M. Leetmaa, Natalia V. Skorodumova*, "Mean square displacements with error estimates from non-equidistant time-step kinetic Monte Carlo simulations", *(submitted)*
+.. [Ref.7] *Mikael Leetmaa, Natalia V. Skorodumova*, "Mean square displacements with error estimates from non-equidistant time-step kinetic Monte Carlo simulations", *(submitted)*
 
-.. [Ref.8] *M. Leetmaa, Natalia V. Skorodumova*, "KMCLib: A general framework for lattice kinetic Monte Carlo (KMC) simulations", *Comput. Phys. Commun. (2014) (accepted)*
+.. [Ref.8] *Mikael Leetmaa, Natalia V. Skorodumova*, "KMCLib: A general framework for lattice kinetic Monte Carlo (KMC) simulations", *Comput. Phys. Commun. (2014) DOI: 10.1016/j.cpc.2014.04.017*
 
