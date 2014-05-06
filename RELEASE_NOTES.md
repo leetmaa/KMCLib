@@ -1,5 +1,5 @@
 ##v1.0 (May 6 2014)
-***KMCLib* version 1.0 is ready for final release.**
+***KMCLib* version 1.0 is ready for release.**
 
 *KMCLib* is a general framework for *lattice* kinetic Monte Carlo (KMC) simulations, to simulate the time evolution of systems of up to millions of particles in one, two or three dimensions. *KMCLib* is organized as a collection of Python frontend functions, classes and interfaces for performing efficient *lattice* KMC simulations, with all computationally heavy backend functionality implemented in C++.
 
