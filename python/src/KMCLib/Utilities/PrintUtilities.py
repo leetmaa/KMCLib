@@ -44,7 +44,8 @@ def printHeader(output=None):
 
     # Write.
     prettyPrint("# -----------------------------------------------------------------------------", output)
-    prettyPrint("# KMCLib version 1.0", output)
+    prettyPrint("# KMCLib version 1.1a0-devel", output)
+    prettyPrint("# **WARNING** This is a potentially broken development version of KMCLib.", output)
     prettyPrint("# Distributed under the GPLv3 license", output)
     prettyPrint("# Copyright (C)  2012-2014  Mikael Leetmaa", output)
     prettyPrint("# Developed by Mikael Leetmaa <leetmaa@kth.se>", output)
