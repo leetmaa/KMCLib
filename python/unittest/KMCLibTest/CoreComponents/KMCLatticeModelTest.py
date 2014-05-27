@@ -1,7 +1,7 @@
 """ Module for testing the KMCLatticeModel class. """
 
 
-# Copyright (c)  2012-2013  Mikael Leetmaa
+# Copyright (c)  2012-2014  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -20,6 +20,7 @@ from KMCLib.CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
 from KMCLib.CoreComponents.KMCControlParameters import KMCControlParameters
 from KMCLib.CoreComponents.KMCUnitCell import KMCUnitCell
 from KMCLib.CoreComponents.KMCLattice  import KMCLattice
+from KMCLib.PluginInterfaces.KMCBreakerPlugin import KMCBreakerPlugin
 from KMCLib.PluginInterfaces.KMCAnalysisPlugin import KMCAnalysisPlugin
 from KMCLib.Exceptions.Error import Error
 from KMCLib.Backend.Backend import MPICommons
@@ -388,49 +389,7 @@ class KMCLatticeModelTest(unittest.TestCase):
 
     def testRunWithAnalysis(self):
         """ Test that the analyis plugins get called correctly. """
-        # Cell.
-        cell_vectors = [[   1.000000e+00,   0.000000e+00,   0.000000e+00],
-                        [   0.000000e+00,   1.000000e+00,   0.000000e+00],
-                        [   0.000000e+00,   0.000000e+00,   1.000000e+00]]
-
-        basis_points = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
-
-        unit_cell = KMCUnitCell(
-            cell_vectors=cell_vectors,
-            basis_points=basis_points)
-
-        # Lattice.
-        lattice = KMCLattice(
-            unit_cell=unit_cell,
-            repetitions=(10,10,1),
-            periodic=(True, True, False))
-
-        # Configuration.
-        types = ['B']*100
-        possible_types = ['A','B']
-        configuration = KMCConfiguration(
-            lattice=lattice,
-            types=types,
-            possible_types=possible_types)
-
-        # Interactions.
-        coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
-        process_0 = KMCProcess(coordinates,
-                               ['A'],
-                               ['B'],
-                               basis_sites=[0],
-                               rate_constant=4.0)
-        process_1 = KMCProcess(coordinates,
-                               ['B'],
-                               ['A'],
-                               basis_sites=[0],
-                               rate_constant=1.0)
-
-        processes = [process_0, process_1]
-        interactions = KMCInteractions(processes)
-
-        # Setup the model.
-        ab_flip_model = KMCLatticeModel(configuration, interactions)
+        ab_flip_model = getValidModel()
 
         # Run the model with a trajectory file.
         name = os.path.abspath(os.path.dirname(__file__))
@@ -748,64 +707,84 @@ STEP 1000
                                                       trajectory_filename=xyz_trajectory_filename,
                                                       trajectory_type=123) )
 
+    def testRunWithBreaker(self):
+        """ Test that a breaker kan be given to the run method. """
+        model = getValidModel()
+
+        # Set the run paramters.
+        control_parameters = KMCControlParameters(number_of_steps=10,
+                                                  dump_interval=1)
+
+        # Construct a breaker, that allways breaks at step 3.
+        class Breaker(KMCBreakerPlugin):
+            def interval(self):
+                return 3
+            def evaluate(self, step, time, configuration):
+                return True
+
+        b1 = Breaker()
+
+        # Construct an analysis object that checks how many steps we tool.
+        class Analysis(KMCAnalysisPlugin):
+            def __init__(self):
+                self.register_step_counts = 0
+            def registerStep(self, step, time, configuration):
+                self.register_step_counts += 1
+
+        a1 = Analysis()
+
+        # Run.
+        model.run(control_parameters, analysis=[a1], breakers=[b1])
+
+        # Check.
+        self.assertEqual(a1.register_step_counts, 3)
+
+    def testRunWithBreaker2(self):
+        """ Test that a breaker evaluates correctly. """
+        model = getValidModel()
+
+        # Set the run paramters.
+        control_parameters = KMCControlParameters(number_of_steps=10,
+                                                  dump_interval=1)
+
+        # Construct a breaker, that allways breaks at step 3.
+        class Breaker(KMCBreakerPlugin):
+            def interval(self):
+                return 1
+            def evaluate(self, step, time, configuration):
+                return (step == 4)
+
+        b1 = Breaker()
+
+        # Construct an analysis object that checks how many steps we tool.
+        class Analysis(KMCAnalysisPlugin):
+            def __init__(self):
+                self.register_step_counts = 0
+            def registerStep(self, step, time, configuration):
+                self.register_step_counts += 1
+
+        a1 = Analysis()
+
+        # Run.
+        model.run(control_parameters, analysis=[a1], breakers=[b1])
+
+        # Check.
+        self.assertEqual(a1.register_step_counts, 4)
+
+    def testRunWithBreakerFail(self):
+        """ Test that a the breakers get checked correctly. """
+        model = getValidModel()
+
+        # Set the run paramters.
+        control_parameters = KMCControlParameters(number_of_steps=10,
+                                                  dump_interval=1)
+
+        self.assertRaises( Error, lambda: model.run(control_parameters, breakers=["b"]) )
+
     def testBackend(self):
         """ Test that the backend object is correctly constructed. """
-        # Setup a unitcell.
-        unit_cell = KMCUnitCell(cell_vectors=numpy.array([[2.8,0.0,0.0],
-                                                          [0.0,3.2,0.0],
-                                                          [0.0,0.5,3.0]]),
-                                basis_points=[[0.0,0.0,0.0],
-                                              [0.5,0.5,0.5],
-                                              [0.25,0.25,0.75]])
-
-        # Setup the lattice.
-        lattice = KMCLattice(unit_cell=unit_cell,
-                             repetitions=(4,4,1),
-                             periodic=(True,True,False))
-
-        types = ['A','A','A','A','B','B',
-                 'A','A','A','B','B','B',
-                 'B','B','A','A','B','A',
-                 'B','B','B','A','B','A',
-                 'B','A','A','A','B','B',
-                 'B','B','B','B','B','B',
-                 'A','A','A','A','B','B',
-                 'B','B','A','B','B','A']
-
-        # Setup the configuration.
-        config = KMCConfiguration(lattice=lattice,
-                                  types=types,
-                                  possible_types=['A','C','B'])
-
-
-        # A first process.
-        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
-        types0 = ["A","B"]
-        types1 = ["B","A"]
-        sites  = [0,1,2,3,4]
-        rate_0_1 = 3.5
-        process_0 = KMCProcess(coords,
-                               types0,
-                               types1,
-                               basis_sites=sites,
-                               rate_constant=rate_0_1)
-
-        # A second process.
-        types0 = ["A","C"]
-        types1 = ["C","A"]
-        rate_0_1 = 1.5
-        process_1 = KMCProcess(coords,
-                               types0,
-                               types1,
-                               basis_sites=sites,
-                               rate_constant=rate_0_1)
-
-        # Construct the interactions object.
-        processes = [process_0, process_1]
-        interactions = KMCInteractions(processes=processes)
-
         # Construct the model.
-        model = KMCLatticeModel(config, interactions)
+        model = getValidModel()
 
         # Get the c++ backend out.
         cpp_model = model._backend()
@@ -1065,6 +1044,114 @@ my_model = KMCLatticeModel(
 
         # Check.
         self.assertEqual(script, ref_script)
+
+
+
+        unit_cell = KMCUnitCell(cell_vectors=numpy.array([[2.8,0.0,0.0],
+                                                          [0.0,3.2,0.0],
+                                                          [0.0,0.5,3.0]]),
+                                basis_points=[[0.0,0.0,0.0],
+                                              [0.5,0.5,0.5],
+                                              [0.25,0.25,0.75]])
+
+        # Setup the lattice.
+        lattice = KMCLattice(unit_cell=unit_cell,
+                             repetitions=(4,4,1),
+                             periodic=(True,True,False))
+
+        types = ['A','A','A','A','B','B',
+                 'A','A','A','B','B','B',
+                 'B','B','A','A','B','A',
+                 'B','B','B','A','B','A',
+                 'B','A','A','A','B','B',
+                 'B','B','B','B','B','B',
+                 'A','A','A','A','B','B',
+                 'B','B','A','B','B','A']
+
+        # Setup the configuration.
+        config = KMCConfiguration(lattice=lattice,
+                                  types=types,
+                                  possible_types=['A','C','B'])
+
+
+        # A first process.
+        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
+        types0 = ["A","B"]
+        types1 = ["B","A"]
+        sites  = [0,1,2,3,4]
+        rate_0_1 = 3.5
+        process_0 = KMCProcess(coords,
+                               types0,
+                               types1,
+                               basis_sites=sites,
+                               rate_constant=rate_0_1)
+
+        # A second process.
+        types0 = ["A","C"]
+        types1 = ["C","A"]
+        rate_0_1 = 1.5
+        process_1 = KMCProcess(coords,
+                               types0,
+                               types1,
+                               basis_sites=sites,
+                               rate_constant=rate_0_1)
+
+        # Construct the interactions object.
+        processes = [process_0, process_1]
+        interactions = KMCInteractions(processes=processes)
+
+        # Construct the model.
+        model = KMCLatticeModel(config, interactions)
+
+
+
+
+def getValidModel():
+    """ Helper function to construct a valid model. """
+    # Cell.
+    cell_vectors = [[   1.000000e+00,   0.000000e+00,   0.000000e+00],
+                    [   0.000000e+00,   1.000000e+00,   0.000000e+00],
+                    [   0.000000e+00,   0.000000e+00,   1.000000e+00]]
+
+    basis_points = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+
+    unit_cell = KMCUnitCell(
+        cell_vectors=cell_vectors,
+        basis_points=basis_points)
+
+    # Lattice.
+    lattice = KMCLattice(
+        unit_cell=unit_cell,
+        repetitions=(10,10,1),
+        periodic=(True, True, False))
+
+    # Configuration.
+    types = ['B']*100
+    possible_types = ['A','B']
+    configuration = KMCConfiguration(
+        lattice=lattice,
+        types=types,
+        possible_types=possible_types)
+
+    # Interactions.
+    coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+    process_0 = KMCProcess(coordinates,
+                           ['A'],
+                           ['B'],
+                           basis_sites=[0],
+                           rate_constant=4.0)
+    process_1 = KMCProcess(coordinates,
+                           ['B'],
+                           ['A'],
+                           basis_sites=[0],
+                           rate_constant=1.0)
+
+    processes = [process_0, process_1]
+    interactions = KMCInteractions(processes)
+
+    # Construct and return the model.
+    return KMCLatticeModel(configuration, interactions)
+
 
 
 if __name__ == '__main__':
