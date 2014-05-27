@@ -1,7 +1,7 @@
 """ Module for the KMCLatticeModel """
 
 
-# Copyright (c)  2012-2013  Mikael Leetmaa
+# Copyright (c)  2012-2014  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -14,6 +14,7 @@ from KMCLib.CoreComponents.KMCConfiguration import KMCConfiguration
 from KMCLib.CoreComponents.KMCInteractions import KMCInteractions
 from KMCLib.CoreComponents.KMCControlParameters import KMCControlParameters
 from KMCLib.PluginInterfaces.KMCAnalysisPlugin import KMCAnalysisPlugin
+from KMCLib.PluginInterfaces.KMCBreakerPlugin import KMCBreakerPlugin
 from KMCLib.Exceptions.Error import Error
 from KMCLib.Utilities.Trajectory.LatticeTrajectory import LatticeTrajectory
 from KMCLib.Utilities.Trajectory.XYZTrajectory import XYZTrajectory
@@ -91,7 +92,8 @@ class KMCLatticeModel(object):
             control_parameters=None,
             trajectory_filename=None,
             trajectory_type=None,
-            analysis=None):
+            analysis=None,
+            breakers=None):
         """
         Run the KMC lattice model simulation with specified parameters.
 
@@ -106,6 +108,8 @@ class KMCLatticeModel(object):
                                     The 'xyz' format gives type and coordinate for each particle.
                                     The default type is 'lattice'.
         :param analysis:            A list of instantiated analysis objects that should be used for on-the-fly analysis.
+
+        :param breakers:            A list of instantiated breaker objects to break the Monte Carlo loop with a custom criterion.
         """
         # Check the input.
         if not isinstance(control_parameters, KMCControlParameters):
@@ -140,6 +144,13 @@ must be given as string."""
         else:
             msg = "Each element in the 'analyis' list must be an instance of KMCAnalysisPlugin."
             analysis = checkSequenceOf(analysis, KMCAnalysisPlugin, msg)
+
+        # Check the breakers.
+        if breakers is None:
+            breakers = []
+        else:
+            msg = "Each element in the 'breakers' list must be an instance of KMCBreakerPlugin."
+            breakers = checkSequenceOf(breakers, KMCBreakerPlugin, msg)
 
         # Seed the backend random number generator.
         Backend.seedRandom(control_parameters.timeSeed(),
@@ -193,8 +204,6 @@ must be given as string."""
             step = 0
             while(step < n_steps):
                 step += 1
-#            for s in range(n_steps):
-#                step = s+1
 
                 # Check if it is possible to take a step.
                 nP = cpp_model.interactions().totalAvailableSites()
@@ -218,7 +227,24 @@ must be given as string."""
                     for ap in analysis:
                         ap.registerStep(step,
                                         self.__cpp_timer.simulationTime(),
-                                        self.__configuration);
+                                        self.__configuration)
+
+                # Check all custom break criteria.
+                break_the_loop = False
+                for b in breakers:
+
+                    # If it is time to evaluate this breaker.
+                    if ((step)%b.interval() == 0):
+                        break_the_loop = b.evaluate(step,
+                                                    self.__cpp_timer.simulationTime(),
+                                                    self.__configuration)
+                        # Break the inner loop.
+                        if break_the_loop:
+                            break
+
+                # Break the main Monte-Carlo loop.
+                if break_the_loop:
+                    break
 
         finally:
 
