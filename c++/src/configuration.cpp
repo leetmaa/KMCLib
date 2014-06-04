@@ -17,9 +17,10 @@
 #include "configuration.h"
 #include "latticemap.h"
 #include "process.h"
+#include "matchlist.h"
 
 // Temporary data for the match list return.
-static std::vector<MinimalMatchListEntry> tmp_minimal_match_list__(0);
+static MinimalMatchList tmp_minimal_match_list__(0);
 
 // -----------------------------------------------------------------------------
 //
@@ -103,8 +104,8 @@ void Configuration::initMatchLists( const LatticeMap & lattice_map,
 void Configuration::updateMatchList(const int index)
 {
     // Update the match list's types information.
-    std::vector<MinimalMatchListEntry>::iterator it1   = match_lists_[index].begin();
-    const std::vector<MinimalMatchListEntry>::const_iterator end = match_lists_[index].end();
+    MinimalMatchList::iterator it1   = match_lists_[index].begin();
+    const MinimalMatchList::const_iterator end = match_lists_[index].end();
     for ( ; it1 != end; ++it1 )
     {
         (*it1).match_type = types_[(*it1).index];
@@ -114,9 +115,9 @@ void Configuration::updateMatchList(const int index)
 
 // -----------------------------------------------------------------------------
 //
-const std::vector<MinimalMatchListEntry> & Configuration::minimalMatchList(const int origin_index,
-                                                                           const std::vector<int> & indices,
-                                                                           const LatticeMap & lattice_map) const
+const MinimalMatchList & Configuration::minimalMatchList(const int origin_index,
+                                                         const std::vector<int> & indices,
+                                                         const LatticeMap & lattice_map) const
 {
     // Setup the return data.
     tmp_minimal_match_list__.resize(indices.size());
@@ -127,7 +128,7 @@ const std::vector<MinimalMatchListEntry> & Configuration::minimalMatchList(const
     // Setup the needed iterators.
     std::vector<int>::const_iterator it_index  = indices.begin();
     const std::vector<int>::const_iterator end = indices.end();
-    std::vector<MinimalMatchListEntry>::iterator it_match_list = tmp_minimal_match_list__.begin();
+    MinimalMatchList::iterator it_match_list = tmp_minimal_match_list__.begin();
 
     const bool periodic_a = lattice_map.periodicA();
     const bool periodic_b = lattice_map.periodicB();
@@ -238,12 +239,12 @@ void Configuration::performProcess(Process & process,
     // Need to time and optimize the new parts of the routine.
 
     // Get the proper match lists.
-    const std::vector<MinimalMatchListEntry> & process_match_list = process.minimalMatchList();
-    const std::vector<MinimalMatchListEntry> & site_match_list    = minimalMatchList(site_index);
+    const MinimalMatchList & process_match_list = process.minimalMatchList();
+    const MinimalMatchList & site_match_list    = minimalMatchList(site_index);
 
     // Iterators to the match list entries.
-    std::vector<MinimalMatchListEntry>::const_iterator it1 = process_match_list.begin();
-    std::vector<MinimalMatchListEntry>::const_iterator it2 = site_match_list.begin();
+    MinimalMatchList::const_iterator it1 = process_match_list.begin();
+    MinimalMatchList::const_iterator it2 = site_match_list.begin();
 
     // Iterators to the info storages.
     std::vector<int>::iterator it3 = process.affectedIndices().begin();

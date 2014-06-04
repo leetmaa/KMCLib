@@ -15,6 +15,7 @@
 #include "test_customrateprocess.h"
 #include "test_interactions.h"
 #include "test_coordinate.h"
+#include "test_matchlist.h"
 #include "test_matchlistentry.h"
 #include "test_matcher.h"
 #include "test_random.h"
@@ -36,6 +37,7 @@ CPPUNIT_TEST_SUITE_REGISTRATION( Test_Process );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_CustomRateProcess );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_Interactions );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_Coordinate );
+CPPUNIT_TEST_SUITE_REGISTRATION( Test_MatchList );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_MatchListEntry );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_Matcher );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_Random );

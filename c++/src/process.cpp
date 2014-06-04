@@ -16,6 +16,7 @@
 #include "process.h"
 #include "random.h"
 #include "configuration.h"
+#include "matchlistentry.h"
 
 // -----------------------------------------------------------------------------
 //

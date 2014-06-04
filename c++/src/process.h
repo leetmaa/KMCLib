@@ -16,7 +16,7 @@
 #include <vector>
 #include <map>
 #include <string>
-#include "matchlistentry.h"
+#include "matchlist.h"
 
 class Configuration;
 
@@ -118,12 +118,12 @@ public:
     /*! \brief Query for the configuration as a vector of match list entries.
      *  \return : The stored match list.
      */
-    const std::vector<MinimalMatchListEntry> & minimalMatchList() const { return minimal_match_list_; }
+    const MinimalMatchList & minimalMatchList() const { return minimal_match_list_; }
 
     /*! \brief Query for the configuration as a vector of match list entries.
      *  \return : A reference to the stored match list.
      */
-    std::vector<MinimalMatchListEntry> & minimalMatchList() { return minimal_match_list_; }
+    MinimalMatchList & minimalMatchList() { return minimal_match_list_; }
 
     /*! \brief Query for the latest affected indices.
      *  \return : The affected indices from the last time the process was
@@ -188,7 +188,7 @@ protected:
     std::vector<int> sites_;
 
     /// The match list for comparing against local configurations.
-    std::vector<MinimalMatchListEntry> minimal_match_list_;
+    MinimalMatchList minimal_match_list_;
 
     /*! \brief: The configuration indices that were affected last time
      *          the process was used to update a configuration.

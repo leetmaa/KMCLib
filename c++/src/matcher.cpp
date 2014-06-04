@@ -1,5 +1,5 @@
 /*
-  Copyright (c)  2012-2013  Mikael Leetmaa
+  Copyright (c)  2012-2014  Mikael Leetmaa
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -14,6 +14,7 @@
 #include <algorithm>
 
 #include "matcher.h"
+#include "matchlist.h"
 #include "process.h"
 #include "interactions.h"
 #include "latticemap.h"
@@ -40,8 +41,7 @@ void Matcher::calculateMatching(Interactions & interactions,
                                 const LatticeMap & lattice_map,
                                 const std::vector<int> & indices)
 {
-    // PERFORMME: Many fixes but no timing yet. Probably room for
-    //            improvements. What happens in this function is
+    // PERFORMME: What happens in this function is
     //            highly performance critical.
 
     // Build the list of indices and processes to match.
@@ -223,11 +223,9 @@ void Matcher::matchIndicesWithProcesses(const std::vector<std::pair<int,int> > &
         // Perform the matching.
         const bool in_list = process.isListed(index);
 
-        const std::vector<MinimalMatchListEntry> & process_match_list = process.minimalMatchList();
-        const std::vector<MinimalMatchListEntry> & index_match_list   = configuration.minimalMatchList(index);
-
-        const bool is_match = isMatch(process_match_list,
-                                      index_match_list);
+        // ML: prototyping.
+        const bool is_match = whateverMatch(process.minimalMatchList(),
+                                            configuration.minimalMatchList(index));
 
         // Determine what to do with this pair of processes and indices.
         if (!is_match && in_list)
@@ -293,8 +291,8 @@ void Matcher::matchIndicesWithProcesses(const std::vector<std::pair<int,int> > &
 
 // -----------------------------------------------------------------------------
 //
-bool Matcher::isMatch(const std::vector<MinimalMatchListEntry> & process_match_list,
-                      const std::vector<MinimalMatchListEntry> & index_match_list) const
+bool Matcher::isMatch(const MinimalMatchList & process_match_list,
+                      const MinimalMatchList & index_match_list) const
 {
     if (index_match_list.size() < process_match_list.size())
     {
@@ -302,8 +300,8 @@ bool Matcher::isMatch(const std::vector<MinimalMatchListEntry> & process_match_l
     }
 
     // Iterators to the match list entries.
-    std::vector<MinimalMatchListEntry>::const_iterator it1 = process_match_list.begin();
-    std::vector<MinimalMatchListEntry>::const_iterator it2 = index_match_list.begin();
+    MinimalMatchList::const_iterator it1 = process_match_list.begin();
+    MinimalMatchList::const_iterator it2 = index_match_list.begin();
 
     // Loop over the process match list and compare.
     for( ; it1 != process_match_list.end(); ++it1, ++it2)
@@ -389,23 +387,25 @@ double Matcher::updateSingleRate(const int index,
                                  const Configuration  & configuration,
                                  const RateCalculator & rate_calculator) const
 {
+    // ML: This one would need to be overloaded in a BucketMatcher.
+
     // Get the match lists.
-    const std::vector<MinimalMatchListEntry> & process_match_list = process.minimalMatchList();
-    const std::vector<MinimalMatchListEntry> & config_match_list  = configuration.minimalMatchList(index);
+    const MinimalMatchList & process_match_list = process.minimalMatchList();
+    const MinimalMatchList & config_match_list  = configuration.minimalMatchList(index);
 
     // We will also need the elements.
     const std::vector<std::string> & elements = configuration.elements();
 
     // Get cutoff distance from the process.
     const double cutoff = process.cutoff();
-    std::vector<MinimalMatchListEntry>::const_iterator it1 = config_match_list.begin();
+    MinimalMatchList::const_iterator it1 = config_match_list.begin();
     int len = 0;
     while ( (*it1).distance <= cutoff && it1 != config_match_list.end())
     {
         ++it1;
         ++len;
     }
-    const std::vector<MinimalMatchListEntry>::const_iterator new_end = it1;
+    const MinimalMatchList::const_iterator new_end = it1;
 
     // Allocate memory for the numpy geometry and copy the data over.
     std::vector<double> numpy_geo(len*3);
@@ -437,9 +437,9 @@ double Matcher::updateSingleRate(const int index,
     it1 = config_match_list.begin();
 
     // Get the iterators to the process match list and types after.
-    std::vector<MinimalMatchListEntry>::const_iterator it2 = process_match_list.begin();
+    MinimalMatchList::const_iterator it2 = process_match_list.begin();
     std::vector<std::string>::iterator it3 = types_after.begin();
-    const std::vector<MinimalMatchListEntry>::const_iterator end = process_match_list.end();
+    const MinimalMatchList::const_iterator end = process_match_list.end();
 
     // Loop over the process match list and update the types_after vector.
     for ( ; it2 != end; ++it1, ++it2, ++it3 )

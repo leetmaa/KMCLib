@@ -18,7 +18,7 @@
 #include <vector>
 #include <string>
 #include <map>
-#include "matchlistentry.h"
+#include "matchlist.h"
 #include "coordinate.h"
 
 // Forward declarations.
@@ -92,9 +92,9 @@ public:
      *                        using correct boundaries.
      *  \return : The match list.
      */
-    const std::vector<MinimalMatchListEntry> & minimalMatchList(const int origin_index,
-                                                                const std::vector<int> & indices,
-                                                                const LatticeMap & lattice_map) const;
+    const MinimalMatchList & minimalMatchList(const int origin_index,
+                                              const std::vector<int> & indices,
+                                              const LatticeMap & lattice_map) const;
 
     /*! \brief Update the cached match list for the given index.
      *  \param index : The index to update the match list for.
@@ -105,7 +105,7 @@ public:
      *  \param index : The index to get the match list for.
      *  \return : The match list.
      */
-    const std::vector<MinimalMatchListEntry> & minimalMatchList(const int index) const { return match_lists_[index]; }
+    const MinimalMatchList & minimalMatchList(const int index) const { return match_lists_[index]; }
 
     /*! \brief Perform the given process.
      *  \param process : The process to perform, which will be updated with the affected
@@ -168,7 +168,7 @@ private:
     std::vector<std::string> type_names_;
 
     /// The match lists for all indices.
-    std::vector< std::vector<MinimalMatchListEntry> > match_lists_;
+    std::vector< MinimalMatchList > match_lists_;
 
 };
 

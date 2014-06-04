@@ -17,7 +17,7 @@
 #include "configuration.h"
 #include "latticemap.h"
 #include "ratecalculator.h"
-
+#include "matchlist.h"
 
 // -----------------------------------------------------------------------------
 // Function for comparing two entries in the probability list.
@@ -123,7 +123,7 @@ void Interactions::updateProcessMatchLists(const Configuration & configuration,
         }
 
         // Get the match list for this process.
-        std::vector<MinimalMatchListEntry> & process_matchlist = p.minimalMatchList();
+        MinimalMatchList & process_matchlist = p.minimalMatchList();
 
         // Take out the basis position for the process.
         const int  basis_position = p.basisSites()[0];
@@ -134,12 +134,12 @@ void Interactions::updateProcessMatchLists(const Configuration & configuration,
         const int jj    = lattice_map.repetitionsB() / 2;
         const int kk    = lattice_map.repetitionsC() / 2;
         const int index = lattice_map.indicesFromCell(ii, jj, kk)[basis_position];
-        const std::vector<MinimalMatchListEntry> config_matchlist = configuration.minimalMatchList(index);
+        const MinimalMatchList config_matchlist = configuration.minimalMatchList(index);
 
         // Perform the match where we add wildcards to fill the vacancies in the
         // process match list.
-        std::vector<MinimalMatchListEntry>::iterator it1 = process_matchlist.begin();
-        std::vector<MinimalMatchListEntry>::const_iterator it2 = config_matchlist.begin();
+        MinimalMatchList::iterator it1 = process_matchlist.begin();
+        MinimalMatchList::const_iterator it2 = config_matchlist.begin();
 
         // Insert the wildcards and update the indexing.
         int old_index = 0;

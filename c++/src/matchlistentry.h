@@ -1,10 +1,9 @@
 /*
-  Copyright (c)  2012-2013  Mikael Leetmaa
+  Copyright (c)  2012-2014  Mikael Leetmaa
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 */
-
 
 
 /*! \file  matchlistentry.h
@@ -17,8 +16,9 @@
 #include "coordinate.h"
 #include <cmath>
 
-/// A minimal struct to replace the MatchListEntry class.
-struct MinimalMatchListEntry {
+class MatchListEntry {
+
+public:
 
     /// Flag for indicating if we have a move coordinate.
     bool has_move_coordinate;
@@ -52,6 +52,44 @@ struct MinimalMatchListEntry {
 
     /// The move coordinate.
     Coordinate move_coordinate;
+
+
+protected:
+
+    /*! \brief Explicitly protected default constructor.
+     */
+    MatchListEntry() {};
+};
+
+
+/// Match list entry for the process bucket match list.
+class ProcessBucketMatchListEntry : public MatchListEntry {
+
+public:
+    // ML: Fill with values.
+
+
+
+};
+
+
+/// Match list entry for the configuration bucket match list.
+class ConfigBucketMatchListEntry : public MatchListEntry {
+
+public:
+    /// The match types.
+    std::vector<int> match_types;
+
+};
+
+
+/// A minimal struct to replace the MatchListEntry class.
+class MinimalMatchListEntry : public MatchListEntry {
+
+public:
+
+    MinimalMatchListEntry() {}
+
 
 };
 
@@ -134,6 +172,34 @@ bool operator<(const MinimalMatchListEntry & m1,
         return (m1.distance < m2.distance);
     }
 }
+
+
+// -----------------------------------------------------------------------------
+//
+
+/*! \brief Matching between Config and Process Bucket types.
+ */
+inline
+bool specificMatch(const ProcessBucketMatchListEntry & e1,
+                   const ConfigBucketMatchListEntry  & e2)
+{
+    // FIXME: Allways match.
+    //printf("allways match");
+    return true;
+}
+
+
+// -----------------------------------------------------------------------------
+//
+inline
+bool specificMatch(const MinimalMatchListEntry & e1,
+                   const MinimalMatchListEntry & e2)
+{
+    // ML: Correct matching but not good design.
+    //printf("We found our way in here");
+    return ! (e1 != e2);
+}
+
 
 
 #endif // __MATCHLISTENTRY__
