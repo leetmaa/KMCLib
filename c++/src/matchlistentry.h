@@ -68,6 +68,8 @@ class ProcessBucketMatchListEntry : public MatchListEntry {
 public:
     // ML: Fill with values.
 
+    /// The minimum number of particles of matching type for match.
+    int match_min_quantity;
 
 
 };
@@ -88,9 +90,6 @@ class MinimalMatchListEntry : public MatchListEntry {
 
 public:
 
-    MinimalMatchListEntry() {}
-
-
 };
 
 
@@ -103,8 +102,8 @@ static double epsi__ = 1.0e-5;
  *         compare match types.
  */
 inline
-bool operator==(const MinimalMatchListEntry & m1,
-                const MinimalMatchListEntry & m2)
+bool operator==(const MatchListEntry & m1,
+                const MatchListEntry & m2)
 {
     // Check the distance.
     if (std::fabs(m2.distance - m1.distance) > epsi__)
@@ -126,7 +125,6 @@ bool operator==(const MinimalMatchListEntry & m1,
     }
     return true;
 }
-
 
 
 /*! \brief 'not equal' for comparing entries.
@@ -155,8 +153,8 @@ bool operator!=(const MinimalMatchListEntry & m1,
 /*! \brief 'less than' for sorting matchlists.
  */
 inline
-bool operator<(const MinimalMatchListEntry & m1,
-               const MinimalMatchListEntry & m2)
+bool operator<(const MatchListEntry & m1,
+               const MatchListEntry & m2)
 {
 
     // Sort along distance, type and coordinate.
@@ -174,32 +172,28 @@ bool operator<(const MinimalMatchListEntry & m1,
 }
 
 
-// -----------------------------------------------------------------------------
-//
-
-/*! \brief Matching between Config and Process Bucket types.
+/*! \brief 'not equal' for comparing entries.
  */
 inline
-bool specificMatch(const ProcessBucketMatchListEntry & e1,
-                   const ConfigBucketMatchListEntry  & e2)
+bool operator!=(const ProcessBucketMatchListEntry & m1,
+                const ConfigBucketMatchListEntry & m2)
 {
-    // FIXME: Allways match.
-    //printf("allways match");
-    return true;
+    // Handle the wildcard case.
+    if (m1.match_type == -1)
+    {
+        return false;
+    }
+
+    // Check the quantity at the specific match type.
+    else if (m2.match_types[m1.match_type] < m1.match_min_quantity)
+    {
+        return true;
+    }
+    else
+    {
+        return !(m1 == m2);
+    }
 }
-
-
-// -----------------------------------------------------------------------------
-//
-inline
-bool specificMatch(const MinimalMatchListEntry & e1,
-                   const MinimalMatchListEntry & e2)
-{
-    // ML: Correct matching but not good design.
-    //printf("We found our way in here");
-    return ! (e1 != e2);
-}
-
 
 
 #endif // __MATCHLISTENTRY__
