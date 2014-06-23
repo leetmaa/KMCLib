@@ -119,11 +119,13 @@ public:
      *  \return : The stored match list.
      */
     const MinimalMatchList & minimalMatchList() const { return minimal_match_list_; }
+    const ProcessBucketMatchList & processMatchList() const { return match_list_; }
 
     /*! \brief Query for the configuration as a vector of match list entries.
      *  \return : A reference to the stored match list.
      */
     MinimalMatchList & minimalMatchList() { return minimal_match_list_; }
+    ProcessBucketMatchList & processMatchList() { return match_list_; }
 
     /*! \brief Query for the latest affected indices.
      *  \return : The affected indices from the last time the process was
@@ -189,6 +191,7 @@ protected:
 
     /// The match list for comparing against local configurations.
     MinimalMatchList minimal_match_list_;
+    ProcessBucketMatchList match_list_;
 
     /*! \brief: The configuration indices that were affected last time
      *          the process was used to update a configuration.

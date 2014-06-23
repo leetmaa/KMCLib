@@ -92,14 +92,15 @@ public:
      *                        using correct boundaries.
      *  \return : The match list.
      */
+    // ML: FIXME
     const MinimalMatchList & minimalMatchList(const int origin_index,
                                               const std::vector<int> & indices,
                                               const LatticeMap & lattice_map) const;
 
     // ML: New version.
-    const MinimalMatchList & configMatchList(const int origin_index,
-                                             const std::vector<int> & indices,
-                                             const LatticeMap & lattice_map) const;
+    const ConfigBucketMatchList & configMatchList(const int origin_index,
+                                                  const std::vector<int> & indices,
+                                                  const LatticeMap & lattice_map) const;
 
 
     /*! \brief Update the cached match list for the given index.
@@ -111,7 +112,9 @@ public:
      *  \param index : The index to get the match list for.
      *  \return : The match list.
      */
-    const MinimalMatchList & minimalMatchList(const int index) const { return match_lists_[index]; }
+    const ConfigBucketMatchList & configMatchList(const int index) const { return match_lists_[index]; }
+
+    const MinimalMatchList & minimalMatchList(const int index) const { return minimal_match_lists_[index]; }
 
     /*! \brief Perform the given process.
      *  \param process : The process to perform, which will be updated with the affected
@@ -184,7 +187,8 @@ private:
     std::vector<std::string> type_names_;
 
     /// The match lists for all indices.
-    std::vector< MinimalMatchList > match_lists_;
+    std::vector< ConfigBucketMatchList > match_lists_;
+    std::vector< MinimalMatchList > minimal_match_lists_;
 
 };
 
