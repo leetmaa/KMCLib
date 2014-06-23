@@ -37,8 +37,8 @@ public:
      *  \param elements      : The elements of the configuration.
      *  \param possible_types: A global mapping from type string to number.
      */
-    Configuration(std::vector< std::vector<double> > const & coordinates,
-                  std::vector<std::string> const & elements,
+    Configuration(const std::vector< std::vector<double> > & coordinates,
+                  const std::vector<std::string> & elements,
                   const std::map<std::string,int> & possible_types);
 
     /*! \brief Initiate the calculation of the match lists.
@@ -132,6 +132,12 @@ public:
      *  \return : The string representation of the type integer.
      */
     const std::string & typeName(const int type) const { return type_names_[type]; }
+
+    // ML: Needs testing.
+    /*! \brief Query for the type names list.
+     *  \return : A handle to the type names list.
+     */
+    const std::vector<std::string> & typeNames() const { return type_names_; }
 
     /*! \brief Get the atom id coordinates.
      *  \return : The list of atom id coordinates.

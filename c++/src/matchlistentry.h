@@ -63,6 +63,9 @@ public:
     /// The match types used in bucket mode.
     std::vector<int> match_types;
 
+    /// The update types used in bucket mode.
+    std::vector<int> update_types;
+
     /// The minimum number of particles of matching type for bucket match.
     int match_min_quantity;
 

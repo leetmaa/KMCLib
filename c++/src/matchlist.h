@@ -45,6 +45,13 @@ void configurationsToMatchList(const Configuration & first,
                                MinimalMatchList & match_list,
                                std::vector<int> & affected_indices);
 
+void configurationsToMatchList(const Configuration & first,
+                               const Configuration & second,
+                               int & range,
+                               double & cutoff,
+                               ProcessBucketMatchList & match_list,
+                               std::vector<int> & affected_indices);
+
 
 /*! \brief Determines if matchlists m1 and m2 match.
  *  \param m1: The first match list to compare.

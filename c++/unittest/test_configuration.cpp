@@ -409,6 +409,7 @@ void Test_Configuration::testPerformProcessVectors()
     }
 }
 
+
 // -------------------------------------------------------------------------- //
 //
 void Test_Configuration::testAtomID()
