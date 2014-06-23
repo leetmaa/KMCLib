@@ -20,6 +20,7 @@
 
 
 // Forward declarations, if any.
+class Configuration;
 
 
 /// Define the match lists.
@@ -27,6 +28,22 @@ typedef std::vector<MatchListEntry> MatchList;
 typedef std::vector<MinimalMatchListEntry> MinimalMatchList;
 typedef std::vector<ProcessBucketMatchListEntry> ProcessBucketMatchList;
 typedef std::vector<ConfigBucketMatchListEntry> ConfigBucketMatchList;
+
+
+/*! \brief Set up a process matchlist from two local configurations.
+ *  \param first            : (in) The first (before) configuration.
+ *  \param second           : (in) The second (after) configuration.
+ *  \param range            : (in/out) The rang of the process.
+ *  \param cutoff           : (in/out) The cutoff of the process.
+ *  \param match_list       : (in/out) The matchlist to construct.
+ *  \param affected_indices : (in/out) The affected indices to set the size of.
+ */
+void configurationsToMatchList(const Configuration & first,
+                               const Configuration & second,
+                               int & range,
+                               double & cutoff,
+                               MinimalMatchList & match_list,
+                               std::vector<int> & affected_indices);
 
 
 /*! \brief Determines if matchlists m1 and m2 match.

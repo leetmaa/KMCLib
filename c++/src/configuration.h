@@ -96,6 +96,12 @@ public:
                                               const std::vector<int> & indices,
                                               const LatticeMap & lattice_map) const;
 
+    // ML: New version.
+    const MinimalMatchList & configMatchList(const int origin_index,
+                                             const std::vector<int> & indices,
+                                             const LatticeMap & lattice_map) const;
+
+
     /*! \brief Update the cached match list for the given index.
      *  \param index : The index to update the match list for.
      */
@@ -116,6 +122,10 @@ public:
     void performProcess(Process & process,
                         const int site_index,
                         const LatticeMap & lattice_map);
+    // ML: New version.
+    void performBucketProcess(Process & process,
+                              const int site_index,
+                              const LatticeMap & lattice_map);
 
     /*! \brief Query for the type name.
      *  \param type: The type integer to get the name for.

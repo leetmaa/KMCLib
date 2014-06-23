@@ -231,9 +231,243 @@ const MinimalMatchList & Configuration::minimalMatchList(const int origin_index,
 
 // -----------------------------------------------------------------------------
 //
+const MinimalMatchList & Configuration::configMatchList(const int origin_index,
+                                                        const std::vector<int> & indices,
+                                                        const LatticeMap & lattice_map) const
+{
+    // Setup the return data.
+    tmp_minimal_match_list__.resize(indices.size());
+
+    // Extract the coordinate of the first index.
+    const Coordinate center = coordinates_[origin_index];
+
+    // Setup the needed iterators.
+    std::vector<int>::const_iterator it_index  = indices.begin();
+    const std::vector<int>::const_iterator end = indices.end();
+    MinimalMatchList::iterator it_match_list = tmp_minimal_match_list__.begin();
+
+    const bool periodic_a = lattice_map.periodicA();
+    const bool periodic_b = lattice_map.periodicB();
+    const bool periodic_c = lattice_map.periodicC();
+
+    // Since we know the periodicity outside the loop we can make the
+    // logics outside also.
+
+    // Periodic a-b-c
+    if (periodic_a && periodic_b && periodic_c)
+    {
+        // Loop, calculate and add to the return list.
+        for ( ; it_index != end; ++it_index, ++it_match_list)
+        {
+            // Center.
+            Coordinate c = coordinates_[(*it_index)] - center;
+
+            // Wrap with coorect periodicity.
+            lattice_map.wrap(c, 0);
+            lattice_map.wrap(c, 1);
+            lattice_map.wrap(c, 2);
+
+            // Get the distance.
+            const double distance = c.distanceToOrigin();
+
+            // Get the type.
+            //const int match_type = types_[(*it_index)];
+            const int particle_type = types_[(*it_index)];
+            const int n_particles = 1;
+            (*it_match_list).match_types = std::vector<int>(type_names_.size());
+            (*it_match_list).match_types[particle_type] = n_particles;
+
+
+            // Save in the match list.
+            //(*it_match_list).match_type  = match_type;
+            (*it_match_list).update_type = -1;
+            (*it_match_list).distance    = distance;
+            (*it_match_list).coordinate  = c;
+            (*it_match_list).index       = (*it_index);
+        }
+    }
+    // Periodic a-b
+    else if (periodic_a && periodic_b)
+    {
+        // Loop, calculate and add to the return list.
+        for ( ; it_index != end; ++it_index, ++it_match_list)
+        {
+            // Center.
+            Coordinate c = coordinates_[(*it_index)] - center;
+
+            // Wrap with coorect periodicity.
+            lattice_map.wrap(c, 0);
+            lattice_map.wrap(c, 1);
+
+            // Get the distance.
+            const double distance = c.distanceToOrigin();
+
+            // Get the type.
+            // const int match_type = types_[(*it_index)];
+
+            // ML: This is where we must set all types.
+            const int particle_type = types_[(*it_index)];
+            const int n_particles = 1;
+            (*it_match_list).match_types = std::vector<int>(type_names_.size());
+            (*it_match_list).match_types[particle_type] = n_particles;
+
+            // Save in the match list.
+            //(*it_match_list).match_type  = match_type;
+            (*it_match_list).update_type = -1;
+            (*it_match_list).distance    = distance;
+            (*it_match_list).coordinate  = c;
+            (*it_match_list).index       = (*it_index);
+        }
+    }
+    else {
+        // The general case fore wrapping all directions.
+        // Periodic b-c
+        // Periodic a-c
+        // Periodic a
+        // Periodic b
+        // Periodic c
+
+        // Loop, calculate and add to the return list.
+        for ( ; it_index != end; ++it_index, ++it_match_list)
+        {
+            // Center.
+            Coordinate c = coordinates_[(*it_index)] - center;
+
+            // Wrap with coorect periodicity.
+            lattice_map.wrap(c);
+
+            const double distance = c.distanceToOrigin();
+
+            // ML:
+            // Get the type.
+            //const int match_type = types_[(*it_index)];
+
+            const int particle_type = types_[(*it_index)];
+            const int n_particles = 1;
+            (*it_match_list).match_types = std::vector<int>(type_names_.size());
+            (*it_match_list).match_types[particle_type] = n_particles;
+
+            // Save in the match list.
+            //(*it_match_list).match_type  = match_type;
+            (*it_match_list).update_type = -1;
+            (*it_match_list).distance    = distance;
+            (*it_match_list).coordinate  = c;
+            (*it_match_list).index       = (*it_index);
+        }
+    }
+
+    // Sort and return.
+    std::sort(tmp_minimal_match_list__.begin(), tmp_minimal_match_list__.end());
+    return tmp_minimal_match_list__;
+}
+
+
+// -----------------------------------------------------------------------------
+//
 void Configuration::performProcess(Process & process,
                                    const int site_index,
                                    const LatticeMap & lattice_map)
+{
+    // PERFORMME
+    // Need to time and optimize the new parts of the routine.
+
+    // Get the proper match lists.
+    const MinimalMatchList & process_match_list = process.minimalMatchList();
+    const MinimalMatchList & site_match_list    = minimalMatchList(site_index);
+
+    // Iterators to the match list entries.
+    MinimalMatchList::const_iterator it1 = process_match_list.begin();
+    MinimalMatchList::const_iterator it2 = site_match_list.begin();
+
+    // Iterators to the info storages.
+    std::vector<int>::iterator it3 = process.affectedIndices().begin();
+    std::vector<int>::iterator it4 = moved_atom_ids_.begin();
+    std::vector<Coordinate>::iterator it5 = recent_move_vectors_.begin();
+
+    // Reset the moved counter.
+    n_moved_ = 0;
+
+    // Loop over the match lists and get the types and indices out.
+    for( ; it1 != process_match_list.end(); ++it1, ++it2)
+    {
+        // Get the type out of the process match list.
+        const int update_type = (*it1).update_type;
+
+        // Get the index out of the configuration match list.
+        const int index = (*it2).index;
+
+        // NOTE: The > 0 is needed for handling the wildcard match.
+        if (types_[index] != update_type && update_type > 0)
+        {
+            // Get the atom id to apply the move vector to.
+            const int atom_id = atom_id_[index];
+
+            // Apply the move vector to the atom coordinate.
+            atom_id_coordinates_[atom_id] += (*it1).move_coordinate;
+
+            // Set the type at this index.
+            types_[index]    = update_type;
+            elements_[index] = type_names_[update_type];
+
+            // Update the atom id element.
+            if (!(*it1).has_move_coordinate)
+            {
+                atom_id_elements_[atom_id] = elements_[index];
+            }
+
+            // Mark this index as affected.
+            (*it3) = index;
+            ++it3;
+
+            // Mark this atom_id as moved.
+            (*it4) = atom_id;
+            ++it4;
+            ++n_moved_;
+
+            // Save this move vector.
+            (*it5) = (*it1).move_coordinate;
+            ++it5;
+        }
+    }
+
+    // Perform the moves on all involved atom-ids.
+    const std::vector< std::pair<int,int> > & process_id_moves = process.idMoves();
+
+    // Local vector to store the atom id updates in.
+    std::vector<std::pair<int,int> > id_updates(process_id_moves.size());
+
+    // Setup the id updates list.
+    for (size_t i = 0; i < process_id_moves.size(); ++i)
+    {
+        const int match_list_index_from = process_id_moves[i].first;
+        const int match_list_index_to   = process_id_moves[i].second;
+
+        const int lattice_index_from = site_match_list[match_list_index_from].index;
+        const int lattice_index_to   = site_match_list[match_list_index_to].index;
+
+        id_updates[i].first  = atom_id_[lattice_index_from];
+        id_updates[i].second = lattice_index_to;
+    }
+
+    // Apply the id updates on the configuration.
+    for (size_t i = 0; i < id_updates.size(); ++i)
+    {
+        const int id    = id_updates[i].first;
+        const int index = id_updates[i].second;
+
+        // Set the atom id at this lattice site index.
+        atom_id_[index] = id;
+        atom_id_elements_[id] = elements_[index];
+
+    }
+}
+
+
+// -----------------------------------------------------------------------------
+//
+void Configuration::performBucketProcess(Process & process,
+                                         const int site_index,
+                                         const LatticeMap & lattice_map)
 {
     // PERFORMME
     // Need to time and optimize the new parts of the routine.
