@@ -66,9 +66,6 @@ public:
     /// The update types used in bucket mode.
     std::vector<int> update_types;
 
-    /// The minimum number of particles of matching type for bucket match.
-    int match_min_quantity;
-
     /*! \brief 'equal' for comparing points. NOTE: This operator does not
      *         compare match types.
      */
@@ -150,14 +147,19 @@ public:
     virtual
     bool operator!=(const MatchListEntry & m2) const
     {
+        // ML: Rework this thing.
+
         // Handle the wildcard case.
-        if (match_type == -1)
+        if (match_types[0] == 1)
         {
             return false;
         }
 
-        // Check the quantity at the specific match type.
-        else if (m2.match_types[match_type] < match_min_quantity)
+        // ML: Handle cases where we want an exact match.
+        //     Or a match with an upper bound also.
+
+        // Check the type matching.
+        else if (m2.match_types < match_types)
         {
             return true;
         }

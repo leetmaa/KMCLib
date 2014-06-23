@@ -30,6 +30,8 @@ void Test_MatchList::testCall()
     ProcessBucketMatchList m1(1);
     m1[0].match_type = 2;
     m1[0].update_type = -1;
+    m1[0].match_types = std::vector<int>(3, 0);
+    m1[0].match_types[2] = 2;
     m1[0].distance = 1.2;
     m1[0].coordinate = Coordinate(0.1, 0.2, 0.3);
     m1[0].index = 0;
