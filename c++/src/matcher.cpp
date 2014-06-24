@@ -1,5 +1,5 @@
 /*
-  Copyright (c)  2012-2013  Mikael Leetmaa
+  Copyright (c)  2012-2014  Mikael Leetmaa
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -14,6 +14,7 @@
 #include <algorithm>
 
 #include "matcher.h"
+#include "matchlist.h"
 #include "process.h"
 #include "interactions.h"
 #include "latticemap.h"
@@ -40,8 +41,7 @@ void Matcher::calculateMatching(Interactions & interactions,
                                 const LatticeMap & lattice_map,
                                 const std::vector<int> & indices)
 {
-    // PERFORMME: Many fixes but no timing yet. Probably room for
-    //            improvements. What happens in this function is
+    // PERFORMME: What happens in this function is
     //            highly performance critical.
 
     // Build the list of indices and processes to match.
@@ -223,11 +223,9 @@ void Matcher::matchIndicesWithProcesses(const std::vector<std::pair<int,int> > &
         // Perform the matching.
         const bool in_list = process.isListed(index);
 
-        const std::vector<MinimalMatchListEntry> & process_match_list = process.minimalMatchList();
-        const std::vector<MinimalMatchListEntry> & index_match_list   = configuration.minimalMatchList(index);
-
-        const bool is_match = isMatch(process_match_list,
-                                      index_match_list);
+        // ML: prototyping.
+        const bool is_match = whateverMatch(process.processMatchList(),
+                                            configuration.configMatchList(index));
 
         // Determine what to do with this pair of processes and indices.
         if (!is_match && in_list)
@@ -293,8 +291,8 @@ void Matcher::matchIndicesWithProcesses(const std::vector<std::pair<int,int> > &
 
 // -----------------------------------------------------------------------------
 //
-bool Matcher::isMatch(const std::vector<MinimalMatchListEntry> & process_match_list,
-                      const std::vector<MinimalMatchListEntry> & index_match_list) const
+bool Matcher::isMatch(const ProcessBucketMatchList & process_match_list,
+                      const ConfigBucketMatchList & index_match_list) const
 {
     if (index_match_list.size() < process_match_list.size())
     {
@@ -302,8 +300,8 @@ bool Matcher::isMatch(const std::vector<MinimalMatchListEntry> & process_match_l
     }
 
     // Iterators to the match list entries.
-    std::vector<MinimalMatchListEntry>::const_iterator it1 = process_match_list.begin();
-    std::vector<MinimalMatchListEntry>::const_iterator it2 = index_match_list.begin();
+    ProcessBucketMatchList::const_iterator it1 = process_match_list.begin();
+    ConfigBucketMatchList::const_iterator it2 = index_match_list.begin();
 
     // Loop over the process match list and compare.
     for( ; it1 != process_match_list.end(); ++it1, ++it2)
@@ -316,6 +314,140 @@ bool Matcher::isMatch(const std::vector<MinimalMatchListEntry> & process_match_l
 
     // All match, return true.
     return true;
+}
+
+
+// -----------------------------------------------------------------------------
+//
+void Matcher::printMatchLists(const ProcessBucketMatchList & process_match_list,
+                              const ConfigBucketMatchList & index_match_list) const
+{
+    printf("\n\n       PROCESS match list           INDEX match list\n");
+    printf("size   %16lu %16lu\n", process_match_list.size(), index_match_list.size());
+
+
+    // Iterators to the match list entries.
+    ProcessBucketMatchList::const_iterator it1 = process_match_list.begin();
+    ConfigBucketMatchList::const_iterator it2 = index_match_list.begin();
+
+    // Loop over the process match list and compare.
+    int step = 0;
+    for( ; it1 != process_match_list.end(); ++it1, ++it2)
+    {
+        printf("%5i:", step);
+        printf("  distance:");
+        printf("%13f",   (*it1).distance);
+        printf("%13f\n", (*it2).distance);
+
+        printf("              [ ");
+        for (size_t i = 0; i < (*it1).match_types.size(); ++i)
+        {
+            printf("%i ", (*it1).match_types[i]);
+        }
+        printf(" ]");
+
+
+        printf("    [ ");
+        for (size_t i = 0; i < (*it2).match_types.size(); ++i)
+        {
+            printf("%i ", (*it2).match_types[i]);
+        }
+        printf(" ]\n");
+
+
+        ++step;
+
+        if ((*it1) != (*it2))
+        {
+            printf("break at step %i\n", step);
+            break;
+        }
+    }
+
+}
+
+
+// -----------------------------------------------------------------------------
+//
+void Matcher::printMatchLists(const ConfigBucketMatchList & process_match_list,
+                              const ConfigBucketMatchList & index_match_list) const
+{
+    printf("\n\n       PROCESS match list           INDEX match list\n");
+    printf("size   %16lu %16lu\n", process_match_list.size(), index_match_list.size());
+
+
+    // Iterators to the match list entries.
+    ConfigBucketMatchList::const_iterator it1 = process_match_list.begin();
+    ConfigBucketMatchList::const_iterator it2 = index_match_list.begin();
+
+    // Loop over the process match list and compare.
+    int step = 0;
+    for( ; it1 != process_match_list.end(); ++it1, ++it2)
+    {
+        printf("%5i:", step);
+        printf("  distance:");
+        printf("%13f",   (*it1).distance);
+        printf("%13f\n", (*it2).distance);
+
+        printf("              [ ");
+        for (size_t i = 0; i < (*it1).match_types.size(); ++i)
+        {
+            printf("%i ", (*it1).match_types[i]);
+        }
+        printf(" ]");
+
+
+        printf("    [ ");
+        for (size_t i = 0; i < (*it2).match_types.size(); ++i)
+        {
+            printf("%i ", (*it2).match_types[i]);
+        }
+        printf(" ]\n");
+
+
+        ++step;
+
+        //if ((*it1) != (*it2))
+        //{
+        //    printf("break at step %i\n", step);
+        //    break;
+        //}
+    }
+
+}
+
+
+// -----------------------------------------------------------------------------
+//
+void Matcher::printMatchList(const ConfigBucketMatchList & index_match_list) const
+{
+    printf("\n\n      INDEX match list\n");
+    printf("size   %16lu\n", index_match_list.size());
+
+
+    // Iterators to the match list entries.
+    ConfigBucketMatchList::const_iterator it2 = index_match_list.begin();
+
+    // Loop over the process match list and compare.
+    int step = 0;
+    for( ; it2 != index_match_list.end(); ++it2)
+    {
+        printf("%5i:", step);
+        printf("  distance:");
+        printf("%13f\n", (*it2).distance);
+
+        printf("    [ ");
+        for (size_t i = 0; i < (*it2).match_types.size(); ++i)
+        {
+            printf("%i ", (*it2).match_types[i]);
+        }
+        printf(" ]\n");
+
+
+        ++step;
+
+    }
+
 }
 
 
@@ -389,23 +521,25 @@ double Matcher::updateSingleRate(const int index,
                                  const Configuration  & configuration,
                                  const RateCalculator & rate_calculator) const
 {
+    // ML: FIXME : Using the old interface for now.
+
     // Get the match lists.
-    const std::vector<MinimalMatchListEntry> & process_match_list = process.minimalMatchList();
-    const std::vector<MinimalMatchListEntry> & config_match_list  = configuration.minimalMatchList(index);
+    const ProcessBucketMatchList & process_match_list = process.processMatchList();
+    const ConfigBucketMatchList & config_match_list   = configuration.configMatchList(index);
 
     // We will also need the elements.
     const std::vector<std::string> & elements = configuration.elements();
 
     // Get cutoff distance from the process.
     const double cutoff = process.cutoff();
-    std::vector<MinimalMatchListEntry>::const_iterator it1 = config_match_list.begin();
+    ConfigBucketMatchList::const_iterator it1 = config_match_list.begin();
     int len = 0;
     while ( (*it1).distance <= cutoff && it1 != config_match_list.end())
     {
         ++it1;
         ++len;
     }
-    const std::vector<MinimalMatchListEntry>::const_iterator new_end = it1;
+    const ConfigBucketMatchList::const_iterator new_end = it1;
 
     // Allocate memory for the numpy geometry and copy the data over.
     std::vector<double> numpy_geo(len*3);
@@ -437,15 +571,36 @@ double Matcher::updateSingleRate(const int index,
     it1 = config_match_list.begin();
 
     // Get the iterators to the process match list and types after.
-    std::vector<MinimalMatchListEntry>::const_iterator it2 = process_match_list.begin();
+    ProcessBucketMatchList::const_iterator it2 = process_match_list.begin();
     std::vector<std::string>::iterator it3 = types_after.begin();
-    const std::vector<MinimalMatchListEntry>::const_iterator end = process_match_list.end();
+    const ProcessBucketMatchList::const_iterator end = process_match_list.end();
 
     // Loop over the process match list and update the types_after vector.
     for ( ; it2 != end; ++it1, ++it2, ++it3 )
     {
-        const int update_type = (*it2).update_type;
-        const int match_type  = (*it1).match_type;
+        int update_type = -1; // = (*it2).update_type;
+        int match_type = -1;  // = (*it1).match_type;
+
+        // FIXME:
+        // Slow, temoporary fix to use the old interface with the new bucket matchlists.
+
+        for (size_t i = 0; i < (*it1).match_types.size(); ++i)
+        {
+            if ((*it1).match_types[i] != 0)
+            {
+                match_type = i;
+                break;
+            }
+        }
+
+        for (size_t i = 0; i < (*it2).update_types.size(); ++i)
+        {
+            if ((*it2).update_types[i] != 0)
+            {
+                update_type = i;
+                break;
+            }
+        }
 
         // Set the type after process. NOTE: The > 0 is needed for handling wildcards.
         if ( match_type != update_type  && update_type > 0)

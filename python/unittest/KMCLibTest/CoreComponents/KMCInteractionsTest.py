@@ -1,7 +1,7 @@
 """" Module for testing KMCInteractions """
 
 
-# Copyright (c)  2012-2013  Mikael Leetmaa
+# Copyright (c)  2012-2014  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -231,20 +231,20 @@ class KMCInteractionsTest(unittest.TestCase):
         self.assertEqual(cpp_processes.size(), 2)
 
         # Get the elements out of the second process.
-        match_type  = cpp_processes[1].minimalMatchList()[0].match_type
-        update_type = cpp_processes[1].minimalMatchList()[0].update_type
+        match_types  = cpp_processes[1].processMatchList()[0].match_types
+        update_types = cpp_processes[1].processMatchList()[0].update_types
 
         # Match type should be "A" -> 15 and update type "C" -> 5
-        self.assertEqual( match_type, 13)
-        self.assertEqual( update_type, 5)
+        self.assertEqual( match_types[13], 1)
+        self.assertEqual( update_types[5], 1)
 
         # Get the elements out of the second process.
-        match_type  = cpp_processes[1].minimalMatchList()[1].match_type
-        update_type = cpp_processes[1].minimalMatchList()[1].update_type
+        match_types  = cpp_processes[1].processMatchList()[1].match_types
+        update_types = cpp_processes[1].processMatchList()[1].update_types
 
         # Match type should be "C" -> 5 and update type "A" -> 13
-        self.assertEqual( match_type,   5)
-        self.assertEqual( update_type, 13)
+        self.assertEqual( match_types[5],   1)
+        self.assertEqual( update_types[13], 1)
 
     def testBackendWithCustomRates(self):
         """ Test that we can construct the backend object with custom rates. """

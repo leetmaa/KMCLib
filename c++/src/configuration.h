@@ -18,7 +18,7 @@
 #include <vector>
 #include <string>
 #include <map>
-#include "matchlistentry.h"
+#include "matchlist.h"
 #include "coordinate.h"
 
 // Forward declarations.
@@ -37,8 +37,8 @@ public:
      *  \param elements      : The elements of the configuration.
      *  \param possible_types: A global mapping from type string to number.
      */
-    Configuration(std::vector< std::vector<double> > const & coordinates,
-                  std::vector<std::string> const & elements,
+    Configuration(const std::vector< std::vector<double> > & coordinates,
+                  const std::vector<std::string> & elements,
                   const std::map<std::string,int> & possible_types);
 
     /*! \brief Initiate the calculation of the match lists.
@@ -92,9 +92,10 @@ public:
      *                        using correct boundaries.
      *  \return : The match list.
      */
-    const std::vector<MinimalMatchListEntry> & minimalMatchList(const int origin_index,
-                                                                const std::vector<int> & indices,
-                                                                const LatticeMap & lattice_map) const;
+    const ConfigBucketMatchList & configMatchList(const int origin_index,
+                                                  const std::vector<int> & indices,
+                                                  const LatticeMap & lattice_map) const;
+
 
     /*! \brief Update the cached match list for the given index.
      *  \param index : The index to update the match list for.
@@ -105,7 +106,7 @@ public:
      *  \param index : The index to get the match list for.
      *  \return : The match list.
      */
-    const std::vector<MinimalMatchListEntry> & minimalMatchList(const int index) const { return match_lists_[index]; }
+    const ConfigBucketMatchList & configMatchList(const int index) const { return match_lists_[index]; }
 
     /*! \brief Perform the given process.
      *  \param process : The process to perform, which will be updated with the affected
@@ -113,15 +114,21 @@ public:
      *  \param site_index : The index of the site where the process should be performed.
      *  \param lattice_map : The lattice map needed for proper move vector indexing.
      */
-    void performProcess(Process & process,
-                        const int site_index,
-                        const LatticeMap & lattice_map);
+    void performBucketProcess(Process & process,
+                              const int site_index,
+                              const LatticeMap & lattice_map);
 
     /*! \brief Query for the type name.
      *  \param type: The type integer to get the name for.
      *  \return : The string representation of the type integer.
      */
     const std::string & typeName(const int type) const { return type_names_[type]; }
+
+    // ML: Needs testing.
+    /*! \brief Query for the type names list.
+     *  \return : A handle to the type names list.
+     */
+    const std::vector<std::string> & typeNames() const { return type_names_; }
 
     /*! \brief Get the atom id coordinates.
      *  \return : The list of atom id coordinates.
@@ -168,7 +175,7 @@ private:
     std::vector<std::string> type_names_;
 
     /// The match lists for all indices.
-    std::vector< std::vector<MinimalMatchListEntry> > match_lists_;
+    std::vector< ConfigBucketMatchList > match_lists_;
 
 };
 

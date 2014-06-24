@@ -177,7 +177,7 @@ void Test_OnTheFlyMSD::testStepX()
     const std::vector<int> & atom_id = configuration.atomID();
 
     // Peform the process.
-    configuration.performProcess(p1, 2, lattice_map);
+    configuration.performBucketProcess(p1, 2, lattice_map);
 
     // Check that we moved the correct indices.
     CPPUNIT_ASSERT_EQUAL(configuration.movedAtomIDs()[0], 2);
@@ -254,7 +254,7 @@ void Test_OnTheFlyMSD::testStepX()
 
     p2.addSite(2, 0.0);
     configuration.updateMatchList(2);
-    configuration.performProcess(p2, 2, lattice_map);
+    configuration.performBucketProcess(p2, 2, lattice_map);
     time = 5.4;
     msd.registerStep(time, configuration);
 
@@ -289,11 +289,11 @@ void Test_OnTheFlyMSD::testStepX()
 
     // Apply the processes to the zeroth index.
     configuration.updateMatchList(0);
-    configuration.performProcess(p1, 0, lattice_map);
+    configuration.performBucketProcess(p1, 0, lattice_map);
     time += 5.2;
     msd.registerStep(time, configuration);
     configuration.updateMatchList(0);
-    configuration.performProcess(p2, 0, lattice_map);
+    configuration.performBucketProcess(p2, 0, lattice_map);
     time += 1.3;
     msd.registerStep(time, configuration);
 
@@ -303,11 +303,11 @@ void Test_OnTheFlyMSD::testStepX()
     for (int i = 0; i < 4; ++i)
     {
         configuration.updateMatchList(2);
-        configuration.performProcess(p1, 2, lattice_map);
+        configuration.performBucketProcess(p1, 2, lattice_map);
         time += 5.2;
         msd.registerStep(time, configuration);
         configuration.updateMatchList(2);
-        configuration.performProcess(p2, 2, lattice_map);
+        configuration.performBucketProcess(p2, 2, lattice_map);
         time += 1.3;
         msd.registerStep(time, configuration);
     }
@@ -450,7 +450,7 @@ void Test_OnTheFlyMSD::testStepY()
     const std::vector<int> & atom_id = configuration.atomID();
 
     // Peform the process.
-    configuration.performProcess(p1, 2, lattice_map);
+    configuration.performBucketProcess(p1, 2, lattice_map);
 
     // Check that we moved the correct indices.
     CPPUNIT_ASSERT_EQUAL(configuration.movedAtomIDs()[0], 2);
@@ -526,7 +526,7 @@ void Test_OnTheFlyMSD::testStepY()
 
     p2.addSite(2, 0.0);
     configuration.updateMatchList(2);
-    configuration.performProcess(p2, 2, lattice_map);
+    configuration.performBucketProcess(p2, 2, lattice_map);
     time = 5.4;
     msd.registerStep(time, configuration);
 
@@ -561,11 +561,11 @@ void Test_OnTheFlyMSD::testStepY()
 
     // Apply the processes to the zeroth index.
     configuration.updateMatchList(0);
-    configuration.performProcess(p1, 0, lattice_map);
+    configuration.performBucketProcess(p1, 0, lattice_map);
     time += 5.2;
     msd.registerStep(time, configuration);
     configuration.updateMatchList(0);
-    configuration.performProcess(p2, 0, lattice_map);
+    configuration.performBucketProcess(p2, 0, lattice_map);
     time += 1.3;
     msd.registerStep(time, configuration);
 
@@ -575,11 +575,11 @@ void Test_OnTheFlyMSD::testStepY()
     for (int i = 0; i < 4; ++i)
     {
         configuration.updateMatchList(2);
-        configuration.performProcess(p1, 2, lattice_map);
+        configuration.performBucketProcess(p1, 2, lattice_map);
         time += 5.2;
         msd.registerStep(time, configuration);
         configuration.updateMatchList(2);
-        configuration.performProcess(p2, 2, lattice_map);
+        configuration.performBucketProcess(p2, 2, lattice_map);
         time += 1.3;
         msd.registerStep(time, configuration);
     }
@@ -721,7 +721,7 @@ void Test_OnTheFlyMSD::testStepZ()
     const std::vector<int> & atom_id = configuration.atomID();
 
     // Peform the process.
-    configuration.performProcess(p1, 2, lattice_map);
+    configuration.performBucketProcess(p1, 2, lattice_map);
 
     // Check that we moved the correct indices.
     CPPUNIT_ASSERT_EQUAL(configuration.movedAtomIDs()[0], 2);
@@ -797,7 +797,7 @@ void Test_OnTheFlyMSD::testStepZ()
 
     p2.addSite(2, 0.0);
     configuration.updateMatchList(2);
-    configuration.performProcess(p2, 2, lattice_map);
+    configuration.performBucketProcess(p2, 2, lattice_map);
     time = 5.4;
     msd.registerStep(time, configuration);
 
@@ -832,11 +832,11 @@ void Test_OnTheFlyMSD::testStepZ()
 
     // Apply the processes to the zeroth index.
     configuration.updateMatchList(0);
-    configuration.performProcess(p1, 0, lattice_map);
+    configuration.performBucketProcess(p1, 0, lattice_map);
     time += 5.2;
     msd.registerStep(time, configuration);
     configuration.updateMatchList(0);
-    configuration.performProcess(p2, 0, lattice_map);
+    configuration.performBucketProcess(p2, 0, lattice_map);
     time += 1.3;
     msd.registerStep(time, configuration);
 
@@ -846,11 +846,11 @@ void Test_OnTheFlyMSD::testStepZ()
     for (int i = 0; i < 4; ++i)
     {
         configuration.updateMatchList(2);
-        configuration.performProcess(p1, 2, lattice_map);
+        configuration.performBucketProcess(p1, 2, lattice_map);
         time += 5.2;
         msd.registerStep(time, configuration);
         configuration.updateMatchList(2);
-        configuration.performProcess(p2, 2, lattice_map);
+        configuration.performBucketProcess(p2, 2, lattice_map);
         time += 1.3;
         msd.registerStep(time, configuration);
     }

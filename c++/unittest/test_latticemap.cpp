@@ -14,6 +14,7 @@
 
 #include "coordinate.h"
 #include "configuration.h"
+#include "matcher.h"
 
 #include <algorithm>
 
@@ -514,6 +515,7 @@ void Test_LatticeMap::testNeighbourIndicesLong()
             }
         }
     }
+
     std::map<std::string,int> possible_types;
     possible_types["A"] = 0;
     possible_types["B"] = 1;
@@ -535,21 +537,21 @@ void Test_LatticeMap::testNeighbourIndicesLong()
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(three_shell_neighbours.size()), basis * 7 * 7 * 7 );
 
     // Calculate corresponding match lists.
-    std::vector<MinimalMatchListEntry> default_matchlist =              \
-        configuration.minimalMatchList(central_index, default_neighbours, map);
+    ConfigBucketMatchList default_matchlist =                           \
+        configuration.configMatchList(central_index, default_neighbours, map);
 
-    std::vector<MinimalMatchListEntry> one_shell_matchlist =            \
-        configuration.minimalMatchList(central_index, one_shell_neighbours, map);
+    ConfigBucketMatchList one_shell_matchlist =            \
+        configuration.configMatchList(central_index, one_shell_neighbours, map);
 
-    std::vector<MinimalMatchListEntry> two_shell_matchlist =            \
-        configuration.minimalMatchList(central_index, two_shell_neighbours, map);
+    ConfigBucketMatchList two_shell_matchlist =                                               \
+        configuration.configMatchList(central_index, two_shell_neighbours, map);
 
-    std::vector<MinimalMatchListEntry> three_shell_matchlist =          \
-        configuration.minimalMatchList(central_index, three_shell_neighbours, map);
+    ConfigBucketMatchList three_shell_matchlist =                                             \
+        configuration.configMatchList(central_index, three_shell_neighbours, map);
 
     // Now, compare the match lists.
-    std::vector<MinimalMatchListEntry>::const_iterator it0 = default_matchlist.begin();
-    std::vector<MinimalMatchListEntry>::const_iterator it1 = one_shell_matchlist.begin();
+    ConfigBucketMatchList::const_iterator it0 = default_matchlist.begin();
+    ConfigBucketMatchList::const_iterator it1 = one_shell_matchlist.begin();
 
     // These should be equal.
     for ( ; it0 != default_matchlist.end(); ++it0, ++it1 )
@@ -558,7 +560,7 @@ void Test_LatticeMap::testNeighbourIndicesLong()
     }
 
     // Check that they are correctly sorted.
-    std::vector<MinimalMatchListEntry>::const_iterator it2 = two_shell_matchlist.begin();
+    ConfigBucketMatchList::const_iterator it2 = two_shell_matchlist.begin();
     double prev_dist = 0.0;
     for ( ; it2 != two_shell_matchlist.end(); ++it2 )
     {
@@ -566,7 +568,7 @@ void Test_LatticeMap::testNeighbourIndicesLong()
         prev_dist = (*it2).distance;
     }
 
-    std::vector<MinimalMatchListEntry>::const_iterator it3 = three_shell_matchlist.begin();
+    ConfigBucketMatchList::const_iterator it3 = three_shell_matchlist.begin();
     prev_dist = 0.0;
     for ( ; it3 != three_shell_matchlist.end(); ++it3 )
     {
@@ -575,8 +577,8 @@ void Test_LatticeMap::testNeighbourIndicesLong()
     }
 
     // Check a few hardcoded values.
-    MinimalMatchListEntry m2 = two_shell_matchlist[5*4*3*2+1];
-    MinimalMatchListEntry m3 = three_shell_matchlist[7*6*5*2+5];
+    ConfigBucketMatchListEntry m2 = two_shell_matchlist[5*4*3*2+1];
+    ConfigBucketMatchListEntry m3 = three_shell_matchlist[7*6*5*2+5];
 
     CPPUNIT_ASSERT_DOUBLES_EQUAL( m2.coordinate.x(), -2.0000000000e+00, 1.0e-10 );
     CPPUNIT_ASSERT_DOUBLES_EQUAL( m2.coordinate.y(), -1.0000000000e+00, 1.0e-10 );

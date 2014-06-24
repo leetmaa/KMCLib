@@ -206,7 +206,7 @@ void Test_Configuration::testPerformProcess()
     CPPUNIT_ASSERT_EQUAL( configuration.types()[2517], 1 );
 
     // Peform the process.
-    configuration.performProcess(p, 1434, lattice_map);
+    configuration.performBucketProcess(p, 1434, lattice_map);
 
     // Check that the types were correctly updated.
     CPPUNIT_ASSERT_EQUAL( configuration.types()[1434], 2 );
@@ -362,7 +362,7 @@ void Test_Configuration::testPerformProcessVectors()
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(configuration.recentMoveVectors().size()), 0);
 
     // Peform the process.
-    configuration.performProcess(p, 1434, lattice_map);
+    configuration.performBucketProcess(p, 1434, lattice_map);
 
     // This move changes place on atom IDs 1434 and 350.
     CPPUNIT_ASSERT_EQUAL( configuration.atomID()[1434],  350 );
@@ -408,6 +408,7 @@ void Test_Configuration::testPerformProcessVectors()
         CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.z(), id_coord.z(), 1.0e-12);
     }
 }
+
 
 // -------------------------------------------------------------------------- //
 //
@@ -541,47 +542,60 @@ void Test_Configuration::testMatchLists()
 
     // Try to access the match lists before initialization. They should be
     // empty.
-    CPPUNIT_ASSERT( configuration.minimalMatchList(10).empty()   );
-    CPPUNIT_ASSERT( configuration.minimalMatchList(2101).empty() );
-    CPPUNIT_ASSERT( configuration.minimalMatchList(1434).empty() );
+    CPPUNIT_ASSERT( configuration.configMatchList(10).empty()   );
+    CPPUNIT_ASSERT( configuration.configMatchList(2101).empty() );
+    CPPUNIT_ASSERT( configuration.configMatchList(1434).empty() );
 
     // Init the match lists.
     configuration.initMatchLists(lattice_map, 1);
 
     // This did something.
-    CPPUNIT_ASSERT( !configuration.minimalMatchList(10).empty()   );
-    CPPUNIT_ASSERT( !configuration.minimalMatchList(2101).empty() );
-    CPPUNIT_ASSERT( !configuration.minimalMatchList(1434).empty() );
+    CPPUNIT_ASSERT( !configuration.configMatchList(10).empty()   );
+    CPPUNIT_ASSERT( !configuration.configMatchList(2101).empty() );
+    CPPUNIT_ASSERT( !configuration.configMatchList(1434).empty() );
 
     // Get the match list the hard way.
-    const std::vector<MinimalMatchListEntry> ref_1434 = \
-        configuration.minimalMatchList( 1434,
-                                        lattice_map.neighbourIndices(1434),
-                                        lattice_map);
+    const ConfigBucketMatchList ref_1434 = \
+        configuration.configMatchList( 1434,
+                                       lattice_map.neighbourIndices(1434),
+                                       lattice_map);
     // Check the size.
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(ref_1434.size()),
-                          static_cast<int>(configuration.minimalMatchList(1434).size()) );
+                          static_cast<int>(configuration.configMatchList(1434).size()) );
 
     // Check the values.
     for (size_t i = 0; i < ref_1434.size(); ++i)
     {
-        CPPUNIT_ASSERT_EQUAL( ref_1434[i].match_type,
-                              configuration.minimalMatchList(1434)[i].match_type );
-        CPPUNIT_ASSERT_EQUAL( ref_1434[i].update_type,
-                              configuration.minimalMatchList(1434)[i].update_type );
+
+        CPPUNIT_ASSERT_EQUAL( static_cast<int>(ref_1434[i].match_types.size()),
+                              static_cast<int>(configuration.configMatchList(1434)[i].match_types.size()) );
+
+        for (size_t j = 0; j < ref_1434[j].match_types.size(); ++j)
+        {
+            CPPUNIT_ASSERT_EQUAL( ref_1434[i].match_types[j], configuration.configMatchList(1434)[i].match_types[j] );
+        }
+
+        CPPUNIT_ASSERT_EQUAL( static_cast<int>(ref_1434[i].update_types.size()),
+                              static_cast<int>(configuration.configMatchList(1434)[i].update_types.size()) );
+
+        for (size_t j = 0; j < ref_1434[j].update_types.size(); ++j)
+        {
+            CPPUNIT_ASSERT_EQUAL( ref_1434[i].update_types[j], configuration.configMatchList(1434)[i].update_types[j] );
+        }
+
         CPPUNIT_ASSERT_EQUAL( ref_1434[i].index,
-                              configuration.minimalMatchList(1434)[i].index );
+                              configuration.configMatchList(1434)[i].index );
         CPPUNIT_ASSERT_DOUBLES_EQUAL( ref_1434[i].distance,
-                                      configuration.minimalMatchList(1434)[i].distance,
+                                      configuration.configMatchList(1434)[i].distance,
                                       1.0e-14 );
         CPPUNIT_ASSERT_DOUBLES_EQUAL( ref_1434[i].coordinate.x(),
-                                      configuration.minimalMatchList(1434)[i].coordinate.x(),
+                                      configuration.configMatchList(1434)[i].coordinate.x(),
                                       1.0e-14 );
         CPPUNIT_ASSERT_DOUBLES_EQUAL( ref_1434[i].coordinate.y(),
-                                      configuration.minimalMatchList(1434)[i].coordinate.y(),
+                                      configuration.configMatchList(1434)[i].coordinate.y(),
                                       1.0e-14 );
         CPPUNIT_ASSERT_DOUBLES_EQUAL( ref_1434[i].coordinate.z(),
-                                      configuration.minimalMatchList(1434)[i].coordinate.z(),
+                                      configuration.configMatchList(1434)[i].coordinate.z(),
                                       1.0e-14 );
 
     }
@@ -630,7 +644,7 @@ void Test_Configuration::testMatchLists()
     CPPUNIT_ASSERT_EQUAL( configuration.types()[2517], 1 );
 
     // Peform the process.
-    configuration.performProcess(p, 1434, lattice_map);
+    configuration.performBucketProcess(p, 1434, lattice_map);
 
     // Check that the types were correctly updated.
     CPPUNIT_ASSERT_EQUAL( configuration.types()[1434], 2 );
@@ -644,34 +658,50 @@ void Test_Configuration::testMatchLists()
     configuration.updateMatchList(1434);
 
     // Reference.
-    const std::vector<MinimalMatchListEntry> ref2_1434 =        \
-        configuration.minimalMatchList( 1434,
-                                        lattice_map.neighbourIndices(1434),
-                                        lattice_map);
+    const ConfigBucketMatchList ref2_1434 =        \
+        configuration.configMatchList( 1434,
+                                       lattice_map.neighbourIndices(1434),
+                                       lattice_map);
     // Check the size.
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(ref2_1434.size()),
-                          static_cast<int>(configuration.minimalMatchList(1434).size()) );
+                          static_cast<int>(configuration.configMatchList(1434).size()) );
 
     // Check the values.
     for (size_t i = 0; i < ref2_1434.size(); ++i)
     {
-        CPPUNIT_ASSERT_EQUAL( ref2_1434[i].match_type,
-                              configuration.minimalMatchList(1434)[i].match_type );
-        CPPUNIT_ASSERT_EQUAL( ref2_1434[i].update_type,
-                              configuration.minimalMatchList(1434)[i].update_type );
-        CPPUNIT_ASSERT_EQUAL( ref2_1434[i].index,
-                              configuration.minimalMatchList(1434)[i].index );
+
+        CPPUNIT_ASSERT_EQUAL( static_cast<int>(ref2_1434[i].match_types.size()),
+                              static_cast<int>(configuration.configMatchList(1434)[i].match_types.size()) );
+
+        for (size_t j = 0; j < ref2_1434[j].match_types.size(); ++j)
+        {
+            CPPUNIT_ASSERT_EQUAL( ref2_1434[i].match_types[j], configuration.configMatchList(1434)[i].match_types[j] );
+        }
+
+        CPPUNIT_ASSERT_EQUAL( static_cast<int>(ref2_1434[i].update_types.size()),
+                              static_cast<int>(configuration.configMatchList(1434)[i].update_types.size()) );
+
+        for (size_t j = 0; j < ref2_1434[j].update_types.size(); ++j)
+        {
+            CPPUNIT_ASSERT_EQUAL( ref2_1434[i].update_types[j], configuration.configMatchList(1434)[i].update_types[j] );
+        }
+
+        CPPUNIT_ASSERT_EQUAL( ref2_1434[i].index, configuration.configMatchList(1434)[i].index );
+
         CPPUNIT_ASSERT_DOUBLES_EQUAL( ref2_1434[i].distance,
-                                      configuration.minimalMatchList(1434)[i].distance,
+                                      configuration.configMatchList(1434)[i].distance,
                                       1.0e-14 );
+
         CPPUNIT_ASSERT_DOUBLES_EQUAL( ref2_1434[i].coordinate.x(),
-                                      configuration.minimalMatchList(1434)[i].coordinate.x(),
+                                      configuration.configMatchList(1434)[i].coordinate.x(),
                                       1.0e-14 );
+
         CPPUNIT_ASSERT_DOUBLES_EQUAL( ref2_1434[i].coordinate.y(),
-                                      configuration.minimalMatchList(1434)[i].coordinate.y(),
+                                      configuration.configMatchList(1434)[i].coordinate.y(),
                                       1.0e-14 );
+
         CPPUNIT_ASSERT_DOUBLES_EQUAL( ref2_1434[i].coordinate.z(),
-                                      configuration.minimalMatchList(1434)[i].coordinate.z(),
+                                      configuration.configMatchList(1434)[i].coordinate.z(),
                                       1.0e-14 );
 
     }
@@ -879,7 +909,7 @@ void Test_Configuration::testAtomIDElementsCoordinatesMovedIDs()
     p.addSite(1434, 0.0);
 
     // Peform the process.
-    configuration.performProcess(p, 1434, lattice_map);
+    configuration.performBucketProcess(p, 1434, lattice_map);
 
     // Get the moved atom_id:s out.
     const std::vector<int> moved_atom_ids1 = configuration.movedAtomIDs();
@@ -984,7 +1014,7 @@ void Test_Configuration::testAtomIDElementsCoordinatesMovedIDs()
 
     // Peform the process.
     configuration.updateMatchList(1434);
-    configuration.performProcess(p2, 1434, lattice_map);
+    configuration.performBucketProcess(p2, 1434, lattice_map);
 
     // Get the moved atom_id:s out.
     const std::vector<int> moved_atom_ids2 = configuration.movedAtomIDs();

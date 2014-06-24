@@ -1,5 +1,5 @@
 /*
-  Copyright (c)  2012-2013  Mikael Leetmaa
+  Copyright (c)  2012-2014  Mikael Leetmaa
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -105,11 +105,21 @@ void Test_Interactions::testQuery()
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(queried_processes.size()), 3 );
 
     // Get the types in the queried processes and check.
-    CPPUNIT_ASSERT_EQUAL( queried_processes[0]->minimalMatchList()[0].match_type, 1 );
-    CPPUNIT_ASSERT_EQUAL( queried_processes[0]->minimalMatchList()[0].update_type, 2 );
+    CPPUNIT_ASSERT_EQUAL( queried_processes[0]->processMatchList()[0].match_types[0], 0 );
+    CPPUNIT_ASSERT_EQUAL( queried_processes[0]->processMatchList()[0].match_types[1], 1 );
+    CPPUNIT_ASSERT_EQUAL( queried_processes[0]->processMatchList()[0].match_types[2], 0 );
 
-    CPPUNIT_ASSERT_EQUAL( queried_processes[2]->minimalMatchList()[2].match_type, 1 );
-    CPPUNIT_ASSERT_EQUAL( queried_processes[2]->minimalMatchList()[2].update_type, 1 );
+    CPPUNIT_ASSERT_EQUAL( queried_processes[0]->processMatchList()[0].update_types[0], 0 );
+    CPPUNIT_ASSERT_EQUAL( queried_processes[0]->processMatchList()[0].update_types[1], 0 );
+    CPPUNIT_ASSERT_EQUAL( queried_processes[0]->processMatchList()[0].update_types[2], 1 );
+
+    CPPUNIT_ASSERT_EQUAL( queried_processes[2]->processMatchList()[2].match_types[0], 0 );
+    CPPUNIT_ASSERT_EQUAL( queried_processes[2]->processMatchList()[2].match_types[1], 1 );
+    CPPUNIT_ASSERT_EQUAL( queried_processes[2]->processMatchList()[2].match_types[2], 0 );
+
+    CPPUNIT_ASSERT_EQUAL( queried_processes[2]->processMatchList()[2].update_types[0], 0 );
+    CPPUNIT_ASSERT_EQUAL( queried_processes[2]->processMatchList()[2].update_types[1], 1 );
+    CPPUNIT_ASSERT_EQUAL( queried_processes[2]->processMatchList()[2].update_types[2], 0 );
 
     // Query for the total number of available sites. This is zero since no sites are added to
     // the processes.
@@ -680,26 +690,49 @@ void Test_Interactions::testUpdateProcessMatchLists()
     config.initMatchLists(lattice_map, interactions.maxRange());
 
     // Check the process match lists before we start.
-    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[0]->minimalMatchList().size()), 3);
-    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[1]->minimalMatchList().size()), 3);
-    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[2]->minimalMatchList().size()), 3);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[0]->processMatchList().size()), 3);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[1]->processMatchList().size()), 3);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[2]->processMatchList().size()), 3);
 
     // Update the interactions according to the configuration match lists.
     interactions.updateProcessMatchLists(config, lattice_map);
 
     // Check a few coordinates and match types.
     {
-        const std::vector<MinimalMatchListEntry> & match = interactions.processes()[0]->minimalMatchList();
+        const ProcessBucketMatchList & match = interactions.processes()[0]->processMatchList();
 
         CPPUNIT_ASSERT_EQUAL( static_cast<int>(match.size()), 6 );
 
         // Wildcards are now added.
-        CPPUNIT_ASSERT_EQUAL( match[0].match_type,  1 );
-        CPPUNIT_ASSERT_EQUAL( match[1].match_type,  3 );
-        CPPUNIT_ASSERT_EQUAL( match[2].match_type,  0 );
-        CPPUNIT_ASSERT_EQUAL( match[3].match_type,  0 );
-        CPPUNIT_ASSERT_EQUAL( match[4].match_type,  0 );
-        CPPUNIT_ASSERT_EQUAL( match[5].match_type,  2 );
+        CPPUNIT_ASSERT_EQUAL( match[0].match_types[0],  0 );
+        CPPUNIT_ASSERT_EQUAL( match[0].match_types[1],  1 );
+        CPPUNIT_ASSERT_EQUAL( match[0].match_types[2],  0 );
+        CPPUNIT_ASSERT_EQUAL( match[0].match_types[3],  0 );
+
+        CPPUNIT_ASSERT_EQUAL( match[1].match_types[0],  0 );
+        CPPUNIT_ASSERT_EQUAL( match[1].match_types[1],  0 );
+        CPPUNIT_ASSERT_EQUAL( match[1].match_types[2],  0 );
+        CPPUNIT_ASSERT_EQUAL( match[1].match_types[3],  1 );
+
+        CPPUNIT_ASSERT_EQUAL( match[2].match_types[0],  1 );
+        CPPUNIT_ASSERT_EQUAL( match[2].match_types[1],  0 );
+        CPPUNIT_ASSERT_EQUAL( match[2].match_types[2],  0 );
+        CPPUNIT_ASSERT_EQUAL( match[2].match_types[3],  0 );
+
+        CPPUNIT_ASSERT_EQUAL( match[3].match_types[0],  1 );
+        CPPUNIT_ASSERT_EQUAL( match[3].match_types[1],  0 );
+        CPPUNIT_ASSERT_EQUAL( match[3].match_types[2],  0 );
+        CPPUNIT_ASSERT_EQUAL( match[3].match_types[3],  0 );
+
+        CPPUNIT_ASSERT_EQUAL( match[4].match_types[0],  1 );
+        CPPUNIT_ASSERT_EQUAL( match[4].match_types[1],  0 );
+        CPPUNIT_ASSERT_EQUAL( match[4].match_types[2],  0 );
+        CPPUNIT_ASSERT_EQUAL( match[4].match_types[3],  0 );
+
+        CPPUNIT_ASSERT_EQUAL( match[5].match_types[0],  0 );
+        CPPUNIT_ASSERT_EQUAL( match[5].match_types[1],  0 );
+        CPPUNIT_ASSERT_EQUAL( match[5].match_types[2],  1 );
+        CPPUNIT_ASSERT_EQUAL( match[5].match_types[3],  0 );
 
         // These are not changed - but sorted.
         CPPUNIT_ASSERT_DOUBLES_EQUAL( match[0].coordinate.x(),  process_coordinates1[0][0], 1.0e-10 );
@@ -732,7 +765,7 @@ void Test_Interactions::testUpdateProcessMatchLists()
 
     {
         // This one is not changed, since it was applicable to more than one basis site.
-        const std::vector<MinimalMatchListEntry> & match = interactions.processes()[1]->minimalMatchList();
+        const ProcessBucketMatchList & match = interactions.processes()[1]->processMatchList();
         CPPUNIT_ASSERT_EQUAL( static_cast<int>(match.size()), 3 );
         // Not changed - but sorted.
         CPPUNIT_ASSERT_DOUBLES_EQUAL( match[0].coordinate.x(),  process_coordinates1[0][0], 1.0e-10 );
@@ -751,7 +784,7 @@ void Test_Interactions::testUpdateProcessMatchLists()
 
 
     {
-        const std::vector<MinimalMatchListEntry> & match = interactions.processes()[2]->minimalMatchList();
+        const ProcessBucketMatchList & match = interactions.processes()[2]->processMatchList();
         CPPUNIT_ASSERT_EQUAL( static_cast<int>(match.size()), 47 );
 
         // Not changed.
@@ -773,7 +806,7 @@ void Test_Interactions::testUpdateProcessMatchLists()
         {
             if (i != 0 && i != 13 && i != 46)
             {
-                CPPUNIT_ASSERT_EQUAL( match[i].match_type, 0 );
+                CPPUNIT_ASSERT_EQUAL( match[i].match_types[0], 1 );
             }
         }
 
@@ -899,9 +932,9 @@ void Test_Interactions::testUpdateProcessIDMoves()
     config.initMatchLists(lattice_map, interactions.maxRange());
 
     // Check the process match lists before we start.
-    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[0]->minimalMatchList().size()), 3);
-    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[1]->minimalMatchList().size()), 3);
-    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[2]->minimalMatchList().size()), 3);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[0]->processMatchList().size()), 3);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[1]->processMatchList().size()), 3);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[2]->processMatchList().size()), 3);
 
     // Check the id moves before update.
     {
@@ -919,7 +952,7 @@ void Test_Interactions::testUpdateProcessIDMoves()
 
     // Check the id moves after update.
     {
-        const std::vector<MinimalMatchListEntry> & match = interactions.processes()[0]->minimalMatchList();
+        const ProcessBucketMatchList & match = interactions.processes()[0]->processMatchList();
         CPPUNIT_ASSERT_EQUAL( static_cast<int>(match.size()), 6 );
 
         const std::vector< std::pair<int, int> > & id_moves = interactions.processes()[0]->idMoves();
@@ -930,11 +963,36 @@ void Test_Interactions::testUpdateProcessIDMoves()
         CPPUNIT_ASSERT_EQUAL( id_moves[1].second, 0 );
 
         // Wildcards are now added.
-        CPPUNIT_ASSERT_EQUAL( match[0].match_type,  1 );
-        CPPUNIT_ASSERT_EQUAL( match[1].match_type,  3 );
-        CPPUNIT_ASSERT_EQUAL( match[2].match_type,  0 );
-        CPPUNIT_ASSERT_EQUAL( match[3].match_type,  0 );
-        CPPUNIT_ASSERT_EQUAL( match[4].match_type,  0 );
-        CPPUNIT_ASSERT_EQUAL( match[5].match_type,  2 );
+
+
+        CPPUNIT_ASSERT_EQUAL( match[0].match_types[0],  0 );
+        CPPUNIT_ASSERT_EQUAL( match[0].match_types[1],  1 );
+        CPPUNIT_ASSERT_EQUAL( match[0].match_types[2],  0 );
+        CPPUNIT_ASSERT_EQUAL( match[0].match_types[3],  0 );
+
+        CPPUNIT_ASSERT_EQUAL( match[1].match_types[0],  0 );
+        CPPUNIT_ASSERT_EQUAL( match[1].match_types[1],  0 );
+        CPPUNIT_ASSERT_EQUAL( match[1].match_types[2],  0 );
+        CPPUNIT_ASSERT_EQUAL( match[1].match_types[3],  1 );
+
+        CPPUNIT_ASSERT_EQUAL( match[2].match_types[0],  1 );
+        CPPUNIT_ASSERT_EQUAL( match[2].match_types[1],  0 );
+        CPPUNIT_ASSERT_EQUAL( match[2].match_types[2],  0 );
+        CPPUNIT_ASSERT_EQUAL( match[2].match_types[3],  0 );
+
+        CPPUNIT_ASSERT_EQUAL( match[3].match_types[0],  1 );
+        CPPUNIT_ASSERT_EQUAL( match[3].match_types[1],  0 );
+        CPPUNIT_ASSERT_EQUAL( match[3].match_types[2],  0 );
+        CPPUNIT_ASSERT_EQUAL( match[3].match_types[3],  0 );
+
+        CPPUNIT_ASSERT_EQUAL( match[4].match_types[0],  1 );
+        CPPUNIT_ASSERT_EQUAL( match[4].match_types[1],  0 );
+        CPPUNIT_ASSERT_EQUAL( match[4].match_types[2],  0 );
+        CPPUNIT_ASSERT_EQUAL( match[4].match_types[3],  0 );
+
+        CPPUNIT_ASSERT_EQUAL( match[5].match_types[0],  0 );
+        CPPUNIT_ASSERT_EQUAL( match[5].match_types[1],  0 );
+        CPPUNIT_ASSERT_EQUAL( match[5].match_types[2],  1 );
+        CPPUNIT_ASSERT_EQUAL( match[5].match_types[3],  0 );
     }
 }

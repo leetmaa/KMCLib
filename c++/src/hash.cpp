@@ -15,7 +15,7 @@
 
 #include "process.h"
 #include "configuration.h"
-#include "matchlistentry.h"
+#include "matchlist.h"
 #include "externals/md5.h"
 
 #include <cstdio>
@@ -122,17 +122,29 @@ unsigned long int hashCustomRateInput(const int index,
     const double cutoff = process.cutoff();
 
     // This is the source of configuration information we will need.
-    const std::vector<MinimalMatchListEntry> & config_match_list  = configuration.minimalMatchList(index);
+    const ConfigBucketMatchList & config_match_list  = configuration.configMatchList(index);
 
     // This is the data to hash.
     std::vector<int> data_to_hash;
     data_to_hash.push_back(process_number);
 
     // Add the match types of the config match list to the data to hash.
-    std::vector<MinimalMatchListEntry>::const_iterator it1 = config_match_list.begin();
+    ConfigBucketMatchList::const_iterator it1 = config_match_list.begin();
     while ( (*it1).distance <= cutoff && it1 != config_match_list.end())
     {
-        data_to_hash.push_back((*it1).match_type);
+
+        // ML: Needs fix for the general case.
+        int match_type = 0;
+        for (size_t i = 0; i < (*it1).match_types.size(); ++i)
+        {
+            if ((*it1).match_types[i] != 0)
+            {
+                match_type = i;
+                break;
+            }
+        }
+
+        data_to_hash.push_back(match_type);
         ++it1;
     }
 

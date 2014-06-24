@@ -16,7 +16,7 @@
 
 #include <vector>
 
-#include "matchlistentry.h"
+#include "matchlist.h"
 #include "ratetable.h"
 
 // Forward declarations.
@@ -134,8 +134,21 @@ public:
      *  \param index_match_list   : The index match list to compare.
      *  \return : True if match.
      */
-    bool isMatch(const std::vector<MinimalMatchListEntry> & process_match_list,
-                 const std::vector<MinimalMatchListEntry> & index_match_list) const;
+    bool isMatch(const ProcessBucketMatchList & process_match_list,
+                 const ConfigBucketMatchList & index_match_list) const;
+
+    /*! \brief Print the match lists to std out. Useful for debugging.
+     *  \param process_match_list : The process match list to compare against.
+     *  \param index_match_list   : The index match list to compare.
+     */
+    void printMatchLists(const ProcessBucketMatchList & process_match_list,
+                         const ConfigBucketMatchList & index_match_list) const;
+
+    void printMatchLists(const ConfigBucketMatchList & process_match_list,
+                         const ConfigBucketMatchList & index_match_list) const;
+
+    void printMatchList(const ConfigBucketMatchList & process_match_list) const;
+
 
 
 protected:
