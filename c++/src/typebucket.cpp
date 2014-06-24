@@ -20,6 +20,7 @@ TypeBucket::TypeBucket(const int size) :
     // NOTHING HERE
 }
 
+
 // -----------------------------------------------------------------------------
 //
 TypeBucket::TypeBucket(const TypeBucket & other) :
@@ -27,3 +28,5 @@ TypeBucket::TypeBucket(const TypeBucket & other) :
 {
     // NOTHING HERE
 }
+
+

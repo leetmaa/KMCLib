@@ -27,11 +27,17 @@ public:
     CPPUNIT_TEST( testDefaultConstruction );
     CPPUNIT_TEST( testConstruction );
     CPPUNIT_TEST( testCopyConstruction );
+    CPPUNIT_TEST( testAccessOperator );
+    CPPUNIT_TEST( testIdentical );
+    CPPUNIT_TEST( testGreaterOrEqual );
     CPPUNIT_TEST_SUITE_END();
 
     void testDefaultConstruction();
     void testConstruction();
     void testCopyConstruction();
+    void testAccessOperator();
+    void testIdentical();
+    void testGreaterOrEqual();
 
 };
 
