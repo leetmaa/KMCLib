@@ -1,0 +1,247 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Installation &mdash; KMCLib 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="top" title="KMCLib 1.0.0 documentation" href="index.html" />
+    <link rel="next" title="Usage examples" href="usage.html" />
+    <link rel="prev" title="Algorithm" href="algorithm.html" /> 
+  </head>
+  <body>
+
+<div style="text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="_static/logo.png" border="0" alt="py4sci"/></a>
+</div>
+
+
+      <div class="header"><h1 class="heading"><a href="index.html">
+          <span>KMCLib 1.0.0 documentation</span></a></h1>
+        <h2 class="heading"><span>Installation</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="algorithm.html">Algorithm</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="usage.html">Usage examples</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<p>The installation of <tt class="xref py py-mod docutils literal"><span class="pre">KMCLib</span></tt> is fairly simple and we have tried
+to keep the external dependencies to a minimum. These install
+instructions works for the different Linux and Mac systems we have
+installed and tested on. If you have successfully installed on another
+system we would be happy to receive your updates to these install
+instructions.</p>
+<p>This table shows on which systems we have successfully
+installed and tested the current version of KMCLib. If you have
+information for other systems, compilers or library versions please
+let us know.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="14%" />
+<col width="24%" />
+<col width="13%" />
+<col width="14%" />
+<col width="14%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">OS</th>
+<th class="head">Compiler</th>
+<th class="head">MPI</th>
+<th class="head">cppunit</th>
+<th class="head">Python</th>
+<th class="head">SWIG</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Ubuntu 12.4 LTS</td>
+<td>GCC 4.6.3</td>
+<td>MPICH2 3.0.2</td>
+<td>1.12.1</td>
+<td>2.7.3</td>
+<td>2.0.4</td>
+</tr>
+<tr class="row-odd"><td>CentOS release 5.9</td>
+<td>GCC 4.6.3</td>
+<td>Intel MPI 4.0.3.008</td>
+<td>1.12.1</td>
+<td>2.7.2</td>
+<td>2.0.4</td>
+</tr>
+<tr class="row-even"><td>Mac OSX 10.5.8</td>
+<td>GCC 4.2.1</td>
+<td>Open MPI 1.2.3</td>
+<td>1.12.1</td>
+<td>2.7.2</td>
+<td>1.3.31</td>
+</tr>
+<tr class="row-odd"><td>Mac OSX 10.8.5</td>
+<td>GCC 4.2.1</td>
+<td>&#8211;</td>
+<td>1.12.1</td>
+<td>2.7.2</td>
+<td>2.0.9</td>
+</tr>
+<tr class="row-even"><td>Mac OSX 10.9.1</td>
+<td>GCC 4.7.3</td>
+<td>&#8211;</td>
+<td>1.12.1</td>
+<td>2.7.6</td>
+<td>2.0.11</td>
+</tr>
+</tbody>
+</table>
+<div class="section" id="compiler">
+<h2>Compiler<a class="headerlink" href="#compiler" title="Permalink to this headline">¶</a></h2>
+<p>To compile <tt class="xref py py-mod docutils literal"><span class="pre">KMCLib</span></tt> you will need a <strong>C++ compiler</strong> installed on your
+system. The current version only supports the <strong>g++</strong> compiler. If
+you want to use another compiler you will have to modify the make
+system accordingly. If you compile <tt class="xref py py-mod docutils literal"><span class="pre">KMCLib</span></tt> using
+another compiler please let us know so we can include your updates in
+the official release.</p>
+</div>
+<div class="section" id="mpi">
+<h2>MPI<a class="headerlink" href="#mpi" title="Permalink to this headline">¶</a></h2>
+<p>To build the <em>parallel</em> version of the code you will also need an <strong>MPI</strong>
+implementation installed on your system, and you will be asked to
+specify the compiler wrapper script you want to use, such as e.g. <strong>mpicxx</strong>.</p>
+</div>
+<div class="section" id="make-system">
+<h2>Make system<a class="headerlink" href="#make-system" title="Permalink to this headline">¶</a></h2>
+<p>The make system is based on <strong>CMake</strong>. Installing <strong>CMake</strong>
+can be done by typing on Linux:</p>
+<div class="highlight-python"><pre>sudo apt-get install swig</pre>
+</div>
+<p>and on Mac OSX using macports:</p>
+<div class="highlight-python"><pre>sudo port install swig &amp;&amp; sudo port install swig-python</pre>
+</div>
+</div>
+<div class="section" id="swig">
+<h2>SWIG<a class="headerlink" href="#swig" title="Permalink to this headline">¶</a></h2>
+<p>To generate the Python wrappings for the C++ code you must have
+<strong>SWIG</strong> with python extensions installed.
+On Linux:</p>
+<div class="highlight-python"><pre>sudo apt-get install swig</pre>
+</div>
+<p>On Mac OSX with macports:</p>
+<div class="highlight-python"><pre>sudo port install swig &amp;&amp; sudo port install swig-python</pre>
+</div>
+</div>
+<div class="section" id="build-the-externals">
+<h2>Build the externals<a class="headerlink" href="#build-the-externals" title="Permalink to this headline">¶</a></h2>
+<p>All other external dependencies are included with
+<tt class="xref py py-mod docutils literal"><span class="pre">KMCLib</span></tt>. These are the <strong>CPPUNIT</strong> library for C++ unit tests,
+and a Mersenne-Twister implementation.</p>
+<p>You can build the externals by typing:</p>
+<div class="highlight-python"><pre>cd KMCLib/c++/externals
+CXX=g++ make</pre>
+</div>
+</div>
+<div class="section" id="build-c-and-test-the-backend">
+<h2>Build C++ and test the backend<a class="headerlink" href="#build-c-and-test-the-backend" title="Permalink to this headline">¶</a></h2>
+<p>For the build to work (on both Linux and Mac OSX) you will have to make
+sure that <strong>CMAke</strong> can find your python headers. This could be
+done by finding where they are located and placing them in your
+<tt class="docutils literal"><span class="pre">CPLUS_INCLUDE_PATH</span></tt>. Some thing like:</p>
+<div class="highlight-python"><pre>export CPLUS_INCLUDE_PATH=/usr/include/python2.7:${CPLUS_INCLUDE_PATH}</pre>
+</div>
+<p>in your <tt class="docutils literal"><span class="pre">.bashrc</span></tt> file typically helps. Note that the exact path may
+vary on different systems.</p>
+<p>Now, go to the <tt class="docutils literal"><span class="pre">KMCLib/c++</span></tt> directory and create the build director:</p>
+<div class="highlight-python"><pre>cd KMCLib/c++
+mkdir build
+cd build</pre>
+</div>
+<p>On Linux:</p>
+<div class="highlight-python"><pre>cmake -DMPI=mpiwrapper ..</pre>
+</div>
+<p>for the MPI version or:</p>
+<div class="highlight-python"><pre>cmake ..</pre>
+</div>
+<p>for the serial version. Replace <tt class="docutils literal"><span class="pre">mpiwrapper</span></tt> with the mpi compiler wrapper script you want to use, e.g. <tt class="docutils literal"><span class="pre">mpicxx</span></tt>.</p>
+<p>Mac with g++ and Python from macports instead do:</p>
+<div class="highlight-python"><pre>cmake -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc -DMACPORT=TRUE ..</pre>
+</div>
+<p>or leave <tt class="docutils literal"><span class="pre">-DMACPORT</span></tt> out to use machine Python. Add the
+<tt class="docutils literal"><span class="pre">-DMPI=mpiwrapper</span></tt> option to build the parallel version.</p>
+<p>On all systems you then type:</p>
+<div class="highlight-python"><pre>make test.x
+./unittest/test.x
+make install</pre>
+</div>
+<p>To make the tests, run the tests and install the <tt class="docutils literal"><span class="pre">Backend.py</span></tt> module.</p>
+</div>
+<div class="section" id="run-the-python-tests">
+<h2>Run the Python tests<a class="headerlink" href="#run-the-python-tests" title="Permalink to this headline">¶</a></h2>
+<p>Put your <tt class="docutils literal"><span class="pre">KMCLib/python/src</span></tt> in your <tt class="docutils literal"><span class="pre">PYTHONPATH</span></tt>. If you use bash
+this can be done by putting:</p>
+<div class="highlight-python"><pre>export PYTHONPATH=/home/leetmaa/projects/KMCLib/python/src:${PYTHONPATH}</pre>
+</div>
+<p>in your <tt class="docutils literal"><span class="pre">.bashrc</span></tt> file.</p>
+<p>Now you should run the test by typing:</p>
+<div class="highlight-python"><pre>python KMCLib/python/unittest/utest.py</pre>
+</div>
+<p>and finally run each of the tests in the <tt class="docutils literal"><span class="pre">KMCLib/python/functest/</span></tt>
+directory.</p>
+<p>If the Python unit tests run without errors or failures your
+installation is finished and ready to use for performing
+KMC simulations.
+Have a look at the functionality tests in <tt class="docutils literal"><span class="pre">KMCLib/python/functest/</span></tt>
+to get a hint at how to do it, and you should also check this manual,
+particular the introductory usage example.</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="algorithm.html">Algorithm</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="usage.html">Usage examples</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012 - 2014, Mikael Leetmaa.
+    </div>
+  </body>
+</html>
