@@ -92,12 +92,6 @@ public:
      *                        using correct boundaries.
      *  \return : The match list.
      */
-    // ML: FIXME
-    const MinimalMatchList & minimalMatchList(const int origin_index,
-                                              const std::vector<int> & indices,
-                                              const LatticeMap & lattice_map) const;
-
-    // ML: New version.
     const ConfigBucketMatchList & configMatchList(const int origin_index,
                                                   const std::vector<int> & indices,
                                                   const LatticeMap & lattice_map) const;
@@ -114,18 +108,12 @@ public:
      */
     const ConfigBucketMatchList & configMatchList(const int index) const { return match_lists_[index]; }
 
-    const MinimalMatchList & minimalMatchList(const int index) const { return minimal_match_lists_[index]; }
-
     /*! \brief Perform the given process.
      *  \param process : The process to perform, which will be updated with the affected
      *                   indices.
      *  \param site_index : The index of the site where the process should be performed.
      *  \param lattice_map : The lattice map needed for proper move vector indexing.
      */
-    void performProcess(Process & process,
-                        const int site_index,
-                        const LatticeMap & lattice_map);
-    // ML: New version.
     void performBucketProcess(Process & process,
                               const int site_index,
                               const LatticeMap & lattice_map);
@@ -188,7 +176,6 @@ private:
 
     /// The match lists for all indices.
     std::vector< ConfigBucketMatchList > match_lists_;
-    std::vector< MinimalMatchList > minimal_match_lists_;
 
 };
 

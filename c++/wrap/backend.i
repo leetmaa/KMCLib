@@ -59,7 +59,8 @@
 %template(StdVectorProcess) std::vector<Process>;
 %template(StdVectorProcessPtr) std::vector<Process*>;
 %template(StdVectorCustomRateProcess) std::vector<CustomRateProcess>;
-%template(StdVectorMinimalMatchListEntry) std::vector<MinimalMatchListEntry>;
+%template(StdVectorProcessBucketMatchListEntry) std::vector<ProcessBucketMatchListEntry>;
+%template(StdVectorConfigBucketMatchListEntry) std::vector<ConfigBucketMatchListEntry>;
 %template(StdVectorStdVectorInt) std::vector<std::vector<int> >;
 %template(StdVectorStdVectorDouble) std::vector<std::vector<double> >;
 %template(StdVectorCoordinate) std::vector<Coordinate>;

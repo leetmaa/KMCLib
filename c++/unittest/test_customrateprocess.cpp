@@ -149,7 +149,7 @@ void Test_CustomRateProcess::testMatchListLong()
     CustomRateProcess process(config1, config2, rate, basis_sites, 1.0);
 
     // Get the match list out.
-    const std::vector<MinimalMatchListEntry> match_list = process.minimalMatchList();
+    const ProcessBucketMatchList match_list = process.processMatchList();
 
     // Check the size of the match list.
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(process_coords.size()),

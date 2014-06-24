@@ -209,9 +209,13 @@ void Test_Process::testConstructionMoveVectors()
 {
     // Setup a valid possible types map.
     std::map<std::string,int> possible_types;
-    possible_types["A"] = 1;
-    possible_types["B"] = 2;
-    possible_types["C"] = 0;
+    possible_types["A"] = 0;
+    possible_types["B"] = 1;
+    possible_types["C"] = 2;
+    possible_types["D"] = 3;
+    possible_types["E"] = 4;
+    possible_types["F"] = 5;
+    possible_types["G"] = 6;
 
     // Setup the two configurations.
     std::vector<std::string> elements1;
@@ -321,9 +325,13 @@ void Test_Process::testConstructionMoveVectors2()
 {
     // Setup a valid possible types map.
     std::map<std::string,int> possible_types;
-    possible_types["A"] = 1;
-    possible_types["B"] = 2;
-    possible_types["C"] = 0;
+    possible_types["A"] = 0;
+    possible_types["B"] = 1;
+    possible_types["C"] = 2;
+    possible_types["D"] = 3;
+    possible_types["E"] = 4;
+    possible_types["F"] = 5;
+    possible_types["G"] = 6;
 
     // Setup the two configurations.
     std::vector<std::string> elements1;
@@ -433,8 +441,8 @@ void Test_Process::testMatchList()
 {
     // Setup a valid possible types map.
     std::map<std::string,int> possible_types;
-    possible_types["A"] = 123;
-    possible_types["B"] = 24;
+    possible_types["A"] = 2;
+    possible_types["B"] = 1;
     possible_types["C"] = 0;
 
     // Setup the two configurations.
@@ -467,22 +475,31 @@ void Test_Process::testMatchList()
     Process process(config1, config2, rate, basis_sites);
 
     // Get the match list out.
-    const std::vector<MinimalMatchListEntry> & match_list = process.minimalMatchList();
+    const ProcessBucketMatchList & match_list = process.processMatchList();
 
     // Check the size of the match list.
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(match_list.size()), 3);
 
     // Get the first entry out and check.
     {
-        const MinimalMatchListEntry entry = match_list[0];
+        const ProcessBucketMatchListEntry entry = match_list[0];
         CPPUNIT_ASSERT_EQUAL(entry.index, -1);
-        CPPUNIT_ASSERT_EQUAL(entry.match_type, 123);
-        CPPUNIT_ASSERT_EQUAL(entry.update_type, 0);
+        CPPUNIT_ASSERT_EQUAL(static_cast<int>(entry.match_types.size()),  3);
+        CPPUNIT_ASSERT_EQUAL(static_cast<int>(entry.update_types.size()), 3);
+
+        CPPUNIT_ASSERT_EQUAL(entry.match_types[0], 0);
+        CPPUNIT_ASSERT_EQUAL(entry.match_types[1], 0);
+        CPPUNIT_ASSERT_EQUAL(entry.match_types[2], 1);
+
+        CPPUNIT_ASSERT_EQUAL(entry.update_types[0], 1);
+        CPPUNIT_ASSERT_EQUAL(entry.update_types[1], 0);
+        CPPUNIT_ASSERT_EQUAL(entry.update_types[2], 0);
+
 
         // Make sure these coordinates are equal.
         Coordinate check_coord(coords[0][0],coords[0][1],coords[0][2]);
         CPPUNIT_ASSERT( !(entry.coordinate < check_coord) );
-        CPPUNIT_ASSERT( !(check_coord        < entry.coordinate) );
+        CPPUNIT_ASSERT( !(check_coord      < entry.coordinate) );
 
         // Check the distance.
         CPPUNIT_ASSERT_DOUBLES_EQUAL(entry.distance, 0.0, 1.0e-14);
@@ -491,10 +508,19 @@ void Test_Process::testMatchList()
 
     // Get the third entry out and check.
     {
-        const MinimalMatchListEntry entry = match_list[2];
+        const ProcessBucketMatchListEntry entry = match_list[2];
+
         CPPUNIT_ASSERT_EQUAL(entry.index, -1);
-        CPPUNIT_ASSERT_EQUAL(entry.match_type, 24);
-        CPPUNIT_ASSERT_EQUAL(entry.update_type, 24);
+        CPPUNIT_ASSERT_EQUAL(static_cast<int>(entry.match_types.size()),  3);
+        CPPUNIT_ASSERT_EQUAL(static_cast<int>(entry.update_types.size()), 3);
+
+        CPPUNIT_ASSERT_EQUAL(entry.match_types[0], 0);
+        CPPUNIT_ASSERT_EQUAL(entry.match_types[1], 1);
+        CPPUNIT_ASSERT_EQUAL(entry.match_types[2], 0);
+
+        CPPUNIT_ASSERT_EQUAL(entry.update_types[0], 0);
+        CPPUNIT_ASSERT_EQUAL(entry.update_types[1], 1);
+        CPPUNIT_ASSERT_EQUAL(entry.update_types[2], 0);
 
         // Make sure these coordinates are equal.
         Coordinate check_coord(coords[1][0],coords[1][1],coords[1][2]);
@@ -508,10 +534,19 @@ void Test_Process::testMatchList()
 
     // Get the second entry out and check.
     {
-        const MinimalMatchListEntry entry = match_list[1];
+        const ProcessBucketMatchListEntry entry = match_list[1];
+
         CPPUNIT_ASSERT_EQUAL(entry.index, -1);
-        CPPUNIT_ASSERT_EQUAL(entry.match_type, 0);
-        CPPUNIT_ASSERT_EQUAL(entry.update_type, 123);
+        CPPUNIT_ASSERT_EQUAL(static_cast<int>(entry.match_types.size()),  3);
+        CPPUNIT_ASSERT_EQUAL(static_cast<int>(entry.update_types.size()), 3);
+
+        CPPUNIT_ASSERT_EQUAL(entry.match_types[0], 1);
+        CPPUNIT_ASSERT_EQUAL(entry.match_types[1], 0);
+        CPPUNIT_ASSERT_EQUAL(entry.match_types[2], 0);
+
+        CPPUNIT_ASSERT_EQUAL(entry.update_types[0], 0);
+        CPPUNIT_ASSERT_EQUAL(entry.update_types[1], 0);
+        CPPUNIT_ASSERT_EQUAL(entry.update_types[2], 1);
 
         // Make sure these coordinates are equal.
         Coordinate check_coord(coords[2][0],coords[2][1],coords[2][2]);
@@ -609,7 +644,7 @@ void Test_Process::testMatchListLong()
     Process process(config1, config2, rate, basis_sites);
 
     // Get the match list out.
-    const std::vector<MinimalMatchListEntry> match_list = process.minimalMatchList();
+    const ProcessBucketMatchList match_list = process.processMatchList();
 
     // Check the size of the match list.
     CPPUNIT_ASSERT_EQUAL( static_cast<int>(process_coords.size()),

@@ -25,7 +25,6 @@ class Configuration;
 
 /// Define the match lists.
 typedef std::vector<MatchListEntry> MatchList;
-typedef std::vector<MinimalMatchListEntry> MinimalMatchList;
 typedef std::vector<ProcessBucketMatchListEntry> ProcessBucketMatchList;
 typedef std::vector<ConfigBucketMatchListEntry> ConfigBucketMatchList;
 
@@ -38,13 +37,6 @@ typedef std::vector<ConfigBucketMatchListEntry> ConfigBucketMatchList;
  *  \param match_list       : (in/out) The matchlist to construct.
  *  \param affected_indices : (in/out) The affected indices to set the size of.
  */
-void configurationsToMatchList(const Configuration & first,
-                               const Configuration & second,
-                               int & range,
-                               double & cutoff,
-                               MinimalMatchList & match_list,
-                               std::vector<int> & affected_indices);
-
 void configurationsToMatchList(const Configuration & first,
                                const Configuration & second,
                                int & range,

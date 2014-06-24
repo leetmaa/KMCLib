@@ -14,6 +14,7 @@
 #define __MATCHLISTENTRY__
 
 #include "coordinate.h"
+#include <cstdio>
 #include <cmath>
 
 
@@ -29,12 +30,6 @@ public:
 
     /// Flag for indicating if we have a move coordinate.
     bool has_move_coordinate;
-
-    /// The match type integer.
-    int match_type;
-
-    /// The update type integer.
-    int update_type;
 
     /// The index in the global structure.
     int index;
@@ -132,7 +127,16 @@ public:
     virtual
     bool operator!=(const MatchListEntry & m2) const
     { // Throw an error.
-        exit(0);
+        printf("This operations must only be used for testing.\n");
+        for (size_t i = 0; i < match_types.size(); ++i)
+        {
+            if (m2.match_types[i] != match_types[i])
+            {
+                return true;
+            }
+        }
+
+        return !((*this) == m2);
     }
 };
 
@@ -159,43 +163,33 @@ public:
         //     Or a match with an upper bound also.
 
         // Check the type matching.
-        else if (m2.match_types < match_types)
-        {
-            return true;
-        }
         else
         {
+            // ML: FIXME: PERFORMME
+            for (size_t i = 0; i < match_types.size(); ++i)
+            {
+                if (m2.match_types[i] < match_types[i])
+                {
+                    return true;
+                }
+            }
+
             return !((*this) == m2);
         }
     }
-};
 
-
-/// A minimal match list entry class.
-class MinimalMatchListEntry : public MatchListEntry {
-
-public:
-
-    /*! \brief 'not equal' for comparing entries.
-     */
-    virtual
-    bool operator!=(const MatchListEntry & m2) const
+    // FIXME: Dummy, needed temporarily, while we have two different classes.
+    void initWildcard(const ConfigBucketMatchListEntry & c)
     {
-        // Handle the wildcard case.
-        if (match_type == 0)
-        {
-            return false;
-        }
-        // Check the type.
-        else if (m2.match_type != match_type)
-        {
-            return true;
-        }
-        else
-        {
-            return !((*this) == m2);
-        }
+        has_move_coordinate = c.has_move_coordinate;
+        index = -1;
+        distance = c.distance;
+        coordinate = c.coordinate;
+        match_types = std::vector<int>(c.match_types.size(), 0);
+        match_types[0] = 1; // Indicating wildcard.
+        update_types.resize(match_types.size());
     }
+
 };
 
 

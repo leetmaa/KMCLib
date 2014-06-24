@@ -189,10 +189,13 @@ class KMCLatticeModelTest(unittest.TestCase):
         model = KMCLatticeModel(config, interactions)
 
         # Get the match types out.
-        match_types = [ l.match_type for l in model._backend().interactions().processes()[0].minimalMatchList() ]
+        match_types = [ [t for t in l.match_types] for l in model._backend().interactions().processes()[0].processMatchList() ]
+
+
+        print match_types
 
         # This does not have wildcards added.
-        ref_match_types = [1, 2, 2, 2, 2, 1]
+        ref_match_types = [[0, 1, 0], [0, 0, 1], [0, 0, 1], [0, 0, 1], [0, 0, 1], [0, 1, 0]]
         self.assertEqual( match_types, ref_match_types )
 
         # Create with implicit wildcards - this is default behavior.
@@ -202,13 +205,13 @@ class KMCLatticeModelTest(unittest.TestCase):
         model = KMCLatticeModel(config, interactions)
 
         # Check the process matchlists again.
-        match_types = [ l.match_type for l in model._backend().interactions().processes()[0].minimalMatchList() ]
+        match_types = [ [t for t in l.match_types] for l in model._backend().interactions().processes()[0].processMatchList() ]
 
-        ref_match_types = [1, 2, 2, 2, 2,
-                           0, 0, 0, 0, 0,
-                           0, 0, 0, 0, 0,
-                           0, 0, 0, 0, 0,
-                           0, 0, 0, 0, 1]
+        ref_match_types = [[0, 1, 0], [0, 0, 1], [0, 0, 1], [0, 0, 1], [0, 0, 1],
+                           [1, 0, 0], [1, 0, 0], [1, 0, 0], [1, 0, 0], [1, 0, 0],
+                           [1, 0, 0], [1, 0, 0], [1, 0, 0], [1, 0, 0], [1, 0, 0],
+                           [1, 0, 0], [1, 0, 0], [1, 0, 0], [1, 0, 0], [1, 0, 0],
+                           [1, 0, 0], [1, 0, 0], [1, 0, 0], [1, 0, 0], [0, 1, 0]]
 
         # This one has the wildcards (zeroes) added.
         self.assertEqual( match_types, ref_match_types )
