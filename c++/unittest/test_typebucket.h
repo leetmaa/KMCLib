@@ -30,6 +30,7 @@ public:
     CPPUNIT_TEST( testAccessOperator );
     CPPUNIT_TEST( testIdentical );
     CPPUNIT_TEST( testGreaterOrEqual );
+    CPPUNIT_TEST( testAssignmentOperator );
     CPPUNIT_TEST_SUITE_END();
 
     void testDefaultConstruction();
@@ -38,6 +39,7 @@ public:
     void testAccessOperator();
     void testIdentical();
     void testGreaterOrEqual();
+    void testAssignmentOperator();
 
 };
 

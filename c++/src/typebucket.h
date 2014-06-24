@@ -52,6 +52,13 @@ public:
      */
     int operator[](const int i) const { return data_[i]; }
 
+    /*! \brief Assignment operator used for compatibility
+     *         with old implementation. This will be removed
+     *         when we go over to the new framework for type representations.
+     */
+    inline
+    void operator=(const int i);
+
     /*! \brief Access operator, non-const version.
      *  \param i : The index to access at.
      *  \return : A copy of the element to access.
@@ -84,6 +91,21 @@ private:
 // -----------------------------------------------------------------------------
 // INLINE FUNCTOION IMPLEMENTATIONS FOLLOW
 // -----------------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+//
+void TypeBucket::operator=(const int i)
+{
+    if (static_cast<int>(data_.size()) <= i)
+    {
+        throw std::runtime_error("Fatal backend error. Not enough space allocated in bucket assignment.");
+    }
+
+    // Reset everything and set the i:th element to 1.
+    data_.assign(data_.size(), 0);
+    data_[i] = 1;
+}
 
 
 // -----------------------------------------------------------------------------

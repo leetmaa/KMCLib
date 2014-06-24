@@ -242,8 +242,6 @@ void Configuration::performBucketProcess(Process & process,
                                          const int site_index,
                                          const LatticeMap & lattice_map)
 {
-    // ML: FIXME
-
     // Get the proper match lists.
     const ProcessBucketMatchList & process_match_list = process.processMatchList();
     const ConfigBucketMatchList & site_match_list     = configMatchList(site_index);

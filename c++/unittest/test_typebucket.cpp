@@ -164,3 +164,24 @@ void Test_TypeBucket::testGreaterOrEqual()
 
 }
 
+
+// -------------------------------------------------------------------------- //
+//
+void Test_TypeBucket::testAssignmentOperator()
+{
+    TypeBucket t1(3);
+    t1[0] = 7;
+    t1[1] = 8;
+    t1[2] = 1;
+
+    t1 = 1;
+
+    // Check.
+    CPPUNIT_ASSERT_EQUAL(t1[0], 0);
+    CPPUNIT_ASSERT_EQUAL(t1[1], 1);
+    CPPUNIT_ASSERT_EQUAL(t1[2], 0);
+
+    // Check that we can not over-assign.
+    CPPUNIT_ASSERT_THROW( t1 = 7, std::runtime_error );
+
+}
