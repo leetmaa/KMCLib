@@ -124,10 +124,10 @@ class ConfigBucketMatchListEntry : public MatchListEntry {
 
 public:
 
+    // FIXME: Only for testing. Replace with special function.
     virtual
     bool operator!=(const MatchListEntry & m2) const
-    { // Throw an error.
-        printf("This operations must only be used for testing.\n");
+    {
         for (size_t i = 0; i < match_types.size(); ++i)
         {
             if (m2.match_types[i] != match_types[i])

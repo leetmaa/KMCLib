@@ -1,0 +1,425 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Analysis &mdash; KMCLib 1.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="top" title="KMCLib 1.0.0 documentation" href="index.html" />
+    <link rel="next" title="Non-API code" href="non_api.html" />
+    <link rel="prev" title="Plugin Interfaces" href="plugins.html" /> 
+  </head>
+  <body>
+
+<div style="text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="_static/logo.png" border="0" alt="py4sci"/></a>
+</div>
+
+
+      <div class="header"><h1 class="heading"><a href="index.html">
+          <span>KMCLib 1.0.0 documentation</span></a></h1>
+        <h2 class="heading"><span>Analysis</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="plugins.html">Plugin Interfaces</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="non_api.html">Non-API code</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="analysis">
+<span id="id1"></span><h1>Analysis<a class="headerlink" href="#analysis" title="Permalink to this headline">¶</a></h1>
+<p>All built in analysis in <tt class="xref py py-mod docutils literal"><span class="pre">KMCLib</span></tt> is implemented using the
+<a class="reference internal" href="plugins.html#KMCLib.KMCAnalysisPlugin" title="KMCLib.KMCAnalysisPlugin"><tt class="xref py py-class docutils literal"><span class="pre">KMCAnalysisPlugin</span></tt></a> interface and is performed on-the-fly
+during the simulation. At present there are two analysis options
+included, the <a class="reference internal" href="#KMCLib.OnTheFlyMSD" title="KMCLib.OnTheFlyMSD"><tt class="xref py py-class docutils literal"><span class="pre">OnTheFlyMSD</span></tt></a> for mean square displacement
+analysis and the <a class="reference internal" href="#KMCLib.TimeStepDistribution" title="KMCLib.TimeStepDistribution"><tt class="xref py py-class docutils literal"><span class="pre">TimeStepDistribution</span></tt></a> analysis for
+recoding the distribution of time steps during the simulation. On-the-fly
+analysis objects are used by giving them as as a arguments to the
+<a class="reference internal" href="api.html#KMCLib.KMCLatticeModel.run" title="KMCLib.KMCLatticeModel.run"><tt class="xref py py-meth docutils literal"><span class="pre">run</span></tt></a> function of the
+<a class="reference internal" href="api.html#KMCLib.KMCLatticeModel" title="KMCLib.KMCLatticeModel"><tt class="xref py py-class docutils literal"><span class="pre">KMCLatticeModel</span></tt></a>. Have a look at the <a class="reference internal" href="usage.html#usage-examples"><em>Usage examples</em></a>
+for details.</p>
+<p>How often analysis is performed during the simulation is controlled
+by the <tt class="xref py py-obj docutils literal"><span class="pre">analysis_interval</span></tt> parameter of the
+<a class="reference internal" href="api.html#KMCLib.KMCControlParameters" title="KMCLib.KMCControlParameters"><tt class="xref py py-class docutils literal"><span class="pre">KMCControlParameters</span></tt></a>. For future releases we will consider
+to let each analysis object
+itself decide how often it should be used, but for the moment all analysis
+is performed equally often.</p>
+<div class="section" id="on-the-fly-mean-square-displacement-msd">
+<h2>On-the-fly mean square displacement (MSD)<a class="headerlink" href="#on-the-fly-mean-square-displacement-msd" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="usage">
+<h3>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference internal" href="#KMCLib.OnTheFlyMSD" title="KMCLib.OnTheFlyMSD"><tt class="xref py py-class docutils literal"><span class="pre">OnTheFlyMSD</span></tt></a> analysis is used by giving it as an
+argument to the <a class="reference internal" href="api.html#KMCLib.KMCLatticeModel.run" title="KMCLib.KMCLatticeModel.run"><tt class="xref py py-meth docutils literal"><span class="pre">run</span></tt></a> function of the
+<a class="reference internal" href="api.html#KMCLib.KMCLatticeModel" title="KMCLib.KMCLatticeModel"><tt class="xref py py-class docutils literal"><span class="pre">KMCLatticeModel</span></tt></a>. Have a look at the <a class="reference internal" href="usage.html#usage-examples"><em>Usage examples</em></a>
+for details.</p>
+</div>
+<div class="section" id="interface">
+<h3>Interface<a class="headerlink" href="#interface" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="KMCLib.OnTheFlyMSD">
+<em class="property">class </em><tt class="descclassname">KMCLib.</tt><tt class="descname">OnTheFlyMSD</tt><big>(</big><em>history_steps=None</em>, <em>n_bins=None</em>, <em>t_max=None</em>, <em>track_type=None</em><big>)</big><a class="headerlink" href="#KMCLib.OnTheFlyMSD" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for performing on-the-fly MSD analysis.</p>
+<dl class="method">
+<dt id="KMCLib.OnTheFlyMSD.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>history_steps=None</em>, <em>n_bins=None</em>, <em>t_max=None</em>, <em>track_type=None</em><big>)</big><a class="headerlink" href="#KMCLib.OnTheFlyMSD.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor for the OnTheFlyMSD.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>history_steps</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; The number of steps per atom to store in the
+history buffer.</li>
+<li><strong>n_bins</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; The nuber of bins in the histogram.</li>
+<li><strong>t_max</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; The starting value of the last bin.</li>
+<li><strong>track_type</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; The atom type to track during the simulation.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.OnTheFlyMSD.binCounters">
+<tt class="descname">binCounters</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.OnTheFlyMSD.binCounters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query function for the bin counters.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The number of values that was averaged over in each bin.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.OnTheFlyMSD.finalize">
+<tt class="descname">finalize</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.OnTheFlyMSD.finalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recieves the finalize call after the MC loop.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.OnTheFlyMSD.printResults">
+<tt class="descname">printResults</tt><big>(</big><em>stream=&lt;open file '&lt;stdout&gt;'</em>, <em>mode 'w' at 0x2b9b574a91e0&gt;</em><big>)</big><a class="headerlink" href="#KMCLib.OnTheFlyMSD.printResults" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print the results to a stream.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>stream</strong> &#8211; The stream to print to. Defaults to &#8216;sys.stdout&#8217;.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.OnTheFlyMSD.registerStep">
+<tt class="descname">registerStep</tt><big>(</big><em>step</em>, <em>time</em>, <em>configuration</em><big>)</big><a class="headerlink" href="#KMCLib.OnTheFlyMSD.registerStep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recieves the step call from the MC loop.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>step</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; The step number of the simulation.</li>
+<li><strong>time</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; The time of the simulation.</li>
+<li><strong>configuration</strong> (<em>KMCConfiguration</em>) &#8211; The configuration of the simulation.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.OnTheFlyMSD.results">
+<tt class="descname">results</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.OnTheFlyMSD.results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query function for the result.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The results as a 7*N numpy array with the MSD data in the
+x, y and z, direction and averaged over the xy, xz, and yz
+planes finally over all space xyz (expressed in cartesian coordinates).</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.OnTheFlyMSD.safeCutoff">
+<tt class="descname">safeCutoff</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.OnTheFlyMSD.safeCutoff" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query function for the safe cutoff as determined by the
+start of the last contributing convolution.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The bin index for the cutoff.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.OnTheFlyMSD.setup">
+<tt class="descname">setup</tt><big>(</big><em>step</em>, <em>time</em>, <em>configuration</em><big>)</big><a class="headerlink" href="#KMCLib.OnTheFlyMSD.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recieves the setup call from the before the MC loop.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>step</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; The step number of the simulation.</li>
+<li><strong>time</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; The time of the simulation.</li>
+<li><strong>configuration</strong> (<em>KMCConfiguration</em>) &#8211; The configuration of the simulation.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.OnTheFlyMSD.stdDev">
+<tt class="descname">stdDev</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.OnTheFlyMSD.stdDev" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query function for the standard deviation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The standard deviation of the results, as a 7*N numpy array
+where the columns correspond to the directions in the
+results data.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.OnTheFlyMSD.timeSteps">
+<tt class="descname">timeSteps</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.OnTheFlyMSD.timeSteps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query function for the time steps.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The bin center time values of the MSD(t) histogram.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="notes">
+<h3>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference internal" href="#KMCLib.OnTheFlyMSD" title="KMCLib.OnTheFlyMSD"><tt class="xref py py-class docutils literal"><span class="pre">OnTheFlyMSD</span></tt></a> analysis implements the method described
+in <a class="reference internal" href="references.html#ref-7">[Ref.7]</a>. It produces the MSD curves with correct error estimates
+for Brownian motion but can overestimate the errors for confined
+motion or diffusion with flow. See <a class="reference internal" href="references.html#ref-7">[Ref.7]</a> for details.</p>
+<p>You have to give the element type to track as argument to the
+constructor. If you want to calculate the MSD of several different
+types simultaneously you can instantiate and use several different
+<a class="reference internal" href="#KMCLib.OnTheFlyMSD" title="KMCLib.OnTheFlyMSD"><tt class="xref py py-class docutils literal"><span class="pre">OnTheFlyMSD</span></tt></a> objects at the same time.</p>
+<p>Note that to be meaningful this analysis requires that move vectors
+are given to the processes so that individual atom movements can be traced.
+See the <a class="reference internal" href="api.html#KMCLib.KMCProcess" title="KMCLib.KMCProcess"><tt class="xref py py-class docutils literal"><span class="pre">KMCProcess</span></tt></a> documentation for details.</p>
+<p>Future versions might include a way to automatically obtain a
+reasonable starting guess for the parameters. For the moment, however,
+you will have to find a good set of parameters yourself. The method
+can be sensitive and you should make sure you run with a reasonable
+bin-size, max time and number of history steps. You should be careful
+and plot the resulting MSD curve after a short simulation to make
+sure your parameters are reasonable before you run and longer production
+simulations to estimate the diffusion constants.</p>
+<p>One way to estimate reasonable parameters is to look at the
+<a class="reference internal" href="#KMCLib.TimeStepDistribution" title="KMCLib.TimeStepDistribution"><tt class="xref py py-class docutils literal"><span class="pre">TimeStepDistribution</span></tt></a> of a short simulation with the same
+system and chose a <tt class="xref py py-obj docutils literal"><span class="pre">bin_size</span></tt> roughly equal to the mean of the
+time step distribution, and use as many bins as you have history steps.</p>
+</div>
+</div>
+<div class="section" id="time-step-distribution">
+<h2>Time-step distribution<a class="headerlink" href="#time-step-distribution" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id4">
+<h3>Usage<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference internal" href="#KMCLib.TimeStepDistribution" title="KMCLib.TimeStepDistribution"><tt class="xref py py-class docutils literal"><span class="pre">TimeStepDistribution</span></tt></a> analysis is used by giving it as an
+argument to the <a class="reference internal" href="api.html#KMCLib.KMCLatticeModel.run" title="KMCLib.KMCLatticeModel.run"><tt class="xref py py-meth docutils literal"><span class="pre">run</span></tt></a> function of the
+<a class="reference internal" href="api.html#KMCLib.KMCLatticeModel" title="KMCLib.KMCLatticeModel"><tt class="xref py py-class docutils literal"><span class="pre">KMCLatticeModel</span></tt></a> in the same way as the
+<a class="reference internal" href="#KMCLib.OnTheFlyMSD" title="KMCLib.OnTheFlyMSD"><tt class="xref py py-class docutils literal"><span class="pre">OnTheFlyMSD</span></tt></a> analysis. You can have a look at the
+<a class="reference internal" href="usage.html#usage-examples"><em>Usage examples</em></a> for details.</p>
+</div>
+<div class="section" id="id5">
+<h3>Interface<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="KMCLib.TimeStepDistribution">
+<em class="property">class </em><tt class="descclassname">KMCLib.</tt><tt class="descname">TimeStepDistribution</tt><big>(</big><em>binsize=None</em><big>)</big><a class="headerlink" href="#KMCLib.TimeStepDistribution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for collecting the time step distribution during a simulation.</p>
+<dl class="method">
+<dt id="KMCLib.TimeStepDistribution.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>binsize=None</em><big>)</big><a class="headerlink" href="#KMCLib.TimeStepDistribution.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor for the time step distribution analysis object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>binsize</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; The size of the bins in the histogram.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.TimeStepDistribution.finalize">
+<tt class="descname">finalize</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.TimeStepDistribution.finalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recieves the finalize call after the MC loop.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.TimeStepDistribution.histogram">
+<tt class="descname">histogram</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.TimeStepDistribution.histogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query function for the histogram.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The raw histogram as a numpy array.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.TimeStepDistribution.normalizedHistogram">
+<tt class="descname">normalizedHistogram</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.TimeStepDistribution.normalizedHistogram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query function for the histogram normalized to 1.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The normalized historgram.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.TimeStepDistribution.printResults">
+<tt class="descname">printResults</tt><big>(</big><em>stream=&lt;open file '&lt;stdout&gt;'</em>, <em>mode 'w' at 0x2b9b574a91e0&gt;</em><big>)</big><a class="headerlink" href="#KMCLib.TimeStepDistribution.printResults" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print the results to the stream.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>stream</strong> &#8211; The stream to print to.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.TimeStepDistribution.registerStep">
+<tt class="descname">registerStep</tt><big>(</big><em>step</em>, <em>time</em>, <em>configuration</em><big>)</big><a class="headerlink" href="#KMCLib.TimeStepDistribution.registerStep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recieves the step call from the MC loop.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.TimeStepDistribution.setup">
+<tt class="descname">setup</tt><big>(</big><em>step</em>, <em>time</em>, <em>configuration</em><big>)</big><a class="headerlink" href="#KMCLib.TimeStepDistribution.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Recieves the setup call from before the MC loop.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.TimeStepDistribution.timeSteps">
+<tt class="descname">timeSteps</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.TimeStepDistribution.timeSteps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query function for the time steps (x-values).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The time steps as a numpy array.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="id6">
+<h3>Notes<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference internal" href="#KMCLib.TimeStepDistribution" title="KMCLib.TimeStepDistribution"><tt class="xref py py-class docutils literal"><span class="pre">TimeStepDistribution</span></tt></a> analysis is very simple and could
+serve as a good example if you want to implement your own
+analysis. Have a look at the source code.</p>
+</div>
+</div>
+<div class="section" id="your-contributions">
+<h2>Your contributions<a class="headerlink" href="#your-contributions" title="Permalink to this headline">¶</a></h2>
+<p>I have implemented the type of analysis I needed for the specific
+projects I was working on. There is often no point in guessing what
+people need. Better to wait for your input. If you have suggestions of
+what type of analysis would be useful please let me
+know.</p>
+<p>With a little bit of Python knowledge implementing your own
+analysis module is simple. Follow the example of the
+<a class="reference internal" href="#KMCLib.TimeStepDistribution" title="KMCLib.TimeStepDistribution"><tt class="xref py py-class docutils literal"><span class="pre">TimeStepDistribution</span></tt></a> and have a look at the
+<a class="reference internal" href="plugins.html#KMCLib.KMCAnalysisPlugin" title="KMCLib.KMCAnalysisPlugin"><tt class="xref py py-class docutils literal"><span class="pre">KMCAnalysisPlugin</span></tt></a> documentation. If you have analysis
+contributions you wish to share, or perhaps even include in the next official
+release don&#8217;t hesitate to let me know.</p>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="plugins.html">Plugin Interfaces</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="non_api.html">Non-API code</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012 - 2014, Mikael Leetmaa.
+    </div>
+  </body>
+</html>
