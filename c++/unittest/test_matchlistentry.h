@@ -27,7 +27,6 @@ public:
     CPPUNIT_TEST( testConstruction );
     CPPUNIT_TEST( testNotEqualOperator );
     CPPUNIT_TEST( testLessOperator );
-    CPPUNIT_TEST( testQuery );
     CPPUNIT_TEST( testProcessBucketEntryConstruction );
     CPPUNIT_TEST( testConfigBucketEntryConstruction );
     CPPUNIT_TEST( testProcessConfigNotEqual );
@@ -35,12 +34,12 @@ public:
     CPPUNIT_TEST( testConfigBucketLessOperator );
     CPPUNIT_TEST( testQueryProcessBucket );
     CPPUNIT_TEST( testQueryConfigBucket );
+    CPPUNIT_TEST( testSamePoint );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstruction();
     void testNotEqualOperator();
     void testLessOperator();
-    void testQuery();
     void testProcessBucketEntryConstruction();
     void testConfigBucketEntryConstruction();
     void testProcessConfigNotEqual();
@@ -48,7 +47,7 @@ public:
     void testConfigBucketLessOperator();
     void testQueryProcessBucket();
     void testQueryConfigBucket();
-
+    void testSamePoint();
 };
 
 #endif

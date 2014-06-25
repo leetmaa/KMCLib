@@ -20,6 +20,7 @@ from KMCLib.CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
 from KMCLib.CoreComponents.KMCControlParameters import KMCControlParameters
 from KMCLib.CoreComponents.KMCUnitCell import KMCUnitCell
 from KMCLib.CoreComponents.KMCLattice  import KMCLattice
+from KMCLib.Utilities.ConversionUtilities import typeBucketToList
 from KMCLib.PluginInterfaces.KMCBreakerPlugin import KMCBreakerPlugin
 from KMCLib.PluginInterfaces.KMCAnalysisPlugin import KMCAnalysisPlugin
 from KMCLib.Exceptions.Error import Error
@@ -121,7 +122,7 @@ class KMCLatticeModelTest(unittest.TestCase):
 
 
     def testRunImplicitWildcards(self):
-        """ Test that ta valid model can run for a few steps. """
+        """ Test that a valid model can run for a few steps. """
         # Setup a unitcell.
         unit_cell = KMCUnitCell(cell_vectors=numpy.array([[1.0,0.0,0.0],
                                                           [0.0,1.0,0.0],
@@ -186,26 +187,25 @@ class KMCLatticeModelTest(unittest.TestCase):
                                        implicit_wildcards=False)
 
         # Create the model.
-        model = KMCLatticeModel(config, interactions)
+        print "ML: Calling the lattice model constructor from python."
+        model1 = KMCLatticeModel(config, interactions)
 
         # Get the match types out.
-        match_types = [ [t for t in l.match_types] for l in model._backend().interactions().processes()[0].processMatchList() ]
-
-
-        print match_types
+        match_types = [ typeBucketToList(l.match_types) for l in model1._backend().interactions().processes()[0].processMatchList() ]
 
         # This does not have wildcards added.
         ref_match_types = [[0, 1, 0], [0, 0, 1], [0, 0, 1], [0, 0, 1], [0, 0, 1], [0, 1, 0]]
         self.assertEqual( match_types, ref_match_types )
 
         # Create with implicit wildcards - this is default behavior.
+        print "ML: Calling the lattice model constructor again (new model) from python."
         interactions = KMCInteractions(processes=processes)
 
         # Create the model.
         model = KMCLatticeModel(config, interactions)
 
         # Check the process matchlists again.
-        match_types = [ [t for t in l.match_types] for l in model._backend().interactions().processes()[0].processMatchList() ]
+        match_types = [ typeBucketToList(l.match_types) for l in model._backend().interactions().processes()[0].processMatchList() ]
 
         ref_match_types = [[0, 1, 0], [0, 0, 1], [0, 0, 1], [0, 0, 1], [0, 0, 1],
                            [1, 0, 0], [1, 0, 0], [1, 0, 0], [1, 0, 0], [1, 0, 0],
@@ -219,6 +219,8 @@ class KMCLatticeModelTest(unittest.TestCase):
         # Setup the run paramters.
         control_parameters = KMCControlParameters(number_of_steps=10,
                                                   dump_interval=1)
+        print "just before start"
+
         model.run(control_parameters)
 
     def testRun2(self):

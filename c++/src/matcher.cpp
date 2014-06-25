@@ -294,6 +294,9 @@ void Matcher::matchIndicesWithProcesses(const std::vector<std::pair<int,int> > &
 bool Matcher::isMatch(const ProcessBucketMatchList & process_match_list,
                       const ConfigBucketMatchList & index_match_list) const
 {
+    return whateverMatch(process_match_list, index_match_list);
+
+    /*
     if (index_match_list.size() < process_match_list.size())
     {
         return false;
@@ -314,6 +317,7 @@ bool Matcher::isMatch(const ProcessBucketMatchList & process_match_list,
 
     // All match, return true.
     return true;
+    */
 }
 
 
@@ -340,7 +344,7 @@ void Matcher::printMatchLists(const ProcessBucketMatchList & process_match_list,
         printf("%13f\n", (*it2).distance);
 
         printf("              [ ");
-        for (size_t i = 0; i < (*it1).match_types.size(); ++i)
+        for (int i = 0; i < (*it1).match_types.size(); ++i)
         {
             printf("%i ", (*it1).match_types[i]);
         }
@@ -348,7 +352,7 @@ void Matcher::printMatchLists(const ProcessBucketMatchList & process_match_list,
 
 
         printf("    [ ");
-        for (size_t i = 0; i < (*it2).match_types.size(); ++i)
+        for (int i = 0; i < (*it2).match_types.size(); ++i)
         {
             printf("%i ", (*it2).match_types[i]);
         }
@@ -357,7 +361,7 @@ void Matcher::printMatchLists(const ProcessBucketMatchList & process_match_list,
 
         ++step;
 
-        if ((*it1) != (*it2))
+        if (!(*it1).match(*it2))
         {
             printf("break at step %i\n", step);
             break;
@@ -390,7 +394,7 @@ void Matcher::printMatchLists(const ConfigBucketMatchList & process_match_list,
         printf("%13f\n", (*it2).distance);
 
         printf("              [ ");
-        for (size_t i = 0; i < (*it1).match_types.size(); ++i)
+        for (int i = 0; i < (*it1).match_types.size(); ++i)
         {
             printf("%i ", (*it1).match_types[i]);
         }
@@ -398,7 +402,7 @@ void Matcher::printMatchLists(const ConfigBucketMatchList & process_match_list,
 
 
         printf("    [ ");
-        for (size_t i = 0; i < (*it2).match_types.size(); ++i)
+        for (int i = 0; i < (*it2).match_types.size(); ++i)
         {
             printf("%i ", (*it2).match_types[i]);
         }
@@ -406,12 +410,6 @@ void Matcher::printMatchLists(const ConfigBucketMatchList & process_match_list,
 
 
         ++step;
-
-        //if ((*it1) != (*it2))
-        //{
-        //    printf("break at step %i\n", step);
-        //    break;
-        //}
     }
 
 }
@@ -437,7 +435,7 @@ void Matcher::printMatchList(const ConfigBucketMatchList & index_match_list) con
         printf("%13f\n", (*it2).distance);
 
         printf("    [ ");
-        for (size_t i = 0; i < (*it2).match_types.size(); ++i)
+        for (int i = 0; i < (*it2).match_types.size(); ++i)
         {
             printf("%i ", (*it2).match_types[i]);
         }
@@ -549,7 +547,7 @@ double Matcher::updateSingleRate(const int index,
     it1 = config_match_list.begin();
     for ( ; it1 != new_end; ++it1 )
     {
-        const Coordinate & coord   = (*it1).coordinate;
+        const Coordinate & coord = (*it1).coordinate;
 
         (*it_geo) = coord.x();
         ++it_geo;
@@ -578,34 +576,25 @@ double Matcher::updateSingleRate(const int index,
     // Loop over the process match list and update the types_after vector.
     for ( ; it2 != end; ++it1, ++it2, ++it3 )
     {
-        int update_type = -1; // = (*it2).update_type;
-        int match_type = -1;  // = (*it1).match_type;
+        const TypeBucket & update_types = (*it2).update_types;
+        const TypeBucket &  match_types = (*it1).match_types;
 
-        // FIXME:
-        // Slow, temoporary fix to use the old interface with the new bucket matchlists.
-
-        for (size_t i = 0; i < (*it1).match_types.size(); ++i)
+        // Set the type after process. NOTE: The != 0 is needed for handling wildcards.
+        if ( !match_types.identical(update_types)  && !(update_types == 0) )
         {
-            if ((*it1).match_types[i] != 0)
+            // FIXME - This requires a new data structure for the type names
+            //         that we send to python for using buckets with more than
+            //         one atom per site.
+
+            for (int i = 0; i < update_types.size(); ++i)
             {
-                match_type = i;
-                break;
+                if (update_types[i] != 0)
+                {
+                    (*it3) = configuration.typeName(i);
+                    break;
+                }
             }
-        }
 
-        for (size_t i = 0; i < (*it2).update_types.size(); ++i)
-        {
-            if ((*it2).update_types[i] != 0)
-            {
-                update_type = i;
-                break;
-            }
-        }
-
-        // Set the type after process. NOTE: The > 0 is needed for handling wildcards.
-        if ( match_type != update_type  && update_type > 0)
-        {
-            (*it3) = configuration.typeName(update_type);
         }
     }
 

@@ -135,7 +135,7 @@ unsigned long int hashCustomRateInput(const int index,
 
         // ML: Needs fix for the general case.
         int match_type = 0;
-        for (size_t i = 0; i < (*it1).match_types.size(); ++i)
+        for (int i = 0; i < (*it1).match_types.size(); ++i)
         {
             if ((*it1).match_types[i] != 0)
             {

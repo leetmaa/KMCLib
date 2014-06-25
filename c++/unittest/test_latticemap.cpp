@@ -553,10 +553,11 @@ void Test_LatticeMap::testNeighbourIndicesLong()
     ConfigBucketMatchList::const_iterator it0 = default_matchlist.begin();
     ConfigBucketMatchList::const_iterator it1 = one_shell_matchlist.begin();
 
-    // These should be equal.
+    // These should be identical.
     for ( ; it0 != default_matchlist.end(); ++it0, ++it1 )
     {
-        CPPUNIT_ASSERT( !((*it0) != (*it1)) );
+        CPPUNIT_ASSERT( (*it0).match_types.identical((*it1).match_types) );
+        CPPUNIT_ASSERT( (*it0).samePoint(*it1) );
     }
 
     // Check that they are correctly sorted.

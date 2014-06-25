@@ -73,7 +73,7 @@ bool whateverMatch(const T1 & m1, const T2 & m2)
 
     for (size_t i = 0; i < size; ++i)
     {
-        if (m1[i] != m2[i])
+        if (!m1[i].match(m2[i]))
         {
             return false;
         }

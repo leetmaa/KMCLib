@@ -10,6 +10,8 @@
  *  \brief File for the implementation code of the TypeBucket class.
  */
 
+#include <iostream>
+
 #include "typebucket.h"
 
 // -----------------------------------------------------------------------------
@@ -30,3 +32,30 @@ TypeBucket::TypeBucket(const TypeBucket & other) :
 }
 
 
+// -----------------------------------------------------------------------------
+//
+TypeBucket::~TypeBucket()
+{
+}
+
+
+// -----------------------------------------------------------------------------
+// NON-MEMBER FUNCTION DEFINITIONS FOLLOW.
+// -----------------------------------------------------------------------------
+
+
+// -----------------------------------------------------------------------------
+// NEEDED FOR CPPUNIT
+std::ostream & operator<<(std::ostream & os, const TypeBucket & tb)
+{
+    os.operator<<("[");
+    for (int i = 0; i < tb.size(); ++i)
+    {
+        os.operator<<(" ");
+        os.operator<<(tb[i]);
+        os.operator<<(" ");
+    }
+    os.operator<<("]");
+
+  return os;
+}

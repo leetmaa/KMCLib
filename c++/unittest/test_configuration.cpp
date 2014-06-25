@@ -193,28 +193,27 @@ void Test_Configuration::testPerformProcess()
     // Now, add index 1434 to the process.
     // We know by construction that these match.
     p.addSite(1434, 0.0);
-
     // For site 1434
     // 350 changes from 1 to 0
     // 1434 changes from 2 to 1
     // All other must remain unchanged.
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[1434], 3 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[350],  2 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[1433], 2 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[349],  2 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[351],  1 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[2517], 1 );
+    CPPUNIT_ASSERT( configuration.types()[1434] == 3 );
+    CPPUNIT_ASSERT( configuration.types()[350]  == 2 );
+    CPPUNIT_ASSERT( configuration.types()[1433] == 2 );
+    CPPUNIT_ASSERT( configuration.types()[349]  == 2 );
+    CPPUNIT_ASSERT( configuration.types()[351]  == 1 );
+    CPPUNIT_ASSERT( configuration.types()[2517] == 1 );
 
     // Peform the process.
     configuration.performBucketProcess(p, 1434, lattice_map);
 
     // Check that the types were correctly updated.
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[1434], 2 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[350],  1 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[1433], 2 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[349],  2 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[351],  1 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[2517], 1 );
+    CPPUNIT_ASSERT( configuration.types()[1434] == 2 );
+    CPPUNIT_ASSERT( configuration.types()[350]  == 1 );
+    CPPUNIT_ASSERT( configuration.types()[1433] == 2 );
+    CPPUNIT_ASSERT( configuration.types()[349]  == 2 );
+    CPPUNIT_ASSERT( configuration.types()[351]  == 1 );
+    CPPUNIT_ASSERT( configuration.types()[2517] == 1 );
 
     // Check that the correct indices were added to the list of affected.
     const std::vector<int> affected = p.affectedIndices();
@@ -567,21 +566,11 @@ void Test_Configuration::testMatchLists()
     for (size_t i = 0; i < ref_1434.size(); ++i)
     {
 
-        CPPUNIT_ASSERT_EQUAL( static_cast<int>(ref_1434[i].match_types.size()),
-                              static_cast<int>(configuration.configMatchList(1434)[i].match_types.size()) );
+        CPPUNIT_ASSERT_EQUAL( ref_1434[i].match_types,
+                              configuration.configMatchList(1434)[i].match_types );
 
-        for (size_t j = 0; j < ref_1434[j].match_types.size(); ++j)
-        {
-            CPPUNIT_ASSERT_EQUAL( ref_1434[i].match_types[j], configuration.configMatchList(1434)[i].match_types[j] );
-        }
-
-        CPPUNIT_ASSERT_EQUAL( static_cast<int>(ref_1434[i].update_types.size()),
-                              static_cast<int>(configuration.configMatchList(1434)[i].update_types.size()) );
-
-        for (size_t j = 0; j < ref_1434[j].update_types.size(); ++j)
-        {
-            CPPUNIT_ASSERT_EQUAL( ref_1434[i].update_types[j], configuration.configMatchList(1434)[i].update_types[j] );
-        }
+        CPPUNIT_ASSERT_EQUAL( ref_1434[i].update_types.size(),
+                              configuration.configMatchList(1434)[i].update_types.size() );
 
         CPPUNIT_ASSERT_EQUAL( ref_1434[i].index,
                               configuration.configMatchList(1434)[i].index );
@@ -636,23 +625,23 @@ void Test_Configuration::testMatchLists()
     // 350 changes from 1 to 0
     // 1434 changes from 2 to 1
     // All other must remain unchanged.
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[1434], 3 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[350],  2 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[1433], 2 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[349],  2 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[351],  1 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[2517], 1 );
+    CPPUNIT_ASSERT( configuration.types()[1434] == 3 );
+    CPPUNIT_ASSERT( configuration.types()[350]  == 2 );
+    CPPUNIT_ASSERT( configuration.types()[1433] == 2 );
+    CPPUNIT_ASSERT( configuration.types()[349]  == 2 );
+    CPPUNIT_ASSERT( configuration.types()[351]  == 1 );
+    CPPUNIT_ASSERT( configuration.types()[2517] == 1 );
 
     // Peform the process.
     configuration.performBucketProcess(p, 1434, lattice_map);
 
     // Check that the types were correctly updated.
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[1434], 2 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[350],  1 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[1433], 2 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[349],  2 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[351],  1 );
-    CPPUNIT_ASSERT_EQUAL( configuration.types()[2517], 1 );
+    CPPUNIT_ASSERT( configuration.types()[1434] == 2 );
+    CPPUNIT_ASSERT( configuration.types()[350]  == 1 );
+    CPPUNIT_ASSERT( configuration.types()[1433] == 2 );
+    CPPUNIT_ASSERT( configuration.types()[349]  == 2 );
+    CPPUNIT_ASSERT( configuration.types()[351]  == 1 );
+    CPPUNIT_ASSERT( configuration.types()[2517] == 1 );
 
     // Check that updating the matchlist gets us the correct values.
     configuration.updateMatchList(1434);
@@ -670,21 +659,11 @@ void Test_Configuration::testMatchLists()
     for (size_t i = 0; i < ref2_1434.size(); ++i)
     {
 
-        CPPUNIT_ASSERT_EQUAL( static_cast<int>(ref2_1434[i].match_types.size()),
-                              static_cast<int>(configuration.configMatchList(1434)[i].match_types.size()) );
+        CPPUNIT_ASSERT_EQUAL( ref2_1434[i].match_types,
+                              configuration.configMatchList(1434)[i].match_types );
 
-        for (size_t j = 0; j < ref2_1434[j].match_types.size(); ++j)
-        {
-            CPPUNIT_ASSERT_EQUAL( ref2_1434[i].match_types[j], configuration.configMatchList(1434)[i].match_types[j] );
-        }
-
-        CPPUNIT_ASSERT_EQUAL( static_cast<int>(ref2_1434[i].update_types.size()),
-                              static_cast<int>(configuration.configMatchList(1434)[i].update_types.size()) );
-
-        for (size_t j = 0; j < ref2_1434[j].update_types.size(); ++j)
-        {
-            CPPUNIT_ASSERT_EQUAL( ref2_1434[i].update_types[j], configuration.configMatchList(1434)[i].update_types[j] );
-        }
+        CPPUNIT_ASSERT_EQUAL( ref2_1434[i].update_types,
+                              configuration.configMatchList(1434)[i].update_types );
 
         CPPUNIT_ASSERT_EQUAL( ref2_1434[i].index, configuration.configMatchList(1434)[i].index );
 

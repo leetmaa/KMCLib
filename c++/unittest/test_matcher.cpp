@@ -44,8 +44,8 @@ void Test_Matcher::testIsMatchMatchList()
 
     const int n_types = 9;
 
-    m.match_types = std::vector<int>(n_types);
-    m.update_types = std::vector<int>(n_types);
+    m.match_types = TypeBucket(n_types);
+    m.update_types = TypeBucket(n_types);
 
     m.match_types[3]  = 1;
     m.update_types[2] = 1;
@@ -85,7 +85,7 @@ void Test_Matcher::testIsMatchMatchList()
     ConfigBucketMatchList index_match_list;
     ConfigBucketMatchListEntry n;
 
-    n.match_types = std::vector<int>(n_types);
+    n.match_types = TypeBucket(n_types);
     n.match_types[3] = 1;
     n.distance     = 1.2;
     n.coordinate   = Coordinate(0.1,2.0,0.34);
@@ -162,8 +162,8 @@ void Test_Matcher::testIsMatchWildcard()
     ProcessBucketMatchListEntry m;
 
     const int n_types = 9;
-    m.match_types = std::vector<int>(n_types);
-    m.update_types = std::vector<int>(n_types);
+    m.match_types = TypeBucket(n_types);
+    m.update_types = TypeBucket(n_types);
 
     m.match_types[3]  = 1;
     m.update_types[2] = 1;
@@ -195,7 +195,7 @@ void Test_Matcher::testIsMatchWildcard()
 
     ConfigBucketMatchList index_match_list;
     ConfigBucketMatchListEntry n;
-    n.match_types = std::vector<int>(n_types);
+    n.match_types = TypeBucket(n_types);
     n.match_types[3] = 1;
     n.distance     = 1.2;
     n.coordinate   = Coordinate(0.1,2.0,0.34);

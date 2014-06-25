@@ -22,6 +22,7 @@
 #include "customrateprocess.h"
 #include "coordinate.h"
 #include "matchlistentry.h"
+#include "typebucket.h"
 #include "matchlist.h"
 #include "simulationtimer.h"
 #include "ratecalculator.h"
@@ -78,6 +79,7 @@
 %include "customrateprocess.h"
 %include "coordinate.h"
 %include "matchlist.h"
+%include "typebucket.h"
 %include "matchlistentry.h"
 %include "simulationtimer.h"
 %include "ratecalculator.h"
@@ -107,5 +109,37 @@
         }
         (*self)[i] = value;
     };
+};
+
+
+// This extends the TypeBucket class with python indexing support.
+%extend TypeBucket
+{
+    int __getitem__(unsigned int i)
+    {
+        // Check bounds.
+        if (static_cast<int>(i) > (*self).size() - 1)
+        {
+            throw std::out_of_range("TypeBucket index out of range.");
+        }
+        return (*self)[i];
+    };
+
+    void __setitem__(unsigned int i, const int value)
+    {
+        // Check bounds.
+        if (static_cast<int>(i) > (*self).size() - 1)
+        {
+            throw std::out_of_range("TypeBucket index out of range.");
+        }
+        (*self)[i] = value;
+    };
+
+    int __len__()
+    {
+        return (*self).size();
+    }
+
+
 };
 

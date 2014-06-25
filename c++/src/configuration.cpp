@@ -1,5 +1,5 @@
 /*
-  Copyright (c)  2012-2013  Mikael Leetmaa
+  Copyright (c)  2012-2014  Mikael Leetmaa
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -31,7 +31,6 @@ Configuration::Configuration(std::vector<std::vector<double> > const & coordinat
     elements_(elements),
     atom_id_elements_(elements),
     match_lists_(elements_.size())
-    //minimal_match_lists_(elements_.size())
 {
     // Setup the coordinates and initial atom ids.
     for (size_t i = 0; i < coordinates.size(); ++i)
@@ -66,12 +65,16 @@ Configuration::Configuration(std::vector<std::vector<double> > const & coordinat
          type_names_[it1->second] = it1->first;
      }
 
+    // ML: Needs update for buckets with more than one atom per site.
+
     // Setup the types from the elements strings.
     for (size_t i = 0; i < elements_.size(); ++i)
     {
         const std::string element = elements_[i];
         const int type = possible_types.find(element)->second;
-        types_.push_back(type);
+        TypeBucket tb(type_names_.size());
+        tb[type] = 1;
+        types_.push_back(tb);
      }
 }
 
@@ -110,8 +113,7 @@ void Configuration::updateMatchList(const int index)
     const ConfigBucketMatchList::const_iterator end = match_lists_[index].end();
     for ( ; it1 != end; ++it1 )
     {
-        (*it1).match_types.assign((*it1).match_types.size(), 0);
-        (*it1).match_types[types_[(*it1).index]] = 1;
+        (*it1).match_types = types_[(*it1).index];
     }
 }
 
@@ -158,10 +160,7 @@ const ConfigBucketMatchList & Configuration::configMatchList(const int origin_in
             const double distance = c.distanceToOrigin();
 
             // Get the type.
-            const int particle_type = types_[(*it_index)];
-            const int n_particles = 1;
-            (*it_match_list).match_types = std::vector<int>(type_names_.size());
-            (*it_match_list).match_types[particle_type] = n_particles;
+            (*it_match_list).match_types = types_[(*it_index)];
 
             // Save in the match list.
             (*it_match_list).distance    = distance;
@@ -186,10 +185,7 @@ const ConfigBucketMatchList & Configuration::configMatchList(const int origin_in
             const double distance = c.distanceToOrigin();
 
             // Get the type.
-            const int particle_type = types_[(*it_index)];
-            const int n_particles = 1;
-            (*it_match_list).match_types = std::vector<int>(type_names_.size());
-            (*it_match_list).match_types[particle_type] = n_particles;
+            (*it_match_list).match_types = types_[(*it_index)];
 
             // Save in the match list.
             (*it_match_list).distance    = distance;
@@ -216,12 +212,8 @@ const ConfigBucketMatchList & Configuration::configMatchList(const int origin_in
 
             const double distance = c.distanceToOrigin();
 
-            // ML:
             // Get the type.
-            const int particle_type = types_[(*it_index)];
-            const int n_particles = 1;
-            (*it_match_list).match_types = std::vector<int>(type_names_.size());
-            (*it_match_list).match_types[particle_type] = n_particles;
+            (*it_match_list).match_types = types_[(*it_index)];
 
             // Save in the match list.
             (*it_match_list).distance    = distance;
@@ -261,27 +253,14 @@ void Configuration::performBucketProcess(Process & process,
     // Loop over the match lists and get the types and indices out.
     for( ; it1 != process_match_list.end(); ++it1, ++it2)
     {
-
-        // ML: Temporary solution to use bucket match lists for one atom per site.
-
         // Find out the update type.
-        const size_t n_types = (*it1).update_types.size();
-        int pos = 0;
-        for (size_t i = 0; i < n_types; ++i)
-        {
-            if ((*it1).update_types[i] == 1)
-            {
-                pos = i;
-                break;
-            }
-        }
-        const int update_type = pos;
+        const TypeBucket & update_types = (*it1).update_types;
 
         // Get the index out of the configuration match list.
         const int index = (*it2).index;
 
-        // NOTE: The > 0 is needed for handling the wildcard match.
-        if (types_[index] != update_type && update_type > 0)
+        // NOTE: The != 0 is needed for handling the wildcard match.
+        if (types_[index] != update_types && !(update_types == 0))
         {
             // Get the atom id to apply the move vector to.
             const int atom_id = atom_id_[index];
@@ -290,8 +269,17 @@ void Configuration::performBucketProcess(Process & process,
             atom_id_coordinates_[atom_id] += (*it1).move_coordinate;
 
             // Set the type at this index.
-            types_[index]    = update_type;
-            elements_[index] = type_names_[update_type];
+            types_[index] = update_types;
+
+            // ML: This is where the temporary fix come in.
+            for (int i = 0; i < update_types.size(); ++i)
+            {
+                if (update_types[i] > 0)
+                {
+                    elements_[index] = type_names_[i];
+                    break;
+                }
+            }
 
             // Update the atom id element.
             if (!(*it1).has_move_coordinate)

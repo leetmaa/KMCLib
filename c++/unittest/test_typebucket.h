@@ -29,8 +29,12 @@ public:
     CPPUNIT_TEST( testCopyConstruction );
     CPPUNIT_TEST( testAccessOperator );
     CPPUNIT_TEST( testIdentical );
+    CPPUNIT_TEST( testEqualOperator );
+    CPPUNIT_TEST( testNotEqualOperator );
     CPPUNIT_TEST( testGreaterOrEqual );
-    CPPUNIT_TEST( testAssignmentOperator );
+    CPPUNIT_TEST( testLessThan );
+    CPPUNIT_TEST( testComparisonOperator );
+    CPPUNIT_TEST( testMatch );
     CPPUNIT_TEST_SUITE_END();
 
     void testDefaultConstruction();
@@ -38,8 +42,13 @@ public:
     void testCopyConstruction();
     void testAccessOperator();
     void testIdentical();
+    void testEqualOperator();
+    void testNotEqualOperator();
     void testGreaterOrEqual();
+    void testLessThan();
     void testAssignmentOperator();
+    void testComparisonOperator();
+    void testMatch();
 
 };
 

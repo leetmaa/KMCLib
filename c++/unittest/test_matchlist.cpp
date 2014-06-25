@@ -21,14 +21,14 @@ void Test_MatchList::testCall()
 {
     // Construct.
     ProcessBucketMatchList m1(1);
-    m1[0].match_types = std::vector<int>(3, 0);
+    m1[0].match_types = TypeBucket(3);
     m1[0].match_types[2] = 2;
     m1[0].distance = 1.2;
     m1[0].coordinate = Coordinate(0.1, 0.2, 0.3);
     m1[0].index = 0;
 
     ConfigBucketMatchList m2(1);
-    m2[0].match_types = std::vector<int>(3, 0);
+    m2[0].match_types = TypeBucket(3);
     m2[0].match_types[2] = 2;
     m2[0].distance = 1.2;
     m2[0].coordinate = Coordinate(0.1, 0.2, 0.3);

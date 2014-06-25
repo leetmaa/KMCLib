@@ -115,3 +115,27 @@ def numpy2DArrayToStdVectorCoordinate(array):
                                                 array[i][2]))
     # Done.
     return cpp_vector
+
+
+# NEEDS TESTING
+def typeBucketToList(type_bucket):
+    """
+    Convert a TypeBucket to a numpy list.
+
+    :param type_bucket: The type bucket to convert.
+
+    :returns: A corresponding python list.
+    """
+    # Get the size.
+    size = type_bucket.size()
+
+    # Set up the return list.
+    ret = [0]*size
+
+    # Copy the values over.
+    for i in range(size):
+        ret[i] = type_bucket[i]
+
+    # Done.
+    return ret
+

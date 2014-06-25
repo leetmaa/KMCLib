@@ -71,7 +71,7 @@ public:
     /*! \brief Const query for the types.
      *  \return : The types of the configuration.
      */
-    const std::vector<int> & types() const { return types_; }
+    const std::vector<TypeBucket> & types() const { return types_; }
 
     /*! \brief Const query for the moved atom ids.
      *  \return : A copy of the moved atom ids, resized to correct length.
@@ -161,7 +161,7 @@ private:
     std::vector<std::string> atom_id_elements_;
 
     /// The the lattice elements in integer representation.
-    std::vector<int> types_;
+    std::vector<TypeBucket> types_;
 
     /// The atom id for each lattice point.
     std::vector<int> atom_id_;

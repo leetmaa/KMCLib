@@ -30,17 +30,9 @@ void configurationsToMatchList(const Configuration & first,
     // Get the first coordinate out to calculate the distance against.
     const Coordinate origin = coords[0];
 
-    // To set the size of the match types list.
-    const size_t n_types = first.typeNames().size();
-
     // Transform the configurations into match lists.
     for (size_t i = 0; i < first.elements().size(); ++i)
     {
-        // Get the types as integers.
-        // ML: This is where we update for buckets.
-        const int first_type  = first.types()[i];
-        const int second_type = second.types()[i];
-
         // Calculate the distance.
         const Coordinate coordinate = coords[i];
         const double distance = coordinate.distance(origin);
@@ -68,13 +60,10 @@ void configurationsToMatchList(const Configuration & first,
         // Set up the match list entry.
         ProcessBucketMatchListEntry pm;
 
-        // Initialize with zeros.
-        pm.match_types  = std::vector<int>(n_types, 0);
-        pm.update_types = std::vector<int>(n_types, 0);
+        // Set the values.
+        pm.match_types = first.types()[i];
+        pm.update_types = second.types()[i];
 
-        // ML: update here later for buckets.
-        pm.match_types[first_type]   = 1;
-        pm.update_types[second_type] = 1;
         pm.distance    = distance;
         pm.coordinate  = coordinate;
         pm.index       = -1;
@@ -88,13 +77,9 @@ void configurationsToMatchList(const Configuration & first,
 
         // If the first and second type differ increase the length of the
         // affected_indices list accordingly.
-        for (size_t i = 0; i < n_types; ++i)
+        if (pm.match_types != pm.update_types)
         {
-            if (pm.match_types[i] != pm.update_types[i])
-            {
-                affected_indices.push_back(0);
-                break;
-            }
+            affected_indices.push_back(0);
         }
     }
 }

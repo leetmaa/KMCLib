@@ -39,9 +39,136 @@ void Test_MatchListEntry::testLessOperator()
 
 // -------------------------------------------------------------------------- //
 //
-void Test_MatchListEntry::testQuery()
+void Test_MatchListEntry::testSamePoint()
 {
-    // NEEDS IMPLEMENTATION
+    // Two equal.
+    {
+        ProcessBucketMatchListEntry m1;
+        m1.match_types = TypeBucket(3);
+        m1.match_types[2] = 3;
+
+        m1.update_types = TypeBucket(3);
+        m1.update_types[2] = 2;
+
+        m1.distance = 1.2;
+        m1.coordinate = Coordinate(0.1,0.2,0.34);
+
+        ConfigBucketMatchListEntry m2;
+        m2.match_types = TypeBucket(3);
+        m2.match_types[2] = 3;
+        m2.distance = 1.2;
+        m2.coordinate = Coordinate(0.1,0.2,0.34);
+
+        CPPUNIT_ASSERT( m1.samePoint(m2) );
+        CPPUNIT_ASSERT( m2.samePoint(m1) );
+    }
+
+    // Still the same point if we change th match types completely.
+    {
+        ProcessBucketMatchListEntry m1;
+        m1.match_types = TypeBucket(4);
+        m1.match_types[2] = 11;
+
+        m1.update_types = TypeBucket(3);
+        m1.update_types[2] = 2;
+
+        m1.distance = 1.2;
+        m1.coordinate = Coordinate(0.1,0.2,0.34);
+
+        ConfigBucketMatchListEntry m2;
+        m2.match_types = TypeBucket(3);
+        m2.match_types[2] = 3;
+        m2.distance = 1.2;
+        m2.coordinate = Coordinate(0.1,0.2,0.34);
+
+        CPPUNIT_ASSERT( m1.samePoint(m2) );
+        CPPUNIT_ASSERT( m2.samePoint(m1) );
+    }
+
+    // Not the same point if we chang the distance.
+    {
+        ProcessBucketMatchListEntry m1;
+        m1.match_types = TypeBucket(4);
+        m1.match_types[2] = 11;
+
+        m1.update_types = TypeBucket(3);
+        m1.update_types[2] = 2;
+
+        m1.distance = 1.2001;
+        m1.coordinate = Coordinate(0.1,0.2,0.34);
+
+        ConfigBucketMatchListEntry m2;
+        m2.match_types = TypeBucket(3);
+        m2.match_types[2] = 3;
+        m2.distance = 1.2;
+        m2.coordinate = Coordinate(0.1,0.2,0.34);
+
+        CPPUNIT_ASSERT( !m1.samePoint(m2) );
+        CPPUNIT_ASSERT( !m2.samePoint(m1) );
+    }
+    // Not the same point if we chang the coordinate in x.
+    {
+        ProcessBucketMatchListEntry m1;
+        m1.match_types = TypeBucket(4);
+        m1.match_types[2] = 11;
+
+        m1.update_types = TypeBucket(3);
+        m1.update_types[2] = 2;
+
+        m1.distance = 1.2;
+        m1.coordinate = Coordinate(0.101,0.2,0.34);
+
+        ConfigBucketMatchListEntry m2;
+        m2.match_types = TypeBucket(3);
+        m2.match_types[2] = 3;
+        m2.distance = 1.2;
+        m2.coordinate = Coordinate(0.1,0.2,0.34);
+
+        CPPUNIT_ASSERT( !m1.samePoint(m2) );
+        CPPUNIT_ASSERT( !m2.samePoint(m1) );
+    }
+    // Not the same point if we chang the coordinate in y.
+    {
+        ProcessBucketMatchListEntry m1;
+        m1.match_types = TypeBucket(4);
+        m1.match_types[2] = 11;
+
+        m1.update_types = TypeBucket(3);
+        m1.update_types[2] = 2;
+
+        m1.distance = 1.2001;
+        m1.coordinate = Coordinate(0.1,0.201,0.34);
+
+        ConfigBucketMatchListEntry m2;
+        m2.match_types = TypeBucket(3);
+        m2.match_types[2] = 3;
+        m2.distance = 1.2;
+        m2.coordinate = Coordinate(0.1,0.2,0.34);
+
+        CPPUNIT_ASSERT( !m1.samePoint(m2) );
+        CPPUNIT_ASSERT( !m2.samePoint(m1) );
+    }
+    // Not the same point if we chang the coordinate in z.
+    {
+        ProcessBucketMatchListEntry m1;
+        m1.match_types = TypeBucket(4);
+        m1.match_types[2] = 11;
+
+        m1.update_types = TypeBucket(3);
+        m1.update_types[2] = 2;
+
+        m1.distance = 1.2001;
+        m1.coordinate = Coordinate(0.1,0.2,0.34);
+
+        ConfigBucketMatchListEntry m2;
+        m2.match_types = TypeBucket(3);
+        m2.match_types[2] = 3;
+        m2.distance = 1.2;
+        m2.coordinate = Coordinate(0.1,0.2,0.3401);
+
+        CPPUNIT_ASSERT( !m1.samePoint(m2) );
+        CPPUNIT_ASSERT( !m2.samePoint(m1) );
+    }
 }
 
 
@@ -64,7 +191,7 @@ void Test_MatchListEntry::testConfigBucketEntryConstruction()
 {
     // Construct.
     ConfigBucketMatchListEntry m0;
-    m0.match_types = std::vector<int>(5);
+    m0.match_types = TypeBucket(5);
     m0.match_types[0] = 1;
     m0.match_types[1] = 0;
     m0.match_types[2] = 3;
@@ -84,49 +211,49 @@ void Test_MatchListEntry::testProcessConfigNotEqual()
     // Two equal.
     {
         ProcessBucketMatchListEntry m1;
-        m1.match_types = std::vector<int>(3,0);
+        m1.match_types = TypeBucket(3);
         m1.match_types[2] = 3;
 
-        m1.update_types = std::vector<int>(3,0);
+        m1.update_types = TypeBucket(3);
         m1.update_types[2] = 2;
 
         m1.distance = 1.2;
         m1.coordinate = Coordinate(0.1,0.2,0.34);
 
         ConfigBucketMatchListEntry m2;
-        m2.match_types = std::vector<int>(3);
+        m2.match_types = TypeBucket(3);
         m2.match_types[2] = 3;
         m2.distance = 1.2;
         m2.coordinate = Coordinate(0.1,0.2,0.34);
 
-        CPPUNIT_ASSERT( !(m1 != m2) );
+        CPPUNIT_ASSERT( m1.match(m2) );
     }
 
     // Two equal - by wildcard.
     {
         ProcessBucketMatchListEntry m1;
-        m1.match_types = std::vector<int>(3,0);
+        m1.match_types = TypeBucket(3);
         m1.match_types[0] = 1;  // Wildcard flag for the process bucket entry.
 
         m1.distance = 1.2;
         m1.coordinate = Coordinate(0.1,0.2,0.34);
 
         ConfigBucketMatchListEntry m2;
-        m2.match_types = std::vector<int>(3);
+        m2.match_types = TypeBucket(3);
         m2.match_types[1] = 2;
         m2.distance = 1.2;
         m2.coordinate = Coordinate(0.1,0.2,0.34);
 
-        CPPUNIT_ASSERT( !(m1 != m2) );
+        CPPUNIT_ASSERT( m1.match(m2) );
     }
 
     // Two not equal in index, should equate to equal.
     {
         ProcessBucketMatchListEntry m1;
-        m1.match_types = std::vector<int>(3,0);
+        m1.match_types = TypeBucket(3);
         m1.match_types[2] = 3;
 
-        m1.update_types = std::vector<int>(3,0);
+        m1.update_types = TypeBucket(3);
         m1.update_types[2] = 2;
 
         m1.distance = 1.2;
@@ -134,138 +261,139 @@ void Test_MatchListEntry::testProcessConfigNotEqual()
         m1.index = 1;
 
         ConfigBucketMatchListEntry m2;
-        m2.match_types = std::vector<int>(3);
+        m2.match_types = TypeBucket(3);
         m2.match_types[2] = 3;
         m2.distance = 1.2;
         m2.coordinate = Coordinate(0.1,0.2,0.34);
         m2.index = 2;
 
-        CPPUNIT_ASSERT( !(m1 != m2) );
+        CPPUNIT_ASSERT( m1.match(m2) );
     }
 
     // Two not equal in match type should equate to not equal.
     {
         ProcessBucketMatchListEntry m1;
-        m1.match_types = std::vector<int>(3,0);
+        m1.match_types = TypeBucket(3);
         m1.match_types[2] = 4;
 
-        m1.update_types = std::vector<int>(3,0);
+        m1.update_types = TypeBucket(3);
         m1.update_types[2] = 2;
 
         m1.distance = 1.2;
         m1.coordinate = Coordinate(0.1,0.2,0.34);
 
         ConfigBucketMatchListEntry m2;
-        m2.match_types = std::vector<int>(3);
+        m2.match_types = TypeBucket(3);
         m2.match_types[2] = 3;
         m2.distance = 1.2;
         m2.coordinate = Coordinate(0.1,0.2,0.34);
 
-        CPPUNIT_ASSERT( m1 != m2 );
+        // m2 match at m1, but not the other way around.
+        CPPUNIT_ASSERT( !m1.match(m2) );
     }
 
     // Two not equal in distance should equate to not equal.
     {
         ProcessBucketMatchListEntry m1;
-        m1.match_types = std::vector<int>(3,0);
+        m1.match_types = TypeBucket(3);
         m1.match_types[2] = 3;
 
-        m1.update_types = std::vector<int>(3,0);
+        m1.update_types = TypeBucket(3);
         m1.update_types[2] = 2;
 
         m1.distance = 1.2;
         m1.coordinate = Coordinate(0.1,0.2,0.34);
 
         ConfigBucketMatchListEntry m2;
-        m2.match_types = std::vector<int>(3);
+        m2.match_types = TypeBucket(3);
         m2.match_types[2] = 3;
         m2.distance = 1.22;
         m2.coordinate = Coordinate(0.1,0.2,0.34);
 
-        CPPUNIT_ASSERT( m1 != m2 );
+        CPPUNIT_ASSERT( !m1.match(m2) );
     }
 
     // If the distance difference is below eps_ hardcoded on the class
     // the difference is not visible.
     {
         ProcessBucketMatchListEntry m1;
-        m1.match_types = std::vector<int>(3,0);
+        m1.match_types = TypeBucket(3);
         m1.match_types[2] = 3;
 
-        m1.update_types = std::vector<int>(3,0);
+        m1.update_types = TypeBucket(3);
         m1.update_types[2] = 2;
 
         m1.distance = 1.2;
         m1.coordinate = Coordinate(0.1,0.2,0.34);
 
         ConfigBucketMatchListEntry m2;
-        m2.match_types = std::vector<int>(3);
+        m2.match_types = TypeBucket(3);
         m2.match_types[2] = 3;
         m2.distance = 1.200000001;
         m2.coordinate = Coordinate(0.1,0.2,0.34);
 
-        CPPUNIT_ASSERT( !(m1 != m2) );
+        CPPUNIT_ASSERT( m1.match(m2) );
     }
 
     // Two not equal in coordinate should equate to not equal.
     {
         ProcessBucketMatchListEntry m1;
-        m1.match_types = std::vector<int>(3,0);
+        m1.match_types = TypeBucket(3);
         m1.match_types[2] = 3;
 
-        m1.update_types = std::vector<int>(3,0);
+        m1.update_types = TypeBucket(3);
         m1.update_types[2] = 2;
 
         m1.distance = 1.2;
         m1.coordinate = Coordinate(0.1,0.2,0.34);
 
         ConfigBucketMatchListEntry m2;
-        m2.match_types = std::vector<int>(3);
+        m2.match_types = TypeBucket(3);
         m2.match_types[2] = 3;
         m2.distance = 1.2;
         m2.coordinate = Coordinate(0.11,0.2,0.34);
 
-        CPPUNIT_ASSERT( (m1 != m2) );
+        CPPUNIT_ASSERT( !m1.match(m2) );
     }
     {
         ProcessBucketMatchListEntry m1;
-        m1.match_types = std::vector<int>(3,0);
+        m1.match_types = TypeBucket(3);
         m1.match_types[2] = 3;
 
-        m1.update_types = std::vector<int>(3,0);
+        m1.update_types = TypeBucket(3);
         m1.update_types[2] = 2;
 
         m1.distance = 1.2;
         m1.coordinate = Coordinate(0.1,0.2,0.34);
 
         ConfigBucketMatchListEntry m2;
-        m2.match_types = std::vector<int>(3);
+        m2.match_types = TypeBucket(3);
         m2.match_types[2] = 3;
         m2.distance = 1.2;
         m2.coordinate = Coordinate(0.1,0.2,0.34);
         m2.coordinate = Coordinate(0.1,0.21,0.34);
 
-        CPPUNIT_ASSERT( (m1 != m2) );
+        CPPUNIT_ASSERT( !m1.match(m2) );
     }
     {
         ProcessBucketMatchListEntry m1;
-        m1.match_types = std::vector<int>(3,0);
+        m1.match_types = TypeBucket(3);
         m1.match_types[2] = 3;
 
-        m1.update_types = std::vector<int>(3,0);
+        m1.update_types = TypeBucket(3);
         m1.update_types[2] = 2;
 
         m1.distance = 1.2;
         m1.coordinate = Coordinate(0.1,0.2,0.34);
 
         ConfigBucketMatchListEntry m2;
-        m2.match_types = std::vector<int>(3);
+        m2.match_types = TypeBucket(3);
         m2.match_types[2] = 3;
         m2.distance = 1.2;
         m2.coordinate = Coordinate(0.1,0.2,0.34);
         m2.coordinate = Coordinate(0.1,0.2,0.341);
 
-        CPPUNIT_ASSERT( (m1 != m2) );
+        CPPUNIT_ASSERT( !m1.match(m2) );
     }
 }
 
