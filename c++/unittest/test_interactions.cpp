@@ -54,8 +54,8 @@ void Test_Interactions::testQuery()
 
     // A process that independent of local environment swaps a "B" to "V"
     {
-        const std::vector<std::string> process_elements1(1,"B");
-        const std::vector<std::string> process_elements2(1,"V");
+        const std::vector<std::vector<std::string> > process_elements1(1, std::vector<std::string>(1, "B"));
+        const std::vector<std::vector<std::string> > process_elements2(1, std::vector<std::string>(1, "V"));
         const std::vector<std::vector<double> > process_coordinates(1, std::vector<double>(3, 0.0));
         const double rate = 1.234;
         Configuration c1(process_coordinates, process_elements1, possible_types);
@@ -69,15 +69,15 @@ void Test_Interactions::testQuery()
     // A process that finds an A between two B's in the 1,1,1 direction
     // and swap the A and the first B.
     {
-        std::vector<std::string> process_elements1(3);
-        process_elements1[0] = "A";
-        process_elements1[1] = "B";
-        process_elements1[2] = "B";
+        std::vector<std::vector<std::string> > process_elements1(3);
+        process_elements1[0] = std::vector<std::string>(1, "A");
+        process_elements1[1] = std::vector<std::string>(1, "B");
+        process_elements1[2] = std::vector<std::string>(1, "B");
 
-        std::vector<std::string> process_elements2(3);
-        process_elements2[0] = "B";
-        process_elements2[1] = "A";
-        process_elements2[2] = "B";
+        std::vector<std::vector<std::string> > process_elements2(3);
+        process_elements2[0] = std::vector<std::string>(1, "B");
+        process_elements2[1] = std::vector<std::string>(1, "A");
+        process_elements2[2] = std::vector<std::string>(1, "B");
 
         std::vector<std::vector<double> > process_coordinates(3, std::vector<double>(3, 0.0));
 
@@ -154,11 +154,11 @@ void Test_Interactions::testUpdateAndPick()
     std::vector<Process> processes;
 
     // Setup a vector of dummy processes.
-    std::vector<std::string> process_elements1(1);
-    process_elements1[0] = "A";
+    std::vector<std::vector<std::string> > process_elements1(1);
+    process_elements1[0] = std::vector<std::string>(1, "A");
 
-    std::vector<std::string> process_elements2(1);
-    process_elements2[0] = "B";
+    std::vector<std::vector<std::string> > process_elements2(1);
+    process_elements2[0] = std::vector<std::string>(1, "B");
 
     std::vector<std::vector<double> > process_coordinates(1, std::vector<double>(3, 0.0));
 
@@ -292,11 +292,11 @@ void Test_Interactions::testUpdateAndPickCustom()
     std::vector<CustomRateProcess> processes;
 
     // Setup a vector of dummy processes.
-    std::vector<std::string> process_elements1(1);
-    process_elements1[0] = "A";
+    std::vector<std::vector<std::string> > process_elements1(1);
+    process_elements1[0] = std::vector<std::string>(1, "A");
 
-    std::vector<std::string> process_elements2(1);
-    process_elements2[0] = "B";
+    std::vector<std::vector<std::string> > process_elements2(1);
+    process_elements2[0] = std::vector<std::string>(1, "B");
 
     std::vector<std::vector<double> > process_coordinates(1, std::vector<double>(3, 0.0));
 
@@ -472,15 +472,15 @@ void Test_Interactions::testMaxRange()
     // Setup two valid processes.
     std::vector<Process> processes;
 
-    std::vector<std::string> process_elements1(3);
-    process_elements1[0] = "A";
-    process_elements1[1] = "A";
-    process_elements1[2] = "A";
+    std::vector<std::vector<std::string> > process_elements1(3);
+    process_elements1[0] = std::vector<std::string>(1, "A");
+    process_elements1[1] = std::vector<std::string>(1, "A");
+    process_elements1[2] = std::vector<std::string>(1, "A");
 
-    std::vector<std::string> process_elements2(3);
-    process_elements2[0] = "B";
-    process_elements2[1] = "A";
-    process_elements2[2] = "A";
+    std::vector<std::vector<std::string> > process_elements2(3);
+    process_elements2[0] = std::vector<std::string>(1, "B");
+    process_elements2[1] = std::vector<std::string>(1, "A");
+    process_elements2[2] = std::vector<std::string>(1, "A");
 
     std::vector<std::vector<double> > process_coordinates(3, std::vector<double>(3, 0.0));
     process_coordinates[1][0] = -0.1;
@@ -598,15 +598,15 @@ void Test_Interactions::testUpdateProcessMatchLists()
     // Setup two valid processes.
     std::vector<Process> processes;
 
-    std::vector<std::string> process_elements1(3);
-    process_elements1[0] = "A";
-    process_elements1[1] = "B";
-    process_elements1[2] = "V";
+    std::vector<std::vector<std::string> > process_elements1(3);
+    process_elements1[0] = std::vector<std::string>(1, "A");
+    process_elements1[1] = std::vector<std::string>(1, "B");
+    process_elements1[2] = std::vector<std::string>(1, "V");
 
-    std::vector<std::string> process_elements2(3);
-    process_elements2[0] = "B";
-    process_elements2[1] = "A";
-    process_elements2[2] = "A";
+    std::vector<std::vector<std::string> > process_elements2(3);
+    process_elements2[0] = std::vector<std::string>(1, "B");
+    process_elements2[1] = std::vector<std::string>(1, "A");
+    process_elements2[2] = std::vector<std::string>(1, "A");
 
     std::vector<std::vector<double> > process_coordinates1(3, std::vector<double>(3, 0.0));
     process_coordinates1[1][0] = -1.0;
@@ -656,7 +656,7 @@ void Test_Interactions::testUpdateProcessMatchLists()
 
     // Generate a corresponding configuration.
     std::vector<std::vector<double> > config_coordinates;
-    std::vector<std::string> elements;
+    std::vector<std::vector<std::string> > elements;
     for (int i = 0; i < 5; ++i)
     {
         for (int j = 0; j < 5; ++j)
@@ -668,12 +668,12 @@ void Test_Interactions::testUpdateProcessMatchLists()
                 coord[1] = 0.0 + j*1.0;
                 coord[2] = 0.0 + k*1.0;
                 config_coordinates.push_back(coord);
-                elements.push_back("V");
+                elements.push_back(std::vector<std::string>(1, "V"));
 
                 coord[0] = 0.3 + i*1.0;
                 coord[1] = 0.3 + j*1.0;
                 coord[2] = 0.3 + k*1.0;
-                elements.push_back("B");
+                elements.push_back(std::vector<std::string>(1, "B"));
                 config_coordinates.push_back(coord);
             }
         }
@@ -831,15 +831,15 @@ void Test_Interactions::testUpdateProcessIDMoves()
     // Setup two valid processes.
     std::vector<Process> processes;
 
-    std::vector<std::string> process_elements1(3);
-    process_elements1[0] = "A";
-    process_elements1[1] = "B";
-    process_elements1[2] = "V";
+    std::vector<std::vector<std::string> > process_elements1(3);
+    process_elements1[0] = std::vector<std::string>(1, "A");
+    process_elements1[1] = std::vector<std::string>(1, "B");
+    process_elements1[2] = std::vector<std::string>(1, "V");
 
-    std::vector<std::string> process_elements2(3);
-    process_elements2[0] = "B";
-    process_elements2[1] = "A";
-    process_elements2[2] = "A";
+    std::vector<std::vector<std::string> > process_elements2(3);
+    process_elements2[0] = std::vector<std::string>(1, "B");
+    process_elements2[1] = std::vector<std::string>(1, "A");
+    process_elements2[2] = std::vector<std::string>(1, "A");
 
     std::vector<std::vector<double> > process_coordinates1(3, std::vector<double>(3, 0.0));
     process_coordinates1[1][0] = -1.0;
@@ -901,7 +901,7 @@ void Test_Interactions::testUpdateProcessIDMoves()
 
     // Generate a corresponding configuration.
     std::vector<std::vector<double> > config_coordinates;
-    std::vector<std::string> elements;
+    std::vector<std::vector<std::string> > elements;
     for (int i = 0; i < 5; ++i)
     {
         for (int j = 0; j < 5; ++j)
@@ -913,12 +913,12 @@ void Test_Interactions::testUpdateProcessIDMoves()
                 coord[1] = 0.0 + j*1.0;
                 coord[2] = 0.0 + k*1.0;
                 config_coordinates.push_back(coord);
-                elements.push_back("V");
+                elements.push_back(std::vector<std::string>(1, "V"));
 
                 coord[0] = 0.3 + i*1.0;
                 coord[1] = 0.3 + j*1.0;
                 coord[2] = 0.3 + k*1.0;
-                elements.push_back("B");
+                elements.push_back(std::vector<std::string>(1, "B"));
                 config_coordinates.push_back(coord);
             }
         }

@@ -1,7 +1,7 @@
 """ Module for the KMCLocalConfiguration """
 
 
-# Copyright (c)  2012-2013  Mikael Leetmaa
+# Copyright (c)  2012-2014  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -13,6 +13,7 @@ import numpy
 from KMCLib.Utilities.CheckUtilities import checkCoordinateList
 from KMCLib.Utilities.CheckUtilities import checkIndexWithinBounds
 from KMCLib.Utilities.CheckUtilities import checkTypes
+from KMCLib.Utilities.ConversionUtilities import stringListToStdVectorStdVectorString
 from KMCLib.Utilities.CoordinateUtilities import centerCoordinates
 from KMCLib.Utilities.ConversionUtilities import numpy2DArrayToStdVectorStdVectorDouble
 from KMCLib.Backend import Backend
@@ -42,6 +43,9 @@ class KMCLocalConfiguration(object):
                        first coordinate (i.e. center == 0).
         :type center:  int
         """
+        # ML:
+        # FIXME: Must support bucket types information.
+
         # Check the coordinates.
         coordinates = checkCoordinateList(coordinates)
 
@@ -90,7 +94,8 @@ class KMCLocalConfiguration(object):
         """
         if self.__backend is None:
             # Construct the c++ backend object.
-            cpp_types  = Backend.StdVectorString(self.__types)
+            cpp_types  = stringListToStdVectorStdVectorString(self.__types)
+
             cpp_coords = numpy2DArrayToStdVectorStdVectorDouble(self.__coordinates)
             cpp_possible_types = Backend.StdMapStringInt(possible_types)
 

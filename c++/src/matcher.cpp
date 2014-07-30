@@ -526,7 +526,7 @@ double Matcher::updateSingleRate(const int index,
     const ConfigBucketMatchList & config_match_list   = configuration.configMatchList(index);
 
     // We will also need the elements.
-    const std::vector<std::string> & elements = configuration.elements();
+    const std::vector<std::vector<std::string> > & elements = configuration.elements();
 
     // Get cutoff distance from the process.
     const double cutoff = process.cutoff();
@@ -559,7 +559,11 @@ double Matcher::updateSingleRate(const int index,
         ++it_geo;
 
         const int idx = (*it1).index;
-        types_before.push_back(elements[idx]);
+
+        // ML:
+        // FIXME: This takes only the first element found. Must be updated
+        //        to send the whole list.
+        types_before.push_back(elements[idx][0]);
     }
 
     // Types after the process.

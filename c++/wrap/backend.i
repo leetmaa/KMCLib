@@ -54,6 +54,7 @@
 
  // Define the templates to use in Python.
 %template(StdVectorString) std::vector<std::string>;
+%template(StdVectorStdVectorString) std::vector<std::vector<std::string> >;
 %template(StdVectorDouble) std::vector<double>;
 %template(StdVectorInt) std::vector<int>;
 %template(StdVectorBool) std::vector<bool>;

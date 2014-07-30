@@ -97,9 +97,9 @@ void Test_Hash::testHashCustomRateInput()
     coords[1][2] = 0.1;
 
     // Setup elements.
-    std::vector<std::string> elements(2);
-    elements[0] = "A";
-    elements[1] = "B";
+    std::vector<std::vector<std::string> > elements(2);
+    elements[0] = std::vector<std::string>(1,"A");
+    elements[1] = std::vector<std::string>(1,"B");
 
     // Setup the mapping from element to integer.
     std::map<std::string, int> possible_types;
@@ -128,12 +128,12 @@ void Test_Hash::testHashCustomRateInput()
     // Construct a process that should match the second index.
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("B");
-    elements1.push_back("A");
-    std::vector<std::string> elements2;
-    elements2.push_back("C");
-    elements2.push_back("A");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1,"B"));
+    elements1.push_back(std::vector<std::string>(1,"A"));
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1,"C"));
+    elements2.push_back(std::vector<std::string>(1,"A"));
     // Setup coordinates.
     std::vector<std::vector<double> > process_coords(2,std::vector<double>(3,0.0));
     process_coords[1][0] =  -0.5;

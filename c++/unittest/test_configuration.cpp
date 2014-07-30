@@ -38,13 +38,12 @@ void Test_Configuration::testConstruction()
     coords[4][2] = 3.4;
 
     // Setup elements.
-    std::vector<std::string> elements(5);
-    elements[0] = "A";
-    elements[1] = "B";
-    elements[2] = "D";
-    elements[3] = "H";
-    elements[4] = "J";
-
+    std::vector< std::vector<std::string> > elements(5);
+    elements[0] = std::vector<std::string>(1, "A");
+    elements[1] = std::vector<std::string>(1, "B");
+    elements[2] = std::vector<std::string>(1, "D");
+    elements[3] = std::vector<std::string>(1, "H");
+    elements[4] = std::vector<std::string>(1, "J");
 
     // Setup the mapping from element to integer.
     std::map<std::string, int> possible_types;
@@ -73,13 +72,16 @@ void Test_Configuration::testConstruction()
     }
 
     // Check the size of the elements.
-    std::vector<std::string> const & ret_elements = config.elements();
+    std::vector<std::vector<std::string> > const & ret_elements = config.elements();
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(ret_coords.size()),
                          static_cast<int>(ret_elements.size()));
 
     for (size_t i = 0; i < elements.size(); ++i)
     {
-        CPPUNIT_ASSERT_EQUAL(ret_elements[i], elements[i]);
+        for (size_t j = 0; j < elements[i].size(); ++j)
+        {
+            CPPUNIT_ASSERT_EQUAL(ret_elements[i][j], elements[i][j]);
+        }
     }
 
     // DONE
@@ -117,7 +119,7 @@ void Test_Configuration::testPerformProcess()
 
     // Coordinates and elements.
     std::vector<std::vector<double> > coordinates;
-    std::vector<std::string> elements;
+    std::vector<std::vector<std::string> > elements;
 
     for (int i = 0; i < nI; ++i)
     {
@@ -132,16 +134,16 @@ void Test_Configuration::testPerformProcess()
                     c[1] = j + basis[b][1];
                     c[2] = k + basis[b][2];
                     coordinates.push_back(c);
-                    elements.push_back(basis_elements[b]);
+                    elements.push_back(std::vector<std::string>(1, basis_elements[b]));
                 }
             }
         }
     }
 
-    elements[0]    = "V";
-    elements[216]  = "V";
-    elements[1434] = "V";
-    elements[2101] = "V";
+    elements[0]    = std::vector<std::string>(1, "V");
+    elements[216]  = std::vector<std::string>(1, "V");
+    elements[1434] = std::vector<std::string>(1, "V");
+    elements[2101] = std::vector<std::string>(1, "V");
 
     // Possible types.
     std::map<std::string, int> possible_types;
@@ -166,15 +168,15 @@ void Test_Configuration::testPerformProcess()
 
     // Get a process that finds a V between two B and turns one of
     // the Bs into an A.
-    std::vector<std::string> process_elements1(3);
-    process_elements1[0] = "V";
-    process_elements1[1] = "B";
-    process_elements1[2] = "B";
+    std::vector<std::vector<std::string> > process_elements1(3);
+    process_elements1[0] = std::vector<std::string>(1,"V");
+    process_elements1[1] = std::vector<std::string>(1,"B");
+    process_elements1[2] = std::vector<std::string>(1,"B");
 
-    std::vector<std::string> process_elements2(3);
-    process_elements2[0] = "B";
-    process_elements2[1] = "A";
-    process_elements2[2] = "B";
+    std::vector<std::vector<std::string> > process_elements2(3);
+    process_elements2[0] = std::vector<std::string>(1,"B");
+    process_elements2[1] = std::vector<std::string>(1,"A");
+    process_elements2[2] = std::vector<std::string>(1,"B");
 
     std::vector<std::vector<double> > process_coordinates(3, std::vector<double>(3, 0.0));
 
@@ -253,7 +255,7 @@ void Test_Configuration::testPerformProcessVectors()
 
     // Coordinates and elements.
     std::vector<std::vector<double> > coordinates;
-    std::vector<std::string> elements;
+    std::vector<std::vector<std::string> > elements;
 
     for (int i = 0; i < nI; ++i)
     {
@@ -268,16 +270,16 @@ void Test_Configuration::testPerformProcessVectors()
                     c[1] = j + basis[b][1];
                     c[2] = k + basis[b][2];
                     coordinates.push_back(c);
-                    elements.push_back(basis_elements[b]);
+                    elements.push_back(std::vector<std::string>(1, basis_elements[b]));
                 }
             }
         }
     }
 
-    elements[0]    = "V";
-    elements[216]  = "V";   // These affects process 0,1 and 3
-    elements[1434] = "V";
-    elements[2101] = "V";   // This affects process 0,1 and 2
+    elements[0]    = std::vector<std::string>(1, "V");
+    elements[216]  = std::vector<std::string>(1, "V");   // These affects process 0,1 and 3
+    elements[1434] = std::vector<std::string>(1, "V");
+    elements[2101] = std::vector<std::string>(1, "V");   // This affects process 0,1 and 2
 
     // Possible types.
     std::map<std::string, int> possible_types;
@@ -302,15 +304,15 @@ void Test_Configuration::testPerformProcessVectors()
 
     // Get a process that finds a V between two B and moves it
     // to a nearby site.
-    std::vector<std::string> process_elements1(3);
-    process_elements1[0] = "V";
-    process_elements1[1] = "B";
-    process_elements1[2] = "B";
+    std::vector<std::vector<std::string> > process_elements1(3);
+    process_elements1[0] = std::vector<std::string>(1, "V");
+    process_elements1[1] = std::vector<std::string>(1, "B");
+    process_elements1[2] = std::vector<std::string>(1, "B");
 
-    std::vector<std::string> process_elements2(3);
-    process_elements2[0] = "B";
-    process_elements2[1] = "V";
-    process_elements2[2] = "B";
+    std::vector<std::vector<std::string> > process_elements2(3);
+    process_elements2[0] = std::vector<std::string>(1, "B");
+    process_elements2[1] = std::vector<std::string>(1, "V");
+    process_elements2[2] = std::vector<std::string>(1, "B");
 
     std::vector<std::vector<double> > process_coordinates(3, std::vector<double>(3, 0.0));
 
@@ -432,12 +434,12 @@ void Test_Configuration::testAtomID()
     coords[4][2]  = 3.4;
 
     // Setup elements.
-    std::vector<std::string> elements(5);
-    elements[0] = "A";
-    elements[1] = "B";
-    elements[2] = "D";
-    elements[3] = "H";
-    elements[4] = "J";
+    std::vector<std::vector<std::string> > elements(5);
+    elements[0] = std::vector<std::string>(1, "A");
+    elements[1] = std::vector<std::string>(1, "B");
+    elements[2] = std::vector<std::string>(1, "D");
+    elements[3] = std::vector<std::string>(1, "H");
+    elements[4] = std::vector<std::string>(1, "J");
 
     // Setup the mapping from element to integer.
     std::map<std::string, int> possible_types;
@@ -495,7 +497,7 @@ void Test_Configuration::testMatchLists()
 
     // Coordinates and elements.
     std::vector<std::vector<double> > coordinates;
-    std::vector<std::string> elements;
+    std::vector<std::vector<std::string> > elements;
 
     for (int i = 0; i < nI; ++i)
     {
@@ -510,16 +512,16 @@ void Test_Configuration::testMatchLists()
                     c[1] = j + basis[b][1];
                     c[2] = k + basis[b][2];
                     coordinates.push_back(c);
-                    elements.push_back(basis_elements[b]);
+                    elements.push_back(std::vector<std::string>(1, basis_elements[b]));
                 }
             }
         }
     }
 
-    elements[0]    = "V";
-    elements[216]  = "V";
-    elements[1434] = "V";
-    elements[2101] = "V";
+    elements[0]    = std::vector<std::string>(1, "V");
+    elements[216]  = std::vector<std::string>(1, "V");
+    elements[1434] = std::vector<std::string>(1, "V");
+    elements[2101] = std::vector<std::string>(1, "V");
 
     // Possible types.
     std::map<std::string, int> possible_types;
@@ -593,15 +595,15 @@ void Test_Configuration::testMatchLists()
 
     // Get a process that finds a V between two B and turns one of
     // the Bs into an A.
-    std::vector<std::string> process_elements1(3);
-    process_elements1[0] = "V";
-    process_elements1[1] = "B";
-    process_elements1[2] = "B";
+    std::vector<std::vector<std::string> > process_elements1(3);
+    process_elements1[0] = std::vector<std::string>(1, "V");
+    process_elements1[1] = std::vector<std::string>(1, "B");
+    process_elements1[2] = std::vector<std::string>(1, "B");
 
-    std::vector<std::string> process_elements2(3);
-    process_elements2[0] = "B";
-    process_elements2[1] = "A";
-    process_elements2[2] = "B";
+    std::vector<std::vector<std::string> > process_elements2(3);
+    process_elements2[0] = std::vector<std::string>(1, "B");
+    process_elements2[1] = std::vector<std::string>(1, "A");
+    process_elements2[2] = std::vector<std::string>(1, "B");
 
     std::vector<std::vector<double> > process_coordinates(3, std::vector<double>(3, 0.0));
 
@@ -695,7 +697,7 @@ void Test_Configuration::testTypeNameQuery()
     const std::vector<std::vector<double> > coords(1, std::vector<double>(3, 0.0));
 
     // Setup elements.
-    const std::vector<std::string> elements(1, "A");
+    const std::vector<std::vector<std::string> > elements(1, std::vector<std::string>(1,"A"));
 
     // Setup the mapping from element to integer.
     std::map<std::string, int> possible_types;
@@ -740,7 +742,7 @@ void Test_Configuration::testAtomIDElementsCoordinatesMovedIDs()
 
     // Coordinates and elements.
     std::vector<std::vector<double> > coordinates;
-    std::vector<std::string> elements;
+    std::vector<std::vector<std::string> > elements;
 
     for (int i = 0; i < nI; ++i)
     {
@@ -753,15 +755,15 @@ void Test_Configuration::testAtomIDElementsCoordinatesMovedIDs()
                 c[1] = static_cast<double>(j);
                 c[2] = static_cast<double>(k);
                 coordinates.push_back(c);
-                elements.push_back(basis_elements[0]);
+                elements.push_back(std::vector<std::string>(1, basis_elements[0]));
             }
         }
     }
 
-    elements[0]    = "V";
-    elements[216]  = "V";
-    elements[1434] = "V";
-    elements[2101] = "V";
+    elements[0]    = std::vector<std::string>(1, "V");
+    elements[216]  = std::vector<std::string>(1, "V");
+    elements[1434] = std::vector<std::string>(1, "V");
+    elements[2101] = std::vector<std::string>(1, "V");
 
     // Possible types.
     std::map<std::string, int> possible_types;
@@ -800,7 +802,10 @@ void Test_Configuration::testAtomIDElementsCoordinatesMovedIDs()
 
     for (size_t i = 0; i < configuration.elements().size(); ++i)
     {
-        CPPUNIT_ASSERT_EQUAL(configuration.elements()[i],
+        // FIXME - this is expected behavior at the moment, but incorrect.
+        //         Atom IDs can only be used when there is exactly one atom per site.
+        //         This will be updated in the release version.
+        CPPUNIT_ASSERT_EQUAL(configuration.elements()[i][0],
                              configuration.atomIDElements()[i]);
     }
 
@@ -818,23 +823,23 @@ void Test_Configuration::testAtomIDElementsCoordinatesMovedIDs()
     // Get a process that finds a V surrounded by A,
     // moves two of the A's and changing the V to B,
     // keeping all other atoms in place.
-    std::vector<std::string> process_elements1(7);
-    process_elements1[0] = "V";
-    process_elements1[1] = "A";
-    process_elements1[2] = "A";
-    process_elements1[3] = "A";
-    process_elements1[4] = "A";
-    process_elements1[5] = "A";
-    process_elements1[6] = "A";
+    std::vector<std::vector<std::string> > process_elements1(7);
+    process_elements1[0] = std::vector<std::string>(1, "V");
+    process_elements1[1] = std::vector<std::string>(1, "A");
+    process_elements1[2] = std::vector<std::string>(1, "A");
+    process_elements1[3] = std::vector<std::string>(1, "A");
+    process_elements1[4] = std::vector<std::string>(1, "A");
+    process_elements1[5] = std::vector<std::string>(1, "A");
+    process_elements1[6] = std::vector<std::string>(1, "A");
 
-    std::vector<std::string> process_elements2(7);
-    process_elements2[0] = "B";
-    process_elements2[1] = "V";
-    process_elements2[2] = "V";
-    process_elements2[3] = "A";
-    process_elements2[4] = "A";
-    process_elements2[5] = "A";
-    process_elements2[6] = "A";
+    std::vector<std::vector<std::string> > process_elements2(7);
+    process_elements2[0] = std::vector<std::string>(1, "B");
+    process_elements2[1] = std::vector<std::string>(1, "V");
+    process_elements2[2] = std::vector<std::string>(1, "V");
+    process_elements2[3] = std::vector<std::string>(1, "A");
+    process_elements2[4] = std::vector<std::string>(1, "A");
+    process_elements2[5] = std::vector<std::string>(1, "A");
+    process_elements2[6] = std::vector<std::string>(1, "A");
 
     std::vector<std::vector<double> > process_coordinates(7, std::vector<double>(3, 0.0));
 
@@ -928,12 +933,14 @@ void Test_Configuration::testAtomIDElementsCoordinatesMovedIDs()
                                  configuration.atomIDCoordinates()[1434].z(),
                                  1.0e-12);
 
+    // FIXME: Again, only matchig the first atom found ([0]).
+
     // Check the corresponding atom ID elements.
-    CPPUNIT_ASSERT_EQUAL(configuration.elements()[1776],
+    CPPUNIT_ASSERT_EQUAL(configuration.elements()[1776][0],
                          configuration.atomIDElements()[1092]);
-    CPPUNIT_ASSERT_EQUAL(configuration.elements()[1092],
+    CPPUNIT_ASSERT_EQUAL(configuration.elements()[1092][0],
                          configuration.atomIDElements()[1776]);
-    CPPUNIT_ASSERT_EQUAL(configuration.elements()[1434],
+    CPPUNIT_ASSERT_EQUAL(configuration.elements()[1434][0],
                          configuration.atomIDElements()[1434]);
 
     // Get a process that finds a B surrounded by two V's in the
@@ -942,21 +949,21 @@ void Test_Configuration::testAtomIDElementsCoordinatesMovedIDs()
     // Moves atoms. Make sure we change the atom_id
     // at the central location.
 
-    process_elements1[0] = "B";
-    process_elements1[1] = "V";
-    process_elements1[2] = "V";
-    process_elements1[3] = "A";
-    process_elements1[4] = "A";
-    process_elements1[5] = "A";
-    process_elements1[6] = "A";
+    process_elements1[0] = std::vector<std::string>(1, "B");
+    process_elements1[1] = std::vector<std::string>(1, "V");
+    process_elements1[2] = std::vector<std::string>(1, "V");
+    process_elements1[3] = std::vector<std::string>(1, "A");
+    process_elements1[4] = std::vector<std::string>(1, "A");
+    process_elements1[5] = std::vector<std::string>(1, "A");
+    process_elements1[6] = std::vector<std::string>(1, "A");
 
-    process_elements2[0] = "V";
-    process_elements2[1] = "B";
-    process_elements2[2] = "A";
-    process_elements2[3] = "A";
-    process_elements2[4] = "V";
-    process_elements2[5] = "A";
-    process_elements2[6] = "A";
+    process_elements2[0] = std::vector<std::string>(1, "V");
+    process_elements2[1] = std::vector<std::string>(1, "B");
+    process_elements2[2] = std::vector<std::string>(1, "A");
+    process_elements2[3] = std::vector<std::string>(1, "A");
+    process_elements2[4] = std::vector<std::string>(1, "V");
+    process_elements2[5] = std::vector<std::string>(1, "A");
+    process_elements2[6] = std::vector<std::string>(1, "A");
 
     // Setup the move vectors for the second process.
     std::vector<int> move_origins_p2;
@@ -1012,13 +1019,13 @@ void Test_Configuration::testAtomIDElementsCoordinatesMovedIDs()
     CPPUNIT_ASSERT_EQUAL( configuration.atomID()[1776], 1453 );
 
     // Check that they have the types they should have.
-    CPPUNIT_ASSERT_EQUAL(configuration.elements()[1092],
+    CPPUNIT_ASSERT_EQUAL(configuration.elements()[1092][0],
                          configuration.atomIDElements()[1434]);
-    CPPUNIT_ASSERT_EQUAL(configuration.elements()[1434],
+    CPPUNIT_ASSERT_EQUAL(configuration.elements()[1434][0],
                          configuration.atomIDElements()[1092]);
-    CPPUNIT_ASSERT_EQUAL(configuration.elements()[1776],
+    CPPUNIT_ASSERT_EQUAL(configuration.elements()[1776][0],
                          configuration.atomIDElements()[1453]);
-    CPPUNIT_ASSERT_EQUAL(configuration.elements()[1453],
+    CPPUNIT_ASSERT_EQUAL(configuration.elements()[1453][0],
                          configuration.atomIDElements()[1776]);
 
     // Check the coordinates.

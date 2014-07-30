@@ -174,7 +174,9 @@ local_config2 = KMCLocalConfiguration(
         self.assertAlmostEqual( cpp_coords[0][2], py_coords[0][2], 10 )
 
         # Get the types back out.
-        cpp_types = list(backend.elements())
+        # ML: FIXME:
+        # This will be incorectly tested and fail for bucket types.
+        cpp_types = [e[0] for e in backend.elements()]
         py_types  = local_config.types()
 
         self.assertEqual(py_types, cpp_types)

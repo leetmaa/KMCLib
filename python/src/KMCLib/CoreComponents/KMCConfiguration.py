@@ -1,7 +1,7 @@
 """ Module for the KMCConfiguration """
 
 
-# Copyright (c)  2012-2013  Mikael Leetmaa
+# Copyright (c)  2012-2014  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -11,7 +11,7 @@ import numpy
 
 from KMCLib.CoreComponents.KMCLattice import KMCLattice
 from KMCLib.Utilities.CheckUtilities import checkTypes
-from KMCLib.Utilities.ConversionUtilities import stringListToStdVectorString
+from KMCLib.Utilities.ConversionUtilities import stringListToStdVectorStdVectorString
 from KMCLib.Utilities.ConversionUtilities import numpy2DArrayToStdVectorStdVectorDouble
 from KMCLib.Utilities.ConversionUtilities import stdVectorCoordinateToNumpy2DArray
 from KMCLib.Exceptions.Error import Error
@@ -60,6 +60,9 @@ class KMCConfiguration(object):
         # Extract the number of lattice sites.
         self.__n_lattice_sites = len(self.__lattice.sites())
 
+        # To be updated if bucket types are used.
+        self.__use_buckets = False
+
         # Check and set the types.
         self.__checkAndSetTypes(types, default_type, possible_types)
 
@@ -71,65 +74,26 @@ class KMCConfiguration(object):
         """
         Private helper routine to check and set the types input.
         """
-        # Check that the types is a list.
-        if not isinstance(types, list):
-            raise Error("The 'types' given to the KMCConfiguration constructor must be \na list of type strings, e.g. ['a','b','c'] or tuples e.g. [(0,0,1,0,'a'), (0,0,2,0,'b'), ...].")
 
-        # Check the first element to get the assumed format.
-        use_long_format = not isinstance(types[0],str)
+        types_format = self.__detectTypesFormat(types)
 
-        # Set the use of default type flag.
-        use_default_type = (default_type is not None)
-
-        # We can not have both a short format and default type.
-        if use_default_type and not use_long_format:
-            raise Error("A default type can only be used in combination with the long types format\nwhen constructing a KMCConfiguration object.")
-
-        # If we use the long format, check that each entry is of the form (int,int,int,int,string)
-        if use_long_format:
-
-            # We must have a default type for the long format.
-            if not use_default_type:
-                raise Error("A default type must be specified when using the long types format.")
-
-            # Check and distribute the default type.
-            if not isinstance(default_type, str):
-                raise Error("The default type given to the KMCConfiguration constructor must be a string.")
-            types_to_set = [default_type]*self.__n_lattice_sites
-
-            # Check each element in the list.
-            for t in types:
-                # Check that it is ia tuple.
-                if not isinstance(t,tuple) or len(t) != 5:
-                    raise Error("All elements in the types list must be of type (int,int,int,int,string) when\nusing the long type format.")
-
-                # Check that the elements in the tuple have the correct type.
-                if not all([isinstance(tt,(int,int,int,int,str)[i]) for i,tt in enumerate(t)]):
-                    raise Error("All elements in the types list must be of type (int,int,int,int,string) when\nusing the long type format.")
-
-                # Check the bounds of the given indices.
-                (nI, nJ, nK) = self.__lattice.repetitions()
-                nB = len(self.__lattice.basis())
-
-                if t[0] < 0 or t[0] >= nI:
-                    raise Error("The first index in the type tuple must be within the limits of the repetitions in the 'a' direction, indexed from 0.")
-                if t[1] < 0 or t[1] >= nJ:
-                    raise Error("The second index in the type tuple must be within the limits of the repetitions in the 'b' direction, indexed from 0.")
-                if t[2] < 0 or t[2] >= nK:
-                    raise Error("The third index in the type tuple must be within the limits of the repetitions in the 'c' direction, indexed from 0.")
-                if t[3] < 0 or t[3] >= nB:
-                    raise Error("The fourth index in the type tuple must be withing the limits of the basis points in the original unit cell, indexed from 0.")
-
-                # Set the type.
-                index = self.__lattice._globalIndex(t[0],t[1],t[2],t[3])
-                types_to_set[index] = t[4]
-
+        if types_format == "short":
+            types_to_set = self.__checkAndSetShortTypes(types, default_type, possible_types)
+            all_types_present = list(set(types_to_set))
+        elif types_format == "long":
+            types_to_set = self.__checkAndSetLongTypes(types, default_type, possible_types)
+            all_types_present = list(set(types_to_set))
         else:
-            # Otherwise, check the types the normal way.
-            types_to_set = checkTypes(types,self.__n_lattice_sites)
+            types_to_set = self.__checkAndSetBucketsTypes(types, default_type, possible_types)
+            self.__use_buckets = True
+            # Calculate all types.
+            all_types_present = []
+            for tt in types_to_set:
+                for t in tt:
+                    all_types_present.append(t[1])
+            all_types_present = list(set(all_types_present))
 
         # Setup the list of possible types.
-        all_types_present = list(set(types_to_set))
         if possible_types is None:
             possible_types = all_types_present
         else:
@@ -143,9 +107,6 @@ class KMCConfiguration(object):
             if not present_set.issubset(possible_set):
                 raise Error("There are types specified which are not in the given list of possible types.")
 
-        # Every thing is checked - store the data on the class.
-        self.__types = types_to_set
-
         # Check that the wildcard has not made it into the possible types allready.
         if "*" in possible_types:
             raise Error("The wildcard caracter '*' is not a valid type.")
@@ -154,6 +115,154 @@ class KMCConfiguration(object):
         possible_types = ["*"] + possible_types
         self.__possible_types = dict(zip(possible_types, range(len(possible_types))))
 
+        # Every thing is checked - store the data on the class.
+        self.__types = types_to_set
+
+    def __detectTypesFormat(self, types):
+        """ """
+        """
+        Private helper routine to detect what types format is given.
+
+        :retrurns: "short", "long" or "buckets".
+        """
+        # Check that the types is a list.
+        if not isinstance(types, list):
+            raise Error("The 'types' given to the KMCConfiguration constructor must be a list of either 'short', 'long' or 'buckets' format. See the manual for details.")
+
+        # Check all elements to see if we have the short format.
+        if all([isinstance(t, str) for t in types]):
+            return "short"
+
+        # Check all elements to see if we have the long format.
+        elif all([isinstance(t, tuple) for t in types]) and all([isinstance(tt, (int, int, int, int, str)[i]) for i,tt in enumerate(types[0])]):
+            return "long"
+
+        # No other option left but to assume the buckets format.
+        else:
+            return "buckets"
+
+    def __checkAndSetShortTypes(self, types, default_type, possible_types):
+        """ """
+        """
+        Private helper to check the types input for the 'short' format.
+        """
+        # Check the default types.
+        if default_type is not None:
+            raise Error("A default type can only be used in combination with the long types format\nwhen constructing a KMCConfiguration object.")
+
+        # Check the types.
+        return checkTypes(types,self.__n_lattice_sites)
+
+    def __checkAndSetLongTypes(self, types, default_type, possible_types):
+        """ """
+        """
+        Private helper to check the types input for the 'long' format.
+        """
+        # We must have a default type for the long format.
+        if default_type is None:
+            raise Error("A default type must be specified when using the long types format.")
+
+        # Check and distribute the default type.
+        if not isinstance(default_type, str):
+            raise Error("The default type given to the KMCConfiguration constructor must be a string.")
+        types_to_set = [default_type]*self.__n_lattice_sites
+
+        # Check each element in the list.
+        for t in types:
+            # Check that it is ia tuple.
+            if not isinstance(t,tuple) or len(t) != 5:
+                raise Error("All elements in the types list must be of type (int,int,int,int,string) when\nusing the long type format.")
+
+            # Check that the elements in the tuple have the correct type.
+            if not all([isinstance(tt,(int,int,int,int,str)[i]) for i,tt in enumerate(t)]):
+                raise Error("All elements in the types list must be of type (int,int,int,int,string) when\nusing the long type format.")
+
+            # Check the bounds of the given indices.
+            (nI, nJ, nK) = self.__lattice.repetitions()
+            nB = len(self.__lattice.basis())
+
+            if t[0] < 0 or t[0] >= nI:
+                raise Error("The first index in the type tuple must be within the limits of the repetitions in the 'a' direction, indexed from 0.")
+            if t[1] < 0 or t[1] >= nJ:
+                raise Error("The second index in the type tuple must be within the limits of the repetitions in the 'b' direction, indexed from 0.")
+            if t[2] < 0 or t[2] >= nK:
+                raise Error("The third index in the type tuple must be within the limits of the repetitions in the 'c' direction, indexed from 0.")
+            if t[3] < 0 or t[3] >= nB:
+                raise Error("The fourth index in the type tuple must be withing the limits of the basis points in the original unit cell, indexed from 0.")
+
+            # Set the type.
+            index = self.__lattice._globalIndex(t[0],t[1],t[2],t[3])
+            types_to_set[index] = t[4]
+
+        # Return the types to set.
+        return types_to_set
+
+    def __checkAndSetBucketsTypes(self, types, default_type, possible_types):
+        """ """
+        """
+        Private helper to check the types input for the 'buckets' format.
+        """
+        # Check the default types.
+        if default_type is not None:
+            raise Error("A default type can only be used in combination with the long types format\nwhen constructing a KMCConfiguration object.")
+
+        # For each element, check that the foramt is any of the valid
+        # "A" - single particle
+        # (N,"A") - numbered single particle
+        # ["A", (N1,"B")] - a list with a combination of the other two.
+        return [self.__checkAndNormaliseBucketEntry(t) for t in types]
+
+    def __checkAndNormaliseBucketEntry(self, t):
+        """ """
+        """
+        Check that the foramt of the type entry t is any of the valid
+        "A" - single particle.
+        (N,"A") - numbered single particle.
+        ["A", (N1,"B")] - a list with a combination of the other two.
+
+        :param t: The type entry to check.
+        :return: The normalized [(N,"A")] formatted type.
+        """
+        # Three cases, list, tuple, str.
+        if isinstance(t, list):
+            # Check that each entry is a valid str or tuple.
+            normalised_type = []
+            for tt in t:
+                if isinstance(tt, str):
+                    normalised_type.append((1,tt))
+                elif isinstance(tt, tuple):
+                    if not len(tt) == 2 and isinstance(tt[0], int) and isinstance(tt[1], str):
+                        raise Error("Bucket type given as a tuple must be of format (int, str).")
+                    normalised_type.append(tt)
+            # Loop through the normalised type list and
+            # add entries with the same string.
+            final_type = []
+
+            for i,first in enumerate(normalised_type):
+                for j in range(len(normalised_type)-i-1):
+                    second = normalised_type[i+j+1]
+
+                    # Check the string.
+                    if first[1] == second[1]:
+                        # Add if same type.
+                        first = (first[0] + second[0], first[1])
+
+                # Append to the final list.
+                final_type.append(first)
+
+            # Done.
+            return final_type
+
+        elif isinstance(t, tuple):
+            if not len(t) == 2 and isinstance(t[0], int) and isinstance(t[1], str):
+                raise Error("Bucket type given as a tuple must be of format (int, str).")
+            return [t]
+        elif isinstance(t, str):
+            return [(1,t)]
+        else:
+            # Raise an error if the format was incorrnect.
+            raise Error("Each bucket format type entry must be (a list of) a tupe(s) of format (int,str) or string(s).")
+
     def types(self):
         """
         Query function for the types of the configuration.
@@ -161,7 +270,11 @@ class KMCConfiguration(object):
         :returns: The stored types list.
         """
         # Update the types with what ever has been changed in the backend.
-        self.__types = list(self._backend().elements())
+
+        if self.__use_buckets:
+            raise Error("NOT IMPLEMENTED")
+        else:
+            self.__types = [e[0] for e in self._backend().elements()]
 
         # Return the types.
         return self.__types
@@ -218,7 +331,11 @@ class KMCConfiguration(object):
         """
         if self.__backend is None:
             # Construct the c++ backend object.
-            cpp_types  = stringListToStdVectorString(self.__types)
+            if self.__use_buckets:
+                raise Error("NOT IMPLEMENTED")
+            else:
+                cpp_types = stringListToStdVectorStdVectorString(self.__types)
+
             cpp_coords = numpy2DArrayToStdVectorStdVectorDouble(self.__lattice.sites())
             cpp_possible_types = Backend.StdMapStringInt(self.__possible_types)
 

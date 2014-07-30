@@ -1,7 +1,7 @@
 """ Module for testing the common type conversion utility functions. """
 
 
-# Copyright (c)  2012  Mikael Leetmaa
+# Copyright (c)  2012-2014  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -15,6 +15,7 @@ from KMCLib.Backend import Backend
 
 # Import from the module we test.
 from KMCLib.Utilities.ConversionUtilities import stringListToStdVectorString
+from KMCLib.Utilities.ConversionUtilities import stringListToStdVectorStdVectorString
 from KMCLib.Utilities.ConversionUtilities import numpy2DArrayToStdVectorStdVectorDouble
 from KMCLib.Utilities.ConversionUtilities import numpy2DArrayToStdVectorCoordinate
 from KMCLib.Utilities.ConversionUtilities import stdVectorCoordinateToNumpy2DArray
@@ -37,6 +38,21 @@ class ConversionUtilitiesTest(unittest.TestCase):
 
         # Check the values.
         list_from_cpp = list(cpp_repr)
+        self.assertEqual(string_list, list_from_cpp)
+
+    def testStringListToStdVectorStdVectorString(self):
+        """ Test the conversion of a string list to a std::vector<std::string>. """
+        # Take a list of strings.
+        string_list = ["AAA","BB","AbC","def"]
+
+        # Convert.
+        cpp_repr = stringListToStdVectorStdVectorString(string_list)
+
+        # Check the type.
+        self.assertTrue(isinstance(cpp_repr, Backend.StdVectorStdVectorString))
+
+        # Check the values.
+        list_from_cpp = [e[0] for e in cpp_repr]
         self.assertEqual(string_list, list_from_cpp)
 
     def testNumpy2DArrayToStdVectorStdVectorDouble(self):

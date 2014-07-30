@@ -38,9 +38,17 @@ public:
      *  \param elements      : The elements of the configuration.
      *  \param possible_types: A global mapping from type string to number.
      */
+//    Configuration(const std::vector< std::vector<double> > & coordinates,
+//                  const std::vector<std::string> & elements,
+//                  const std::map<std::string,int> & possible_types);
+
+
     Configuration(const std::vector< std::vector<double> > & coordinates,
-                  const std::vector<std::string> & elements,
+                  const std::vector< std::vector<std::string> > & elements,
                   const std::map<std::string,int> & possible_types);
+
+
+
 
     /*! \brief Initiate the calculation of the match lists.
      *  \param lattice_map : The lattice map needed to get coordinates wrapped.
@@ -61,7 +69,7 @@ public:
     /*! \brief Const query for the elements.
      *  \return : The elements of the configuration.
      */
-    const std::vector<std::string> & elements() const { return elements_; }
+    const std::vector<std::vector<std::string> > & elements() const { return elements_; }
 
     /*! \brief Const query for the atom id types.
      *  \return : The atom id types of the configuration.
@@ -155,7 +163,7 @@ private:
     std::vector<Coordinate> atom_id_coordinates_;
 
     /// The lattice elements.
-    std::vector<std::string> elements_;
+    std::vector<std::vector<std::string> > elements_;
 
     /// The elements per atom id.
     std::vector<std::string> atom_id_elements_;

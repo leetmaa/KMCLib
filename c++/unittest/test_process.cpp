@@ -28,13 +28,13 @@ void Test_Process::testConstruction()
     possible_types["C"] = 0;
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("A");
-    elements1.push_back("B");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
 
-    std::vector<std::string> elements2;
-    elements2.push_back("C");
-    elements2.push_back("B");
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
 
     // Setup coordinates.
     std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
@@ -76,13 +76,13 @@ void Test_Process::testConstruction2()
     possible_types["C"] = 0;
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("A");
-    elements1.push_back("B");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
 
-    std::vector<std::string> elements2;
-    elements2.push_back("C");
-    elements2.push_back("B");
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
 
     // Setup coordinates.
     std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
@@ -143,13 +143,13 @@ void Test_Process::testConstruction3()
     possible_types["C"] = 0;
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("A");
-    elements1.push_back("B");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
 
-    std::vector<std::string> elements2;
-    elements2.push_back("C");
-    elements2.push_back("B");
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
 
     // Setup coordinates.
     std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
@@ -218,23 +218,23 @@ void Test_Process::testConstructionMoveVectors()
     possible_types["G"] = 6;
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("A");
-    elements1.push_back("B");
-    elements1.push_back("C");
-    elements1.push_back("D");
-    elements1.push_back("E");
-    elements1.push_back("F");
-    elements1.push_back("G");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "C"));
+    elements1.push_back(std::vector<std::string>(1, "D"));
+    elements1.push_back(std::vector<std::string>(1, "E"));
+    elements1.push_back(std::vector<std::string>(1, "F"));
+    elements1.push_back(std::vector<std::string>(1, "G"));
 
-    std::vector<std::string> elements2;
-    elements2.push_back("A");
-    elements2.push_back("G");
-    elements2.push_back("F");
-    elements2.push_back("D");
-    elements2.push_back("E");
-    elements2.push_back("C");
-    elements2.push_back("B");
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "A"));
+    elements2.push_back(std::vector<std::string>(1, "G"));
+    elements2.push_back(std::vector<std::string>(1, "F"));
+    elements2.push_back(std::vector<std::string>(1, "D"));
+    elements2.push_back(std::vector<std::string>(1, "E"));
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
 
     // Setup coordinates.
     std::vector<std::vector<double> > coords(7,std::vector<double>(3,0.0));
@@ -334,23 +334,23 @@ void Test_Process::testConstructionMoveVectors2()
     possible_types["G"] = 6;
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("A");
-    elements1.push_back("F");
-    elements1.push_back("G");
-    elements1.push_back("D");
-    elements1.push_back("E");
-    elements1.push_back("B");
-    elements1.push_back("C");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "F"));
+    elements1.push_back(std::vector<std::string>(1, "G"));
+    elements1.push_back(std::vector<std::string>(1, "D"));
+    elements1.push_back(std::vector<std::string>(1, "E"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "C"));
 
-    std::vector<std::string> elements2;
-    elements2.push_back("A");
-    elements2.push_back("C");
-    elements2.push_back("B");
-    elements2.push_back("D");
-    elements2.push_back("E");
-    elements2.push_back("G");
-    elements2.push_back("F");
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "A"));
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+    elements2.push_back(std::vector<std::string>(1, "D"));
+    elements2.push_back(std::vector<std::string>(1, "E"));
+    elements2.push_back(std::vector<std::string>(1, "G"));
+    elements2.push_back(std::vector<std::string>(1, "F"));
 
     // Setup coordinates.
     std::vector<std::vector<double> > coords(7,std::vector<double>(3,0.0));
@@ -446,15 +446,15 @@ void Test_Process::testMatchList()
     possible_types["C"] = 0;
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("A");
-    elements1.push_back("B");
-    elements1.push_back("C");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "C"));
 
-    std::vector<std::string> elements2;
-    elements2.push_back("C");
-    elements2.push_back("B");
-    elements2.push_back("A");
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+    elements2.push_back(std::vector<std::string>(1, "A"));
 
     // Setup coordinates.
     std::vector<std::vector<double> > coords(3,std::vector<double>(3,0.0));
@@ -574,26 +574,26 @@ void Test_Process::testMatchListLong()
     possible_types["F"] = 5;
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("A");
-    elements1.push_back("B");
-    elements1.push_back("B");
-    elements1.push_back("B");
-    elements1.push_back("B");
-    elements1.push_back("B");
-    elements1.push_back("B");
-    elements1.push_back("B");
-    elements1.push_back("B");
-    std::vector<std::string> elements2;
-    elements2.push_back("C");
-    elements2.push_back("B");
-    elements2.push_back("B");
-    elements2.push_back("B");
-    elements2.push_back("B");
-    elements2.push_back("B");
-    elements2.push_back("B");
-    elements2.push_back("B");
-    elements2.push_back("B");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
 
     // Setup coordinates.
     std::vector<std::vector<double> > process_coords(9,std::vector<double>(3,0.0));
@@ -719,13 +719,13 @@ void Test_Process::testAddAndRemoveSite()
     possible_types["C"] = 0;
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("A");
-    elements1.push_back("B");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
 
-    std::vector<std::string> elements2;
-    elements2.push_back("C");
-    elements2.push_back("B");
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
 
     // Setup coordinates.
     std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
@@ -849,13 +849,13 @@ void Test_Process::testAffectedIndices()
     possible_types["C"] = 0;
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("A");
-    elements1.push_back("B");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
 
-    std::vector<std::string> elements2;
-    elements2.push_back("C");
-    elements2.push_back("B");
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
 
     // Setup coordinates.
     std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
@@ -896,13 +896,13 @@ void Test_Process::testCutoffAndRange()
     possible_types["C"] = 0;
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("A");
-    elements1.push_back("B");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
 
-    std::vector<std::string> elements2;
-    elements2.push_back("C");
-    elements2.push_back("B");
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
 
     // Setup coordinates.
     std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
@@ -940,13 +940,13 @@ void Test_Process::testProcessNumber()
     possible_types["C"] = 0;
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("A");
-    elements1.push_back("B");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
 
-    std::vector<std::string> elements2;
-    elements2.push_back("C");
-    elements2.push_back("B");
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
 
     // Setup coordinates.
     std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
@@ -995,13 +995,13 @@ void Test_Process::testCacheRate()
     possible_types["C"] = 0;
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("A");
-    elements1.push_back("B");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
 
-    std::vector<std::string> elements2;
-    elements2.push_back("C");
-    elements2.push_back("B");
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
 
     // Setup coordinates.
     std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));

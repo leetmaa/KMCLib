@@ -1,7 +1,7 @@
 """ Module for holding common type conversion utility functions. """
 
 
-# Copyright (c)  2012  Mikael Leetmaa
+# Copyright (c)  2012-2014  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -28,6 +28,27 @@ def stringListToStdVectorString(string_list):
     # Copy values over.
     for s in string_list:
         cpp_list.push_back(s);
+    # Done.
+    return cpp_list
+
+
+def stringListToStdVectorStdVectorString(string_list):
+    """
+    Converts a list of strings to a std::vector<std::vector<std::string> >
+    object with one elemnt in each of the inner vectors.
+
+    :param string_list: The list of strings.
+
+    :returns: A corresponding std::vector<std::vector<std::string> > object.
+    """
+    # Get the size.
+    size = len(string_list)
+    # Setup the c++ object.
+    cpp_list = Backend.StdVectorStdVectorString()
+
+    # Copy values over.
+    for s in string_list:
+        cpp_list.push_back(Backend.StdVectorString(1, s));
     # Done.
     return cpp_list
 

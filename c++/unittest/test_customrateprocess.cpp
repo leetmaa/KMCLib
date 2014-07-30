@@ -1,5 +1,5 @@
 /*
-  Copyright (c)  2012-2013  Mikael Leetmaa
+  Copyright (c)  2012-2014  Mikael Leetmaa
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -28,13 +28,13 @@ void Test_CustomRateProcess::testConstruction()
     possible_types["C"] = 0;
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("A");
-    elements1.push_back("B");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
 
-    std::vector<std::string> elements2;
-    elements2.push_back("C");
-    elements2.push_back("B");
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
 
     // Setup coordinates.
     std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
@@ -79,26 +79,26 @@ void Test_CustomRateProcess::testMatchListLong()
     possible_types["F"] = 5;
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("A");
-    elements1.push_back("B");
-    elements1.push_back("B");
-    elements1.push_back("B");
-    elements1.push_back("B");
-    elements1.push_back("B");
-    elements1.push_back("B");
-    elements1.push_back("B");
-    elements1.push_back("B");
-    std::vector<std::string> elements2;
-    elements2.push_back("C");
-    elements2.push_back("B");
-    elements2.push_back("B");
-    elements2.push_back("B");
-    elements2.push_back("B");
-    elements2.push_back("B");
-    elements2.push_back("B");
-    elements2.push_back("B");
-    elements2.push_back("B");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
 
     // Setup coordinates.
     std::vector<std::vector<double> > process_coords(9,std::vector<double>(3,0.0));
@@ -224,13 +224,13 @@ void Test_CustomRateProcess::testTotalRate()
     possible_types["C"] = 0;
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("A");
-    elements1.push_back("B");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
 
-    std::vector<std::string> elements2;
-    elements2.push_back("C");
-    elements2.push_back("B");
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
 
     // Setup coordinates.
     std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
@@ -276,13 +276,13 @@ void Test_CustomRateProcess::testAddAndRemoveSite()
     possible_types["C"] = 0;
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("A");
-    elements1.push_back("B");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
 
-    std::vector<std::string> elements2;
-    elements2.push_back("C");
-    elements2.push_back("B");
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
 
     // Setup coordinates.
     std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
@@ -426,13 +426,13 @@ void Test_CustomRateProcess::testAffectedIndices()
     possible_types["C"] = 0;
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("A");
-    elements1.push_back("B");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
 
-    std::vector<std::string> elements2;
-    elements2.push_back("C");
-    elements2.push_back("B");
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
 
     // Setup coordinates.
     std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
@@ -473,13 +473,13 @@ void Test_CustomRateProcess::testCutoffAndRange()
     possible_types["C"] = 0;
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("A");
-    elements1.push_back("B");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
 
-    std::vector<std::string> elements2;
-    elements2.push_back("C");
-    elements2.push_back("B");
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
 
     // Setup coordinates.
     std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
@@ -522,13 +522,13 @@ void Test_CustomRateProcess::testProcessNumber()
     possible_types["C"] = 0;
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("A");
-    elements1.push_back("B");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
 
-    std::vector<std::string> elements2;
-    elements2.push_back("C");
-    elements2.push_back("B");
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
 
     // Setup coordinates.
     std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
@@ -562,7 +562,6 @@ void Test_CustomRateProcess::testProcessNumber()
     // Check that the number that is returned is the same.
     CPPUNIT_ASSERT_EQUAL( process.processNumber(), p_number );
 
-
     // Construct another process without the process number.
     CustomRateProcess process2(config1,
                                config2,
@@ -590,13 +589,13 @@ void Test_CustomRateProcess::testCacheRate()
     possible_types["C"] = 0;
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("A");
-    elements1.push_back("B");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
 
-    std::vector<std::string> elements2;
-    elements2.push_back("C");
-    elements2.push_back("B");
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
 
     // Setup coordinates.
     std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));

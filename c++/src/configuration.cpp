@@ -21,11 +21,11 @@
 
 // Temporary data for the match list return.
 static ConfigBucketMatchList tmp_match_list__(0);
-
+/*
 // -----------------------------------------------------------------------------
 //
-Configuration::Configuration(std::vector<std::vector<double> > const & coordinates,
-                             std::vector<std::string> const & elements,
+Configuration::Configuration(const std::vector<std::vector<double> > & coordinates,
+                             const std::vector<std::string> & elements,
                              const std::map<std::string,int> & possible_types) :
     n_moved_(0),
     elements_(elements),
@@ -76,6 +76,81 @@ Configuration::Configuration(std::vector<std::vector<double> > const & coordinat
         tb[type] = 1;
         types_.push_back(tb);
      }
+}
+*/
+
+// -----------------------------------------------------------------------------
+//
+Configuration::Configuration(const std::vector<std::vector<double> >  & coordinates,
+                             const std::vector<std::vector<std::string> > & elements,
+                             const std::map<std::string,int> & possible_types) :
+    n_moved_(0),
+    elements_(elements),
+    atom_id_elements_(elements_.size()),
+    match_lists_(elements_.size())
+{
+    // ML: FIXME: We assume here that if atom id's are to be used, only one
+    //            atom per site is present. If more than one atom per site are
+    //            present, only the first atom will be detected and labeled with correct ID.
+    //            This must be handeled in a generic way in the release version.
+
+
+    // Setup the coordinates and initial atom ids.
+    for (size_t i = 0; i < coordinates.size(); ++i)
+    {
+        coordinates_.push_back( Coordinate(coordinates[i][0],
+                                           coordinates[i][1],
+                                           coordinates[i][2]));
+        // FIXME
+        atom_id_.push_back(i);
+
+        // FIXME
+        atom_id_elements_[i] = elements_[i][0];
+    }
+
+    // Set the atom id coordinates to the same as the coordinates to start with.
+    atom_id_coordinates_ = coordinates_;
+
+    // Loop through the possible types map and find out what the maximum is.
+    std::map<std::string,int>::const_iterator it1 = possible_types.begin();
+    int max_type = 0;
+    for ( ; it1 != possible_types.end(); ++it1)
+    {
+        if (it1->second > max_type)
+        {
+            max_type = it1->second;
+        }
+    }
+
+    // Set the size of the type names list.
+    type_names_ = std::vector<std::string>(max_type+1);
+
+    // Fill the list.
+    it1 = possible_types.begin();
+    for ( ; it1 != possible_types.end(); ++it1 )
+     {
+         type_names_[it1->second] = it1->first;
+     }
+
+    // Setup the types from the elements strings.
+    for (size_t i = 0; i < elements_.size(); ++i)
+    {
+        TypeBucket tb(type_names_.size());
+        for (size_t j = 0; j < elements_[i].size(); ++j)
+        {
+            // Get the element out at this point.
+            const std::string element = elements_[i][j];
+
+            // Get the type a a numeric value.
+            const int type = possible_types.find(element)->second;
+
+            // Increase this type counter.
+            tb[type] += 1;
+        }
+
+        // Add to the types vector.
+        types_.push_back(tb);
+    }
 }
 
 
@@ -271,20 +346,30 @@ void Configuration::performBucketProcess(Process & process,
             // Set the type at this index.
             types_[index] = update_types;
 
-            // ML: This is where the temporary fix come in.
+            // Set the elements at this index.
+
+
+            // ML: FIXME: This is not a good solution.
+            //            We should store the update types as
+            //            a vector of strings in the match list entry,
+            //            instead of regenerating that list every time here.
+            std::vector<std::string> elements_at_index;
             for (int i = 0; i < update_types.size(); ++i)
             {
-                if (update_types[i] > 0)
+                for (int j = 0; j < update_types[i]; ++j)
                 {
-                    elements_[index] = type_names_[i];
-                    break;
+                    elements_at_index.push_back(type_names_[i]);
                 }
             }
+            elements_[index] = elements_at_index;
 
             // Update the atom id element.
             if (!(*it1).has_move_coordinate)
             {
-                atom_id_elements_[atom_id] = elements_[index];
+                // ML: FIXME: This behavior should be deprecated.
+                //            Now we only take the first occuring type at the site.
+                //            This is expected behavior but incorrect.
+                atom_id_elements_[atom_id] = elements_[index][0];
             }
 
             // Mark this index as affected.
@@ -329,7 +414,13 @@ void Configuration::performBucketProcess(Process & process,
 
         // Set the atom id at this lattice site index.
         atom_id_[index] = id;
-        atom_id_elements_[id] = elements_[index];
+
+
+        // ML: FIXME: This behavior should be deprecated.
+        //            Now we only take the first occuring type at the site.
+        //            This is expected behavior but incorrect.
+        // Update the element type of this atom ID.
+        atom_id_elements_[id] = elements_[index][0];
 
     }
 }
