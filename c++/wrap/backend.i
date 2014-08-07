@@ -69,6 +69,7 @@
 %template(StdVectorStdPairCoordinate) std::vector<std::pair<Coordinate, Coordinate> >;
 %template(StdVectorStdVectorCoordinate) std::vector<std::vector<Coordinate> >;
 %template(StdMapStringInt) std::map<std::string,int>;
+%template(StdVectorStdMapStringInt) std::vector<std::map<std::string,int> >;
 %template(StdVectorStdPairIntInt) std::vector<std::pair<int, int> >;
 
 // Include the definitions.

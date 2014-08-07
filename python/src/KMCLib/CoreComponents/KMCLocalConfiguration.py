@@ -13,9 +13,12 @@ import numpy
 from KMCLib.Utilities.CheckUtilities import checkCoordinateList
 from KMCLib.Utilities.CheckUtilities import checkIndexWithinBounds
 from KMCLib.Utilities.CheckUtilities import checkTypes
+from KMCLib.Utilities.CheckUtilities import checkAndNormaliseBucketEntry
 from KMCLib.Utilities.ConversionUtilities import stringListToStdVectorStdVectorString
 from KMCLib.Utilities.CoordinateUtilities import centerCoordinates
 from KMCLib.Utilities.ConversionUtilities import numpy2DArrayToStdVectorStdVectorDouble
+from KMCLib.Utilities.ConversionUtilities import bucketListToStdVectorStdVectorString
+from KMCLib.Exceptions.Error import Error
 from KMCLib.Backend import Backend
 
 class KMCLocalConfiguration(object):
@@ -61,8 +64,11 @@ class KMCLocalConfiguration(object):
         # Center the coordinates.
         self.__coordinates = centerCoordinates(coordinates, center)
 
-        # Check the tyeps.
-        self.__types = checkTypes(types, len(coordinates))
+        # Check the types.
+        if len(types) != len(coordinates):
+            raise Error("The length of the types must match the coordinates.")
+
+        self.__types = [checkAndNormaliseBucketEntry(t) for t in types]
 
         # Set the backend to None, to generate it at first query.
         self.__backend = None
@@ -93,8 +99,9 @@ class KMCLocalConfiguration(object):
         :returns: The interactions object in C++
         """
         if self.__backend is None:
+
             # Construct the c++ backend object.
-            cpp_types  = stringListToStdVectorStdVectorString(self.__types)
+            cpp_types = bucketListToStdVectorStdVectorString(self.__types)
 
             cpp_coords = numpy2DArrayToStdVectorStdVectorDouble(self.__coordinates)
             cpp_possible_types = Backend.StdMapStringInt(possible_types)

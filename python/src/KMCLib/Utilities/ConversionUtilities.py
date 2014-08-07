@@ -52,6 +52,29 @@ def stringListToStdVectorStdVectorString(string_list):
     # Done.
     return cpp_list
 
+def bucketListToStdVectorStdVectorString(bucket_list):
+    """
+    Converts a list of the format [[(n,"A"), ...], ...]
+    to a std::vector< std::vector<std::string> > representation.
+
+    :param bucket_list: The list to convert.
+
+    :returns: A corresponding std::vector<std::vector<std::string> > object.
+    """
+    cpp_list = Backend.StdVectorStdVectorString()
+
+    # For each site.
+    for ss in bucket_list:
+        # For all types at this site.
+        site_list = Backend.StdVectorString()
+        for s in ss:
+            # Add the number of types.
+            for i in range(s[0]):
+                site_list.push_back(s[1])
+        cpp_list.push_back(site_list);
+
+    # Done.
+    return cpp_list
 
 def numpy2DArrayToStdVectorStdVectorDouble(array):
     """

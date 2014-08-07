@@ -11,9 +11,12 @@ import numpy
 
 from KMCLib.CoreComponents.KMCLattice import KMCLattice
 from KMCLib.Utilities.CheckUtilities import checkTypes
+from KMCLib.Utilities.CheckUtilities import checkAndNormaliseBucketEntry
 from KMCLib.Utilities.ConversionUtilities import stringListToStdVectorStdVectorString
 from KMCLib.Utilities.ConversionUtilities import numpy2DArrayToStdVectorStdVectorDouble
 from KMCLib.Utilities.ConversionUtilities import stdVectorCoordinateToNumpy2DArray
+from KMCLib.Utilities.ConversionUtilities import bucketListToStdVectorStdVectorString
+
 from KMCLib.Exceptions.Error import Error
 from KMCLib.Backend import Backend
 
@@ -210,58 +213,7 @@ class KMCConfiguration(object):
         # "A" - single particle
         # (N,"A") - numbered single particle
         # ["A", (N1,"B")] - a list with a combination of the other two.
-        return [self.__checkAndNormaliseBucketEntry(t) for t in types]
-
-    def __checkAndNormaliseBucketEntry(self, t):
-        """ """
-        """
-        Check that the foramt of the type entry t is any of the valid
-        "A" - single particle.
-        (N,"A") - numbered single particle.
-        ["A", (N1,"B")] - a list with a combination of the other two.
-
-        :param t: The type entry to check.
-        :return: The normalized [(N,"A")] formatted type.
-        """
-        # Three cases, list, tuple, str.
-        if isinstance(t, list):
-            # Check that each entry is a valid str or tuple.
-            normalised_type = []
-            for tt in t:
-                if isinstance(tt, str):
-                    normalised_type.append((1,tt))
-                elif isinstance(tt, tuple):
-                    if not len(tt) == 2 and isinstance(tt[0], int) and isinstance(tt[1], str):
-                        raise Error("Bucket type given as a tuple must be of format (int, str).")
-                    normalised_type.append(tt)
-            # Loop through the normalised type list and
-            # add entries with the same string.
-            final_type = []
-
-            for i,first in enumerate(normalised_type):
-                for j in range(len(normalised_type)-i-1):
-                    second = normalised_type[i+j+1]
-
-                    # Check the string.
-                    if first[1] == second[1]:
-                        # Add if same type.
-                        first = (first[0] + second[0], first[1])
-
-                # Append to the final list.
-                final_type.append(first)
-
-            # Done.
-            return final_type
-
-        elif isinstance(t, tuple):
-            if not len(t) == 2 and isinstance(t[0], int) and isinstance(t[1], str):
-                raise Error("Bucket type given as a tuple must be of format (int, str).")
-            return [t]
-        elif isinstance(t, str):
-            return [(1,t)]
-        else:
-            # Raise an error if the format was incorrnect.
-            raise Error("Each bucket format type entry must be (a list of) a tupe(s) of format (int,str) or string(s).")
+        return [checkAndNormaliseBucketEntry(t) for t in types]
 
     def types(self):
         """
@@ -270,9 +222,9 @@ class KMCConfiguration(object):
         :returns: The stored types list.
         """
         # Update the types with what ever has been changed in the backend.
-
         if self.__use_buckets:
-            raise Error("NOT IMPLEMENTED")
+
+            self.__types = [[ee for ee in e] for e in self._backend().elements()]
         else:
             self.__types = [e[0] for e in self._backend().elements()]
 
@@ -332,7 +284,7 @@ class KMCConfiguration(object):
         if self.__backend is None:
             # Construct the c++ backend object.
             if self.__use_buckets:
-                raise Error("NOT IMPLEMENTED")
+                cpp_types = bucketListToStdVectorStdVectorString(self.__types)
             else:
                 cpp_types = stringListToStdVectorStdVectorString(self.__types)
 

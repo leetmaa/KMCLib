@@ -493,7 +493,7 @@ void Test_Process::testMatchList()
 
         CPPUNIT_ASSERT_EQUAL(entry.update_types[0], 1);
         CPPUNIT_ASSERT_EQUAL(entry.update_types[1], 0);
-        CPPUNIT_ASSERT_EQUAL(entry.update_types[2], 0);
+        CPPUNIT_ASSERT_EQUAL(entry.update_types[2],-1);
 
 
         // Make sure these coordinates are equal.
@@ -519,7 +519,7 @@ void Test_Process::testMatchList()
         CPPUNIT_ASSERT_EQUAL(entry.match_types[2], 0);
 
         CPPUNIT_ASSERT_EQUAL(entry.update_types[0], 0);
-        CPPUNIT_ASSERT_EQUAL(entry.update_types[1], 1);
+        CPPUNIT_ASSERT_EQUAL(entry.update_types[1], 0);
         CPPUNIT_ASSERT_EQUAL(entry.update_types[2], 0);
 
         // Make sure these coordinates are equal.
@@ -544,7 +544,7 @@ void Test_Process::testMatchList()
         CPPUNIT_ASSERT_EQUAL(entry.match_types[1], 0);
         CPPUNIT_ASSERT_EQUAL(entry.match_types[2], 0);
 
-        CPPUNIT_ASSERT_EQUAL(entry.update_types[0], 0);
+        CPPUNIT_ASSERT_EQUAL(entry.update_types[0],-1);
         CPPUNIT_ASSERT_EQUAL(entry.update_types[1], 0);
         CPPUNIT_ASSERT_EQUAL(entry.update_types[2], 1);
 

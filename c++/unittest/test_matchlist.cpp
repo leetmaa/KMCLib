@@ -1032,7 +1032,7 @@ void Test_MatchList::testConfigurationsToMatchList()
 
     // Check the content of the update types.
     CPPUNIT_ASSERT_EQUAL( match_list[0].update_types[0], 0 );
-    CPPUNIT_ASSERT_EQUAL( match_list[0].update_types[1], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[0].update_types[1],-1 );
     CPPUNIT_ASSERT_EQUAL( match_list[0].update_types[2], 0 );
     CPPUNIT_ASSERT_EQUAL( match_list[0].update_types[3], 0 );
     CPPUNIT_ASSERT_EQUAL( match_list[0].update_types[4], 0 );
@@ -1041,7 +1041,7 @@ void Test_MatchList::testConfigurationsToMatchList()
 
     CPPUNIT_ASSERT_EQUAL( match_list[1].update_types[0], 0 );
     CPPUNIT_ASSERT_EQUAL( match_list[1].update_types[1], 0 );
-    CPPUNIT_ASSERT_EQUAL( match_list[1].update_types[2], 1 );
+    CPPUNIT_ASSERT_EQUAL( match_list[1].update_types[2], 0 );
     CPPUNIT_ASSERT_EQUAL( match_list[1].update_types[3], 0 );
     CPPUNIT_ASSERT_EQUAL( match_list[1].update_types[4], 0 );
     CPPUNIT_ASSERT_EQUAL( match_list[1].update_types[5], 0 );
@@ -1050,7 +1050,217 @@ void Test_MatchList::testConfigurationsToMatchList()
     CPPUNIT_ASSERT_EQUAL( match_list[9].update_types[0], 0 );
     CPPUNIT_ASSERT_EQUAL( match_list[9].update_types[1], 1 );
     CPPUNIT_ASSERT_EQUAL( match_list[9].update_types[2], 0 );
-    CPPUNIT_ASSERT_EQUAL( match_list[9].update_types[3], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[9].update_types[3],-1 );
+    CPPUNIT_ASSERT_EQUAL( match_list[9].update_types[4], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[9].update_types[5], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[9].update_types[6], 0 );
+
+    // Check the cutoff and range.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( cutoff, 1.0, 1.0e-10);
+    CPPUNIT_ASSERT_EQUAL( range, 1);
+
+    // DONE.
+
+}
+
+// -------------------------------------------------------------------------- //
+//
+void Test_MatchList::testConfigurationsToMatchList2()
+{
+    // Set up two configurations.
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "C"));
+    elements1.push_back(std::vector<std::string>(1, "C"));
+    elements1.push_back(std::vector<std::string>(1, "C"));
+    elements1.push_back(std::vector<std::string>(1, "C"));
+    elements1.push_back(std::vector<std::string>(1, "C"));
+    elements1.push_back(std::vector<std::string>(1, "C"));
+
+    std::vector<std::vector<std::string> > elements2 = elements1;
+
+    // Setup coordinates.
+    std::vector<std::vector<double> > process_coords(15,std::vector<double>(3,0.0));
+    process_coords[1][0] =  0.5;
+    process_coords[1][1] =  0.5;
+    process_coords[1][2] =  0.5;
+
+    process_coords[2][0] = -0.5;
+    process_coords[2][1] =  0.5;
+    process_coords[2][2] =  0.5;
+
+    process_coords[3][0] =  0.5;
+    process_coords[3][1] = -0.5;
+    process_coords[3][2] =  0.5;
+
+    process_coords[4][0] =  0.5;
+    process_coords[4][1] =  0.5;
+    process_coords[4][2] = -0.5;
+
+    process_coords[5][0] = -0.5;
+    process_coords[5][1] = -0.5;
+    process_coords[5][2] =  0.5;
+
+    process_coords[6][0] = -0.5;
+    process_coords[6][1] =  0.5;
+    process_coords[6][2] = -0.5;
+
+    process_coords[7][0] =  0.5;
+    process_coords[7][1] = -0.5;
+    process_coords[7][2] = -0.5;
+
+    process_coords[8][0] = -0.5;
+    process_coords[8][1] = -0.5;
+    process_coords[8][2] = -0.5;
+
+    process_coords[9][0] =  1.0;
+    process_coords[9][1] =  0.0;
+    process_coords[9][2] =  0.0;
+
+    process_coords[10][0] =  0.0;
+    process_coords[10][1] =  1.0;
+    process_coords[10][2] =  0.0;
+
+    process_coords[11][0] =  0.0;
+    process_coords[11][1] =  0.0;
+    process_coords[11][2] =  1.0;
+
+    process_coords[12][0] = -1.0;
+    process_coords[12][1] =  0.0;
+    process_coords[12][2] =  0.0;
+
+    process_coords[13][0] =  0.0;
+    process_coords[13][1] = -1.0;
+    process_coords[13][2] =  0.0;
+
+    process_coords[14][0] =  0.0;
+    process_coords[14][1] =  0.0;
+    process_coords[14][2] = -1.0;
+
+    // Mapping form string to integer.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["C"] = 3;
+    possible_types["D"] = 4;
+    possible_types["E"] = 5;
+    possible_types["F"] = 6;
+
+    // The configurations.
+    const Configuration first(process_coords, elements1, possible_types);
+    Configuration second(process_coords, elements2, possible_types);
+
+
+    // The update info on the second process.
+    std::vector< std::map<std::string, int> > update_info(15);
+    update_info[0]["F"]  =  1;
+    update_info[0]["A"]  = -1;
+    update_info[1]["*"]  =  0;
+    update_info[2]["*"]  =  0;
+    update_info[3]["*"]  =  0;
+    update_info[4]["*"]  =  0;
+    update_info[5]["*"]  =  0;
+    update_info[6]["*"]  =  0;
+    update_info[7]["*"]  =  0;
+    update_info[8]["*"]  =  0;
+    update_info[9]["A"]  =  1;
+    update_info[9]["C"]  = -1;
+    update_info[10]["A"] =  1;
+    update_info[10]["C"] = -1;
+    update_info[11]["A"] =  1;
+    update_info[11]["C"] = -1;
+    update_info[12]["A"] =  1;
+    update_info[12]["C"] = -1;
+    update_info[13]["A"] =  1;
+    update_info[13]["C"] = -1;
+    update_info[14]["A"] =  1;
+    update_info[14]["C"] = -1;
+
+    second.setUpdateInfo(update_info);
+
+    // This is output from the config to matchlist generation routine.
+    int range = 0;
+    double cutoff = 0.0;
+    ProcessBucketMatchList match_list;
+    std::vector<int> affected_indices;
+
+    // Generate the match list.
+    configurationsToMatchList(first,
+                              second,
+                              range,
+                              cutoff,
+                              match_list,
+                              affected_indices);
+
+    // Check that the match list correct.
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(match_list.size()), 15 );
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(affected_indices.size()), 7 );
+
+    // Check the size of the match types and update types.
+    for (size_t i = 0; i < match_list.size(); ++i)
+    {
+        CPPUNIT_ASSERT_EQUAL(static_cast<int>(match_list[i].match_types.size()),
+                             static_cast<int>(possible_types.size()));
+
+        CPPUNIT_ASSERT_EQUAL(static_cast<int>(match_list[i].update_types.size()),
+                             static_cast<int>(possible_types.size()));
+    }
+
+    // Check the content of the match types.
+    CPPUNIT_ASSERT_EQUAL( match_list[0].match_types[0], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[0].match_types[1], 1 );
+    CPPUNIT_ASSERT_EQUAL( match_list[0].match_types[2], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[0].match_types[3], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[0].match_types[4], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[0].match_types[5], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[0].match_types[6], 0 );
+
+    CPPUNIT_ASSERT_EQUAL( match_list[1].match_types[0], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[1].match_types[1], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[1].match_types[2], 1 );
+    CPPUNIT_ASSERT_EQUAL( match_list[1].match_types[3], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[1].match_types[4], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[1].match_types[5], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[1].match_types[6], 0 );
+
+    CPPUNIT_ASSERT_EQUAL( match_list[9].match_types[0], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[9].match_types[1], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[9].match_types[2], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[9].match_types[3], 1 );
+    CPPUNIT_ASSERT_EQUAL( match_list[9].match_types[4], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[9].match_types[5], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[9].match_types[6], 0 );
+
+    // Check the content of the update types.
+    CPPUNIT_ASSERT_EQUAL( match_list[0].update_types[0], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[0].update_types[1],-1 );
+    CPPUNIT_ASSERT_EQUAL( match_list[0].update_types[2], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[0].update_types[3], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[0].update_types[4], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[0].update_types[5], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[0].update_types[6], 1 );
+
+    CPPUNIT_ASSERT_EQUAL( match_list[1].update_types[0], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[1].update_types[1], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[1].update_types[2], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[1].update_types[3], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[1].update_types[4], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[1].update_types[5], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[1].update_types[6], 0 );
+
+    CPPUNIT_ASSERT_EQUAL( match_list[9].update_types[0], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[9].update_types[1], 1 );
+    CPPUNIT_ASSERT_EQUAL( match_list[9].update_types[2], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[9].update_types[3],-1 );
     CPPUNIT_ASSERT_EQUAL( match_list[9].update_types[4], 0 );
     CPPUNIT_ASSERT_EQUAL( match_list[9].update_types[5], 0 );
     CPPUNIT_ASSERT_EQUAL( match_list[9].update_types[6], 0 );

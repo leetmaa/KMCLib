@@ -21,63 +21,7 @@
 
 // Temporary data for the match list return.
 static ConfigBucketMatchList tmp_match_list__(0);
-/*
-// -----------------------------------------------------------------------------
-//
-Configuration::Configuration(const std::vector<std::vector<double> > & coordinates,
-                             const std::vector<std::string> & elements,
-                             const std::map<std::string,int> & possible_types) :
-    n_moved_(0),
-    elements_(elements),
-    atom_id_elements_(elements),
-    match_lists_(elements_.size())
-{
-    // Setup the coordinates and initial atom ids.
-    for (size_t i = 0; i < coordinates.size(); ++i)
-    {
-        coordinates_.push_back( Coordinate(coordinates[i][0],
-                                           coordinates[i][1],
-                                           coordinates[i][2]));
-        atom_id_.push_back(i);
-    }
 
-    // Set the atom id coordinates to the same as the coordinates to start with.
-    atom_id_coordinates_ = coordinates_;
-
-    // Loop through the possible types map and find out what the maximum is.
-    std::map<std::string,int>::const_iterator it1 = possible_types.begin();
-    int max_type = 0;
-    for ( ; it1 != possible_types.end(); ++it1)
-    {
-        if (it1->second > max_type)
-        {
-            max_type = it1->second;
-        }
-    }
-
-    // Set the size of the type names list.
-    type_names_ = std::vector<std::string>(max_type+1);
-
-    // Fill the list.
-    it1 = possible_types.begin();
-    for ( ; it1 != possible_types.end(); ++it1 )
-     {
-         type_names_[it1->second] = it1->first;
-     }
-
-    // ML: Needs update for buckets with more than one atom per site.
-
-    // Setup the types from the elements strings.
-    for (size_t i = 0; i < elements_.size(); ++i)
-    {
-        const std::string element = elements_[i];
-        const int type = possible_types.find(element)->second;
-        TypeBucket tb(type_names_.size());
-        tb[type] = 1;
-        types_.push_back(tb);
-     }
-}
-*/
 
 // -----------------------------------------------------------------------------
 //
@@ -87,7 +31,8 @@ Configuration::Configuration(const std::vector<std::vector<double> >  & coordina
     n_moved_(0),
     elements_(elements),
     atom_id_elements_(elements_.size()),
-    match_lists_(elements_.size())
+    match_lists_(elements_.size()),
+    possible_types_(possible_types)
 {
     // ML: FIXME: We assume here that if atom id's are to be used, only one
     //            atom per site is present. If more than one atom per site are
@@ -141,7 +86,7 @@ Configuration::Configuration(const std::vector<std::vector<double> >  & coordina
             // Get the element out at this point.
             const std::string element = elements_[i][j];
 
-            // Get the type a a numeric value.
+            // Get the type a numeric value.
             const int type = possible_types.find(element)->second;
 
             // Increase this type counter.
@@ -334,8 +279,21 @@ void Configuration::performBucketProcess(Process & process,
         // Get the index out of the configuration match list.
         const int index = (*it2).index;
 
+        // ML: Update the matching such that the update_types in the
+        // new format gets used correctly.
+
+
+        // FIXME: ML: Prototyping.
+        int sum = 0;
+        for (int i = 0; i  < update_types.size(); ++i)
+        {
+            sum += std::abs(update_types[i]);
+        }
+
+//        if (!update_types.zero() && !(update_types[0] > 0))
         // NOTE: The != 0 is needed for handling the wildcard match.
-        if (types_[index] != update_types && !(update_types == 0))
+        //if (types_[index] != update_types && !(update_types == 0))
+        if (sum > 0 && !(update_types[0] > 0))
         {
             // Get the atom id to apply the move vector to.
             const int atom_id = atom_id_[index];
@@ -343,20 +301,24 @@ void Configuration::performBucketProcess(Process & process,
             // Apply the move vector to the atom coordinate.
             atom_id_coordinates_[atom_id] += (*it1).move_coordinate;
 
+            // ML: FIXME: Prototyping.
             // Set the type at this index.
-            types_[index] = update_types;
+            //types_[index] += update_types;
+            for (int i = 0; i < types_[index].size(); ++i)
+            {
+                types_[index][i] += update_types[i];
+            }
 
             // Set the elements at this index.
-
 
             // ML: FIXME: This is not a good solution.
             //            We should store the update types as
             //            a vector of strings in the match list entry,
             //            instead of regenerating that list every time here.
             std::vector<std::string> elements_at_index;
-            for (int i = 0; i < update_types.size(); ++i)
+            for (int i = 0; i < types_[index].size(); ++i)
             {
-                for (int j = 0; j < update_types[i]; ++j)
+                for (int j = 0; j < types_[index][i]; ++j)
                 {
                     elements_at_index.push_back(type_names_[i]);
                 }

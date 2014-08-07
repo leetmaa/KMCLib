@@ -27,6 +27,52 @@ void configurationsToMatchList(const Configuration & first,
     // Get a handle to the coordinates and elements.
     const std::vector<Coordinate> & coords = first.coordinates();
 
+    // The update types to set up.
+    std::vector<TypeBucket> update_types;
+
+    // If update info is present.
+    if (second.updateInfo().size() != 0)
+    {
+        // Translate the update information to integer representation.
+        std::vector<std::map<std::string, int> > update_info = second.updateInfo();
+
+        for (size_t i = 0; i < update_info.size(); ++i)
+        {
+            // Get the update info for this site.
+            const std::map<std::string, int> & info = update_info[i];
+            TypeBucket update(second.possibleTypes().size());
+
+            // Loop through the info and determine the corresponding integer representation.
+            std::map<std::string, int>::const_iterator it1 = info.begin();
+            for ( ; it1 != info.end(); ++it1 )
+            {
+                const int type = second.possibleTypes().find(it1->first)->second;
+                const int diff = it1->second;
+                update[type] = diff;
+            }
+
+            update_types.push_back(update);
+        }
+    }
+
+    // If no update info was given we create it here.
+    else
+    {
+        for (size_t i = 0; i < first.elements().size(); ++i)
+        {
+            const TypeBucket & t1 = first.types()[i];
+            const TypeBucket & t2 = second.types()[i];
+            TypeBucket update = t2;
+
+            for (int j = 0; j < update.size(); ++j)
+            {
+                update[j] -= t1[j];
+            }
+            update_types.push_back(update);
+        }
+    }
+
+
     // Get the first coordinate out to calculate the distance against.
     const Coordinate origin = coords[0];
 
@@ -61,25 +107,31 @@ void configurationsToMatchList(const Configuration & first,
         ProcessBucketMatchListEntry pm;
 
         // Set the values.
-        pm.match_types = first.types()[i];
-        pm.update_types = second.types()[i];
+        pm.match_types  = first.types()[i];
+        pm.update_types = update_types[i];
 
         pm.distance    = distance;
         pm.coordinate  = coordinate;
         pm.index       = -1;
 
-        // ML: Handle move coordinates separately later.
+        // Handle move coordinates separately later.
         pm.has_move_coordinate = false;
         pm.move_coordinate = Coordinate(0.0, 0.0, 0.0);
 
         // Add the entry.
         match_list.push_back(pm);
 
-        // If the first and second type differ increase the length of the
-        // affected_indices list accordingly.
-        if (pm.match_types != pm.update_types)
+        // ML: FIXME:
+        // If not all elements are zero in the update type,
+        // increase the length of the affected indices list.
+
+        for (int j = 0; j < pm.update_types.size(); ++j)
         {
-            affected_indices.push_back(0);
+            if (pm.update_types[j] != 0)
+            {
+                affected_indices.push_back(0);
+                break;
+            }
         }
     }
 }

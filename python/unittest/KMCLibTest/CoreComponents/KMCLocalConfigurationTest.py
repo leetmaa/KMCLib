@@ -53,7 +53,7 @@ class KMCLocalConfigurationTest(unittest.TestCase):
 
         # Define the reference data.
         ref_coords    = numpy.array([[0.0,1.0,0.0],[0.0,0.0,0.0],[2.0,7.0,6.0]])
-        ref_types     = ["C","B","A"]
+        ref_types     = [[(1, "C")],[(1, "B")],[(1, "A")]]
 
         # Check the coordinates.
         self.assertAlmostEqual(numpy.linalg.norm(local_config._KMCLocalConfiguration__coordinates - ref_coords), 0.0, 10)
@@ -111,7 +111,7 @@ class KMCLocalConfigurationTest(unittest.TestCase):
 
 coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
 
-types = ['C']
+types = [[(1, 'C')]]
 
 local_configuration = KMCLocalConfiguration(
     coordinates=coordinates,
@@ -134,7 +134,7 @@ coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
                [   0.000000e+00,  -1.000000e+00,   0.000000e+00],
                [   2.000000e+00,   6.000000e+00,   6.000000e+00]]
 
-types = ['C', 'B', 'A']
+types = [[(1, 'C')], [(1, 'B')], [(1, 'A')]]
 
 local_config2 = KMCLocalConfiguration(
     coordinates=coordinates,
@@ -174,12 +174,14 @@ local_config2 = KMCLocalConfiguration(
         self.assertAlmostEqual( cpp_coords[0][2], py_coords[0][2], 10 )
 
         # Get the types back out.
-        # ML: FIXME:
-        # This will be incorectly tested and fail for bucket types.
-        cpp_types = [e[0] for e in backend.elements()]
-        py_types  = local_config.types()
+        cpp_types = backend.elements()
+        ref_cpp_types = (("A",),("B",))
+        self.assertEqual(cpp_types, ref_cpp_types)
 
-        self.assertEqual(py_types, cpp_types)
+        py_types  = local_config.types()
+        ref_py_types = [[(1, "A")],[(1, "B")]]
+        self.assertEqual(py_types, ref_py_types)
+
 
 
 if __name__ == '__main__':

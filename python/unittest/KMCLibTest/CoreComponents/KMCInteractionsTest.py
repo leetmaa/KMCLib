@@ -15,6 +15,7 @@ import os
 
 from KMCLib.CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
 from KMCLib.CoreComponents.KMCProcess import KMCProcess
+from KMCLib.CoreComponents.KMCBucketProcess import KMCBucketProcess
 from KMCLib.PluginInterfaces.KMCRateCalculatorPlugin import KMCRateCalculatorPlugin
 from KMCLib.Exceptions.Error import Error
 from KMCLib.Backend import Backend
@@ -45,6 +46,51 @@ class KMCInteractionsTest(unittest.TestCase):
         types1 = ["C","A"]
         rate_0_1 = 1.5
         process_1 = KMCProcess(coords, types0, types1, basis_sites=[0,1,3], rate_constant=rate_0_1)
+
+        processes = [process_0, process_1]
+
+        # Construct the interactions object.
+        kmc_interactions = KMCInteractions(processes=processes)
+
+        # Check the default implicit wildcard.
+        self.assertTrue( kmc_interactions.implicitWildcards() )
+
+        # Construct again with non default value.
+        kmc_interactions = KMCInteractions(processes=processes,
+                                           implicit_wildcards=False)
+
+        # Check the wildcard again.
+        self.assertFalse( kmc_interactions.implicitWildcards() )
+
+        # Check the processes stored on the object.
+        stored_processes = kmc_interactions._KMCInteractions__processes
+
+        # Checks that the address is the same.
+        self.assertTrue(stored_processes == processes)
+
+    def testConstructionBuckets(self):
+        """ Test that the KMCInteractions class can be constructed. """
+        # A first process.
+        coords = [[1.0,2.0,3.4],[12.0,13.0,-1.0],[1.1,1.2,1.3]]
+        minimum_match = ["A","*","B"]
+        update = [[(-1,"A"), (1, "B")],"*",[(1,"A"), (-1, "B")]]
+        rate_0_1 = 3.5
+        process_0 = KMCBucketProcess(coordinates=coords,
+                                     minimum_match=minimum_match,
+                                     update=update,
+                                     basis_sites=[0,1,3],
+                                     rate_constant=rate_0_1)
+
+        # A second process.
+        coords = [[1.0,2.0,3.4],[12.0,13.0,-1.0],[1.1,1.2,1.3]]
+        minimum_match = ["A","*","C"]
+        update = [[(-1,"A"), (1, "C")],"*",[(1,"A"), (-1, "C")]]
+        rate_0_1 = 1.5
+        process_1 = KMCBucketProcess(coordinates=coords,
+                                     minimum_match=minimum_match,
+                                     update=update,
+                                     basis_sites=[0,1,3],
+                                     rate_constant=rate_0_1)
 
         processes = [process_0, process_1]
 
@@ -245,6 +291,124 @@ class KMCInteractionsTest(unittest.TestCase):
         # Match type should be "C" -> 5 and update type "A" -> 13
         self.assertEqual( match_types[5],   1)
         self.assertEqual( update_types[13], 1)
+
+    def testBackendBuckets(self):
+        """
+        Test that the backend behaves as expected with bucket processes.
+        """
+        # A first process.
+        coords = [[1.0,2.0,3.4],[12.0,13.0,-1.0],[1.1,1.2,1.3]]
+        minimum_match = ["A","*","B"]
+        update = [[(-1,"A"), (1, "B")],[(0,"*")],[(1,"A"), (-1, "B")]]
+        rate_0_1 = 3.5
+        process_0 = KMCBucketProcess(coordinates=coords,
+                                     minimum_match=minimum_match,
+                                     update=update,
+                                     basis_sites=[0,1,3],
+                                     rate_constant=rate_0_1)
+
+        # A second process.
+        coords = [[1.0,2.0,3.4],[12.0,13.0,-1.0],[1.1,1.2,1.3]]
+        minimum_match = ["A","*","C"]
+        update = [[(-1,"A"), (1, "C")],[(0,"*")],[(1,"A"), (-1, "C")]]
+        rate_0_1 = 1.5
+        process_1 = KMCBucketProcess(coordinates=coords,
+                                     minimum_match=minimum_match,
+                                     update=update,
+                                     basis_sites=[0,1,3],
+                                     rate_constant=rate_0_1)
+
+        processes = [process_0, process_1]
+
+        # Construct the interactions object.
+        kmc_interactions = KMCInteractions(processes=processes)
+
+        # Setup a dict with the possible types.
+        possible_types = {
+            "A" : 0,
+            "B" : 1,
+            "J" : 2,
+            "C" : 3,
+            }
+
+        # Use a dummy argument for the configuration.
+        config = "DummyConfig"
+
+        # Check that setting up the backend fails if we have types in the processes that do
+        # not corresponds to a type in the list of possible types.
+        self.assertRaises( Error, lambda : kmc_interactions._backend(possible_types, 2, config) )
+
+        possible_types = {
+            "A" : 0,
+            "B" : 1,
+            "D" : 2,
+            "J" : 3,
+            "C" : 4,
+            }
+
+        self.assertRaises( Error, lambda : kmc_interactions._backend(possible_types, 2, config) )
+
+        possible_types = {
+            "A" : 0,
+            "B" : 1,
+            "F" : 2,
+            "J" : 3,
+            "C" : 4,
+            }
+
+        self.assertRaises( Error, lambda : kmc_interactions._backend(possible_types, 2, config) )
+
+        # Both "D" and "F" must be present, and the widcard "*".
+        possible_types["D"] = 5
+        possible_types["*"] = 6
+
+        # Get the backend.
+        cpp_interactions = kmc_interactions._backend(possible_types, 2, config)
+
+        # Check the type.
+        self.assertTrue( isinstance(cpp_interactions, Backend.Interactions) )
+
+        # Get the processes out.
+        cpp_processes = cpp_interactions.processes()
+
+        # Check the length of the processes.
+        self.assertEqual(cpp_processes.size(), 2)
+
+        # Get the elements out of the second process.
+        update_types = cpp_processes[1].processMatchList()[0].update_types
+
+        # This is an "A"
+        match_types  = cpp_processes[1].processMatchList()[0].match_types
+        self.assertEqual(match_types[0], 1)
+        self.assertEqual(match_types[1], 0)
+        self.assertEqual(match_types[2], 0)
+        self.assertEqual(match_types[3], 0)
+        self.assertEqual(match_types[4], 0)
+        self.assertEqual(match_types[5], 0)
+        self.assertEqual(match_types[6], 0)
+
+        # This is an "C"
+        match_types  = cpp_processes[1].processMatchList()[1].match_types
+        self.assertEqual(match_types[0], 0)
+        self.assertEqual(match_types[1], 0)
+        self.assertEqual(match_types[2], 0)
+        self.assertEqual(match_types[3], 0)
+        self.assertEqual(match_types[4], 1)
+        self.assertEqual(match_types[5], 0)
+        self.assertEqual(match_types[6], 0)
+
+        # This is a "*"
+        match_types  = cpp_processes[1].processMatchList()[2].match_types
+        self.assertEqual(match_types[0], 0)
+        self.assertEqual(match_types[1], 0)
+        self.assertEqual(match_types[2], 0)
+        self.assertEqual(match_types[3], 0)
+        self.assertEqual(match_types[4], 0)
+        self.assertEqual(match_types[5], 0)
+        self.assertEqual(match_types[6], 1)
+
+        # Check the update types.
+        # NEEDS IMPLEMENTATION
 
     def testBackendWithCustomRates(self):
         """ Test that we can construct the backend object with custom rates. """

@@ -581,10 +581,22 @@ double Matcher::updateSingleRate(const int index,
     for ( ; it2 != end; ++it1, ++it2, ++it3 )
     {
         const TypeBucket & update_types = (*it2).update_types;
-        const TypeBucket &  match_types = (*it1).match_types;
+//        const TypeBucket &  match_types = (*it1).match_types;
 
-        // Set the type after process. NOTE: The != 0 is needed for handling wildcards.
-        if ( !match_types.identical(update_types)  && !(update_types == 0) )
+        // Set the type after process.
+
+        // NOTE: The != 0 is needed for handling wildcards.
+
+        // ML: FIXME
+        // Check that the update type is not 'zero'.
+        int sum = 0;
+        for (int i = 0; i < update_types.size(); ++i)
+        {
+            sum += std::abs(update_types[i]);
+        }
+
+//        if ( !match_types.identical(update_types)  && !(update_types == 0) )
+        if ( sum != 0  && !(update_types == 0) )
         {
             // FIXME - This requires a new data structure for the type names
             //         that we send to python for using buckets with more than
@@ -592,7 +604,8 @@ double Matcher::updateSingleRate(const int index,
 
             for (int i = 0; i < update_types.size(); ++i)
             {
-                if (update_types[i] != 0)
+                // Taking the first only.
+                if (update_types[i] == 1)
                 {
                     (*it3) = configuration.typeName(i);
                     break;

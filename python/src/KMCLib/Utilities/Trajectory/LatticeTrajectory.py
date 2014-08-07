@@ -152,17 +152,24 @@ class LatticeTrajectory(Trajectory):
                     types_str = "types.append(["
                     indent = " "*14
                     row_length = len(types_str)
-                    for t in types[:-1]:
-                        row_length += len(t) + 2
-                        types_str += "\"" + t + "\"" + ","
 
-                        # Berak the row if above 70 positions.
-                        if row_length >= 70:
-                            types_str += "\n" + indent
-                            row_length = len(indent)
+                    if isinstance(types[:-1][0], str):
+                        for t in types[:-1]:
+                            row_length += len(t) + 2
+                            types_str += "\"" + t + "\"" + ","
 
-                    # Add the last type.
-                    types_str += "\"" + types[-1] + "\"" + "])\n"
+                            # Berak the row if above 70 positions.
+                            if row_length >= 70:
+                                types_str += "\n" + indent
+                                row_length = len(indent)
+
+                        # Add the last type.
+                        types_str += "\"" + types[-1] + "\"" + "])\n"
+
+                    # With bucket types.
+                    else:
+                        # FIXME
+                        types_str += "\"NOT IMPLEMENTED\"])\n"
 
                     # Write it to file.
                     trajectory.write(types_str)

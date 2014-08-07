@@ -219,6 +219,7 @@ void Test_Configuration::testPerformProcess()
 
     // Check that the correct indices were added to the list of affected.
     const std::vector<int> affected = p.affectedIndices();
+
     CPPUNIT_ASSERT_EQUAL( affected[0], 1434 );
     CPPUNIT_ASSERT_EQUAL( affected[1], 350  );
 
@@ -1065,4 +1066,73 @@ void Test_Configuration::testAtomIDElementsCoordinatesMovedIDs()
     CPPUNIT_ASSERT_DOUBLES_EQUAL(configuration.coordinates()[1776].z(),
                                  configuration.atomIDCoordinates()[1453].z(),
                                  1.0e-12);
+}
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Configuration::testUpdateInfo()
+{
+    // Setup coordinates.
+    std::vector<std::vector<double> > coords(5, std::vector<double>(3, 0.0));
+    coords[0][0]  = 0.1;
+    coords[0][1]  = 0.2;
+    coords[0][2]  = 0.3;
+    coords[1][0]  = 0.4;
+    coords[1][1]  = 0.5;
+    coords[1][2]  = 0.6;
+    coords[2][0]  = 0.7;
+    coords[2][1]  = 0.8;
+    coords[2][2]  = 0.9;
+    coords[3][0]  = 1.1;
+    coords[3][1] = 1.2;
+    coords[3][2] = 1.3;
+    coords[4][0] = 3.6;
+    coords[4][1] = 3.5;
+    coords[4][2] = 3.4;
+
+    // Setup elements.
+    std::vector< std::vector<std::string> > elements(5);
+    elements[0] = std::vector<std::string>(1, "A");
+    elements[1] = std::vector<std::string>(1, "B");
+    elements[2] = std::vector<std::string>(1, "D");
+    elements[3] = std::vector<std::string>(1, "H");
+    elements[4] = std::vector<std::string>(1, "J");
+
+    // Setup the mapping from element to integer.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["D"] = 3;
+    possible_types["H"] = 4;
+    possible_types["J"] = 5;
+    possible_types["G"] = 6;
+
+    // Construct the configuration.
+    Configuration config(coords, elements, possible_types);
+
+    // Create update info.
+    std::vector<std::map<std::string, int> > update(5);
+    update[0]["*"] =  1;
+
+    update[1]["A"] =  2;
+    update[1]["B"] = -2;
+
+    update[2]["A"] = -2;
+    update[2]["B"] =  2;
+
+    update[3]["C"] =  1;
+
+    update[4]["*"] =  1;
+
+    // Set the update info on the class.
+    config.setUpdateInfo(update);
+
+    // Check that the update info is there.
+    std::vector<std::map<std::string, int> > ret_update = config.updateInfo();
+
+    CPPUNIT_ASSERT_EQUAL(update[0]["*"], ret_update[0]["*"]);
+    CPPUNIT_ASSERT_EQUAL(update[1]["A"], ret_update[1]["A"]);
+    CPPUNIT_ASSERT_EQUAL(update[1]["B"], ret_update[1]["B"]);
+    CPPUNIT_ASSERT_EQUAL(update[2]["B"], ret_update[2]["B"]);
 }

@@ -38,17 +38,9 @@ public:
      *  \param elements      : The elements of the configuration.
      *  \param possible_types: A global mapping from type string to number.
      */
-//    Configuration(const std::vector< std::vector<double> > & coordinates,
-//                  const std::vector<std::string> & elements,
-//                  const std::map<std::string,int> & possible_types);
-
-
     Configuration(const std::vector< std::vector<double> > & coordinates,
                   const std::vector< std::vector<std::string> > & elements,
                   const std::map<std::string,int> & possible_types);
-
-
-
 
     /*! \brief Initiate the calculation of the match lists.
      *  \param lattice_map : The lattice map needed to get coordinates wrapped.
@@ -149,6 +141,24 @@ public:
      */
     const std::vector<int> & atomID() const { return atom_id_; }
 
+    /*! \brief Set the update info on the configuration. This is used
+     *         in connection with setting up processes of bucket type.
+     *  \param update_info: The update info to set on the class.
+     */
+    void setUpdateInfo(const std::vector<std::map<std::string, int> > & update_info) { update_info_ = update_info; }
+
+    /*! \brief Query for the update info.
+     *  \return : The update info stored on the class.
+     */
+    const std::vector<std::map<std::string, int> > & updateInfo() const { return update_info_; }
+
+    /*! \brief Query for the mapping between string and int
+               type representations.
+     *  \return : A const handle to the mapping.
+     */
+    const std::map<std::string,int> & possibleTypes() const { return possible_types_; }
+
+
 protected:
 
 private:
@@ -185,6 +195,12 @@ private:
 
     /// The match lists for all indices.
     std::vector< ConfigBucketMatchList > match_lists_;
+
+    /// The update info.
+    std::vector< std::map<std::string, int> > update_info_;
+
+    /// Mapping from string to int representation of types.
+    std::map<std::string,int> possible_types_;
 
 };
 

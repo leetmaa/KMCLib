@@ -371,6 +371,7 @@ class KMCConfigurationTest(unittest.TestCase):
                                   possible_types=['A','B','empty'])
 
         # Retrieve the types information from the configuration backend.
+        # FXME: NEEDS IMPLEMENTATION
         print config.types()
 
     def testLatticeMap(self):

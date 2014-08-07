@@ -37,9 +37,6 @@ Process::Process(const Configuration & first,
     basis_sites_(basis_sites),
     id_moves_(0)
 {
-
-    // ML: This thing is working. Now, update it to use bucket matching.
-
     // Generate the matchlist from the configurations.
     configurationsToMatchList(first,
                               second,

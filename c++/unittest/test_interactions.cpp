@@ -110,7 +110,7 @@ void Test_Interactions::testQuery()
     CPPUNIT_ASSERT_EQUAL( queried_processes[0]->processMatchList()[0].match_types[2], 0 );
 
     CPPUNIT_ASSERT_EQUAL( queried_processes[0]->processMatchList()[0].update_types[0], 0 );
-    CPPUNIT_ASSERT_EQUAL( queried_processes[0]->processMatchList()[0].update_types[1], 0 );
+    CPPUNIT_ASSERT_EQUAL( queried_processes[0]->processMatchList()[0].update_types[1],-1 );
     CPPUNIT_ASSERT_EQUAL( queried_processes[0]->processMatchList()[0].update_types[2], 1 );
 
     CPPUNIT_ASSERT_EQUAL( queried_processes[2]->processMatchList()[2].match_types[0], 0 );
@@ -118,7 +118,7 @@ void Test_Interactions::testQuery()
     CPPUNIT_ASSERT_EQUAL( queried_processes[2]->processMatchList()[2].match_types[2], 0 );
 
     CPPUNIT_ASSERT_EQUAL( queried_processes[2]->processMatchList()[2].update_types[0], 0 );
-    CPPUNIT_ASSERT_EQUAL( queried_processes[2]->processMatchList()[2].update_types[1], 1 );
+    CPPUNIT_ASSERT_EQUAL( queried_processes[2]->processMatchList()[2].update_types[1], 0 );
     CPPUNIT_ASSERT_EQUAL( queried_processes[2]->processMatchList()[2].update_types[2], 0 );
 
     // Query for the total number of available sites. This is zero since no sites are added to

@@ -16,9 +16,11 @@ from KMCLib.Backend import Backend
 # Import from the module we test.
 from KMCLib.Utilities.ConversionUtilities import stringListToStdVectorString
 from KMCLib.Utilities.ConversionUtilities import stringListToStdVectorStdVectorString
+from KMCLib.Utilities.ConversionUtilities import bucketListToStdVectorStdVectorString
 from KMCLib.Utilities.ConversionUtilities import numpy2DArrayToStdVectorStdVectorDouble
 from KMCLib.Utilities.ConversionUtilities import numpy2DArrayToStdVectorCoordinate
 from KMCLib.Utilities.ConversionUtilities import stdVectorCoordinateToNumpy2DArray
+
 
 
 # Implement the test.
@@ -54,6 +56,27 @@ class ConversionUtilitiesTest(unittest.TestCase):
         # Check the values.
         list_from_cpp = [e[0] for e in cpp_repr]
         self.assertEqual(string_list, list_from_cpp)
+
+    def testBucketListToStdVectorStdVectorString(self):
+        """ Test that a bucket list can be converted to C++ """
+        bucket_list = [[(1, "J")], [(4, "G"), (1, "DD")], [(2, "P")]]
+        cpp_list = bucketListToStdVectorStdVectorString(bucket_list)
+
+        # Check the size:
+        self.assertEqual(cpp_list.size(), 3)
+        self.assertEqual(len(cpp_list[0]), 1)
+        self.assertEqual(len(cpp_list[1]), 5)
+        self.assertEqual(len(cpp_list[2]), 2)
+
+        # Check the content.
+        self.assertEqual(cpp_list[0][0], "J")
+        self.assertEqual(cpp_list[1][0], "G")
+        self.assertEqual(cpp_list[1][1], "G")
+        self.assertEqual(cpp_list[1][2], "G")
+        self.assertEqual(cpp_list[1][3], "G")
+        self.assertEqual(cpp_list[1][4], "DD")
+        self.assertEqual(cpp_list[2][0], "P")
+        self.assertEqual(cpp_list[2][1], "P")
 
     def testNumpy2DArrayToStdVectorStdVectorDouble(self):
         """ Test the conversion of a 2D numpy array to a std::vector representation. """

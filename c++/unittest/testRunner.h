@@ -31,7 +31,6 @@
 
 // -------------------------------------------------------------------------- //
 // Add tests.
-
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_Blocker );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_Configuration );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_Coordinate );

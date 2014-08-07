@@ -7,7 +7,6 @@
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 #
 
-
 import unittest
 import numpy
 import sys
@@ -15,6 +14,7 @@ import os
 
 from KMCLib.CoreComponents.KMCInteractions import KMCInteractions
 from KMCLib.CoreComponents.KMCProcess import KMCProcess
+from KMCLib.CoreComponents.KMCBucketProcess import KMCBucketProcess
 from KMCLib.CoreComponents.KMCConfiguration import KMCConfiguration
 from KMCLib.CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
 from KMCLib.CoreComponents.KMCControlParameters import KMCControlParameters
@@ -187,7 +187,6 @@ class KMCLatticeModelTest(unittest.TestCase):
                                        implicit_wildcards=False)
 
         # Create the model.
-        print "ML: Calling the lattice model constructor from python."
         model1 = KMCLatticeModel(config, interactions)
 
         # Get the match types out.
@@ -198,7 +197,6 @@ class KMCLatticeModelTest(unittest.TestCase):
         self.assertEqual( match_types, ref_match_types )
 
         # Create with implicit wildcards - this is default behavior.
-        print "ML: Calling the lattice model constructor again (new model) from python."
         interactions = KMCInteractions(processes=processes)
 
         # Create the model.
@@ -219,8 +217,6 @@ class KMCLatticeModelTest(unittest.TestCase):
         # Setup the run paramters.
         control_parameters = KMCControlParameters(number_of_steps=10,
                                                   dump_interval=1)
-        print "just before start"
-
         model.run(control_parameters)
 
     def testRun2(self):
@@ -786,6 +782,71 @@ STEP 1000
 
         self.assertRaises( Error, lambda: model.run(control_parameters, breakers=["b"]) )
 
+    def testRunSimpleBuckets(self):
+        """ Test that a simple system can run with buckets. """
+        # Define the unit cell.
+        unit_cell = KMCUnitCell(cell_vectors=numpy.array([[2.1,0.0,0.0],
+                                                          [0.0,1.0,0.0],
+                                                          [0.0,0.0,1.0]]),
+                                basis_points=[[0.0,0.0,0.0]])
+
+        # And a lattice.
+        lattice = KMCLattice(unit_cell=unit_cell,
+                             repetitions=(5,1,1),
+                             periodic=(True,False,False))
+
+        # Populate the lattice with types.
+        types = [(12,"A"),
+                 "A",
+                 ["A", "A", "A"],
+                 "A",
+                 "B"]
+
+        config = KMCConfiguration(lattice=lattice,
+                                  types=types,
+                                  possible_types=["A","B"])
+
+        # Setup a processes that moves B to the left.
+        coordinates_p0 = [[0.0, 0.0, 0.0],[-1.0, 0.0, 0.0]]
+        p0 = KMCBucketProcess(coordinates=coordinates_p0,
+                              minimum_match=[(1, "B"), "*"],
+                              update=[[(-1,"B")], [(1,"B")]],
+                              basis_sites=[0],
+                              rate_constant=1.0)
+
+        # B to the right.
+        coordinates_p1 = [[0.0, 0.0, 0.0],[1.0, 0.0, 0.0]]
+        p1 = KMCBucketProcess(coordinates=coordinates_p1,
+                              minimum_match=[(1, "B"), "*"],
+                              update=[[(-1,"B")], [(1,"B")]],
+                              basis_sites=[0],
+                              rate_constant=1.0)
+
+        # Set up the interactions.
+        interactions = KMCInteractions(processes=[p0, p1],
+                                       implicit_wildcards=True)
+
+        # Construct the model.
+        model = KMCLatticeModel(configuration=config,
+                                interactions=interactions)
+
+        # Control parameters.
+        control_parameters = KMCControlParameters(number_of_steps=1,
+                                                  dump_interval=1,
+                                                  analysis_interval=1,
+                                                  seed=123)
+
+        ref_types = [['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A'], ['A'], ['A', 'A', 'A'], ['A'], ['B']]
+        self.assertEqual(ref_types, config.types())
+
+        # Run the model.
+        model.run(control_parameters=control_parameters,
+                  trajectory_filename="traj.py")
+
+        # Check again.
+        ref_types = [['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'B'], ['A'], ['A', 'A', 'A'], ['A'], []]
+        self.assertEqual(ref_types, config.types())
+
     def testBackend(self):
         """ Test that the backend object is correctly constructed. """
         # Construct the model.
@@ -1156,7 +1217,6 @@ def getValidModel():
 
     # Construct and return the model.
     return KMCLatticeModel(configuration, interactions)
-
 
 
 if __name__ == '__main__':
