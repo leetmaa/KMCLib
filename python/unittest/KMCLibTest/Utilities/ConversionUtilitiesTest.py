@@ -20,6 +20,7 @@ from KMCLib.Utilities.ConversionUtilities import bucketListToStdVectorStdVectorS
 from KMCLib.Utilities.ConversionUtilities import numpy2DArrayToStdVectorStdVectorDouble
 from KMCLib.Utilities.ConversionUtilities import numpy2DArrayToStdVectorCoordinate
 from KMCLib.Utilities.ConversionUtilities import stdVectorCoordinateToNumpy2DArray
+from KMCLib.Utilities.ConversionUtilities import toShortBucketsFormat
 
 
 
@@ -135,6 +136,43 @@ class ConversionUtilitiesTest(unittest.TestCase):
         # Convert back and check values.
         converted = stdVectorCoordinateToNumpy2DArray(cpp_vector)
         self.assertAlmostEqual(numpy.linalg.norm(array-converted), 0.0, 10)
+
+    def testToShortBucketsFormat(self):
+        """ Test the buckets format conversion routine. """
+        # Simple case, only strings.
+        types = ["A", "B", "C"]
+        converted = toShortBucketsFormat(types)
+        ref_converted = [[(1, "A")], [(1, "B")], [(1, "C")]]
+
+        self.assertEqual(converted, ref_converted)
+
+        # Strings and tuples.
+        types = ["A", "B", (3, "C")]
+        converted = toShortBucketsFormat(types)
+        ref_converted = [[(1, "A")], [(1, "B")], [(3, "C")]]
+
+        self.assertEqual(converted, ref_converted)
+
+        # Strings, lists and tuples.
+        types = ["A", ["B", "B"], (3, "C")]
+        converted = toShortBucketsFormat(types)
+        ref_converted = [[(1, "A")], [(2, "B")], [(3, "C")]]
+
+        # Strings, lists and tuples.
+        types = ["A", ["B", "B", "C", "B", "A", "A"], (3, "C")]
+        converted = toShortBucketsFormat(types)
+        ref_converted = [[(1, "A")], [(3, "B"), (1, "C"), (2, "A")], [(3, "C")]]
+
+        # Strings, lists and tuples.
+        types = ["A",
+                 ["B", "B", "C", "B", "A", (2, "A")],
+                 ["B", "B", "C", "B", "A", "A"], (3, "C")]
+
+        converted = toShortBucketsFormat(types)
+        ref_converted = [[(1, "A")], [(3, "B"), (1, "C"), (3, "A")],
+                          [(3, "B"), (1, "C"), (2, "A")], [(3, "C")]]
+
+        self.assertEqual(converted, ref_converted)
 
 
 if __name__ == '__main__':

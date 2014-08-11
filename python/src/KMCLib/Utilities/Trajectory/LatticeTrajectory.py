@@ -14,7 +14,7 @@ import time
 
 from KMCLib.Backend.Backend import MPICommons
 from KMCLib.Utilities.Trajectory.Trajectory import Trajectory
-
+from KMCLib.Utilities.ConversionUtilities import toShortBucketsFormat
 
 class LatticeTrajectory(Trajectory):
     """
@@ -168,8 +168,35 @@ class LatticeTrajectory(Trajectory):
 
                     # With bucket types.
                     else:
-                        # FIXME
-                        types_str += "\"NOT IMPLEMENTED\"])\n"
+                        bucket_types = toShortBucketsFormat(types)
+
+                        # For all sites except the last.
+                        for bt in bucket_types[:-1]:
+
+                            # Start the types for this site.
+                            types_str += "["
+                            for t in bt[:-1]:
+                                types_str += "(" + str(t[0]) + ",\"" + t[1] + "\"),"
+                            if len(bt) > 0:
+                                t = bt[-1]
+                                types_str += "(" + str(t[0]) + ",\"" + t[1] + "\")"
+                                types_str += "],\n" + indent
+
+                            else:
+                                types_str += "],\n" + indent
+
+                        # For the last site.
+                        bt = bucket_types[-1]
+                        types_str += "["
+                        for t in bt[:-1]:
+                            types_str += "(" + str(t[0]) + ",\"" + t[1] + "\"),"
+                        if len(bt) > 0:
+                            t = bt[-1]
+                            types_str += "(" + str(t[0]) + ",\"" + t[1] + "\")]"
+                        else:
+                            types_str += "]"
+
+                        types_str += "])\n"
 
                     # Write it to file.
                     trajectory.write(types_str)

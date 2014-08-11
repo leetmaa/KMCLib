@@ -11,7 +11,7 @@
 import numpy
 
 from KMCLib.Backend import Backend
-
+from KMCLib.Exceptions.Error import Error
 
 def stringListToStdVectorString(string_list):
     """
@@ -160,7 +160,6 @@ def numpy2DArrayToStdVectorCoordinate(array):
     # Done.
     return cpp_vector
 
-
 # NEEDS TESTING
 def typeBucketToList(type_bucket):
     """
@@ -182,4 +181,62 @@ def typeBucketToList(type_bucket):
 
     # Done.
     return ret
+
+def toShortBucketsFormat(types_list):
+    """
+    Convert any valid types information to the short buckets format,
+    i.e. on the form [[(n,"A"), ...], ...]
+
+    :param types_list: The list to convert.
+
+    :returns: The types list in the short buckets format.
+    """
+    ret_types = []
+    for t in types_list:
+
+        # Set up the list for this site.
+        t_list = []
+
+        # Three cases.
+        if isinstance(t, str):
+            t_list.append((1, t))
+
+        elif isinstance(t, list):
+            # Two cases in the list.
+            for tt in t:
+                if isinstance(tt, str):
+                    t_list.append((1, tt))
+                elif isinstance(tt, tuple):
+                    t_list.append(tt)
+
+        elif isinstance(t, tuple):
+            # Append the tuple.
+            t_list.append(t)
+
+        # Done with this site.
+        ret_types.append(t_list)
+
+    # Loop through again and collect identical types.
+    final_types = []
+    for t in ret_types:
+
+        t_type = []
+        taken  = []
+
+        # For each site, collect the numbers of the same type.
+        for i,t0 in enumerate(t):
+            occupation = t0[0]
+            name       = t0[1]
+            if not name in taken:
+                for j, t1 in enumerate(t):
+                    if i < j:
+                        if t1[1] == name:
+                            occupation += t1[0]
+
+                t_type.append( (occupation, name) )
+                taken.append(name)
+        final_types.append(t_type)
+
+    # Done.
+    return final_types
 

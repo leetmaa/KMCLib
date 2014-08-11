@@ -225,6 +225,71 @@ class LatticeTrajectoryTest(unittest.TestCase):
             ref_times = [1.10045, 2.334156, 3.451641, 1.10045, 2.334156, 3.451641]
             self.assertEqual( ret_times, ref_times )
 
+    def testWriteToFileBuckets(self):
+        """ Test writing buffers in buckets format to file. """
+        # Setup input.
+        sites = [[0.0,1.0,2.3],
+                 [1.0,0.0,2.3],
+                 [1.0,1.0,0.3],
+                 [1.0,1.0,2.3],
+                 [3.4,4.5,4.3],
+                 [3.4,4.3,4.3],
+                 [3.4,5.5,4.3],
+                 [3.7,7.5,6.5]]
+        name = os.path.abspath(os.path.dirname(__file__))
+        name = os.path.join(name, "..", "..")
+        name = os.path.join(name, "TestUtilities", "Scratch")
+        trajectory_filename = os.path.join(name, "tmp_bucktes_traj.py")
+
+        if MPICommons.isMaster():
+            self.__files_to_remove.append(trajectory_filename)
+
+        # Construct.
+        t = LatticeTrajectory(trajectory_filename, Config(sites))
+
+        # Write times, steps and typers.
+        times = [1.10045, 2.334156, 3.4516410]
+        steps = [12, 25, 52]
+        site_types = [[["A"],[(3, "A"), "A", "B", "B"],["A", "B", "C"]],
+                      [[],["A", (3, "A"), "A", "B", "B"],["A", "B", "C"]],
+                      [[(2, "C")],["B", "B", "A"],["A", "B"]]]
+
+        # Check that the time is zero before we start.
+        if MPICommons.isMaster():
+            self.assertAlmostEqual( t._Trajectory__time_last_dump, 0.0, 10 )
+
+        # This function should be MPI safe.
+        t._LatticeTrajectory__writeToFile(times, steps, site_types)
+
+        # Check the info stored in the file.
+        if MPICommons.isMaster():
+            global_dict = {}
+            local_dict  = {}
+            execfile(trajectory_filename, global_dict, local_dict)
+
+            # Check the types.
+            ret_types = local_dict['types']
+            ref_types = [[[(1, "A")],
+                          [(4, "A"), (2, "B")],
+                          [(1, "A"), (1, "B"), (1, "C")]],
+                         [[],
+                          [(5, "A"), (2, "B")],
+                          [(1, "A"), (1, "B"), (1, "C")]],
+                         [[(2, "C")],[(2, "B"), (1, "A")],
+                          [(1, "A"), (1, "B")]]]
+
+            self.assertEqual( ret_types, ref_types )
+
+            # Check the steps.
+            ret_steps = local_dict['steps']
+            ref_steps = [12, 25, 52]
+            self.assertEqual( ret_steps, ref_steps )
+
+            # Check the times.
+            ret_times = local_dict['times']
+            ref_times = [1.10045, 2.334156, 3.451641]
+            self.assertEqual( ret_times, ref_times )
+
     def testAppend(self):
         """ Test appending to the trajectory. """
         # Setup input.
