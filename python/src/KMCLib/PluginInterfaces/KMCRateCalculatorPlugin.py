@@ -12,6 +12,7 @@ import numpy
 
 from KMCLib.Backend import Backend
 from KMCLib.Exceptions.Error import Error
+from KMCLib.Utilities.ConversionUtilities import stdVectorTypeBucketToPython
 
 class KMCRateCalculatorPlugin(Backend.RateCalculator):
     """
@@ -33,6 +34,39 @@ class KMCRateCalculatorPlugin(Backend.RateCalculator):
 
         # Call the custom setup.
         self.initialize()
+
+    def backendRateCallbackBuckets(self,
+                                   cpp_coords,
+                                   coords_len,
+                                   occupations,
+                                   update,
+                                   types_map,
+                                   rate_constant,
+                                   process_number,
+                                   global_x,
+                                   global_y,
+                                   global_z):
+        """
+        Function called from C++ to get the rate. It function recieves
+        the data from C++ and parse it to a Python friendly format to send it
+        forward to the custom rate function.
+        """
+        # PERFORMME: move operations to C++.
+
+        # Determine the occupations after the move.
+        occupations_after = Backend.StdVectorTypeBucket()
+
+        for i in range(len(update)):
+            occupations_after.push_back(occupations[i].add(update[i]))
+
+        # Call and return the custom rate.
+        global_coordinate = (global_x, global_y, global_z)
+        return self.rate(numpy.array(cpp_coords).reshape(coords_len,3),
+                         stdVectorTypeBucketToPython(occupations, types_map),
+                         stdVectorTypeBucketToPython(occupations_after, types_map),
+                         rate_constant,
+                         process_number,
+                         global_coordinate)
 
     def backendRateCallback(self,
                             cpp_coords,

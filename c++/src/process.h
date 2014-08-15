@@ -167,6 +167,11 @@ public:
      */
     int processNumber() const { return process_number_; }
 
+    /*! \brief Query for the flag indicating if this is a bucket process.
+     *  \return : The bucket process flag.
+     */
+    bool bucketProcess() const { return bucket_process_; }
+
 protected:
 
     // If the process rate can be cached.
@@ -200,6 +205,9 @@ protected:
 
     /// The atom id moves.
     std::vector< std::pair<int,int> > id_moves_;
+
+    /// Flag indicating if this is a bucket process or not.
+    bool bucket_process_;
 
 private:
 

@@ -21,6 +21,7 @@ from KMCLib.Utilities.ConversionUtilities import numpy2DArrayToStdVectorStdVecto
 from KMCLib.Utilities.ConversionUtilities import numpy2DArrayToStdVectorCoordinate
 from KMCLib.Utilities.ConversionUtilities import stdVectorCoordinateToNumpy2DArray
 from KMCLib.Utilities.ConversionUtilities import toShortBucketsFormat
+from KMCLib.Utilities.ConversionUtilities import stdVectorTypeBucketToPython
 
 
 
@@ -173,6 +174,52 @@ class ConversionUtilitiesTest(unittest.TestCase):
                           [(3, "B"), (1, "C"), (2, "A")], [(3, "C")]]
 
         self.assertEqual(converted, ref_converted)
+
+    def testStdVectorBucketTypeToPython(self):
+        """ Test the buckets format conversion routine from C++ to Python. """
+        empty_py_vector = stdVectorTypeBucketToPython(Backend.StdVectorTypeBucket(), Backend.StdVectorString())
+
+        self.assertEqual(empty_py_vector, [])
+
+        # Add a vector with content.
+        cpp_map = Backend.StdVectorString(3)
+        cpp_map[0] = "*"
+        cpp_map[1] = "A"
+        cpp_map[2] = "B"
+
+        cpp_vector = Backend.StdVectorTypeBucket(4, Backend.TypeBucket(3))
+
+        # [(1,"A")]
+        cpp_vector[0][0] = 0
+        cpp_vector[0][1] = 1
+        cpp_vector[0][2] = 0
+
+        # []
+        cpp_vector[1][0] = 0
+        cpp_vector[1][1] = 0
+        cpp_vector[1][2] = 0
+
+        # [(3,"A"), (1, "B")]
+        cpp_vector[2][0] = 0
+        cpp_vector[2][1] = 3
+        cpp_vector[2][2] = 1
+
+        # [(4,"A"), (5, "B")]
+        cpp_vector[3][0] = 1
+        cpp_vector[3][1] = 4
+        cpp_vector[3][2] = 5
+
+        # Translate to Python.
+        py_vector = stdVectorTypeBucketToPython(cpp_vector,
+                                                cpp_map)
+
+        ref_py_vector = [[(1,"A")],
+                         [],
+                         [(3,"A"), (1, "B")],
+                         [(4,"A"), (5, "B")]]
+
+        # Check.
+        self.assertEqual(py_vector, ref_py_vector)
 
 
 if __name__ == '__main__':

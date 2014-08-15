@@ -71,6 +71,7 @@
 %template(StdMapStringInt) std::map<std::string,int>;
 %template(StdVectorStdMapStringInt) std::vector<std::map<std::string,int> >;
 %template(StdVectorStdPairIntInt) std::vector<std::pair<int, int> >;
+%template(StdVectorTypeBucket) std::vector<TypeBucket>;
 
 // Include the definitions.
 %include "latticemodel.h"

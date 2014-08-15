@@ -13,6 +13,7 @@ import numpy
 from KMCLib.Backend import Backend
 from KMCLib.Exceptions.Error import Error
 
+
 def stringListToStdVectorString(string_list):
     """
     Converts a list of strings to a std::vector<std::string> object.
@@ -239,4 +240,41 @@ def toShortBucketsFormat(types_list):
 
     # Done.
     return final_types
+
+def stdVectorTypeBucketToPython(cpp_vector, cpp_type_map):
+    """
+    Translate a std::vector<TypeBucket> object to the python
+    format [[(n, "A"), ... ], ... ] by using a map of the type
+    std::vector<std::string>.
+
+    :param cpp_vector: The C++ vector to translate.
+    :param cpp_type_map: The type map to use.
+    """
+    # The return data.
+    types = []
+
+    # Loop over each site.
+    for i in range(len(cpp_vector)):
+
+        site_types = []
+
+        for j in range(cpp_vector[i].size() - 1):
+
+            # Skip the wildcard.
+            j += 1
+
+            # Translate.
+            t = cpp_type_map[j]
+            n = cpp_vector[i][j]
+
+            # Add.
+            if n > 0:
+                site_types.append((n,t))
+
+        types.append(site_types)
+
+    # Done.
+    return types
+
+
 

@@ -279,20 +279,14 @@ void Configuration::performBucketProcess(Process & process,
         // Get the index out of the configuration match list.
         const int index = (*it2).index;
 
-        // ML: Update the matching such that the update_types in the
-        // new format gets used correctly.
-
-
-        // FIXME: ML: Prototyping.
+        // ML: Prototyping.
         int sum = 0;
         for (int i = 0; i  < update_types.size(); ++i)
         {
             sum += std::abs(update_types[i]);
         }
 
-//        if (!update_types.zero() && !(update_types[0] > 0))
-        // NOTE: The != 0 is needed for handling the wildcard match.
-        //if (types_[index] != update_types && !(update_types == 0))
+        // NOTE: The !(update_types[0] > 0) is needed for handling the wildcard match.
         if (sum > 0 && !(update_types[0] > 0))
         {
             // Get the atom id to apply the move vector to.
@@ -301,9 +295,7 @@ void Configuration::performBucketProcess(Process & process,
             // Apply the move vector to the atom coordinate.
             atom_id_coordinates_[atom_id] += (*it1).move_coordinate;
 
-            // ML: FIXME: Prototyping.
             // Set the type at this index.
-            //types_[index] += update_types;
             for (int i = 0; i < types_[index].size(); ++i)
             {
                 types_[index][i] += update_types[i];
@@ -330,7 +322,8 @@ void Configuration::performBucketProcess(Process & process,
             {
                 // ML: FIXME: This behavior should be deprecated.
                 //            Now we only take the first occuring type at the site.
-                //            This is expected behavior but incorrect.
+                //            This is expected behavior but incorrect in general and
+                //            works only for one atom per site simulations.
                 atom_id_elements_[atom_id] = elements_[index][0];
             }
 
@@ -379,8 +372,7 @@ void Configuration::performBucketProcess(Process & process,
 
 
         // ML: FIXME: This behavior should be deprecated.
-        //            Now we only take the first occuring type at the site.
-        //            This is expected behavior but incorrect.
+        // See above comment.
         // Update the element type of this atom ID.
         atom_id_elements_[id] = elements_[index][0];
 

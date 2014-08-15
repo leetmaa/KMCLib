@@ -59,3 +59,4 @@ std::ostream & operator<<(std::ostream & os, const TypeBucket & tb)
 
   return os;
 }
+

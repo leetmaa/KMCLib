@@ -106,6 +106,13 @@ public:
     inline
     bool match(const TypeBucket & other) const;
 
+    /*! \brief Element wise addition.
+     *  \param other : The other bucket to add.
+     *  \return : The element wise addition of this and the other.
+     */
+    inline
+    TypeBucket add(const TypeBucket & other) const;
+
 protected:
 
 private:
@@ -114,7 +121,6 @@ private:
     std::vector<int> data_;
 
 };
-
 
 
 // -----------------------------------------------------------------------------
@@ -186,6 +192,26 @@ bool TypeBucket::match(const TypeBucket & other) const
 
 // -----------------------------------------------------------------------------
 //
+TypeBucket TypeBucket::add(const TypeBucket & other) const
+{
+    if (data_.size() != other.data_.size())
+    {
+        throw std::runtime_error("Fatal backend error. Size must match in bucket additions.");
+    }
+
+    TypeBucket t(data_.size());
+
+    for (size_t i = 0; i < data_.size(); ++i)
+    {
+        t.data_[i] = data_[i] + other.data_[i];
+    }
+
+    return t;
+}
+
+
+// -----------------------------------------------------------------------------
+//
 bool TypeBucket::lessThan(const TypeBucket & other) const
 {
     if (data_.size() != other.data_.size())
@@ -200,6 +226,9 @@ bool TypeBucket::lessThan(const TypeBucket & other) const
 // NON-MEMBER FUNCTION DECLARATIONS FOLLOW.
 // -----------------------------------------------------------------------------
 
+/*! \brief Dummy << operator needed for CPPUNIT.
+ * \return : A handle to the modified ostream.
+ */
 std::ostream & operator<<(std::ostream & os, const TypeBucket & tb);
 
 

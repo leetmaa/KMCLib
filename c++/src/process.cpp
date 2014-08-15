@@ -37,6 +37,10 @@ Process::Process(const Configuration & first,
     basis_sites_(basis_sites),
     id_moves_(0)
 {
+    // Determine if this is a bucket process by looking at the update info
+    // on the second configuration.
+    bucket_process_ = (second.updateInfo().size() != 0);
+
     // Generate the matchlist from the configurations.
     configurationsToMatchList(first,
                               second,

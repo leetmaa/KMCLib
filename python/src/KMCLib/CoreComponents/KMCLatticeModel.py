@@ -76,7 +76,6 @@ class KMCLatticeModel(object):
             cpp_interactions = self.__interactions._backend(self.__configuration.possibleTypes(),
                                                             cpp_lattice_map.nBasis(),
                                                             self.__configuration)
-
             # Construct a timer.
             self.__cpp_timer = Backend.SimulationTimer()
 

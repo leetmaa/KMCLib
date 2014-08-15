@@ -519,14 +519,13 @@ double Matcher::updateSingleRate(const int index,
                                  const Configuration  & configuration,
                                  const RateCalculator & rate_calculator) const
 {
-    // ML: FIXME : Using the old interface for now.
-
     // Get the match lists.
     const ProcessBucketMatchList & process_match_list = process.processMatchList();
     const ConfigBucketMatchList & config_match_list   = configuration.configMatchList(index);
 
     // We will also need the elements.
     const std::vector<std::vector<std::string> > & elements = configuration.elements();
+    const std::vector<TypeBucket> & types = configuration.types();
 
     // Get cutoff distance from the process.
     const double cutoff = process.cutoff();
@@ -543,6 +542,7 @@ double Matcher::updateSingleRate(const int index,
     std::vector<double> numpy_geo(len*3);
     std::vector<double>::iterator it_geo = numpy_geo.begin();
     std::vector<std::string> types_before;
+    std::vector<TypeBucket> occupations;
 
     it1 = config_match_list.begin();
     for ( ; it1 != new_end; ++it1 )
@@ -560,14 +560,13 @@ double Matcher::updateSingleRate(const int index,
 
         const int idx = (*it1).index;
 
-        // ML:
-        // FIXME: This takes only the first element found. Must be updated
-        //        to send the whole list.
         types_before.push_back(elements[idx][0]);
+        occupations.push_back(types[idx]);
     }
 
     // Types after the process.
     std::vector<std::string> types_after = types_before;
+    std::vector<TypeBucket> update(len, TypeBucket(occupations[0].size()));
 
     // Rewind the config match list iterator.
     it1 = config_match_list.begin();
@@ -576,18 +575,18 @@ double Matcher::updateSingleRate(const int index,
     ProcessBucketMatchList::const_iterator it2 = process_match_list.begin();
     std::vector<std::string>::iterator it3 = types_after.begin();
     const ProcessBucketMatchList::const_iterator end = process_match_list.end();
+    std::vector<TypeBucket>::iterator it4 = update.begin();
 
     // Loop over the process match list and update the types_after vector.
-    for ( ; it2 != end; ++it1, ++it2, ++it3 )
+    for ( ; it2 != end; ++it1, ++it2, ++it3, ++it4 )
     {
         const TypeBucket & update_types = (*it2).update_types;
-//        const TypeBucket &  match_types = (*it1).match_types;
 
-        // Set the type after process.
+        // Save the update types in the full update vector.
+        (*it4) = update_types;
 
-        // NOTE: The != 0 is needed for handling wildcards.
+        // PERFORMME: This should be handeled more efficiently.
 
-        // ML: FIXME
         // Check that the update type is not 'zero'.
         int sum = 0;
         for (int i = 0; i < update_types.size(); ++i)
@@ -595,13 +594,10 @@ double Matcher::updateSingleRate(const int index,
             sum += std::abs(update_types[i]);
         }
 
-//        if ( !match_types.identical(update_types)  && !(update_types == 0) )
         if ( sum != 0  && !(update_types == 0) )
         {
-            // FIXME - This requires a new data structure for the type names
-            //         that we send to python for using buckets with more than
-            //         one atom per site.
 
+            // For non-buckets only.
             for (int i = 0; i < update_types.size(); ++i)
             {
                 // Taking the first only.
@@ -622,13 +618,30 @@ double Matcher::updateSingleRate(const int index,
     const double global_y = configuration.coordinates()[index].y();
     const double global_z = configuration.coordinates()[index].z();
 
-    return rate_calculator.backendRateCallback(numpy_geo,
-                                               len,
-                                               types_before,
-                                               types_after,
-                                               rate_constant,
-                                               process_number,
-                                               global_x,
-                                               global_y,
-                                               global_z);
+    // Determine if we should use the buckets interface or not.
+    if (!process.bucketProcess())
+    {
+        return rate_calculator.backendRateCallback(numpy_geo,
+                                                   len,
+                                                   types_before,
+                                                   types_after,
+                                                   rate_constant,
+                                                   process_number,
+                                                   global_x,
+                                                   global_y,
+                                                   global_z);
+    }
+    else
+    {
+        return rate_calculator.backendRateCallbackBuckets(numpy_geo,
+                                                          len,
+                                                          occupations,
+                                                          update,
+                                                          configuration.typeNames(),
+                                                          rate_constant,
+                                                          process_number,
+                                                          global_x,
+                                                          global_y,
+                                                          global_z);
+    }
 }

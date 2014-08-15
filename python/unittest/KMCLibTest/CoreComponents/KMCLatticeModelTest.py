@@ -23,6 +23,7 @@ from KMCLib.CoreComponents.KMCLattice  import KMCLattice
 from KMCLib.Utilities.ConversionUtilities import typeBucketToList
 from KMCLib.PluginInterfaces.KMCBreakerPlugin import KMCBreakerPlugin
 from KMCLib.PluginInterfaces.KMCAnalysisPlugin import KMCAnalysisPlugin
+from KMCLib.PluginInterfaces.KMCRateCalculatorPlugin import KMCRateCalculatorPlugin
 from KMCLib.Exceptions.Error import Error
 from KMCLib.Backend.Backend import MPICommons
 
@@ -846,6 +847,100 @@ STEP 1000
         # Check again.
         ref_types = [['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'B'], ['A'], ['A', 'A', 'A'], ['A'], []]
         self.assertEqual(ref_types, config.types())
+
+    def testRunSimpleBucketsCustom(self):
+        """ Test a 1D system."""
+        # Define the unit cell.
+        unit_cell = KMCUnitCell(cell_vectors=numpy.array([[2.1,0.0,0.0],
+                                                          [0.0,1.0,0.0],
+                                                          [0.0,0.0,1.0]]),
+                                basis_points=[[0.0,0.0,0.0]])
+
+        # And a lattice.
+        lattice = KMCLattice(unit_cell=unit_cell,
+                             repetitions=(5,1,1),
+                             periodic=(True,False,False))
+
+        # Populate the lattice with types.
+        types = [(4,"A"),
+                 "A",
+                 ["A", "A"],
+                 "A",
+                 "B"]
+
+        config = KMCConfiguration(lattice=lattice,
+                                  types=types,
+                                  possible_types=["A","B"])
+
+        # Setup a processes that moves B to the left.
+        coordinates_p0 = [[0.0, 0.0, 0.0],[-1.0, 0.0, 0.0]]
+        p0 = KMCBucketProcess(coordinates=coordinates_p0,
+                              minimum_match=[(1, "B"), "*"],
+                              update=[[(-1,"B")], [(1,"B")]],
+                              basis_sites=[0],
+                              rate_constant=1.0)
+
+        # Set up the interactions.
+        interactions = KMCInteractions(processes=[p0],
+                                       implicit_wildcards=True)
+
+        # Use a rate calculator.
+        class CustomRates(KMCRateCalculatorPlugin):
+            def rate(self,
+                     coords,
+                     types_before,
+                     types_after,
+                     rate_constant,
+                     process_number,
+                     global_coordinate):
+                # Store the
+                self.global_types_before = types_before
+                self.global_types_after  = types_after
+                self.global_coords       = coords
+                self.global_coordinate   = global_coordinate
+                return rate_constant
+
+        interactions.setRateCalculator(rate_calculator=CustomRates)
+
+        # Construct the model.
+        model = KMCLatticeModel(configuration=config,
+                                interactions=interactions)
+
+        ref_types = [['A', 'A', 'A', 'A'], ['A'], ['A', 'A'], ['A'], ['B']]
+        self.assertEqual(ref_types, config.types())
+
+        # Control parameters.
+        control_parameters = KMCControlParameters(number_of_steps=1,
+                                                  dump_interval=1,
+                                                  analysis_interval=1,
+                                                  seed=123)
+        # Run the model - take one step to the left.
+        model.run(control_parameters=control_parameters,
+                  trajectory_filename="traj2a.py")
+
+        ref_types = [['A', 'A', 'A', 'A'], ['A'], ['A', 'A'], ['A', 'B'], []]
+        self.assertEqual(ref_types, config.types())
+
+        # The 'B' now sits at global coordinate 3, so this is the last matched site.
+        self.assertAlmostEqual(interactions.rateCalculator().global_coordinate[0], 3.0, 10)
+        self.assertAlmostEqual(interactions.rateCalculator().global_coordinate[1], 0.0, 10)
+        self.assertAlmostEqual(interactions.rateCalculator().global_coordinate[2], 0.0, 10)
+
+        # Check the order of the coordinates.
+        ref_coords = numpy.array([[ 0.,  0.,  0.],
+                                  [-1.,  0.,  0.],
+                                  [ 1.,  0.,  0.]])
+
+        diff = numpy.linalg.norm(interactions.rateCalculator().global_coords - ref_coords)
+        self.assertAlmostEqual(diff, 0.0, 10)
+
+        # The types before should equal the reference types.
+        ref_tb = [[(1, 'A'),(1, 'B')],[(2,'A')],[]]
+        self.assertEqual(interactions.rateCalculator().global_types_before, ref_tb)
+
+        # The types after should correspond to the 'B' moving one step to the left.
+        ref_ta = [[(1, 'A')],[(2,'A'), (1, 'B')],[]]
+        self.assertEqual(interactions.rateCalculator().global_types_after, ref_ta)
 
     def testBackend(self):
         """ Test that the backend object is correctly constructed. """
