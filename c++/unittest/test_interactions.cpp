@@ -320,22 +320,22 @@ void Test_Interactions::testUpdateAndPickCustom()
     // Fake a matching by adding sites to the processes.
 
     // First process, 3 sites, total rate 12
-    processes[0].addSite(12,  4.0);
-    processes[0].addSite(123, 7.0);
-    processes[0].addSite(332, 1.0);
+    processes[0].addSite(12,  4.0, 1.0);
+    processes[0].addSite(123, 7.0, 1.0);
+    processes[0].addSite(332, 1.0, 1.0);
 
     // Second process, 2 sites, total rate 4
-    processes[1].addSite(19, 1.0);
-    processes[1].addSite(12, 3.0);
+    processes[1].addSite(19, 1.0, 1.0);
+    processes[1].addSite(12, 3.0, 1.0);
 
     // Third process, 4 sites, total rate  3
-    processes[2].addSite(19,  1.0/4.0);
-    processes[2].addSite(12,  5.0/4.0);
-    processes[2].addSite(234, 2.0/4.0);
-    processes[2].addSite(991, 4.0/4.0);
+    processes[2].addSite(19,  1.0/4.0, 1.0);
+    processes[2].addSite(12,  5.0/4.0, 1.0);
+    processes[2].addSite(234, 2.0/4.0, 1.0);
+    processes[2].addSite(991, 4.0/4.0, 1.0);
 
     // The sixth process, one site, total rate 12.
-    processes[5].addSite(992, 12.0);
+    processes[5].addSite(992, 12.0, 1.0);
 
     // Setup the interactions object.
     RateCalculator rc;
@@ -422,7 +422,7 @@ void Test_Interactions::testUpdateAndPickCustom()
 
     // Alter the total rate in one of the processes and re-run the picking.
     interactions.processes()[5]->removeSite(992);
-    interactions.processes()[5]->addSite(992, 24.0);
+    interactions.processes()[5]->addSite(992, 24.0, 1.0);
 
     // Update the probability table.
     interactions.updateProbabilityTable();

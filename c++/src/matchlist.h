@@ -45,6 +45,15 @@ void configurationsToMatchList(const Configuration & first,
                                std::vector<int> & affected_indices);
 
 
+/*! \brief Calculate the multiplicity of a set of matching matchlists.
+ *  \param process_match_list : The process matchlist to compare.
+ *  \param config_match_list  : The configuration matchlist to compare.
+ *  \return : The multiplicity of the match.
+ */
+double multiplicity(const ProcessBucketMatchList & process_match_list,
+                    const ConfigBucketMatchList & config_match_list);
+
+
 /*! \brief Determines if matchlists m1 and m2 match.
  *  \param m1: The first match list to compare.
  *  \param m2: The second match list to compare.

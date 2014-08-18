@@ -1273,3 +1273,88 @@ void Test_MatchList::testConfigurationsToMatchList2()
 
 }
 
+
+// -------------------------------------------------------------------------- //
+//
+void Test_MatchList::testMultiplicity()
+{
+    // Two match lists.
+    ProcessBucketMatchList process_match_list(3);
+    ConfigBucketMatchList  config_match_list(3);
+
+    process_match_list[0].match_types = TypeBucket(3);
+    process_match_list[0].match_types[0] = 0;
+    process_match_list[0].match_types[1] = 2;
+    process_match_list[0].match_types[2] = 1;
+
+    process_match_list[1].match_types = TypeBucket(3);
+    process_match_list[1].match_types[0] = 1;
+    process_match_list[1].match_types[1] = 0;
+    process_match_list[1].match_types[2] = 4;
+
+    process_match_list[2].match_types = TypeBucket(3);
+    process_match_list[2].match_types[0] = 0;
+    process_match_list[2].match_types[1] = 2;
+    process_match_list[2].match_types[2] = 0;
+
+    config_match_list[0].match_types = TypeBucket(3);
+    config_match_list[0].match_types[0] = 0;
+    config_match_list[0].match_types[1] = 2;
+    config_match_list[0].match_types[2] = 1;
+
+    config_match_list[1].match_types = TypeBucket(3);
+    config_match_list[1].match_types[0] = 0;
+    config_match_list[1].match_types[1] = 5;
+    config_match_list[1].match_types[2] = 4;
+
+    config_match_list[2].match_types = TypeBucket(3);
+    config_match_list[2].match_types[0] = 0;
+    config_match_list[2].match_types[1] = 2;
+    config_match_list[2].match_types[2] = 0;
+
+    // Their multiplicity should be 1.0.
+    const double m0 = multiplicity(process_match_list, config_match_list);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(m0, 1.0, 1.0e-10);
+
+    // Generate two other lists.
+    config_match_list[0].match_types[0] = 0;
+    config_match_list[0].match_types[1] = 3;
+    config_match_list[0].match_types[2] = 4;
+
+    config_match_list[1].match_types[0] = 0;
+    config_match_list[1].match_types[1] = 5;
+    config_match_list[1].match_types[2] = 4;
+
+    config_match_list[2].match_types[0] = 0;
+    config_match_list[2].match_types[1] = 7;
+    config_match_list[2].match_types[2] = 2;
+
+    // Their multiplicity should be 252.
+    const double m1 = multiplicity(process_match_list, config_match_list);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(m1, 252.0, 1.0e-10);
+
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_MatchList::testMultiplicity2()
+{
+    // A case with larger numbers.
+    ProcessBucketMatchList process_match_list(1);
+    ConfigBucketMatchList  config_match_list(1);
+
+    process_match_list[0].match_types = TypeBucket(3);
+    process_match_list[0].match_types[0] = 0;
+    process_match_list[0].match_types[1] = 15;
+    process_match_list[0].match_types[2] = 35;
+
+    config_match_list[0].match_types = TypeBucket(3);
+    config_match_list[0].match_types[0] = 0;
+    config_match_list[0].match_types[1] = 20;
+    config_match_list[0].match_types[2] = 36;
+
+    // Check the multiplicity.
+    const double m0 = multiplicity(process_match_list, config_match_list);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(m0, 558144.0, 1.0e-10);
+}

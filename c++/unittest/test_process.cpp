@@ -780,7 +780,100 @@ void Test_Process::testAddAndRemoveSite()
     CPPUNIT_ASSERT( !process.isListed(-123) );
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 0);
 
-    // This will crash since it is illegal.
+    // This would crash with a segfault since it is illegal.
+    // process.removeSite(-123);
+    // process.removeSite(1234);
+
+    // DONE
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Process::testAddAndRemoveSiteMultiplicity()
+{
+    // Setup a valid possible types map.
+    std::map<std::string,int> possible_types;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["C"] = 0;
+
+    // Setup the two configurations.
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+
+    // Setup coordinates.
+    std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
+    coords[1][0] =  1.0;
+    coords[1][1] =  1.3;
+    coords[1][2] = -4.4;
+
+    // The configurations.
+    const Configuration config1(coords, elements1, possible_types);
+    const Configuration config2(coords, elements2, possible_types);
+
+    // Construct the process.
+    const double rate = 13.0;
+    const std::vector<int> basis_sites(1,0);
+    Process process(config1, config2, rate, basis_sites);
+
+    // Check that there are no listed indices by default.
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 0);
+
+    // Add a few indices.
+    process.addSite(1234, 1.0,  1.0);
+    process.addSite(3,    1.0,  5.0);
+    process.addSite(11,   1.0, 11.0);
+    process.addSite(-123, 1.0,  9.0);
+
+    // Check that these indices are now there.
+    CPPUNIT_ASSERT( process.isListed(1234) );
+    CPPUNIT_ASSERT( process.isListed(3)    );
+    CPPUNIT_ASSERT( process.isListed(11)   );
+    CPPUNIT_ASSERT( process.isListed(-123) );
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 4);
+
+    // Check that the total rate is the rate times the multiplicities.
+    double rate_should_be = (1.0 + 5.0 + 11.0 + 9.0) * rate;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( process.totalRate(), rate_should_be, 1.0e-10);
+
+    // Remove two of the indices.
+    process.removeSite(3);
+    process.removeSite(11);
+
+    // Check again.
+    CPPUNIT_ASSERT( process.isListed(1234) );
+    CPPUNIT_ASSERT( !process.isListed(3)   );
+    CPPUNIT_ASSERT( !process.isListed(11)  );
+    CPPUNIT_ASSERT( process.isListed(-123) );
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 2);
+
+    // Check that the total rate is the rate times the multiplicities.
+    rate_should_be = (1.0 + 9.0) * rate;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( process.totalRate(), rate_should_be, 1.0e-10);
+
+    // Remove the remaining two indices.
+    process.removeSite(-123);
+    process.removeSite(1234);
+
+    // Check.
+    CPPUNIT_ASSERT( !process.isListed(1234) );
+    CPPUNIT_ASSERT( !process.isListed(3)    );
+    CPPUNIT_ASSERT( !process.isListed(11)   );
+    CPPUNIT_ASSERT( !process.isListed(-123) );
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 0);
+
+    // Check that the total rate is the rate times the multiplicities.
+    rate_should_be = (0.0) * rate;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( process.totalRate(), rate_should_be, 1.0e-10);
+
+
+    // This would crash with a segfault since it is illegal.
     // process.removeSite(-123);
     // process.removeSite(1234);
 

@@ -56,9 +56,12 @@ double CustomRateProcess::totalRate() const
 
 // -----------------------------------------------------------------------------
 //
-void CustomRateProcess::addSite(const int index, const double rate)
+void CustomRateProcess::addSite(const int index,
+                                const double rate,
+                                const double multiplicity)
 {
     sites_.push_back(index);
+    site_multiplicity_.push_back(multiplicity);
     site_rates_.push_back(rate);
 }
 
@@ -85,6 +88,15 @@ void CustomRateProcess::removeSite(const int index)
     // Swap and remove.
     std::swap((*it2), (*last_rate));
     site_rates_.pop_back();
+
+    // Calculate the position in the site_multiplicity_ vector.
+    std::vector<double>::iterator it3 = site_multiplicity_.begin() + (it1-sites_.begin());
+    std::vector<double>::iterator last_multiplicity = site_multiplicity_.end()-1;
+
+    // Swap and remove.
+    std::swap((*it3), (*last_multiplicity));
+    site_multiplicity_.pop_back();
+
 }
 
 // -----------------------------------------------------------------------------

@@ -265,24 +265,29 @@ void Matcher::matchIndicesWithProcesses(const std::vector<std::pair<int,int> > &
             remove_tasks.push_back(t);
         }
 
-        // If match and previous match - update the rate.
-        else if (task_types[i] == 2)
+        else if (task_types[i] == 2 || task_types[i] == 3)
         {
-            RateTask t;
-            t.index   = index;
-            t.process = p_idx;
-            t.rate    = process.rateConstant();
-            update_tasks.push_back(t);
-        }
+            // Get the multiplicity.
+            const double m = multiplicity(process.processMatchList(),
+                                          configuration.configMatchList(index));
 
-        // If match and not previous match - add.
-        else if (task_types[i] == 3)
-        {
             RateTask t;
-            t.index   = index;
-            t.process = p_idx;
-            t.rate    = process.rateConstant();
+            t.index        = index;
+            t.process      = p_idx;
+            t.rate         = process.rateConstant();
+            t.multiplicity = m;
+
+            // If match and previous match - update the rate.
+            if (task_types[i] == 2)
+            {
+                update_tasks.push_back(t);
+            }
+
+            // If match and not previous match - add.
+            else if (task_types[i] == 3)
+            {
             add_tasks.push_back(t);
+            }
         }
     }
 

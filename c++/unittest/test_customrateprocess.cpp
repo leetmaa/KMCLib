@@ -254,8 +254,8 @@ void Test_CustomRateProcess::testTotalRate()
     CPPUNIT_ASSERT_DOUBLES_EQUAL( total_rate_0, 0.0, 1.0e-12 );
 
     // If we add two sites the total rate should be the sum.
-    process.addSite(123, 1.2);
-    process.addSite(456, 3.1);
+    process.addSite(123, 1.2, 1.0);
+    process.addSite(456, 3.1, 1.0);
     const double total_rate_1 = process.totalRate();
     CPPUNIT_ASSERT_DOUBLES_EQUAL( total_rate_1, 4.3, 1.0e-12 );
 
@@ -315,10 +315,10 @@ void Test_CustomRateProcess::testAddAndRemoveSite()
     const double r2 = randomDouble01()*10.0;
     const double r3 = randomDouble01()*10.0;
 
-    process.addSite(1234,  r0);
-    process.addSite(3,     r1);
-    process.addSite(11,    r2);
-    process.addSite(-123,  r3);
+    process.addSite(1234, r0, 1.0);
+    process.addSite(3,    r1, 1.0);
+    process.addSite(11,   r2, 1.0);
+    process.addSite(-123, r3, 1.0);
 
     // Check the total rate again.
     const double rtot0 = r0 + r1 + r2 + r3;
@@ -372,9 +372,9 @@ void Test_CustomRateProcess::testPickSite()
     CustomRateProcess process;
 
     // Add sites.
-    process.addSite(199, 2.00);
-    process.addSite(12,  5.00);
-    process.addSite(19,  3.00);
+    process.addSite(199, 2.00, 1.0);
+    process.addSite(12,  5.00, 1.0);
+    process.addSite(19,  3.00, 1.0);
     process.updateRateTable();
 
     // Get the cite.

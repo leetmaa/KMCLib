@@ -65,13 +65,17 @@ public:
     /*! \brief Query for the total rate.
      *  \return : The total rate of the process.
      */
-    virtual double totalRate() const { return rate_ * sites_.size(); }
+    virtual double totalRate() const;
 
     /*! \brief Add the index to the list of available sites.
-     *  \param index : The index to add.
-     *  \param rate  : Dummy argument needed for common interface.
+     *  \param index        : The index to add.
+     *  \param rate         : Dummy argument needed for common interface.
+     *  \param multiplicity : The multiplicity of the site, to be multiplied
+                              with the rate for determining the total rate.
      */
-    virtual void addSite(const int index, const double rate=0.0);
+    virtual void addSite(const int index,
+                         const double rate=0.0,
+                         const double multiplicity=1.0);
 
     /*! \brief Remove the index from the list of available sites.
      *  \param index : The index to remove.
@@ -89,7 +93,7 @@ public:
     virtual void updateRateTable() {}
 
     /*! \brief Returns true if the process rates can be cached.
-     *  \return : True of rates can be cached. False if no caching is allowed.
+     *  \return : True if rates can be cached. False if no caching is allowed.
      */
     bool cacheRate() const { return cache_rate_; }
 
@@ -191,6 +195,9 @@ protected:
 
     /// The available sites for this process.
     std::vector<int> sites_;
+
+    /// The multiplicity for the available sites for this process.
+    std::vector<double> site_multiplicity_;
 
     /// The match list for comparing against local configurations.
     ProcessBucketMatchList match_list_;

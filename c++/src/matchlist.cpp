@@ -136,3 +136,66 @@ void configurationsToMatchList(const Configuration & first,
     }
 }
 
+
+// -----------------------------------------------------------------------------
+//
+double multiplicity(const ProcessBucketMatchList & process_match_list,
+                    const ConfigBucketMatchList & config_match_list)
+{
+    // Loop through the match lists and count the multiplicity for each site.
+    ProcessBucketMatchList::const_iterator it1 = process_match_list.begin();
+    ProcessBucketMatchList::const_iterator end = process_match_list.end();
+    ConfigBucketMatchList::const_iterator it2  = config_match_list.begin();
+
+    int m = 1;
+
+    for ( ; it1 != end; ++it1, ++it2 )
+    {
+        const TypeBucket & t1 = it1->match_types;
+        const TypeBucket & t2 = it2->match_types;
+
+        // Wild cards are skipped.
+        if (t1[0] == 0)
+        {
+            // For each element type.
+            for (int i = 1; i < t1.size(); ++i)
+            {
+                // We only consider cases where the occupations is > 0.
+                if (t1[i] > 0)
+                {
+                    // Local variables we need.
+                    const int n = t2[i];
+                    const int r = t1[i];
+                    const int n_minus_r = n - r;
+                    const int max = std::max(r, n_minus_r);
+                    const int min = std::min(r, n_minus_r);
+
+                    if (min != 0)
+                    {
+                        // Calculate n! / (r!(n-r)!)
+
+                        // Get the numerator.
+                        int local_n = t2[i];
+                        for (int j = t2[i] - 1; j > max; --j)
+                        {
+                            local_n *= j;
+                        }
+
+                        // Calculate the denominator.
+                        int local_r = min;
+                        for (int j = min-1; j > 0; --j)
+                        {
+                            local_r *= j;
+                        }
+
+                        // Multiply m by (n! / (r! (n-r)!))
+                        m *= (local_n / local_r);
+                    }
+                }
+            }
+        }
+    }
+
+    // Done.
+    return static_cast<double>(m);
+}

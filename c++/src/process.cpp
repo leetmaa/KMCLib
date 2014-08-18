@@ -99,10 +99,14 @@ Process::Process(const Configuration & first,
 
 // -----------------------------------------------------------------------------
 //
-void Process::addSite(const int index, const double rate)
+void Process::addSite(const int index,
+                      const double rate,
+                      const double multiplicity)
 {
     sites_.push_back(index);
+    site_multiplicity_.push_back(multiplicity);
 }
+
 
 // -----------------------------------------------------------------------------
 //
@@ -117,7 +121,17 @@ void Process::removeSite(const int index)
     std::swap((*it1), (*last));
     // Remove the last index from the list.
     sites_.pop_back();
+
+    // Calculate the position in the site_multiplicity_ vector.
+    std::vector<double>::iterator it3 = site_multiplicity_.begin() + (it1-sites_.begin());
+    std::vector<double>::iterator last_multiplicity = site_multiplicity_.end()-1;
+
+    // Swap and remove.
+    std::swap((*it3), (*last_multiplicity));
+    site_multiplicity_.pop_back();
+
 }
+
 
 // -----------------------------------------------------------------------------
 //
@@ -128,11 +142,23 @@ int Process::pickSite() const
     return sites_[rnd];
 }
 
+
 // -----------------------------------------------------------------------------
 //
 bool Process::isListed(const int index) const
 {
     // Search in the list to find out if it is added.
     return std::find(sites_.begin(), sites_.end(), index) != sites_.end();
+}
+
+
+// -----------------------------------------------------------------------------
+//
+double Process::totalRate() const
+{
+    // Sum all elements in the multiplicity vector and
+    // multiply with the rate constant.
+    return std::accumulate(site_multiplicity_.begin(),
+                           site_multiplicity_.end(), 0.0) * rate_;
 }
 

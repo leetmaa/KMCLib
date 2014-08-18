@@ -66,10 +66,14 @@ public:
     virtual double totalRate() const;
 
     /*! \brief Add the index to the list of available sites.
-     *  \param index : The index to add.
-     *  \param rate  : Dummy argument needed for common interface.
+     *  \param index        : The index to add.
+     *  \param rate         : The rate of the process at the added site.
+     *  \param multiplicity : The multiplicity of the site, to be multiplied
+                              with the rate for determining the total rate.
      */
-    virtual void addSite(const int index, const double rate);
+    virtual void addSite(const int index,
+                         const double rate,
+                         const double multiplicity);
 
     /*! \brief Remove the index from the list of available sites.
      *  \param index : The index to remove.

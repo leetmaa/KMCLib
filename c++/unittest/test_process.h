@@ -32,6 +32,7 @@ public:
     CPPUNIT_TEST( testMatchList );
     CPPUNIT_TEST( testMatchListLong );
     CPPUNIT_TEST( testAddAndRemoveSite );
+    CPPUNIT_TEST( testAddAndRemoveSiteMultiplicity );
     CPPUNIT_TEST( testPickSite );
     CPPUNIT_TEST( testAffectedIndices );
     CPPUNIT_TEST( testCutoffAndRange );
@@ -47,6 +48,7 @@ public:
     void testMatchList();
     void testMatchListLong();
     void testAddAndRemoveSite();
+    void testAddAndRemoveSiteMultiplicity();
     void testPickSite();
     void testAffectedIndices();
     void testCutoffAndRange();

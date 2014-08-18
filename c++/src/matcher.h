@@ -32,6 +32,7 @@ struct RateTask
     int index;
     int process;
     double rate;
+    double multiplicity;
 };
 
 
