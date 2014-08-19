@@ -27,6 +27,7 @@ public:
     CPPUNIT_TEST( testConstruction );
     CPPUNIT_TEST( testMatchListLong );
     CPPUNIT_TEST( testTotalRate );
+    CPPUNIT_TEST( testTotalRateMultiplicity );
     CPPUNIT_TEST( testAddAndRemoveSite );
     CPPUNIT_TEST( testPickSite );
     CPPUNIT_TEST( testAffectedIndices );
@@ -38,6 +39,7 @@ public:
     void testConstruction();
     void testMatchListLong();
     void testTotalRate();
+    void testTotalRateMultiplicity();
     void testAddAndRemoveSite();
     void testPickSite();
     void testAffectedIndices();

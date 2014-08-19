@@ -1,5 +1,5 @@
 /*
-  Copyright (c)  2013  Mikael Leetmaa
+  Copyright (c)  2013-2014  Mikael Leetmaa
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -50,8 +50,19 @@ CustomRateProcess::CustomRateProcess(const Configuration & first,
 //
 double CustomRateProcess::totalRate() const
 {
-    // Sum all individual rates.
-    return std::accumulate(site_rates_.begin(),site_rates_.end(), 0.0);
+    std::vector<double>::const_iterator it1 = site_rates_.begin();
+    const std::vector<double>::const_iterator end = site_rates_.end();
+    std::vector<double>::const_iterator it2 = site_multiplicity_.begin();
+
+    double sum = 0.0;
+
+    // Sum rates times multiplicity.
+    for ( ; it1 != end; ++it1, ++it2 )
+    {
+        sum += (*it1) * (*it2);
+    }
+
+    return sum;
 }
 
 // -----------------------------------------------------------------------------
