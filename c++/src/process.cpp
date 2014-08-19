@@ -137,9 +137,28 @@ void Process::removeSite(const int index)
 //
 int Process::pickSite() const
 {
-    // Draw an integer between 0 and sites_.size() - 1
-    const int rnd = static_cast<int>(randomDouble01() * sites_.size());
-    return sites_[rnd];
+    // PERFORMME: This implementation works but is unnecessarily slow
+    //            in the case when no buckets are used, and therefore
+    //            multiplicity is one for all sites. For the Ising spin
+    //            model this means a 30% (!) extra increase in running time,
+    //            with no benefit at al. Should be fixed before release.
+
+    // Get the total rate.
+    const double total_rate = incremental_rate_table_.back();
+
+    // Get a random number between 0.0 and the total rate.
+    const double rnd = randomDouble01() * total_rate;
+
+    // Pick the site.
+    const std::vector<double>::const_iterator begin = incremental_rate_table_.begin();
+    const std::vector<double>::const_iterator end   = incremental_rate_table_.end();
+    const std::vector<double>::const_iterator it1   = std::lower_bound( begin, end, rnd);
+
+    // Get the site index.
+    const int site_index = it1-begin;
+
+    // Return the site.
+    return sites_[site_index];
 }
 
 
@@ -160,5 +179,22 @@ double Process::totalRate() const
     // multiply with the rate constant.
     return std::accumulate(site_multiplicity_.begin(),
                            site_multiplicity_.end(), 0.0) * rate_;
+}
+
+
+// -----------------------------------------------------------------------------
+//
+void Process::updateRateTable()
+{
+    // Resize and update the incremental rate table.
+    incremental_rate_table_.resize(site_multiplicity_.size());
+    double previous = 0.0;
+    for (size_t i = 0; i < site_multiplicity_.size(); ++i)
+    {
+        incremental_rate_table_[i] = previous + (rate_ * site_multiplicity_[i]);
+        previous = incremental_rate_table_[i];
+    }
+
+    // DONE
 }
 

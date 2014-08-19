@@ -466,9 +466,60 @@ void Test_CustomRateProcess::testPickSite()
     }
 
     // Test.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.0/10.0, 1.0 * counter199 / n_loop,  1.0e-2);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0/2.0 , 1.0 * counter12  / n_loop,  1.0e-2);
     CPPUNIT_ASSERT_DOUBLES_EQUAL( 3.0/10.0, 1.0 * counter19  / n_loop,  1.0e-2);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 2.0/10.0, 1.0 * counter199 / n_loop,  1.0e-2);
+
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_CustomRateProcess::testPickSiteMultiplicity()
+{
+    // Default construct a process.
+    CustomRateProcess process;
+
+    // Add sites.
+    process.addSite(199, 2.00, 3.0);
+    process.addSite(12,  5.00, 5.0);
+    process.addSite(19,  3.00, 7.0);
+    process.updateRateTable();
+
+    // Get the cite.
+    int counter12  = 0;
+    int counter19  = 0;
+    int counter199 = 0;
+
+    seedRandom(false, 97);
+    const int n_loop = 1000000;
+
+    for (int i = 0; i < n_loop; ++i)
+    {
+        const int site = process.pickSite();
+        CPPUNIT_ASSERT( ! (site != 12 && site != 199 && site != 19) );
+
+        // Count how often each gets selected.
+        if (site == 12)
+        {
+            ++counter12;
+        }
+
+        if (site == 199)
+        {
+            ++counter199;
+        }
+
+        if (site == 19)
+        {
+            ++counter19;
+        }
+    }
+
+    // Test.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 6.0/52.0, 1.0 * counter199 / n_loop,  1.0e-2);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(25.0/52.0, 1.0 * counter12  / n_loop,  1.0e-2);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(21.0/52.0, 1.0 * counter19  / n_loop,  1.0e-2);
 
 }
 

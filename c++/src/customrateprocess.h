@@ -80,11 +80,6 @@ public:
      */
     virtual void removeSite(const int index);
 
-    /*! \brief Pick an available process with probability determined by
-     *         its individual rate.
-     *  \return : A correctly drawn available process.
-     */
-    virtual int pickSite() const;
 
     /*! \brief Update the rate table prior to drawing a rate.
      */
@@ -96,9 +91,6 @@ private:
 
     /// The list of individual site rates.
     std::vector<double> site_rates_;
-
-    /// The incremental rates.
-    std::vector<double> incremental_rate_table_;
 
 };
 

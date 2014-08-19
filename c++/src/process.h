@@ -82,15 +82,14 @@ public:
      */
     virtual void removeSite(const int index);
 
-    /*! \brief Pick a random available process.
-     *  \return : A random available process.
+    /*! \brief Pick a site weighted by its individual total rate (multiplicity).
+     *  \return : An available process.
      */
     virtual int pickSite() const;
 
-    /*! \brief Interface function for inherited classes.
-     *         This function does nothing if not overloaded.
+    /*! \brief Update the rate table prior to drawing a rate.
      */
-    virtual void updateRateTable() {}
+    virtual void updateRateTable();
 
     /*! \brief Returns true if the process rates can be cached.
      *  \return : True if rates can be cached. False if no caching is allowed.
@@ -198,6 +197,9 @@ protected:
 
     /// The multiplicity for the available sites for this process.
     std::vector<double> site_multiplicity_;
+
+    /// The incremental rates.
+    std::vector<double> incremental_rate_table_;
 
     /// The match list for comparing against local configurations.
     ProcessBucketMatchList match_list_;

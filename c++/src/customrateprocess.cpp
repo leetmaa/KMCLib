@@ -110,38 +110,17 @@ void CustomRateProcess::removeSite(const int index)
 
 }
 
-// -----------------------------------------------------------------------------
-//
-int CustomRateProcess::pickSite() const
-{
-    // Get the total rate.
-    const double total_rate = incremental_rate_table_.back();
-
-    // Get a random number between 0.0 and the total rate.
-    const double rnd = randomDouble01() * total_rate;
-
-    // Pick the site.
-    const std::vector<double>::const_iterator begin = incremental_rate_table_.begin();
-    const std::vector<double>::const_iterator end   = incremental_rate_table_.end();
-    const std::vector<double>::const_iterator it1   = std::lower_bound( begin, end, rnd);
-
-    // Get the site index.
-    const int site_index = it1-begin;
-
-    // Return the site.
-    return sites_[site_index];
-}
 
 // -----------------------------------------------------------------------------
 //
 void CustomRateProcess::updateRateTable()
 {
     // Resize and update the incremental rate table.
-    incremental_rate_table_.resize(site_rates_.size());
+    incremental_rate_table_.resize(site_multiplicity_.size());
     double previous = 0.0;
-    for (size_t i = 0; i < site_rates_.size(); ++i)
+    for (size_t i = 0; i < site_multiplicity_.size(); ++i)
     {
-        incremental_rate_table_[i] = previous + site_rates_[i];
+        incremental_rate_table_[i] = previous + (site_rates_[i] * site_multiplicity_[i]);
         previous = incremental_rate_table_[i];
     }
 

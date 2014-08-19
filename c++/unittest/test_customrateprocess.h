@@ -30,6 +30,7 @@ public:
     CPPUNIT_TEST( testTotalRateMultiplicity );
     CPPUNIT_TEST( testAddAndRemoveSite );
     CPPUNIT_TEST( testPickSite );
+    CPPUNIT_TEST( testPickSiteMultiplicity );
     CPPUNIT_TEST( testAffectedIndices );
     CPPUNIT_TEST( testCutoffAndRange );
     CPPUNIT_TEST( testProcessNumber );
@@ -42,6 +43,7 @@ public:
     void testTotalRateMultiplicity();
     void testAddAndRemoveSite();
     void testPickSite();
+    void testPickSiteMultiplicity();
     void testAffectedIndices();
     void testCutoffAndRange();
     void testProcessNumber();

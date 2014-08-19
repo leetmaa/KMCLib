@@ -34,6 +34,7 @@ public:
     CPPUNIT_TEST( testAddAndRemoveSite );
     CPPUNIT_TEST( testAddAndRemoveSiteMultiplicity );
     CPPUNIT_TEST( testPickSite );
+    CPPUNIT_TEST( testPickSiteMultiplicity );
     CPPUNIT_TEST( testAffectedIndices );
     CPPUNIT_TEST( testCutoffAndRange );
     CPPUNIT_TEST( testProcessNumber );
@@ -50,6 +51,7 @@ public:
     void testAddAndRemoveSite();
     void testAddAndRemoveSiteMultiplicity();
     void testPickSite();
+    void testPickSiteMultiplicity();
     void testAffectedIndices();
     void testCutoffAndRange();
     void testProcessNumber();

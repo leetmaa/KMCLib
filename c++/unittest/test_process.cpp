@@ -885,13 +885,41 @@ void Test_Process::testAddAndRemoveSiteMultiplicity()
 //
 void Test_Process::testPickSite()
 {
-    // Default construct a process.
-    Process process;
+    // Setup a valid possible types map.
+    std::map<std::string,int> possible_types;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["C"] = 0;
+
+    // Setup the two configurations.
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+
+    // Setup coordinates.
+    std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
+    coords[1][0] =  1.0;
+    coords[1][1] =  1.3;
+    coords[1][2] = -4.4;
+
+    // The configurations.
+    const Configuration config1(coords, elements1, possible_types);
+    const Configuration config2(coords, elements2, possible_types);
+
+    // Construct the process.
+    const double rate = 1.0;
+    const std::vector<int> basis_sites(1,0);
+    Process process(config1, config2, rate, basis_sites);
 
     // Add sites.
     process.addSite(12);
     process.addSite(199);
     process.addSite(19);
+    process.updateRateTable();
 
     // Get the cite.
     int counter12  = 0;
@@ -924,9 +952,87 @@ void Test_Process::testPickSite()
     }
 
     // Test.
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0 * n_loop / (3 * n_loop) , 1.0 * counter12 / n_loop,  1.0e-2);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0 * n_loop / (3 * n_loop) , 1.0 * counter19 / n_loop,  1.0e-2);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0 * n_loop / (3 * n_loop) , 1.0 * counter199 / n_loop, 1.0e-2);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0/3.0 , 1.0 * counter12 / n_loop,  1.0e-2);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0/3.0 , 1.0 * counter19 / n_loop,  1.0e-2);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0/3.0 , 1.0 * counter199 / n_loop, 1.0e-2);
+
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Process::testPickSiteMultiplicity()
+{
+    // Setup a valid possible types map.
+    std::map<std::string,int> possible_types;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["C"] = 0;
+
+    // Setup the two configurations.
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+
+    // Setup coordinates.
+    std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
+    coords[1][0] =  1.0;
+    coords[1][1] =  1.3;
+    coords[1][2] = -4.4;
+
+    // The configurations.
+    const Configuration config1(coords, elements1, possible_types);
+    const Configuration config2(coords, elements2, possible_types);
+
+    // Construct the process.
+    const double rate = 1.0;
+    const std::vector<int> basis_sites(1,0);
+    Process process(config1, config2, rate, basis_sites);
+
+    // Add sites.
+    process.addSite(12,  1.0, 3.0);
+    process.addSite(199, 1.0, 5.0);
+    process.addSite(19,  1.0, 7.0);
+    process.updateRateTable();
+
+    // Get the cite.
+    int counter12  = 0;
+    int counter19  = 0;
+    int counter199 = 0;
+
+    seedRandom(false, 97);
+    const int n_loop = 1000000;
+
+    for (int i = 0; i < n_loop; ++i)
+    {
+        const int site = process.pickSite();
+        CPPUNIT_ASSERT( ! (site != 12 && site != 199 && site != 19) );
+
+        // Count how often each gets selected.
+        if (site == 12)
+        {
+            ++counter12;
+        }
+
+        if (site == 199)
+        {
+            ++counter199;
+        }
+
+        if (site == 19)
+        {
+            ++counter19;
+        }
+    }
+
+    // Test.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 3.0/15.0, 1.0 * counter12  / n_loop, 1.0e-2);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 5.0/15.0, 1.0 * counter199 / n_loop, 1.0e-2);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 7.0/15.0, 1.0 * counter19  / n_loop, 1.0e-2);
 
 }
 
