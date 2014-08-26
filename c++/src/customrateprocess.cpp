@@ -48,25 +48,6 @@ CustomRateProcess::CustomRateProcess(const Configuration & first,
 
 // -----------------------------------------------------------------------------
 //
-double CustomRateProcess::totalRate() const
-{
-    std::vector<double>::const_iterator it1 = site_rates_.begin();
-    const std::vector<double>::const_iterator end = site_rates_.end();
-    std::vector<double>::const_iterator it2 = site_multiplicity_.begin();
-
-    double sum = 0.0;
-
-    // Sum rates times multiplicity.
-    for ( ; it1 != end; ++it1, ++it2 )
-    {
-        sum += (*it1) * (*it2);
-    }
-
-    return sum;
-}
-
-// -----------------------------------------------------------------------------
-//
 void CustomRateProcess::addSite(const int index,
                                 const double rate,
                                 const double multiplicity)
@@ -74,7 +55,9 @@ void CustomRateProcess::addSite(const int index,
     sites_.push_back(index);
     site_multiplicity_.push_back(multiplicity);
     site_rates_.push_back(rate);
+    total_rate_ += multiplicity * rate;
 }
+
 
 // -----------------------------------------------------------------------------
 //
@@ -98,6 +81,9 @@ void CustomRateProcess::removeSite(const int index)
 
     // Swap and remove.
     std::swap((*it2), (*last_rate));
+
+    // Store the value temporarily.
+    const double site_rate = site_rates_.back();
     site_rates_.pop_back();
 
     // Calculate the position in the site_multiplicity_ vector.
@@ -106,6 +92,10 @@ void CustomRateProcess::removeSite(const int index)
 
     // Swap and remove.
     std::swap((*it3), (*last_multiplicity));
+
+    // Update the total rate.
+    total_rate_ -= site_rate * site_multiplicity_.back();
+
     site_multiplicity_.pop_back();
 
 }

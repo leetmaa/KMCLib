@@ -544,74 +544,58 @@ double Matcher::updateSingleRate(const int index,
         ++it1;
         ++len;
     }
-    const ConfigBucketMatchList::const_iterator new_end = it1;
+
+    const size_t distance = it1 - config_match_list.begin();
 
     // Allocate memory for the numpy geometry and copy the data over.
     std::vector<double> numpy_geo(len*3);
-    std::vector<double>::iterator it_geo = numpy_geo.begin();
-    std::vector<std::string> types_before;
-    std::vector<TypeBucket> occupations;
+    std::vector<std::string> types_before(distance);
+    std::vector<TypeBucket> occupations(distance);
 
-    it1 = config_match_list.begin();
-    for ( ; it1 != new_end; ++it1 )
+    for (size_t i = 0; i < distance; ++i)
     {
-        const Coordinate & coord = (*it1).coordinate;
+        const Coordinate & coord = config_match_list[i].coordinate;
 
-        (*it_geo) = coord.x();
-        ++it_geo;
+        numpy_geo[3*i]   = coord.x();
+        numpy_geo[3*i+1] = coord.y();
+        numpy_geo[3*i+2] = coord.z();
 
-        (*it_geo) = coord.y();
-        ++it_geo;
-
-        (*it_geo) = coord.z();
-        ++it_geo;
-
-        const int idx = (*it1).index;
-
-        types_before.push_back(elements[idx][0]);
-        occupations.push_back(types[idx]);
+        const int idx   = config_match_list[i].index;
+        types_before[i] = elements[idx][0];
+        occupations[i]  = types[idx];
     }
 
     // Types after the process.
     std::vector<std::string> types_after = types_before;
     std::vector<TypeBucket> update(len, TypeBucket(occupations[0].size()));
 
-    // Rewind the config match list iterator.
-    it1 = config_match_list.begin();
-
-    // Get the iterators to the process match list and types after.
-    ProcessBucketMatchList::const_iterator it2 = process_match_list.begin();
-    std::vector<std::string>::iterator it3 = types_after.begin();
-    const ProcessBucketMatchList::const_iterator end = process_match_list.end();
-    std::vector<TypeBucket>::iterator it4 = update.begin();
-
     // Loop over the process match list and update the types_after vector.
-    for ( ; it2 != end; ++it1, ++it2, ++it3, ++it4 )
+    for (size_t i = 0; i < process_match_list.size(); ++i)
     {
-        const TypeBucket & update_types = (*it2).update_types;
+        const TypeBucket & update_types = process_match_list[i].update_types;
 
         // Save the update types in the full update vector.
-        (*it4) = update_types;
+        update[i] = update_types;
 
         // PERFORMME: This should be handeled more efficiently.
 
         // Check that the update type is not 'zero'.
         int sum = 0;
-        for (int i = 0; i < update_types.size(); ++i)
+        for (int j = 0; j < update_types.size(); ++j)
         {
-            sum += std::abs(update_types[i]);
+            sum += std::abs(update_types[j]);
         }
 
         if ( sum != 0  && !(update_types == 0) )
         {
 
             // For non-buckets only.
-            for (int i = 0; i < update_types.size(); ++i)
+            for (int j = 0; j < update_types.size(); ++j)
             {
                 // Taking the first only.
-                if (update_types[i] == 1)
+                if (update_types[j] == 1)
                 {
-                    (*it3) = configuration.typeName(i);
+                    types_after[i] = configuration.typeName(j);
                     break;
                 }
             }

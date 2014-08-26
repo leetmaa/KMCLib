@@ -60,11 +60,6 @@ public:
      */
     virtual ~CustomRateProcess() {}
 
-    /*! \brief Query for the total rate.
-     *  \return : The total rate of the process.
-     */
-    virtual double totalRate() const;
-
     /*! \brief Add the index to the list of available sites.
      *  \param index        : The index to add.
      *  \param rate         : The rate of the process at the added site.
@@ -89,8 +84,6 @@ protected:
 
 private:
 
-    /// The list of individual site rates.
-    std::vector<double> site_rates_;
 
 };
 

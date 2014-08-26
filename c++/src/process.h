@@ -65,7 +65,7 @@ public:
     /*! \brief Query for the total rate.
      *  \return : The total rate of the process.
      */
-    virtual double totalRate() const;
+    double totalRate() const { return total_rate_; }
 
     /*! \brief Add the index to the list of available sites.
      *  \param index        : The index to add.
@@ -202,6 +202,9 @@ protected:
     /// The multiplicity for the available sites for this process.
     std::vector<double> site_multiplicity_;
 
+    /// The list of individual site rates.
+    std::vector<double> site_rates_;
+
     /// The incremental rates.
     std::vector<double> incremental_rate_table_;
 
@@ -221,6 +224,9 @@ protected:
 
     /// Flag indicating if this is a bucket process or not.
     bool bucket_process_;
+
+    /// The total available rate for this process.
+    double total_rate_;
 
 private:
 

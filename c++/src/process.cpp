@@ -35,7 +35,8 @@ Process::Process(const Configuration & first,
     sites_(0),
     affected_indices_(0),
     basis_sites_(basis_sites),
-    id_moves_(0)
+    id_moves_(0),
+    total_rate_(0.0)
 {
     // Determine if this is a bucket process by looking at the update info
     // on the second configuration.
@@ -105,6 +106,7 @@ void Process::addSite(const int index,
 {
     sites_.push_back(index);
     site_multiplicity_.push_back(multiplicity);
+    total_rate_ += multiplicity * rate_;
 }
 
 
@@ -128,6 +130,7 @@ void Process::removeSite(const int index)
 
     // Swap and remove.
     std::swap((*it3), (*last_multiplicity));
+    total_rate_ -= site_multiplicity_.back() * rate_;
     site_multiplicity_.pop_back();
 
 }
@@ -139,6 +142,8 @@ void Process::clearSites()
 {
     sites_.clear();
     site_multiplicity_.clear();
+    site_rates_.clear();
+    total_rate_ = 0.0;
 }
 
 
@@ -177,17 +182,6 @@ bool Process::isListed(const int index) const
 {
     // Search in the list to find out if it is added.
     return std::find(sites_.begin(), sites_.end(), index) != sites_.end();
-}
-
-
-// -----------------------------------------------------------------------------
-//
-double Process::totalRate() const
-{
-    // Sum all elements in the multiplicity vector and
-    // multiply with the rate constant.
-    return std::accumulate(site_multiplicity_.begin(),
-                           site_multiplicity_.end(), 0.0) * rate_;
 }
 
 
