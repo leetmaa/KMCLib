@@ -82,6 +82,10 @@ public:
      */
     virtual void removeSite(const int index);
 
+    /*! \brief Remove all indices from the list of available sites.
+     */
+    virtual void clearSites();
+
     /*! \brief Pick a site weighted by its individual total rate (multiplicity).
      *  \return : An available process.
      */

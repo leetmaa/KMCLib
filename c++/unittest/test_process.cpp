@@ -790,6 +790,67 @@ void Test_Process::testAddAndRemoveSite()
 
 // -------------------------------------------------------------------------- //
 //
+void Test_Process::testClearSites()
+{
+    // Setup a valid possible types map.
+    std::map<std::string,int> possible_types;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["C"] = 0;
+
+    // Setup the two configurations.
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+
+    // Setup coordinates.
+    std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
+    coords[1][0] =  1.0;
+    coords[1][1] =  1.3;
+    coords[1][2] = -4.4;
+
+    // The configurations.
+    const Configuration config1(coords, elements1, possible_types);
+    const Configuration config2(coords, elements2, possible_types);
+
+    // Construct the process.
+    const double rate = 13.7;
+    const std::vector<int> basis_sites(1,0);
+    Process process(config1, config2, rate, basis_sites);
+
+    // Check that there are no listed indices by default.
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 0);
+
+    // Add a few indices.
+    process.addSite(1234, 1.0,  1.0);
+    process.addSite(3,    1.0,  5.0);
+    process.addSite(11,   1.0, 11.0);
+    process.addSite(-123, 1.0,  9.0);
+
+    // Check that these indices are now there.
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 4);
+
+    // Check that the total rate is the rate times the multiplicities.
+    const double rate_should_be = (1.0 + 5.0 + 11.0 + 9.0) * rate;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( process.totalRate(), rate_should_be, 1.0e-10);
+
+    // Clear.
+    process.clearSites();
+
+    // Check.
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( process.totalRate(), 0.0, 1.0e-10);
+
+    // DONE
+}
+
+
+// -------------------------------------------------------------------------- //
+//
 void Test_Process::testAddAndRemoveSiteMultiplicity()
 {
     // Setup a valid possible types map.

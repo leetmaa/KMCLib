@@ -27,8 +27,9 @@
 
 // -----------------------------------------------------------------------------
 //
-Matcher::Matcher() :
-    rate_table_()
+Matcher::Matcher(const size_t & sites, const size_t & processes) :
+    rate_table_(),
+    inverse_table_(sites, std::vector<bool>(processes, false))
 {
     // NOTHING HERE YET
 }
@@ -221,9 +222,9 @@ void Matcher::matchIndicesWithProcesses(const std::vector<std::pair<int,int> > &
         Process & process = (*interactions.processes()[p_idx]);
 
         // Perform the matching.
-        const bool in_list = process.isListed(index);
+        const bool in_list = inverse_table_[index][p_idx];
 
-        // ML: prototyping.
+        // ML:
         const bool is_match = whateverMatch(process.processMatchList(),
                                             configuration.configMatchList(index));
 
@@ -286,7 +287,7 @@ void Matcher::matchIndicesWithProcesses(const std::vector<std::pair<int,int> > &
             // If match and not previous match - add.
             else if (task_types[i] == 3)
             {
-            add_tasks.push_back(t);
+                add_tasks.push_back(t);
             }
         }
     }
@@ -459,7 +460,7 @@ void Matcher::printMatchList(const ConfigBucketMatchList & index_match_list) con
 void Matcher::updateProcesses(const std::vector<RemoveTask> & remove_tasks,
                               const std::vector<RateTask>   & update_tasks,
                               const std::vector<RateTask>   & add_tasks,
-                              Interactions & interactions) const
+                              Interactions & interactions)
 {
     // This could perhaps be OpenMP parallelized.
 
@@ -469,6 +470,7 @@ void Matcher::updateProcesses(const std::vector<RemoveTask> & remove_tasks,
         const int index = remove_tasks[i].index;
         const int p_idx = remove_tasks[i].process;
         interactions.processes()[p_idx]->removeSite(index);
+        inverse_table_[index][p_idx] = false;
     }
 
     // Update.
@@ -488,6 +490,7 @@ void Matcher::updateProcesses(const std::vector<RemoveTask> & remove_tasks,
         const int p_idx   = add_tasks[i].process;
         const double rate = add_tasks[i].rate;
         interactions.processes()[p_idx]->addSite(index, rate);
+        inverse_table_[index][p_idx] = true;
     }
 }
 

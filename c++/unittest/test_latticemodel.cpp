@@ -278,7 +278,7 @@ void Test_LatticeModel::testSetupAndQuery()
     configuration = Configuration(coordinates, elements, possible_types);
 
     // Get a new lattice model to test.
-    LatticeModel lattice_model_2(configuration, timer, lattice_map, interactions);
+    const LatticeModel lattice_model_2(configuration, timer, lattice_map, interactions);
 
     // Get the interactions out and check.
     const Interactions ret_interactions_2 = lattice_model_2.interactions();

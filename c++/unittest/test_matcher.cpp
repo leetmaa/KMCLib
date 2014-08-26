@@ -28,7 +28,7 @@
 void Test_Matcher::testConstruction()
 {
     // Construct.
-    Matcher m;
+    Matcher m(1,2);
 }
 
 // -------------------------------------------------------------------------- //
@@ -36,7 +36,7 @@ void Test_Matcher::testConstruction()
 void Test_Matcher::testIsMatchMatchList()
 {
     // Construct.
-    Matcher matcher;
+    Matcher matcher(1000, 10);
 
     // Setup two match lists to check.
     ProcessBucketMatchList process_match_list;
@@ -155,7 +155,7 @@ void Test_Matcher::testIsMatchMatchList()
 void Test_Matcher::testIsMatchWildcard()
 {
     // Construct.
-    Matcher matcher;
+    Matcher matcher(100, 10);
 
     // Setup two match lists to check.
     ProcessBucketMatchList process_match_list;
@@ -229,7 +229,7 @@ void Test_Matcher::testIsMatchWildcard()
 void Test_Matcher::testIsMatchIndexListMinimal()
 {
     // Construct.
-    Matcher m;
+    Matcher m(100, 10);
 
     // ---------------------------------------------------------------------
     // Setup a valid configuration.
@@ -405,7 +405,7 @@ void Test_Matcher::testIsMatchIndexListMinimalPeriodic()
     // simulation would be meaningfull on a smaller system any way.
 
     // Construct.
-    Matcher m;
+    Matcher m(100, 10);
 
     // ---------------------------------------------------------------------
     // Setup a valid configuration.
@@ -661,7 +661,7 @@ void Test_Matcher::testIsMatchIndexListMinimalPeriodic()
 void Test_Matcher::testIsMatchIndexListComplicatedPeriodic()
 {
     // Construct.
-    Matcher m;
+    Matcher m(54, 10);
 
     // ---------------------------------------------------------------------
     // Setup a valid configuration.
@@ -923,7 +923,7 @@ void Test_Matcher::testIsMatchIndexListComplicatedPeriodic()
 void Test_Matcher::testCalculateMatchingProcess()
 {
     // Construct.
-    Matcher m;
+    Matcher m(54, 3);
 
     // ---------------------------------------------------------------------
     // 27 cells cell with two atoms in the basis.
@@ -1162,7 +1162,7 @@ void Test_Matcher::testCalculateMatchingProcess()
 //
 void Test_Matcher::testUpdateProcesses()
 {
-    Matcher m;
+    Matcher m(100, 10);
 
     // Setup a list of processes and give it to an interactions object.
     std::map<std::string, int> possible_types;
@@ -1255,7 +1255,7 @@ void Test_Matcher::testUpdateProcesses()
 void Test_Matcher::testCalculateMatchingInteractions()
 {
     // Construct.
-    Matcher m;
+    Matcher m(54, 2);
 
     // Setup the processes to test with.
     std::vector<Process> processes;
@@ -1585,7 +1585,7 @@ void Test_Matcher::testUpdateRates()
     tasks.push_back(t2);
 
     // Here is the matcher to test.
-    Matcher m;
+    Matcher m(100, 10);
 
     // Setup a list of processes and give it to an interactions object.
     std::map<std::string, int> possible_types;
@@ -1779,7 +1779,7 @@ void Test_Matcher::testUpdateSingleRate()
     Interactions interactions(processes, false, CustomRateCalculator());
 
     // Get the matcher to test and a custom rate calculator.
-    const Matcher m;
+    const Matcher m(100, 10);
     const CustomRateCalculator crc;
     const int index = 1;
     const double ret_rate = m.updateSingleRate(index, *interactions.processes()[0], config, crc);

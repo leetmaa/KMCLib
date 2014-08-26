@@ -114,6 +114,11 @@ public:
      */
     Process* pickProcess();
 
+    /*! \brief Erase any matching information from the processe.
+     *         Used at initialization.
+     */
+    void clearMatching();
+
 protected:
 
 private:

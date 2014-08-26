@@ -135,6 +135,15 @@ void Process::removeSite(const int index)
 
 // -----------------------------------------------------------------------------
 //
+void Process::clearSites()
+{
+    sites_.clear();
+    site_multiplicity_.clear();
+}
+
+
+// -----------------------------------------------------------------------------
+//
 int Process::pickSite() const
 {
     // PERFORMME: This implementation works but is unnecessarily slow

@@ -264,3 +264,16 @@ Process* Interactions::pickProcess()
 
     return process_pointers_[index];
 }
+
+
+// -----------------------------------------------------------------------------
+//
+void Interactions::clearMatching()
+{
+    for (size_t i = 0; i < process_pointers_.size(); ++i)
+    {
+        process_pointers_[i]->clearSites();
+    }
+}
+
+

@@ -50,10 +50,11 @@ class Matcher {
 
 public:
 
-
-    /*! \brief Default constructor.
+    /*! \brief Constructor for the mather.
+     *  \param sites : The number of sites in the system.
+     *  \param processes : The number of processes in the system.
      */
-    Matcher();
+    Matcher(const size_t & sites, const size_t & processes);
 
     /*! \brief Calculate/update the matching of provided indices with
      *         all possible processes.
@@ -105,7 +106,7 @@ public:
     void updateProcesses(const std::vector<RemoveTask> & to_remove,
                          const std::vector<RateTask>   & to_update,
                          const std::vector<RateTask>   & to_add,
-                         Interactions & interactions) const;
+                         Interactions & interactions);
 
     /*! \brief Calculate the rate for a single process using the rate calculator.
      *  \param index           : The index to perform the process at.
@@ -158,6 +159,9 @@ private:
 
     /// The rate table for storing calculated custom rates.
     RateTable rate_table_;
+
+    /// The inverse matching information table.
+    std::vector<std::vector<bool> > inverse_table_;
 
 };
 

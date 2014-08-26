@@ -27,7 +27,8 @@ LatticeModel::LatticeModel(Configuration & configuration,
     configuration_(configuration),
     simulation_timer_(simulation_timer),
     lattice_map_(lattice_map),
-    interactions_(interactions)
+    interactions_(interactions),
+    matcher_(configuration.coordinates().size(), interactions.processes().size())
 {
     // Setup the mapping between coordinates and processes.
     calculateInitialMatching();
@@ -45,6 +46,7 @@ void LatticeModel::calculateInitialMatching()
     configuration_.initMatchLists(lattice_map_, interactions_.maxRange());
 
     // Update the interactions matchlists.
+    interactions_.clearMatching();
     interactions_.updateProcessMatchLists(configuration_, lattice_map_);
 
    // Match all centeres.
@@ -54,6 +56,8 @@ void LatticeModel::calculateInitialMatching()
     {
         indices.push_back(i);
     }
+
+    // Match.
     matcher_.calculateMatching(interactions_,
                                configuration_,
                                lattice_map_,

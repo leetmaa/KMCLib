@@ -996,3 +996,112 @@ void Test_Interactions::testUpdateProcessIDMoves()
         CPPUNIT_ASSERT_EQUAL( match[5].match_types[3],  0 );
     }
 }
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Interactions::testClearMatching()
+{
+    // Setup two valid processes.
+    std::vector<Process> processes;
+
+    std::vector<std::vector<std::string> > process_elements1(3);
+    process_elements1[0] = std::vector<std::string>(1, "A");
+    process_elements1[1] = std::vector<std::string>(1, "B");
+    process_elements1[2] = std::vector<std::string>(1, "V");
+
+    std::vector<std::vector<std::string> > process_elements2(3);
+    process_elements2[0] = std::vector<std::string>(1, "B");
+    process_elements2[1] = std::vector<std::string>(1, "A");
+    process_elements2[2] = std::vector<std::string>(1, "A");
+
+    std::vector<std::vector<double> > process_coordinates1(3, std::vector<double>(3, 0.0));
+    process_coordinates1[1][0] = -1.0;
+    process_coordinates1[1][1] =  0.0;
+    process_coordinates1[1][2] =  0.0;
+
+    process_coordinates1[2][0] =  0.3;
+    process_coordinates1[2][1] =  0.3;
+    process_coordinates1[2][2] =  0.3;
+
+    std::vector<int> move_origins;
+    move_origins.push_back(0);
+    move_origins.push_back(1);
+
+    std::vector<Coordinate> move_vectors;
+    move_vectors.push_back( Coordinate(-1.0, 0.0, 0.0) );
+    move_vectors.push_back( Coordinate( 1.0, 0.0, 0.0) );
+
+    // Possible types.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["V"] = 3;
+
+    const double rate = 13.7;
+    const Configuration c1(process_coordinates1, process_elements1, possible_types);
+    const Configuration c2(process_coordinates1, process_elements2, possible_types);
+
+    // Let this process be valid at site 0.
+    processes.push_back(Process(c1,c2,rate,std::vector<int>(1,0), move_origins, move_vectors));
+
+    // Let this process be valid at sites 0 and 2.
+    std::vector<int> sites_vector(2,0);
+    sites_vector[1] = 2;
+    processes.push_back(Process(c1, c2, rate, sites_vector, move_origins, move_vectors));
+
+    std::vector<std::vector<double> > process_coordinates2(3, std::vector<double>(3, 0.0));
+
+    process_coordinates2[1][0] =  0.7;
+    process_coordinates2[1][1] =  0.7;
+    process_coordinates2[1][2] = -0.3;
+
+    process_coordinates2[2][0] =  1.0;
+    process_coordinates2[2][1] =  1.0;
+    process_coordinates2[2][2] =  1.0;
+
+    move_vectors[0] = Coordinate( 0.7, 0.7, -0.3);
+    move_vectors[1] = Coordinate(-0.7,-0.7,  0.3);
+
+    const Configuration c3(process_coordinates2, process_elements1, possible_types);
+    const Configuration c4(process_coordinates2, process_elements2, possible_types);
+
+    // Let the process be valid at site 1.
+    processes.push_back(Process(c3,c4,rate,std::vector<int>(1,1), move_origins, move_vectors));
+
+    processes[0].addSite(32);
+    processes[1].addSite(432);
+    processes[1].addSite(443);
+    processes[1].addSite(431);
+    processes[2].addSite(112);
+    processes[2].addSite(124);
+
+    Interactions interactions(processes, true);
+
+    // Check that the processes have the expected number of sites listed.
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[0]->nSites()),
+                         1);
+
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[1]->nSites()),
+                         3);
+
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[2]->nSites()),
+                         2);
+
+    // Call the function to test.
+    interactions.clearMatching();
+
+
+    // These should now be zero.
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[0]->nSites()),
+                         0);
+
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[1]->nSites()),
+                         0);
+
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[2]->nSites()),
+                         0);
+
+}
+
