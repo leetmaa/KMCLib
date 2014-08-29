@@ -408,7 +408,8 @@ class LatticeTrajectoryTest(unittest.TestCase):
             ret_types = local_dict['types']
             ref_types = [["A","A","A","A","A","A"],
                          ["B","B","B","B","B","B"],
-                         ["C","C","C","C","C","C"]]
+                         ["C","C","C","C","C","C"],
+                         ["A","A","A","A","A","B"]]
 
             self.assertEqual( ret_types, ref_types )
 
