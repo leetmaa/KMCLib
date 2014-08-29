@@ -215,10 +215,6 @@ PERIODICITY True True True
                           max_buffer_size=12345,
                           max_buffer_time=123.0)
 
-        # Check that the empty buffers has the size of four empty lists.
-        buffer_size = t._bufferSize()
-        self.assertEqual(buffer_size, sys.getsizeof([])*4)
-
         # Store a bunch of data.
         simulation_time = 1.234
         step = 123
@@ -227,9 +223,13 @@ PERIODICITY True True True
 
         # Check the size again.
         ref_size =  sys.getsizeof(t._XYZTrajectory__atom_id_coordinates)
+        ref_size += sys.getsizeof(t._XYZTrajectory__atom_id_coordinates[0])*len(t._XYZTrajectory__atom_id_coordinates)
         ref_size += sys.getsizeof(t._XYZTrajectory__atom_id_types)
+        ref_size += sys.getsizeof(t._XYZTrajectory__atom_id_types[0])*len(t._XYZTrajectory__atom_id_types)
         ref_size += sys.getsizeof(t._XYZTrajectory__time)
+        ref_size += sys.getsizeof(t._XYZTrajectory__time[0])*len(t._XYZTrajectory__time)
         ref_size += sys.getsizeof(t._XYZTrajectory__step)
+        ref_size += sys.getsizeof(t._XYZTrajectory__step[0])*len(t._XYZTrajectory__step)
 
         self.assertEqual(buffer_size, ref_size)
 
@@ -244,9 +244,13 @@ PERIODICITY True True True
         t._storeData(simulation_time, step, config)
 
         ref_size =  sys.getsizeof(t._XYZTrajectory__atom_id_coordinates)
+        ref_size += sys.getsizeof(t._XYZTrajectory__atom_id_coordinates[0])*len(t._XYZTrajectory__atom_id_coordinates)
         ref_size += sys.getsizeof(t._XYZTrajectory__atom_id_types)
+        ref_size += sys.getsizeof(t._XYZTrajectory__atom_id_types[0])*len(t._XYZTrajectory__atom_id_types)
         ref_size += sys.getsizeof(t._XYZTrajectory__time)
+        ref_size += sys.getsizeof(t._XYZTrajectory__time[0])*len(t._XYZTrajectory__time)
         ref_size += sys.getsizeof(t._XYZTrajectory__step)
+        ref_size += sys.getsizeof(t._XYZTrajectory__step[0])*len(t._XYZTrajectory__step)
 
         buffer_size = t._bufferSize()
 
