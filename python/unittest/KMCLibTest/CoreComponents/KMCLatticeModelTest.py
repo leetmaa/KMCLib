@@ -389,6 +389,314 @@ class KMCLatticeModelTest(unittest.TestCase):
             value = 1.0 * nA / (nA + nB)
             self.assertAlmostEqual(0.74, value, 2)
 
+    def testRunZeroRate(self):
+        """ Test the run of an A-B-C flip model with zero rate to get A. """
+        # Cell.
+        cell_vectors = [[   1.000000e+00,   0.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   1.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   0.000000e+00,   1.000000e+00]]
+
+        basis_points = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+
+        unit_cell = KMCUnitCell(
+            cell_vectors=cell_vectors,
+            basis_points=basis_points)
+
+        # Lattice.
+        lattice = KMCLattice(
+            unit_cell=unit_cell,
+            repetitions=(10,10,1),
+            periodic=(True, True, False))
+
+        # Configuration.
+        types = ['A']*100
+        possible_types = ['A','B','C']
+        configuration = KMCConfiguration(
+            lattice=lattice,
+            types=types,
+            possible_types=possible_types)
+
+        # Interactions.
+        coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+        process_0 = KMCProcess(coordinates, ['A'], ['B'], None, [0], 4.0)
+        process_1 = KMCProcess(coordinates, ['B'], ['A'], None, [0], 0.0)  # <- zero rate.
+        process_2 = KMCProcess(coordinates, ['B'], ['C'], None, [0], 1.0)
+        process_3 = KMCProcess(coordinates, ['C'], ['B'], None, [0], 1.0)
+        processes = [process_0, process_1, process_2, process_3]
+        interactions = KMCInteractions(processes,
+                                       implicit_wildcards=True)
+
+        # Setup the model.
+        ab_flip_model = KMCLatticeModel(configuration, interactions)
+
+        # Run the model with a trajectory file.
+        name = os.path.abspath(os.path.dirname(__file__))
+        name = os.path.join(name, "..", "TestUtilities", "Scratch")
+        trajectory_filename = os.path.join(name, "ab_flip_traj_custom.py")
+        self.__files_to_remove.append(trajectory_filename)
+
+        # The control parameters.
+        control_parameters = KMCControlParameters(number_of_steps=1000,
+                                                  dump_interval=500,
+                                                  seed=2013)
+
+        # Run the model for 1000 steps.
+        ab_flip_model.run(control_parameters,
+                          trajectory_filename=trajectory_filename)
+
+        # Read the first and last frames from the trajectory file and check the
+        # fraction of A, B and C are as expected from the relative rates.
+        if MPICommons.isMaster():
+            global_dict = {}
+            local_dict  = {}
+            execfile(trajectory_filename, global_dict, local_dict)
+
+            # Count the first frame.
+            elem = local_dict["types"][0]
+            nA = len([ ee for ee in elem if ee == "A" ])
+            nB = len([ ee for ee in elem if ee == "B" ])
+            nC = len([ ee for ee in elem if ee == "C" ])
+            self.assertEqual(nA, 100)
+            self.assertEqual(nB, 0)
+            self.assertEqual(nC, 0)
+
+            # Count the last frame.
+            elem = local_dict["types"][-1]
+            nA = len([ ee for ee in elem if ee == "A" ])
+            nB = len([ ee for ee in elem if ee == "B" ])
+            nC = len([ ee for ee in elem if ee == "C" ])
+
+            # Note that the average over a long simulation should be
+            # 50% B and 50% C.
+            self.assertEqual(nA, 0)
+            self.assertEqual(nB, 50)
+            self.assertEqual(nC, 50)
+
+    def testRunZeroCustomRate(self):
+        """ Test the run of an A-B-C flip model with zero custom rate to get A. """
+        # Cell.
+        cell_vectors = [[   1.000000e+00,   0.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   1.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   0.000000e+00,   1.000000e+00]]
+
+        basis_points = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+
+        unit_cell = KMCUnitCell(
+            cell_vectors=cell_vectors,
+            basis_points=basis_points)
+
+        # Lattice.
+        lattice = KMCLattice(
+            unit_cell=unit_cell,
+            repetitions=(10,10,1),
+            periodic=(True, True, False))
+
+        # Configuration.
+        types = ['A']*100
+        possible_types = ['A','B','C']
+        configuration = KMCConfiguration(
+            lattice=lattice,
+            types=types,
+            possible_types=possible_types)
+
+        # Interactions.
+        coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+        process_0 = KMCProcess(coordinates, ['A'], ['B'], None, [0], 4.0)
+        process_1 = KMCProcess(coordinates, ['B'], ['A'], None, [0], 4.0)  # <- Not zero rate.
+        process_2 = KMCProcess(coordinates, ['B'], ['C'], None, [0], 1.0)
+        process_3 = KMCProcess(coordinates, ['C'], ['B'], None, [0], 1.0)
+        processes = [process_0, process_1, process_2, process_3]
+        interactions = KMCInteractions(processes,
+                                       implicit_wildcards=True)
+
+        # Custom rates.
+        class CustomZeroRateProcessOne(KMCRateCalculatorPlugin):
+            def rate(self,
+                     coords,
+                     types_before,
+                     types_after,
+                     rate_constant,
+                     process_number,
+                     global_coordinate):
+                if process_number == 1:
+                    return 0.0
+                else:
+                    return 1.0
+
+        rate_calculator = CustomZeroRateProcessOne
+        interactions.setRateCalculator(rate_calculator)
+
+        # Setup the model.
+        ab_flip_model = KMCLatticeModel(configuration, interactions)
+
+        # Run the model with a trajectory file.
+        name = os.path.abspath(os.path.dirname(__file__))
+        name = os.path.join(name, "..", "TestUtilities", "Scratch")
+        trajectory_filename = os.path.join(name, "ab_flip_traj_custom.py")
+        self.__files_to_remove.append(trajectory_filename)
+
+        # The control parameters.
+        control_parameters = KMCControlParameters(number_of_steps=1000,
+                                                  dump_interval=500,
+                                                  seed=2013)
+
+        # Run the model for 1000 steps.
+        ab_flip_model.run(control_parameters,
+                          trajectory_filename=trajectory_filename)
+
+        # Read the first and last frames from the trajectory file and check the
+        # fraction of A, B and C are as expected from the relative rates.
+        if MPICommons.isMaster():
+            global_dict = {}
+            local_dict  = {}
+            execfile(trajectory_filename, global_dict, local_dict)
+
+            # Count the first frame.
+            elem = local_dict["types"][0]
+            nA = len([ ee for ee in elem if ee == "A" ])
+            nB = len([ ee for ee in elem if ee == "B" ])
+            nC = len([ ee for ee in elem if ee == "C" ])
+            self.assertEqual(nA, 100)
+            self.assertEqual(nB, 0)
+            self.assertEqual(nC, 0)
+
+            # Count the last frame.
+            elem = local_dict["types"][-1]
+            nA = len([ ee for ee in elem if ee == "A" ])
+            nB = len([ ee for ee in elem if ee == "B" ])
+            nC = len([ ee for ee in elem if ee == "C" ])
+
+            # Note that the average over a long simulation should be
+            # 50% B and 50% C.
+            print nA, nB, nC
+            self.assertEqual(nA, 0)
+            self.assertEqual(nB, 50)
+            self.assertEqual(nC, 50)
+
+    def testRunZeroCustomRateBuckets(self):
+        """ Test the run of an A-B-C flip model with zero custom rate to get A. """
+        # Cell.
+        cell_vectors = [[   1.000000e+00,   0.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   1.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   0.000000e+00,   1.000000e+00]]
+
+        basis_points = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+
+        unit_cell = KMCUnitCell(
+            cell_vectors=cell_vectors,
+            basis_points=basis_points)
+
+        # Lattice.
+        lattice = KMCLattice(
+            unit_cell=unit_cell,
+            repetitions=(10,10,1),
+            periodic=(True, True, False))
+
+        # Configuration.
+        types = [(1, 'A')]*100
+
+        possible_types = ['A','B','C']
+        configuration = KMCConfiguration(
+            lattice=lattice,
+            types=types,
+            possible_types=possible_types)
+
+        # Interactions.
+        coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+        process_0 = KMCBucketProcess(coordinates=coordinates,
+                                     minimum_match=[[(1, 'A')]],
+                                     update=[[(-1, 'A'),(1, 'B')]],
+                                     basis_sites=[0],
+                                     rate_constant=4.0)
+
+        process_1 = KMCBucketProcess(coordinates=coordinates,
+                                     minimum_match=[[(1, 'B')]],
+                                     update=[[(-1, 'B'),(1, 'A')]],
+                                     basis_sites=[0],
+                                     rate_constant=4.0)  # <- Not zero rate.
+
+        process_2 = KMCBucketProcess(coordinates=coordinates,
+                                     minimum_match=[[(1, 'B')]],
+                                     update=[[(-1, 'B'),(1, 'C')]],
+                                     basis_sites=[0],
+                                     rate_constant=1.0)
+
+        process_3 = KMCBucketProcess(coordinates=coordinates,
+                                     minimum_match=[[(1, 'C')]],
+                                     update=[[(-1, 'C'),(1, 'B')]],
+                                     basis_sites=[0],
+                                     rate_constant=1.0)
+
+        processes = [process_0, process_1, process_2, process_3]
+        interactions = KMCInteractions(processes,
+                                       implicit_wildcards=True)
+
+        # Custom rates.
+        class CustomZeroRateProcessOne(KMCRateCalculatorPlugin):
+            def rate(self,
+                     coords,
+                     types_before,
+                     types_after,
+                     rate_constant,
+                     process_number,
+                     global_coordinate):
+                if process_number == 1:
+                    return 0.0
+                else:
+                    return 1.0
+
+        rate_calculator = CustomZeroRateProcessOne
+        interactions.setRateCalculator(rate_calculator)
+
+        # Setup the model.
+        ab_flip_model = KMCLatticeModel(configuration, interactions)
+
+        # Run the model with a trajectory file.
+        name = os.path.abspath(os.path.dirname(__file__))
+        name = os.path.join(name, "..", "TestUtilities", "Scratch")
+        trajectory_filename = os.path.join(name, "abc_flip_traj_custom_zero_bucket.py")
+        self.__files_to_remove.append(trajectory_filename)
+
+        # The control parameters.
+        control_parameters = KMCControlParameters(number_of_steps=1000,
+                                                  dump_interval=500,
+                                                  seed=2013)
+
+        # Run the model for 1000 steps.
+        ab_flip_model.run(control_parameters,
+                          trajectory_filename=trajectory_filename)
+
+        # Read the first and last frames from the trajectory file and check the
+        # fraction of A, B and C are as expected from the relative rates.
+        if MPICommons.isMaster():
+            global_dict = {}
+            local_dict  = {}
+            execfile(trajectory_filename, global_dict, local_dict)
+
+            # Count the first frame.
+            elem = local_dict["types"][0]
+
+            nA = len([ ee for ee in elem if ee == [(1, "A")] ])
+            nB = len([ ee for ee in elem if ee == [(1, "B")] ])
+            nC = len([ ee for ee in elem if ee == [(1, "C")] ])
+
+            self.assertEqual(nA, 100)
+            self.assertEqual(nB, 0)
+            self.assertEqual(nC, 0)
+
+            # Count the last frame.
+            elem = local_dict["types"][-1]
+            nA = len([ ee for ee in elem if ee == [(1, "A")] ])
+            nB = len([ ee for ee in elem if ee == [(1, "B")] ])
+            nC = len([ ee for ee in elem if ee == [(1, "C")] ])
+
+            # Note that the average over a long simulation should be
+            # 50% B and 50% C.
+            print nA, nB, nC
+            self.assertEqual(nA, 0)
+            self.assertEqual(nB, 50)
+            self.assertEqual(nC, 50)
+
     def testRunWithAnalysis(self):
         """ Test that the analyis plugins get called correctly. """
         ab_flip_model = getValidModel()
