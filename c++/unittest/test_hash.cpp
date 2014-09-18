@@ -155,13 +155,13 @@ void Test_Hash::testHashCustomRateInput()
         // Get the hash.
         index = 1;
         const unsigned long int hash1 = hashCustomRateInput(index, process1, config);
-        const unsigned long int ref1 = 663948462431481124;
+        const unsigned long int ref1 = 18009609292013583759u;
         CPPUNIT_ASSERT_EQUAL(hash1, ref1);
 
         // Get the hash.
         index = 0;
         const unsigned long int hash0 = hashCustomRateInput(index, process1, config);
-        const unsigned long int ref0 = 5460844214287194975;
+        const unsigned long int ref0 = 4224368175550234772u;
         CPPUNIT_ASSERT_EQUAL(hash0, ref0);
     }
 
@@ -169,12 +169,12 @@ void Test_Hash::testHashCustomRateInput()
         // Check against another process that differs in the process number.
         index = 1;
         const unsigned long int hash1 = hashCustomRateInput(index, process2, config);
-        const unsigned long int ref1 = 7376371818039500683;
+        const unsigned long int ref1 = 4824710481459367137u;
         CPPUNIT_ASSERT_EQUAL(hash1, ref1);
 
         index = 0;
         const unsigned long int hash0 = hashCustomRateInput(index, process2, config);
-        const unsigned long int ref0 = 3751783971651441402;
+        const unsigned long int ref0 = 17780468236463825071u;
         CPPUNIT_ASSERT_EQUAL(hash0, ref0);
     }
 

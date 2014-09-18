@@ -568,7 +568,6 @@ class KMCLatticeModelTest(unittest.TestCase):
 
             # Note that the average over a long simulation should be
             # 50% B and 50% C.
-            print nA, nB, nC
             self.assertEqual(nA, 0)
             self.assertEqual(nB, 50)
             self.assertEqual(nC, 50)
@@ -692,10 +691,162 @@ class KMCLatticeModelTest(unittest.TestCase):
 
             # Note that the average over a long simulation should be
             # 50% B and 50% C.
-            print nA, nB, nC
             self.assertEqual(nA, 0)
             self.assertEqual(nB, 50)
             self.assertEqual(nC, 50)
+
+    def testCacheCustomRateBuckets(self):
+        """ Test the run of an A-B-C flip model with cached custom rates and bucked geometry. """
+        # Cell.
+        cell_vectors = [[   1.000000e+00,   0.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   1.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   0.000000e+00,   1.000000e+00]]
+
+        basis_points = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+
+        unit_cell = KMCUnitCell(
+            cell_vectors=cell_vectors,
+            basis_points=basis_points)
+
+        # Lattice.
+        lattice = KMCLattice(
+            unit_cell=unit_cell,
+            repetitions=(10,10,1),
+            periodic=(True, True, False))
+
+        # Interactions.
+
+        # Flip an A to B.
+        coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+        process_0 = KMCBucketProcess(coordinates=coordinates,
+                                     minimum_match=[[(1, 'A')]],
+                                     update=[[(-1, 'A'),(1, 'B')]],
+                                     basis_sites=[0],
+                                     rate_constant=4.0)
+
+        # Flip a B to A.
+        process_1 = KMCBucketProcess(coordinates=coordinates,
+                                     minimum_match=[[(1, 'B')]],
+                                     update=[[(-1, 'B'),(1, 'A')]],
+                                     basis_sites=[0],
+                                     rate_constant=4.0)
+
+        # Add a C.
+        process_2 = KMCBucketProcess(coordinates=coordinates,
+                                     minimum_match=[[(1, '*')]],
+                                     update=[[(1, 'C')]],
+                                     basis_sites=[0],
+                                     rate_constant=1.0)
+
+        processes = [process_0, process_1, process_2]
+        ref_interactions = KMCInteractions(processes,
+                                           implicit_wildcards=True)
+        cache_interactions = KMCInteractions(processes,
+                                             implicit_wildcards=True)
+
+        # Custom rates.
+        class CustomRateRef(KMCRateCalculatorPlugin):
+            def rate(self,
+                     coords,
+                     types_before,
+                     types_after,
+                     rate_constant,
+                     process_number,
+                     global_coordinate):
+                if process_number != 2:
+                    for t in types_before[0]:
+                        if t[1] == 'C':
+                            return 10.0*t[0]
+                    return rate_constant
+                else:
+                    return rate_constant*2.0
+
+            def cacheRates(self):
+                return False
+
+        # Another rate calculator, that caches the rates.
+        class CustomRateCache(KMCRateCalculatorPlugin):
+            def rate(self,
+                     coords,
+                     types_before,
+                     types_after,
+                     rate_constant,
+                     process_number,
+                     global_coordinate):
+                if process_number != 2:
+                    for t in types_before[0]:
+                        if t[1] == 'C':
+                            return 10.0*t[0]
+                    return rate_constant
+                else:
+                    return rate_constant*2.0
+
+            def cacheRates(self):
+                return True
+
+        # Set the two different rate calculators.
+        ref_interactions.setRateCalculator(CustomRateRef)
+        cache_interactions.setRateCalculator(CustomRateCache)
+
+        # Setup the models.
+        types = [(1, 'A')]*100
+        possible_types = ['A','B','C']
+        configuration = KMCConfiguration(
+            lattice=lattice,
+            types=types,
+            possible_types=possible_types)
+        ref_flip_model   = KMCLatticeModel(configuration, ref_interactions)
+
+        types = [(1, 'A')]*100
+        possible_types = ['A','B','C']
+        configuration = KMCConfiguration(
+            lattice=lattice,
+            types=types,
+            possible_types=possible_types)
+        cache_flip_model = KMCLatticeModel(configuration, cache_interactions)
+
+        # Run the model with a trajectory file.
+        name = os.path.abspath(os.path.dirname(__file__))
+        name = os.path.join(name, "..", "TestUtilities", "Scratch")
+        ref_trajectory_filename = os.path.join(name, "ref_buckets.py")
+        self.__files_to_remove.append(ref_trajectory_filename)
+
+        name = os.path.abspath(os.path.dirname(__file__))
+        name = os.path.join(name, "..", "TestUtilities", "Scratch")
+        trajectory_filename = os.path.join(name, "cache_buckets.py")
+        self.__files_to_remove.append(trajectory_filename)
+
+        # Run the model for 1000 steps.
+        ref_flip_model.run(control_parameters=KMCControlParameters(number_of_steps=1000,
+                                                                   dump_interval=500,
+                                                                   seed=2013),
+                           trajectory_filename=ref_trajectory_filename)
+
+        cache_flip_model.run(control_parameters=KMCControlParameters(number_of_steps=1000,
+                                                                     dump_interval=500,
+                                                                     seed=2013),
+                             trajectory_filename=trajectory_filename)
+
+        # Read the first and last frames from the trajectory file and check
+        # that they are equal for the cache and ref calculations.
+        if MPICommons.isMaster():
+            global_dict = {}
+            local_dict  = {}
+            execfile(ref_trajectory_filename, global_dict, local_dict)
+
+            # Check the times.
+            ref_times = numpy.array(local_dict["times"])
+
+            global_dict = {}
+            local_dict  = {}
+            execfile(trajectory_filename, global_dict, local_dict)
+            cache_times = numpy.array(local_dict["times"])
+
+            # Check that they equal in length.
+            self.assertEqual(len(ref_times), len(cache_times))
+
+            # Check the values.
+            self.assertAlmostEqual(numpy.linalg.norm(ref_times - cache_times), 0.0, 10)
 
     def testRunWithAnalysis(self):
         """ Test that the analyis plugins get called correctly. """
@@ -1194,6 +1345,13 @@ STEP 1000
 
         # Use a rate calculator.
         class CustomRates(KMCRateCalculatorPlugin):
+
+            def init(self):
+                self.global_types_before = None
+                self.global_types_after  = None
+                self.global_coords       = None
+                self.global_coordinate   = None
+
             def rate(self,
                      coords,
                      types_before,
@@ -1229,26 +1387,31 @@ STEP 1000
         ref_types = [['A', 'A', 'A', 'A'], ['A'], ['A', 'A'], ['A', 'B'], []]
         self.assertEqual(ref_types, config.types())
 
-        # The 'B' now sits at global coordinate 3, so this is the last matched site.
-        self.assertAlmostEqual(interactions.rateCalculator().global_coordinate[0], 3.0, 10)
-        self.assertAlmostEqual(interactions.rateCalculator().global_coordinate[1], 0.0, 10)
-        self.assertAlmostEqual(interactions.rateCalculator().global_coordinate[2], 0.0, 10)
 
-        # Check the order of the coordinates.
-        ref_coords = numpy.array([[ 0.,  0.,  0.],
-                                  [-1.,  0.,  0.],
-                                  [ 1.,  0.,  0.]])
+        # Since we are parallizing over calls to the rate function only master will
+        # have a value != None.
+        if MPICommons.isMaster():
 
-        diff = numpy.linalg.norm(interactions.rateCalculator().global_coords - ref_coords)
-        self.assertAlmostEqual(diff, 0.0, 10)
+            # The 'B' now sits at global coordinate 3, so this is the last matched site.
+            self.assertAlmostEqual(interactions.rateCalculator().global_coordinate[0], 3.0, 10)
+            self.assertAlmostEqual(interactions.rateCalculator().global_coordinate[1], 0.0, 10)
+            self.assertAlmostEqual(interactions.rateCalculator().global_coordinate[2], 0.0, 10)
 
-        # The types before should equal the reference types.
-        ref_tb = [[(1, 'A'),(1, 'B')],[(2,'A')],[]]
-        self.assertEqual(interactions.rateCalculator().global_types_before, ref_tb)
+            # Check the order of the coordinates.
+            ref_coords = numpy.array([[ 0.,  0.,  0.],
+                                      [-1.,  0.,  0.],
+                                      [ 1.,  0.,  0.]])
 
-        # The types after should correspond to the 'B' moving one step to the left.
-        ref_ta = [[(1, 'A')],[(2,'A'), (1, 'B')],[]]
-        self.assertEqual(interactions.rateCalculator().global_types_after, ref_ta)
+            diff = numpy.linalg.norm(interactions.rateCalculator().global_coords - ref_coords)
+            self.assertAlmostEqual(diff, 0.0, 10)
+
+            # The types before should equal the reference types.
+            ref_tb = [[(1, 'A'),(1, 'B')],[(2,'A')],[]]
+            self.assertEqual(interactions.rateCalculator().global_types_before, ref_tb)
+
+            # The types after should correspond to the 'B' moving one step to the left.
+            ref_ta = [[(1, 'A')],[(2,'A'), (1, 'B')],[]]
+            self.assertEqual(interactions.rateCalculator().global_types_after, ref_ta)
 
     def testBackend(self):
         """ Test that the backend object is correctly constructed. """
