@@ -29,7 +29,7 @@ When you use *KMCLib* in your research please **cite** the paper describing the 
 The code manual (http://leetmaa.github.io/KMCLib/manual-v1.0/) includes full documentation of the Python interface and several usage examples, as well as installation instructions for both Linux and Mac.
 
 ### No known issues
-After carefully testing the code and removing bugs and issues before the release of version 1.0 there are *no* known bugs or issues at the time of writing. This is of course no guarantee that there are none left to be found. So if you find any bugs or issues, or if you have suggestions for improvements, please let me know.
+With the latest bugfix update 1.0.1 there are at the time of writing *no* known issues with the program. This is of course no guarantee that there are none left to be found. So if you find any bugs or issues, or if you have suggestions for improvements, please let me know.
 
 ### Obtain a copy
 The program is distributed under the GPLv3 license and can be obtained from the *KMCLib* git repository https://github.com/leetmaa/KMCLib/releases/tag/v1.0

@@ -113,7 +113,7 @@ class LatticeTrajectory(Trajectory):
         """
         Calculate and return the buffer size.
         """
-        return sys.getsizeof(self.__types_buffer)
+        return sys.getsizeof(self.__types_buffer[0])*len(self.__types_buffer) + sys.getsizeof(self.__types_buffer)
 
     def flush(self):
         """ Write all buffers to file. """

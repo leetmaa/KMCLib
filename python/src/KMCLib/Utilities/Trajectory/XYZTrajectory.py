@@ -113,9 +113,13 @@ class XYZTrajectory(Trajectory):
         Calculate and return the buffer size.
         """
         size =  sys.getsizeof(self.__atom_id_coordinates)
+        size +=  sys.getsizeof(self.__atom_id_coordinates[0])*len(self.__atom_id_coordinates)
         size += sys.getsizeof(self.__atom_id_types)
+        size += sys.getsizeof(self.__atom_id_types[0])*len(self.__atom_id_types)
         size += sys.getsizeof(self.__time)
+        size += sys.getsizeof(self.__time[0])*len(self.__time)
         size += sys.getsizeof(self.__step)
+        size += sys.getsizeof(self.__step[0])*len(self.__step)
 
         return size
 
