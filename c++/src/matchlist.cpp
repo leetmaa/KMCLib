@@ -27,20 +27,58 @@ void configurationsToMatchList(const Configuration & first,
     // Get a handle to the coordinates and elements.
     const std::vector<Coordinate> & coords = first.coordinates();
 
+    // The update types to set up.
+    std::vector<TypeBucket> update_types;
+
+    // If update info is present.
+    if (second.updateInfo().size() != 0)
+    {
+        // Translate the update information to integer representation.
+        std::vector<std::map<std::string, int> > update_info = second.updateInfo();
+
+        for (size_t i = 0; i < update_info.size(); ++i)
+        {
+            // Get the update info for this site.
+            const std::map<std::string, int> & info = update_info[i];
+            TypeBucket update(second.possibleTypes().size());
+
+            // Loop through the info and determine the corresponding integer representation.
+            std::map<std::string, int>::const_iterator it1 = info.begin();
+            for ( ; it1 != info.end(); ++it1 )
+            {
+                const int type = second.possibleTypes().find(it1->first)->second;
+                const int diff = it1->second;
+                update[type] = diff;
+            }
+
+            update_types.push_back(update);
+        }
+    }
+
+    // If no update info was given we create it here.
+    else
+    {
+        for (size_t i = 0; i < first.elements().size(); ++i)
+        {
+            const TypeBucket & t1 = first.types()[i];
+            const TypeBucket & t2 = second.types()[i];
+            TypeBucket update = t2;
+
+            for (int j = 0; j < update.size(); ++j)
+            {
+                update[j] -= t1[j];
+            }
+            update_types.push_back(update);
+        }
+    }
+
+
     // Get the first coordinate out to calculate the distance against.
     const Coordinate origin = coords[0];
-
-    // To set the size of the match types list.
-    const size_t n_types = first.typeNames().size();
 
     // Transform the configurations into match lists.
     for (size_t i = 0; i < first.elements().size(); ++i)
     {
-        // Get the types as integers.
-        // ML: This is where we update for buckets.
-        const int first_type  = first.types()[i];
-        const int second_type = second.types()[i];
-
         // Calculate the distance.
         const Coordinate coordinate = coords[i];
         const double distance = coordinate.distance(origin);
@@ -68,29 +106,28 @@ void configurationsToMatchList(const Configuration & first,
         // Set up the match list entry.
         ProcessBucketMatchListEntry pm;
 
-        // Initialize with zeros.
-        pm.match_types  = std::vector<int>(n_types, 0);
-        pm.update_types = std::vector<int>(n_types, 0);
+        // Set the values.
+        pm.match_types  = first.types()[i];
+        pm.update_types = update_types[i];
 
-        // ML: update here later for buckets.
-        pm.match_types[first_type]   = 1;
-        pm.update_types[second_type] = 1;
         pm.distance    = distance;
         pm.coordinate  = coordinate;
         pm.index       = -1;
 
-        // ML: Handle move coordinates separately later.
+        // Handle move coordinates separately later.
         pm.has_move_coordinate = false;
         pm.move_coordinate = Coordinate(0.0, 0.0, 0.0);
 
         // Add the entry.
         match_list.push_back(pm);
 
-        // If the first and second type differ increase the length of the
-        // affected_indices list accordingly.
-        for (size_t i = 0; i < n_types; ++i)
+        // ML: FIXME:
+        // If not all elements are zero in the update type,
+        // increase the length of the affected indices list.
+
+        for (int j = 0; j < pm.update_types.size(); ++j)
         {
-            if (pm.match_types[i] != pm.update_types[i])
+            if (pm.update_types[j] != 0)
             {
                 affected_indices.push_back(0);
                 break;
@@ -99,3 +136,66 @@ void configurationsToMatchList(const Configuration & first,
     }
 }
 
+
+// -----------------------------------------------------------------------------
+//
+double multiplicity(const ProcessBucketMatchList & process_match_list,
+                    const ConfigBucketMatchList & config_match_list)
+{
+    // Loop through the match lists and count the multiplicity for each site.
+    ProcessBucketMatchList::const_iterator it1 = process_match_list.begin();
+    ProcessBucketMatchList::const_iterator end = process_match_list.end();
+    ConfigBucketMatchList::const_iterator it2  = config_match_list.begin();
+
+    int m = 1;
+
+    for ( ; it1 != end; ++it1, ++it2 )
+    {
+        const TypeBucket & t1 = it1->match_types;
+        const TypeBucket & t2 = it2->match_types;
+
+        // Wild cards are skipped.
+        if (t1[0] == 0)
+        {
+            // For each element type.
+            for (int i = 1; i < t1.size(); ++i)
+            {
+                // We only consider cases where the occupations is > 0.
+                if (t1[i] > 0)
+                {
+                    // Local variables we need.
+                    const int n = t2[i];
+                    const int r = t1[i];
+                    const int n_minus_r = n - r;
+                    const int max = std::max(r, n_minus_r);
+                    const int min = std::min(r, n_minus_r);
+
+                    if (min != 0)
+                    {
+                        // Calculate n! / (r!(n-r)!)
+
+                        // Get the numerator.
+                        int local_n = t2[i];
+                        for (int j = t2[i] - 1; j > max; --j)
+                        {
+                            local_n *= j;
+                        }
+
+                        // Calculate the denominator.
+                        int local_r = min;
+                        for (int j = min-1; j > 0; --j)
+                        {
+                            local_r *= j;
+                        }
+
+                        // Multiply m by (n! / (r! (n-r)!))
+                        m *= (local_n / local_r);
+                    }
+                }
+            }
+        }
+    }
+
+    // Done.
+    return static_cast<double>(m);
+}

@@ -21,14 +21,14 @@ void Test_MatchList::testCall()
 {
     // Construct.
     ProcessBucketMatchList m1(1);
-    m1[0].match_types = std::vector<int>(3, 0);
+    m1[0].match_types = TypeBucket(3);
     m1[0].match_types[2] = 2;
     m1[0].distance = 1.2;
     m1[0].coordinate = Coordinate(0.1, 0.2, 0.3);
     m1[0].index = 0;
 
     ConfigBucketMatchList m2(1);
-    m2[0].match_types = std::vector<int>(3, 0);
+    m2[0].match_types = TypeBucket(3);
     m2[0].match_types[2] = 2;
     m2[0].distance = 1.2;
     m2[0].coordinate = Coordinate(0.1, 0.2, 0.3);
@@ -199,9 +199,9 @@ void Test_MatchList::testIsMatchIndexListMinimal()
     coords[1][2] = 0.5;
 
     // Setup elements.
-    std::vector<std::string> elements(2);
-    elements[0] = "A";
-    elements[1] = "B";
+    std::vector<std::vector<std::string> > elements(2);
+    elements[0] = std::vector<std::string>(1, "A");
+    elements[1] = std::vector<std::string>(1, "B");
 
     // Setup the mapping from element to integer.
     std::map<std::string, int> possible_types;
@@ -233,12 +233,12 @@ void Test_MatchList::testIsMatchIndexListMinimal()
     // Construct a processes and test.
     {
         // Setup the two configurations.
-        std::vector<std::string> elements1;
-        elements1.push_back("A");
-        elements1.push_back("B");
-        std::vector<std::string> elements2;
-        elements2.push_back("C");
-        elements2.push_back("B");
+        std::vector<std::vector<std::string> > elements1;
+        elements1.push_back(std::vector<std::string>(1, "A"));
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        std::vector<std::vector<std::string> > elements2;
+        elements2.push_back(std::vector<std::string>(1, "C"));
+        elements2.push_back(std::vector<std::string>(1, "B"));
         // Setup coordinates.
         std::vector<std::vector<double> > process_coords(2,std::vector<double>(3,0.0));
         process_coords[1][0] =  0.5;
@@ -262,12 +262,12 @@ void Test_MatchList::testIsMatchIndexListMinimal()
     // Construct another process that should match the second index.
     {
         // Setup the two configurations.
-        std::vector<std::string> elements1;
-        elements1.push_back("B");
-        elements1.push_back("A");
-        std::vector<std::string> elements2;
-        elements2.push_back("C");
-        elements2.push_back("A");
+        std::vector<std::vector<std::string> > elements1;
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        elements1.push_back(std::vector<std::string>(1, "A"));
+        std::vector<std::vector<std::string> > elements2;
+        elements2.push_back(std::vector<std::string>(1, "C"));
+        elements2.push_back(std::vector<std::string>(1, "A"));
         // Setup coordinates.
         std::vector<std::vector<double> > process_coords(2,std::vector<double>(3,0.0));
         process_coords[1][0] =  -0.5;
@@ -291,12 +291,12 @@ void Test_MatchList::testIsMatchIndexListMinimal()
     // This process does not match any. Note that the symmetry / direction is important.
     {
         // Setup the two configurations.
-        std::vector<std::string> elements1;
-        elements1.push_back("B");
-        elements1.push_back("A");
-        std::vector<std::string> elements2;
-        elements2.push_back("C");
-        elements2.push_back("A");
+        std::vector<std::vector<std::string> > elements1;
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        elements1.push_back(std::vector<std::string>(1, "A"));
+        std::vector<std::vector<std::string> > elements2;
+        elements2.push_back(std::vector<std::string>(1, "C"));
+        elements2.push_back(std::vector<std::string>(1, "A"));
         // Setup coordinates.
         std::vector<std::vector<double> > process_coords(2,std::vector<double>(3,0.0));
         process_coords[1][0] =  -0.5;
@@ -318,14 +318,14 @@ void Test_MatchList::testIsMatchIndexListMinimal()
     // This process does not match any site since it is to long.
     {
         // Setup the two configurations.
-        std::vector<std::string> elements1;
-        elements1.push_back("B");
-        elements1.push_back("A");
-        elements1.push_back("C");
-        std::vector<std::string> elements2;
-        elements2.push_back("C");
-        elements2.push_back("A");
-        elements2.push_back("C");
+        std::vector<std::vector<std::string> > elements1;
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        elements1.push_back(std::vector<std::string>(1, "A"));
+        elements1.push_back(std::vector<std::string>(1, "C"));
+        std::vector<std::vector<std::string> > elements2;
+        elements2.push_back(std::vector<std::string>(1, "C"));
+        elements2.push_back(std::vector<std::string>(1, "A"));
+        elements2.push_back(std::vector<std::string>(1, "C"));
         // Setup coordinates.
         std::vector<std::vector<double> > process_coords(3,std::vector<double>(3,0.0));
         process_coords[1][0] =  -0.5;
@@ -371,7 +371,7 @@ void Test_MatchList::testIsMatchIndexListMinimalPeriodic()
     basis_sites.push_back(1);
     basis_sites.push_back(0);
 
-    std::vector<std::string> elements;
+    std::vector<std::vector<std::string> > elements;
     std::vector<std::vector<double> > coords;
     for (int i = 0; i < 3; ++i)
     {
@@ -384,14 +384,14 @@ void Test_MatchList::testIsMatchIndexListMinimalPeriodic()
                 coord[1] += j;
                 coord[2] += k;
                 coords.push_back(coord);
-                elements.push_back("A");
+                elements.push_back(std::vector<std::string>(1, "A"));
 
                 coord = basis[1];
                 coord[0] += i;
                 coord[1] += j;
                 coord[2] += k;
                 coords.push_back(coord);
-                elements.push_back("B");
+                elements.push_back(std::vector<std::string>(1, "B"));
             }
         }
     }
@@ -422,26 +422,26 @@ void Test_MatchList::testIsMatchIndexListMinimalPeriodic()
     // Construct a processes and test.
     {
         // Setup the two configurations.
-        std::vector<std::string> elements1;
-        elements1.push_back("A");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        std::vector<std::string> elements2;
-        elements2.push_back("C");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
+        std::vector<std::vector<std::string> > elements1;
+        elements1.push_back(std::vector<std::string>(1, "A"));
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        std::vector<std::vector<std::string> > elements2;
+        elements2.push_back(std::vector<std::string>(1, "C"));
+        elements2.push_back(std::vector<std::string>(1, "B"));
+        elements2.push_back(std::vector<std::string>(1, "B"));
+        elements2.push_back(std::vector<std::string>(1, "B"));
+        elements2.push_back(std::vector<std::string>(1, "B"));
+        elements2.push_back(std::vector<std::string>(1, "B"));
+        elements2.push_back(std::vector<std::string>(1, "B"));
+        elements2.push_back(std::vector<std::string>(1, "B"));
+        elements2.push_back(std::vector<std::string>(1, "B"));
         // Setup coordinates.
         std::vector<std::vector<double> > process_coords(9,std::vector<double>(3,0.0));
         process_coords[1][0] =  0.5;
@@ -496,39 +496,39 @@ void Test_MatchList::testIsMatchIndexListMinimalPeriodic()
     // Test an even larger local environment.
     {
         // Setup the two configurations.
-        std::vector<std::string> elements1;
-        elements1.push_back("A");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("A");
-        elements1.push_back("A");
-        elements1.push_back("A");
-        elements1.push_back("A");
-        elements1.push_back("A");
-        elements1.push_back("A");
+        std::vector<std::vector<std::string> > elements1;
+        elements1.push_back(std::vector<std::string>(1, "A"));
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        elements1.push_back(std::vector<std::string>(1, "A"));
+        elements1.push_back(std::vector<std::string>(1, "A"));
+        elements1.push_back(std::vector<std::string>(1, "A"));
+        elements1.push_back(std::vector<std::string>(1, "A"));
+        elements1.push_back(std::vector<std::string>(1, "A"));
+        elements1.push_back(std::vector<std::string>(1, "A"));
 
-        std::vector<std::string> elements2;
-        elements2.push_back("C");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("A");
-        elements2.push_back("A");
-        elements2.push_back("A");
-        elements2.push_back("A");
-        elements2.push_back("A");
-        elements2.push_back("A");
+        std::vector<std::vector<std::string> > elements2;
+        elements2.push_back(std::vector<std::string>(1, "C"));
+        elements2.push_back(std::vector<std::string>(1, "B"));
+        elements2.push_back(std::vector<std::string>(1, "B"));
+        elements2.push_back(std::vector<std::string>(1, "B"));
+        elements2.push_back(std::vector<std::string>(1, "B"));
+        elements2.push_back(std::vector<std::string>(1, "B"));
+        elements2.push_back(std::vector<std::string>(1, "B"));
+        elements2.push_back(std::vector<std::string>(1, "B"));
+        elements2.push_back(std::vector<std::string>(1, "B"));
+        elements2.push_back(std::vector<std::string>(1, "A"));
+        elements2.push_back(std::vector<std::string>(1, "A"));
+        elements2.push_back(std::vector<std::string>(1, "A"));
+        elements2.push_back(std::vector<std::string>(1, "A"));
+        elements2.push_back(std::vector<std::string>(1, "A"));
+        elements2.push_back(std::vector<std::string>(1, "A"));
 
         // Setup coordinates.
         std::vector<std::vector<double> > process_coords(15,std::vector<double>(3,0.0));
@@ -623,7 +623,7 @@ void Test_MatchList::testIsMatchIndexListComplicatedPeriodic()
     basis_sites.push_back(1);
     basis_sites.push_back(0);
 
-    std::vector<std::string> elements;
+    std::vector<std::vector<std::string> > elements;
     std::vector<std::vector<double> > coords;
     for (int i = 0; i < 3; ++i)
     {
@@ -636,20 +636,20 @@ void Test_MatchList::testIsMatchIndexListComplicatedPeriodic()
                 coord[1] += j;
                 coord[2] += k;
                 coords.push_back(coord);
-                elements.push_back("C");
+                elements.push_back(std::vector<std::string>(1, "C"));
 
                 coord = basis[1];
                 coord[0] += i;
                 coord[1] += j;
                 coord[2] += k;
                 coords.push_back(coord);
-                elements.push_back("B");
+                elements.push_back(std::vector<std::string>(1, "B"));
             }
         }
     }
 
     // Modify the elements such that the central cell has an A in center.
-    elements[0] = "A";
+    elements[0] = std::vector<std::string>(1, "A");
 
     // Setup the mapping from element to integer.
     std::map<std::string, int> possible_types;
@@ -677,26 +677,26 @@ void Test_MatchList::testIsMatchIndexListComplicatedPeriodic()
     // Construct a processes and test.
     {
         // Setup the two configurations.
-        std::vector<std::string> elements1;
-        elements1.push_back("C");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        std::vector<std::string> elements2;
-        elements2.push_back("D");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
+        std::vector<std::vector<std::string> > elements1;
+        elements1.push_back(std::vector<std::string>(1, "C"));
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        std::vector<std::vector<std::string> > elements2;
+        elements2.push_back(std::vector<std::string>(1, "D"));
+        elements2.push_back(std::vector<std::string>(1, "B"));
+        elements2.push_back(std::vector<std::string>(1, "B"));
+        elements2.push_back(std::vector<std::string>(1, "B"));
+        elements2.push_back(std::vector<std::string>(1, "B"));
+        elements2.push_back(std::vector<std::string>(1, "B"));
+        elements2.push_back(std::vector<std::string>(1, "B"));
+        elements2.push_back(std::vector<std::string>(1, "B"));
+        elements2.push_back(std::vector<std::string>(1, "B"));
         // Setup coordinates.
         std::vector<std::vector<double> > process_coords(9,std::vector<double>(3,0.0));
         process_coords[1][0] =  0.5;
@@ -754,39 +754,39 @@ void Test_MatchList::testIsMatchIndexListComplicatedPeriodic()
     // Test an even larger local environment.
     {
         // Setup the two configurations.
-        std::vector<std::string> elements1;
-        elements1.push_back("A");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("B");
-        elements1.push_back("C");
-        elements1.push_back("C");
-        elements1.push_back("C");
-        elements1.push_back("C");
-        elements1.push_back("C");
-        elements1.push_back("C");
+        std::vector<std::vector<std::string> > elements1;
+        elements1.push_back(std::vector<std::string>(1, "A"));
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        elements1.push_back(std::vector<std::string>(1, "B"));
+        elements1.push_back(std::vector<std::string>(1, "C"));
+        elements1.push_back(std::vector<std::string>(1, "C"));
+        elements1.push_back(std::vector<std::string>(1, "C"));
+        elements1.push_back(std::vector<std::string>(1, "C"));
+        elements1.push_back(std::vector<std::string>(1, "C"));
+        elements1.push_back(std::vector<std::string>(1, "C"));
 
-        std::vector<std::string> elements2;
-        elements2.push_back("F");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("B");
-        elements2.push_back("A");
-        elements2.push_back("A");
-        elements2.push_back("A");
-        elements2.push_back("A");
-        elements2.push_back("A");
-        elements2.push_back("A");
+        std::vector<std::vector<std::string> > elements2;
+        elements2.push_back(std::vector<std::string>(1, "F"));
+        elements2.push_back(std::vector<std::string>(1, "B"));
+        elements2.push_back(std::vector<std::string>(1, "B"));
+        elements2.push_back(std::vector<std::string>(1, "B"));
+        elements2.push_back(std::vector<std::string>(1, "B"));
+        elements2.push_back(std::vector<std::string>(1, "B"));
+        elements2.push_back(std::vector<std::string>(1, "B"));
+        elements2.push_back(std::vector<std::string>(1, "B"));
+        elements2.push_back(std::vector<std::string>(1, "B"));
+        elements2.push_back(std::vector<std::string>(1, "A"));
+        elements2.push_back(std::vector<std::string>(1, "A"));
+        elements2.push_back(std::vector<std::string>(1, "A"));
+        elements2.push_back(std::vector<std::string>(1, "A"));
+        elements2.push_back(std::vector<std::string>(1, "A"));
+        elements2.push_back(std::vector<std::string>(1, "A"));
 
         // Setup coordinates.
         std::vector<std::vector<double> > process_coords(15,std::vector<double>(3,0.0));
@@ -871,39 +871,39 @@ void Test_MatchList::testIsMatchIndexListComplicatedPeriodic()
 void Test_MatchList::testConfigurationsToMatchList()
 {
     // Set up two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("A");
-    elements1.push_back("B");
-    elements1.push_back("B");
-    elements1.push_back("B");
-    elements1.push_back("B");
-    elements1.push_back("B");
-    elements1.push_back("B");
-    elements1.push_back("B");
-    elements1.push_back("B");
-    elements1.push_back("C");
-    elements1.push_back("C");
-    elements1.push_back("C");
-    elements1.push_back("C");
-    elements1.push_back("C");
-    elements1.push_back("C");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "C"));
+    elements1.push_back(std::vector<std::string>(1, "C"));
+    elements1.push_back(std::vector<std::string>(1, "C"));
+    elements1.push_back(std::vector<std::string>(1, "C"));
+    elements1.push_back(std::vector<std::string>(1, "C"));
+    elements1.push_back(std::vector<std::string>(1, "C"));
 
-    std::vector<std::string> elements2;
-    elements2.push_back("F");
-    elements2.push_back("B");
-    elements2.push_back("B");
-    elements2.push_back("B");
-    elements2.push_back("B");
-    elements2.push_back("B");
-    elements2.push_back("B");
-    elements2.push_back("B");
-    elements2.push_back("B");
-    elements2.push_back("A");
-    elements2.push_back("A");
-    elements2.push_back("A");
-    elements2.push_back("A");
-    elements2.push_back("A");
-    elements2.push_back("A");
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "F"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+    elements2.push_back(std::vector<std::string>(1, "A"));
+    elements2.push_back(std::vector<std::string>(1, "A"));
+    elements2.push_back(std::vector<std::string>(1, "A"));
+    elements2.push_back(std::vector<std::string>(1, "A"));
+    elements2.push_back(std::vector<std::string>(1, "A"));
+    elements2.push_back(std::vector<std::string>(1, "A"));
 
     // Setup coordinates.
     std::vector<std::vector<double> > process_coords(15,std::vector<double>(3,0.0));
@@ -1032,7 +1032,7 @@ void Test_MatchList::testConfigurationsToMatchList()
 
     // Check the content of the update types.
     CPPUNIT_ASSERT_EQUAL( match_list[0].update_types[0], 0 );
-    CPPUNIT_ASSERT_EQUAL( match_list[0].update_types[1], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[0].update_types[1],-1 );
     CPPUNIT_ASSERT_EQUAL( match_list[0].update_types[2], 0 );
     CPPUNIT_ASSERT_EQUAL( match_list[0].update_types[3], 0 );
     CPPUNIT_ASSERT_EQUAL( match_list[0].update_types[4], 0 );
@@ -1041,7 +1041,7 @@ void Test_MatchList::testConfigurationsToMatchList()
 
     CPPUNIT_ASSERT_EQUAL( match_list[1].update_types[0], 0 );
     CPPUNIT_ASSERT_EQUAL( match_list[1].update_types[1], 0 );
-    CPPUNIT_ASSERT_EQUAL( match_list[1].update_types[2], 1 );
+    CPPUNIT_ASSERT_EQUAL( match_list[1].update_types[2], 0 );
     CPPUNIT_ASSERT_EQUAL( match_list[1].update_types[3], 0 );
     CPPUNIT_ASSERT_EQUAL( match_list[1].update_types[4], 0 );
     CPPUNIT_ASSERT_EQUAL( match_list[1].update_types[5], 0 );
@@ -1050,7 +1050,7 @@ void Test_MatchList::testConfigurationsToMatchList()
     CPPUNIT_ASSERT_EQUAL( match_list[9].update_types[0], 0 );
     CPPUNIT_ASSERT_EQUAL( match_list[9].update_types[1], 1 );
     CPPUNIT_ASSERT_EQUAL( match_list[9].update_types[2], 0 );
-    CPPUNIT_ASSERT_EQUAL( match_list[9].update_types[3], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[9].update_types[3],-1 );
     CPPUNIT_ASSERT_EQUAL( match_list[9].update_types[4], 0 );
     CPPUNIT_ASSERT_EQUAL( match_list[9].update_types[5], 0 );
     CPPUNIT_ASSERT_EQUAL( match_list[9].update_types[6], 0 );
@@ -1063,3 +1063,298 @@ void Test_MatchList::testConfigurationsToMatchList()
 
 }
 
+// -------------------------------------------------------------------------- //
+//
+void Test_MatchList::testConfigurationsToMatchList2()
+{
+    // Set up two configurations.
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "C"));
+    elements1.push_back(std::vector<std::string>(1, "C"));
+    elements1.push_back(std::vector<std::string>(1, "C"));
+    elements1.push_back(std::vector<std::string>(1, "C"));
+    elements1.push_back(std::vector<std::string>(1, "C"));
+    elements1.push_back(std::vector<std::string>(1, "C"));
+
+    std::vector<std::vector<std::string> > elements2 = elements1;
+
+    // Setup coordinates.
+    std::vector<std::vector<double> > process_coords(15,std::vector<double>(3,0.0));
+    process_coords[1][0] =  0.5;
+    process_coords[1][1] =  0.5;
+    process_coords[1][2] =  0.5;
+
+    process_coords[2][0] = -0.5;
+    process_coords[2][1] =  0.5;
+    process_coords[2][2] =  0.5;
+
+    process_coords[3][0] =  0.5;
+    process_coords[3][1] = -0.5;
+    process_coords[3][2] =  0.5;
+
+    process_coords[4][0] =  0.5;
+    process_coords[4][1] =  0.5;
+    process_coords[4][2] = -0.5;
+
+    process_coords[5][0] = -0.5;
+    process_coords[5][1] = -0.5;
+    process_coords[5][2] =  0.5;
+
+    process_coords[6][0] = -0.5;
+    process_coords[6][1] =  0.5;
+    process_coords[6][2] = -0.5;
+
+    process_coords[7][0] =  0.5;
+    process_coords[7][1] = -0.5;
+    process_coords[7][2] = -0.5;
+
+    process_coords[8][0] = -0.5;
+    process_coords[8][1] = -0.5;
+    process_coords[8][2] = -0.5;
+
+    process_coords[9][0] =  1.0;
+    process_coords[9][1] =  0.0;
+    process_coords[9][2] =  0.0;
+
+    process_coords[10][0] =  0.0;
+    process_coords[10][1] =  1.0;
+    process_coords[10][2] =  0.0;
+
+    process_coords[11][0] =  0.0;
+    process_coords[11][1] =  0.0;
+    process_coords[11][2] =  1.0;
+
+    process_coords[12][0] = -1.0;
+    process_coords[12][1] =  0.0;
+    process_coords[12][2] =  0.0;
+
+    process_coords[13][0] =  0.0;
+    process_coords[13][1] = -1.0;
+    process_coords[13][2] =  0.0;
+
+    process_coords[14][0] =  0.0;
+    process_coords[14][1] =  0.0;
+    process_coords[14][2] = -1.0;
+
+    // Mapping form string to integer.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["C"] = 3;
+    possible_types["D"] = 4;
+    possible_types["E"] = 5;
+    possible_types["F"] = 6;
+
+    // The configurations.
+    const Configuration first(process_coords, elements1, possible_types);
+    Configuration second(process_coords, elements2, possible_types);
+
+
+    // The update info on the second process.
+    std::vector< std::map<std::string, int> > update_info(15);
+    update_info[0]["F"]  =  1;
+    update_info[0]["A"]  = -1;
+    update_info[1]["*"]  =  0;
+    update_info[2]["*"]  =  0;
+    update_info[3]["*"]  =  0;
+    update_info[4]["*"]  =  0;
+    update_info[5]["*"]  =  0;
+    update_info[6]["*"]  =  0;
+    update_info[7]["*"]  =  0;
+    update_info[8]["*"]  =  0;
+    update_info[9]["A"]  =  1;
+    update_info[9]["C"]  = -1;
+    update_info[10]["A"] =  1;
+    update_info[10]["C"] = -1;
+    update_info[11]["A"] =  1;
+    update_info[11]["C"] = -1;
+    update_info[12]["A"] =  1;
+    update_info[12]["C"] = -1;
+    update_info[13]["A"] =  1;
+    update_info[13]["C"] = -1;
+    update_info[14]["A"] =  1;
+    update_info[14]["C"] = -1;
+
+    second.setUpdateInfo(update_info);
+
+    // This is output from the config to matchlist generation routine.
+    int range = 0;
+    double cutoff = 0.0;
+    ProcessBucketMatchList match_list;
+    std::vector<int> affected_indices;
+
+    // Generate the match list.
+    configurationsToMatchList(first,
+                              second,
+                              range,
+                              cutoff,
+                              match_list,
+                              affected_indices);
+
+    // Check that the match list correct.
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(match_list.size()), 15 );
+    CPPUNIT_ASSERT_EQUAL( static_cast<int>(affected_indices.size()), 7 );
+
+    // Check the size of the match types and update types.
+    for (size_t i = 0; i < match_list.size(); ++i)
+    {
+        CPPUNIT_ASSERT_EQUAL(static_cast<int>(match_list[i].match_types.size()),
+                             static_cast<int>(possible_types.size()));
+
+        CPPUNIT_ASSERT_EQUAL(static_cast<int>(match_list[i].update_types.size()),
+                             static_cast<int>(possible_types.size()));
+    }
+
+    // Check the content of the match types.
+    CPPUNIT_ASSERT_EQUAL( match_list[0].match_types[0], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[0].match_types[1], 1 );
+    CPPUNIT_ASSERT_EQUAL( match_list[0].match_types[2], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[0].match_types[3], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[0].match_types[4], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[0].match_types[5], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[0].match_types[6], 0 );
+
+    CPPUNIT_ASSERT_EQUAL( match_list[1].match_types[0], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[1].match_types[1], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[1].match_types[2], 1 );
+    CPPUNIT_ASSERT_EQUAL( match_list[1].match_types[3], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[1].match_types[4], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[1].match_types[5], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[1].match_types[6], 0 );
+
+    CPPUNIT_ASSERT_EQUAL( match_list[9].match_types[0], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[9].match_types[1], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[9].match_types[2], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[9].match_types[3], 1 );
+    CPPUNIT_ASSERT_EQUAL( match_list[9].match_types[4], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[9].match_types[5], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[9].match_types[6], 0 );
+
+    // Check the content of the update types.
+    CPPUNIT_ASSERT_EQUAL( match_list[0].update_types[0], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[0].update_types[1],-1 );
+    CPPUNIT_ASSERT_EQUAL( match_list[0].update_types[2], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[0].update_types[3], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[0].update_types[4], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[0].update_types[5], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[0].update_types[6], 1 );
+
+    CPPUNIT_ASSERT_EQUAL( match_list[1].update_types[0], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[1].update_types[1], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[1].update_types[2], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[1].update_types[3], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[1].update_types[4], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[1].update_types[5], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[1].update_types[6], 0 );
+
+    CPPUNIT_ASSERT_EQUAL( match_list[9].update_types[0], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[9].update_types[1], 1 );
+    CPPUNIT_ASSERT_EQUAL( match_list[9].update_types[2], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[9].update_types[3],-1 );
+    CPPUNIT_ASSERT_EQUAL( match_list[9].update_types[4], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[9].update_types[5], 0 );
+    CPPUNIT_ASSERT_EQUAL( match_list[9].update_types[6], 0 );
+
+    // Check the cutoff and range.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( cutoff, 1.0, 1.0e-10);
+    CPPUNIT_ASSERT_EQUAL( range, 1);
+
+    // DONE.
+
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_MatchList::testMultiplicity()
+{
+    // Two match lists.
+    ProcessBucketMatchList process_match_list(3);
+    ConfigBucketMatchList  config_match_list(3);
+
+    process_match_list[0].match_types = TypeBucket(3);
+    process_match_list[0].match_types[0] = 0;
+    process_match_list[0].match_types[1] = 2;
+    process_match_list[0].match_types[2] = 1;
+
+    process_match_list[1].match_types = TypeBucket(3);
+    process_match_list[1].match_types[0] = 1;
+    process_match_list[1].match_types[1] = 0;
+    process_match_list[1].match_types[2] = 4;
+
+    process_match_list[2].match_types = TypeBucket(3);
+    process_match_list[2].match_types[0] = 0;
+    process_match_list[2].match_types[1] = 2;
+    process_match_list[2].match_types[2] = 0;
+
+    config_match_list[0].match_types = TypeBucket(3);
+    config_match_list[0].match_types[0] = 0;
+    config_match_list[0].match_types[1] = 2;
+    config_match_list[0].match_types[2] = 1;
+
+    config_match_list[1].match_types = TypeBucket(3);
+    config_match_list[1].match_types[0] = 0;
+    config_match_list[1].match_types[1] = 5;
+    config_match_list[1].match_types[2] = 4;
+
+    config_match_list[2].match_types = TypeBucket(3);
+    config_match_list[2].match_types[0] = 0;
+    config_match_list[2].match_types[1] = 2;
+    config_match_list[2].match_types[2] = 0;
+
+    // Their multiplicity should be 1.0.
+    const double m0 = multiplicity(process_match_list, config_match_list);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(m0, 1.0, 1.0e-10);
+
+    // Generate two other lists.
+    config_match_list[0].match_types[0] = 0;
+    config_match_list[0].match_types[1] = 3;
+    config_match_list[0].match_types[2] = 4;
+
+    config_match_list[1].match_types[0] = 0;
+    config_match_list[1].match_types[1] = 5;
+    config_match_list[1].match_types[2] = 4;
+
+    config_match_list[2].match_types[0] = 0;
+    config_match_list[2].match_types[1] = 7;
+    config_match_list[2].match_types[2] = 2;
+
+    // Their multiplicity should be 252.
+    const double m1 = multiplicity(process_match_list, config_match_list);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(m1, 252.0, 1.0e-10);
+
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_MatchList::testMultiplicity2()
+{
+    // A case with larger numbers.
+    ProcessBucketMatchList process_match_list(1);
+    ConfigBucketMatchList  config_match_list(1);
+
+    process_match_list[0].match_types = TypeBucket(3);
+    process_match_list[0].match_types[0] = 0;
+    process_match_list[0].match_types[1] = 15;
+    process_match_list[0].match_types[2] = 35;
+
+    config_match_list[0].match_types = TypeBucket(3);
+    config_match_list[0].match_types[0] = 0;
+    config_match_list[0].match_types[1] = 20;
+    config_match_list[0].match_types[2] = 36;
+
+    // Check the multiplicity.
+    const double m0 = multiplicity(process_match_list, config_match_list);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(m0, 558144.0, 1.0e-10);
+}

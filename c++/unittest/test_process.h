@@ -32,7 +32,10 @@ public:
     CPPUNIT_TEST( testMatchList );
     CPPUNIT_TEST( testMatchListLong );
     CPPUNIT_TEST( testAddAndRemoveSite );
+    CPPUNIT_TEST( testClearSites );
+    CPPUNIT_TEST( testAddAndRemoveSiteMultiplicity );
     CPPUNIT_TEST( testPickSite );
+    CPPUNIT_TEST( testPickSiteMultiplicity );
     CPPUNIT_TEST( testAffectedIndices );
     CPPUNIT_TEST( testCutoffAndRange );
     CPPUNIT_TEST( testProcessNumber );
@@ -47,7 +50,10 @@ public:
     void testMatchList();
     void testMatchListLong();
     void testAddAndRemoveSite();
+    void testClearSites();
+    void testAddAndRemoveSiteMultiplicity();
     void testPickSite();
+    void testPickSiteMultiplicity();
     void testAffectedIndices();
     void testCutoffAndRange();
     void testProcessNumber();

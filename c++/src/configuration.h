@@ -1,5 +1,5 @@
 /*
-  Copyright (c)  2012-2013  Mikael Leetmaa
+  Copyright (c)  2012-2014  Mikael Leetmaa
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -20,6 +20,7 @@
 #include <map>
 #include "matchlist.h"
 #include "coordinate.h"
+#include "typebucket.h"
 
 // Forward declarations.
 class LatticeMap;
@@ -38,7 +39,7 @@ public:
      *  \param possible_types: A global mapping from type string to number.
      */
     Configuration(const std::vector< std::vector<double> > & coordinates,
-                  const std::vector<std::string> & elements,
+                  const std::vector< std::vector<std::string> > & elements,
                   const std::map<std::string,int> & possible_types);
 
     /*! \brief Initiate the calculation of the match lists.
@@ -60,7 +61,7 @@ public:
     /*! \brief Const query for the elements.
      *  \return : The elements of the configuration.
      */
-    const std::vector<std::string> & elements() const { return elements_; }
+    const std::vector<std::vector<std::string> > & elements() const { return elements_; }
 
     /*! \brief Const query for the atom id types.
      *  \return : The atom id types of the configuration.
@@ -70,7 +71,7 @@ public:
     /*! \brief Const query for the types.
      *  \return : The types of the configuration.
      */
-    const std::vector<int> & types() const { return types_; }
+    const std::vector<TypeBucket> & types() const { return types_; }
 
     /*! \brief Const query for the moved atom ids.
      *  \return : A copy of the moved atom ids, resized to correct length.
@@ -140,6 +141,24 @@ public:
      */
     const std::vector<int> & atomID() const { return atom_id_; }
 
+    /*! \brief Set the update info on the configuration. This is used
+     *         in connection with setting up processes of bucket type.
+     *  \param update_info: The update info to set on the class.
+     */
+    void setUpdateInfo(const std::vector<std::map<std::string, int> > & update_info) { update_info_ = update_info; }
+
+    /*! \brief Query for the update info.
+     *  \return : The update info stored on the class.
+     */
+    const std::vector<std::map<std::string, int> > & updateInfo() const { return update_info_; }
+
+    /*! \brief Query for the mapping between string and int
+               type representations.
+     *  \return : A const handle to the mapping.
+     */
+    const std::map<std::string,int> & possibleTypes() const { return possible_types_; }
+
+
 protected:
 
 private:
@@ -154,13 +173,13 @@ private:
     std::vector<Coordinate> atom_id_coordinates_;
 
     /// The lattice elements.
-    std::vector<std::string> elements_;
+    std::vector<std::vector<std::string> > elements_;
 
     /// The elements per atom id.
     std::vector<std::string> atom_id_elements_;
 
     /// The the lattice elements in integer representation.
-    std::vector<int> types_;
+    std::vector<TypeBucket> types_;
 
     /// The atom id for each lattice point.
     std::vector<int> atom_id_;
@@ -176,6 +195,12 @@ private:
 
     /// The match lists for all indices.
     std::vector< ConfigBucketMatchList > match_lists_;
+
+    /// The update info.
+    std::vector< std::map<std::string, int> > update_info_;
+
+    /// Mapping from string to int representation of types.
+    std::map<std::string,int> possible_types_;
 
 };
 

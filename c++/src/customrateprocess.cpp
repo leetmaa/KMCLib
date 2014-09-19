@@ -1,5 +1,5 @@
 /*
-  Copyright (c)  2013  Mikael Leetmaa
+  Copyright (c)  2013-2014  Mikael Leetmaa
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -48,19 +48,16 @@ CustomRateProcess::CustomRateProcess(const Configuration & first,
 
 // -----------------------------------------------------------------------------
 //
-double CustomRateProcess::totalRate() const
-{
-    // Sum all individual rates.
-    return std::accumulate(site_rates_.begin(),site_rates_.end(), 0.0);
-}
-
-// -----------------------------------------------------------------------------
-//
-void CustomRateProcess::addSite(const int index, const double rate)
+void CustomRateProcess::addSite(const int index,
+                                const double rate,
+                                const double multiplicity)
 {
     sites_.push_back(index);
+    site_multiplicity_.push_back(multiplicity);
     site_rates_.push_back(rate);
+    total_rate_ += multiplicity * rate;
 }
+
 
 // -----------------------------------------------------------------------------
 //
@@ -84,41 +81,36 @@ void CustomRateProcess::removeSite(const int index)
 
     // Swap and remove.
     std::swap((*it2), (*last_rate));
+
+    // Store the value temporarily.
+    const double site_rate = site_rates_.back();
     site_rates_.pop_back();
+
+    // Calculate the position in the site_multiplicity_ vector.
+    std::vector<double>::iterator it3 = site_multiplicity_.begin() + (it1-sites_.begin());
+    std::vector<double>::iterator last_multiplicity = site_multiplicity_.end()-1;
+
+    // Swap and remove.
+    std::swap((*it3), (*last_multiplicity));
+
+    // Update the total rate.
+    total_rate_ -= site_rate * site_multiplicity_.back();
+
+    site_multiplicity_.pop_back();
+
 }
 
-// -----------------------------------------------------------------------------
-//
-int CustomRateProcess::pickSite() const
-{
-    // Get the total rate.
-    const double total_rate = incremental_rate_table_.back();
-
-    // Get a random number between 0.0 and the total rate.
-    const double rnd = randomDouble01() * total_rate;
-
-    // Pick the site.
-    const std::vector<double>::const_iterator begin = incremental_rate_table_.begin();
-    const std::vector<double>::const_iterator end   = incremental_rate_table_.end();
-    const std::vector<double>::const_iterator it1   = std::lower_bound( begin, end, rnd);
-
-    // Get the site index.
-    const int site_index = it1-begin;
-
-    // Return the site.
-    return sites_[site_index];
-}
 
 // -----------------------------------------------------------------------------
 //
 void CustomRateProcess::updateRateTable()
 {
     // Resize and update the incremental rate table.
-    incremental_rate_table_.resize(site_rates_.size());
+    incremental_rate_table_.resize(site_multiplicity_.size());
     double previous = 0.0;
-    for (size_t i = 0; i < site_rates_.size(); ++i)
+    for (size_t i = 0; i < site_multiplicity_.size(); ++i)
     {
-        incremental_rate_table_[i] = previous + site_rates_[i];
+        incremental_rate_table_[i] = previous + (site_rates_[i] * site_multiplicity_[i]);
         previous = incremental_rate_table_[i];
     }
 

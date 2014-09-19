@@ -17,6 +17,7 @@
 #include <string>
 
 #include "coordinate.h"
+#include "typebucket.h"
 
 /*! \brief Class for defining the interface for making a custom Python
  *         rate calculator function called from within the inner C++ loop.
@@ -34,7 +35,7 @@ public:
     virtual ~RateCalculator();
 
     /*! \brief The backend callback function for sending process information
-     *         to objects inheriting from this method. The KMCRateCalculatorPlugin
+     *         to objects inheriting from this class. The KMCRateCalculatorPlugin
      *         class in python overloads this function.
      * \param geometry       : The geometry, with x,y,z coordinates for each atom in contiguous memory.
      * \param len            : The number of atoms, must be geometry.size()/3 used for reshping
@@ -57,6 +58,34 @@ public:
                                        const double global_x,
                                        const double global_y,
                                        const double global_z) const { return rate_constant; }
+
+    /*! \brief The backend callback function for sending bucket process information
+     *         to objects inheriting from this class. The KMCRateCalculatorPlugin
+     *         class in python overloads this function.
+     * \param geometry       : The geometry, with x,y,z coordinates for each atom in contiguous memory.
+     * \param len            : The number of atoms, must be geometry.size()/3 used for reshping
+     *                         geometry data in Python.
+     * \param occupation     : The occupation before the process.
+     * \param update         : The occupation update to perform.
+     * \param type_map       : Mapping between type strings and integers.
+     * \param rate_constant  : The rate constant associated with the process.
+     * \param process_number : The id number of the process.
+     * \param global_x       : The global coordinate in the x direction for the central site.
+     * \param global_y       : The global coordinate in the y direction for the central site.
+     * \param global_z       : The global coordinate in the z direction for the central site.
+     * \return : The base class implementation returns the rate constant unmodified.
+     */
+    virtual double backendRateCallbackBuckets(const std::vector<double> geometry,
+                                              const int len,
+                                              const std::vector<TypeBucket> & occupation,
+                                              const std::vector<TypeBucket> & update,
+                                              const std::vector<std::string> & type_map,
+                                              const double rate_constant,
+                                              const int process_number,
+                                              const double global_x,
+                                              const double global_y,
+                                              const double global_z) const { return rate_constant; }
+
 
 protected:
 

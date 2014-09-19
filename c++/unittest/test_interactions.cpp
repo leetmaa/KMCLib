@@ -54,8 +54,8 @@ void Test_Interactions::testQuery()
 
     // A process that independent of local environment swaps a "B" to "V"
     {
-        const std::vector<std::string> process_elements1(1,"B");
-        const std::vector<std::string> process_elements2(1,"V");
+        const std::vector<std::vector<std::string> > process_elements1(1, std::vector<std::string>(1, "B"));
+        const std::vector<std::vector<std::string> > process_elements2(1, std::vector<std::string>(1, "V"));
         const std::vector<std::vector<double> > process_coordinates(1, std::vector<double>(3, 0.0));
         const double rate = 1.234;
         Configuration c1(process_coordinates, process_elements1, possible_types);
@@ -69,15 +69,15 @@ void Test_Interactions::testQuery()
     // A process that finds an A between two B's in the 1,1,1 direction
     // and swap the A and the first B.
     {
-        std::vector<std::string> process_elements1(3);
-        process_elements1[0] = "A";
-        process_elements1[1] = "B";
-        process_elements1[2] = "B";
+        std::vector<std::vector<std::string> > process_elements1(3);
+        process_elements1[0] = std::vector<std::string>(1, "A");
+        process_elements1[1] = std::vector<std::string>(1, "B");
+        process_elements1[2] = std::vector<std::string>(1, "B");
 
-        std::vector<std::string> process_elements2(3);
-        process_elements2[0] = "B";
-        process_elements2[1] = "A";
-        process_elements2[2] = "B";
+        std::vector<std::vector<std::string> > process_elements2(3);
+        process_elements2[0] = std::vector<std::string>(1, "B");
+        process_elements2[1] = std::vector<std::string>(1, "A");
+        process_elements2[2] = std::vector<std::string>(1, "B");
 
         std::vector<std::vector<double> > process_coordinates(3, std::vector<double>(3, 0.0));
 
@@ -110,7 +110,7 @@ void Test_Interactions::testQuery()
     CPPUNIT_ASSERT_EQUAL( queried_processes[0]->processMatchList()[0].match_types[2], 0 );
 
     CPPUNIT_ASSERT_EQUAL( queried_processes[0]->processMatchList()[0].update_types[0], 0 );
-    CPPUNIT_ASSERT_EQUAL( queried_processes[0]->processMatchList()[0].update_types[1], 0 );
+    CPPUNIT_ASSERT_EQUAL( queried_processes[0]->processMatchList()[0].update_types[1],-1 );
     CPPUNIT_ASSERT_EQUAL( queried_processes[0]->processMatchList()[0].update_types[2], 1 );
 
     CPPUNIT_ASSERT_EQUAL( queried_processes[2]->processMatchList()[2].match_types[0], 0 );
@@ -118,7 +118,7 @@ void Test_Interactions::testQuery()
     CPPUNIT_ASSERT_EQUAL( queried_processes[2]->processMatchList()[2].match_types[2], 0 );
 
     CPPUNIT_ASSERT_EQUAL( queried_processes[2]->processMatchList()[2].update_types[0], 0 );
-    CPPUNIT_ASSERT_EQUAL( queried_processes[2]->processMatchList()[2].update_types[1], 1 );
+    CPPUNIT_ASSERT_EQUAL( queried_processes[2]->processMatchList()[2].update_types[1], 0 );
     CPPUNIT_ASSERT_EQUAL( queried_processes[2]->processMatchList()[2].update_types[2], 0 );
 
     // Query for the total number of available sites. This is zero since no sites are added to
@@ -154,11 +154,11 @@ void Test_Interactions::testUpdateAndPick()
     std::vector<Process> processes;
 
     // Setup a vector of dummy processes.
-    std::vector<std::string> process_elements1(1);
-    process_elements1[0] = "A";
+    std::vector<std::vector<std::string> > process_elements1(1);
+    process_elements1[0] = std::vector<std::string>(1, "A");
 
-    std::vector<std::string> process_elements2(1);
-    process_elements2[0] = "B";
+    std::vector<std::vector<std::string> > process_elements2(1);
+    process_elements2[0] = std::vector<std::string>(1, "B");
 
     std::vector<std::vector<double> > process_coordinates(1, std::vector<double>(3, 0.0));
 
@@ -292,11 +292,11 @@ void Test_Interactions::testUpdateAndPickCustom()
     std::vector<CustomRateProcess> processes;
 
     // Setup a vector of dummy processes.
-    std::vector<std::string> process_elements1(1);
-    process_elements1[0] = "A";
+    std::vector<std::vector<std::string> > process_elements1(1);
+    process_elements1[0] = std::vector<std::string>(1, "A");
 
-    std::vector<std::string> process_elements2(1);
-    process_elements2[0] = "B";
+    std::vector<std::vector<std::string> > process_elements2(1);
+    process_elements2[0] = std::vector<std::string>(1, "B");
 
     std::vector<std::vector<double> > process_coordinates(1, std::vector<double>(3, 0.0));
 
@@ -320,22 +320,22 @@ void Test_Interactions::testUpdateAndPickCustom()
     // Fake a matching by adding sites to the processes.
 
     // First process, 3 sites, total rate 12
-    processes[0].addSite(12,  4.0);
-    processes[0].addSite(123, 7.0);
-    processes[0].addSite(332, 1.0);
+    processes[0].addSite(12,  4.0, 1.0);
+    processes[0].addSite(123, 7.0, 1.0);
+    processes[0].addSite(332, 1.0, 1.0);
 
     // Second process, 2 sites, total rate 4
-    processes[1].addSite(19, 1.0);
-    processes[1].addSite(12, 3.0);
+    processes[1].addSite(19, 1.0, 1.0);
+    processes[1].addSite(12, 3.0, 1.0);
 
     // Third process, 4 sites, total rate  3
-    processes[2].addSite(19,  1.0/4.0);
-    processes[2].addSite(12,  5.0/4.0);
-    processes[2].addSite(234, 2.0/4.0);
-    processes[2].addSite(991, 4.0/4.0);
+    processes[2].addSite(19,  1.0/4.0, 1.0);
+    processes[2].addSite(12,  5.0/4.0, 1.0);
+    processes[2].addSite(234, 2.0/4.0, 1.0);
+    processes[2].addSite(991, 4.0/4.0, 1.0);
 
     // The sixth process, one site, total rate 12.
-    processes[5].addSite(992, 12.0);
+    processes[5].addSite(992, 12.0, 1.0);
 
     // Setup the interactions object.
     RateCalculator rc;
@@ -422,7 +422,7 @@ void Test_Interactions::testUpdateAndPickCustom()
 
     // Alter the total rate in one of the processes and re-run the picking.
     interactions.processes()[5]->removeSite(992);
-    interactions.processes()[5]->addSite(992, 24.0);
+    interactions.processes()[5]->addSite(992, 24.0, 1.0);
 
     // Update the probability table.
     interactions.updateProbabilityTable();
@@ -472,15 +472,15 @@ void Test_Interactions::testMaxRange()
     // Setup two valid processes.
     std::vector<Process> processes;
 
-    std::vector<std::string> process_elements1(3);
-    process_elements1[0] = "A";
-    process_elements1[1] = "A";
-    process_elements1[2] = "A";
+    std::vector<std::vector<std::string> > process_elements1(3);
+    process_elements1[0] = std::vector<std::string>(1, "A");
+    process_elements1[1] = std::vector<std::string>(1, "A");
+    process_elements1[2] = std::vector<std::string>(1, "A");
 
-    std::vector<std::string> process_elements2(3);
-    process_elements2[0] = "B";
-    process_elements2[1] = "A";
-    process_elements2[2] = "A";
+    std::vector<std::vector<std::string> > process_elements2(3);
+    process_elements2[0] = std::vector<std::string>(1, "B");
+    process_elements2[1] = std::vector<std::string>(1, "A");
+    process_elements2[2] = std::vector<std::string>(1, "A");
 
     std::vector<std::vector<double> > process_coordinates(3, std::vector<double>(3, 0.0));
     process_coordinates[1][0] = -0.1;
@@ -598,15 +598,15 @@ void Test_Interactions::testUpdateProcessMatchLists()
     // Setup two valid processes.
     std::vector<Process> processes;
 
-    std::vector<std::string> process_elements1(3);
-    process_elements1[0] = "A";
-    process_elements1[1] = "B";
-    process_elements1[2] = "V";
+    std::vector<std::vector<std::string> > process_elements1(3);
+    process_elements1[0] = std::vector<std::string>(1, "A");
+    process_elements1[1] = std::vector<std::string>(1, "B");
+    process_elements1[2] = std::vector<std::string>(1, "V");
 
-    std::vector<std::string> process_elements2(3);
-    process_elements2[0] = "B";
-    process_elements2[1] = "A";
-    process_elements2[2] = "A";
+    std::vector<std::vector<std::string> > process_elements2(3);
+    process_elements2[0] = std::vector<std::string>(1, "B");
+    process_elements2[1] = std::vector<std::string>(1, "A");
+    process_elements2[2] = std::vector<std::string>(1, "A");
 
     std::vector<std::vector<double> > process_coordinates1(3, std::vector<double>(3, 0.0));
     process_coordinates1[1][0] = -1.0;
@@ -656,7 +656,7 @@ void Test_Interactions::testUpdateProcessMatchLists()
 
     // Generate a corresponding configuration.
     std::vector<std::vector<double> > config_coordinates;
-    std::vector<std::string> elements;
+    std::vector<std::vector<std::string> > elements;
     for (int i = 0; i < 5; ++i)
     {
         for (int j = 0; j < 5; ++j)
@@ -668,12 +668,12 @@ void Test_Interactions::testUpdateProcessMatchLists()
                 coord[1] = 0.0 + j*1.0;
                 coord[2] = 0.0 + k*1.0;
                 config_coordinates.push_back(coord);
-                elements.push_back("V");
+                elements.push_back(std::vector<std::string>(1, "V"));
 
                 coord[0] = 0.3 + i*1.0;
                 coord[1] = 0.3 + j*1.0;
                 coord[2] = 0.3 + k*1.0;
-                elements.push_back("B");
+                elements.push_back(std::vector<std::string>(1, "B"));
                 config_coordinates.push_back(coord);
             }
         }
@@ -831,15 +831,15 @@ void Test_Interactions::testUpdateProcessIDMoves()
     // Setup two valid processes.
     std::vector<Process> processes;
 
-    std::vector<std::string> process_elements1(3);
-    process_elements1[0] = "A";
-    process_elements1[1] = "B";
-    process_elements1[2] = "V";
+    std::vector<std::vector<std::string> > process_elements1(3);
+    process_elements1[0] = std::vector<std::string>(1, "A");
+    process_elements1[1] = std::vector<std::string>(1, "B");
+    process_elements1[2] = std::vector<std::string>(1, "V");
 
-    std::vector<std::string> process_elements2(3);
-    process_elements2[0] = "B";
-    process_elements2[1] = "A";
-    process_elements2[2] = "A";
+    std::vector<std::vector<std::string> > process_elements2(3);
+    process_elements2[0] = std::vector<std::string>(1, "B");
+    process_elements2[1] = std::vector<std::string>(1, "A");
+    process_elements2[2] = std::vector<std::string>(1, "A");
 
     std::vector<std::vector<double> > process_coordinates1(3, std::vector<double>(3, 0.0));
     process_coordinates1[1][0] = -1.0;
@@ -901,7 +901,7 @@ void Test_Interactions::testUpdateProcessIDMoves()
 
     // Generate a corresponding configuration.
     std::vector<std::vector<double> > config_coordinates;
-    std::vector<std::string> elements;
+    std::vector<std::vector<std::string> > elements;
     for (int i = 0; i < 5; ++i)
     {
         for (int j = 0; j < 5; ++j)
@@ -913,12 +913,12 @@ void Test_Interactions::testUpdateProcessIDMoves()
                 coord[1] = 0.0 + j*1.0;
                 coord[2] = 0.0 + k*1.0;
                 config_coordinates.push_back(coord);
-                elements.push_back("V");
+                elements.push_back(std::vector<std::string>(1, "V"));
 
                 coord[0] = 0.3 + i*1.0;
                 coord[1] = 0.3 + j*1.0;
                 coord[2] = 0.3 + k*1.0;
-                elements.push_back("B");
+                elements.push_back(std::vector<std::string>(1, "B"));
                 config_coordinates.push_back(coord);
             }
         }
@@ -996,3 +996,112 @@ void Test_Interactions::testUpdateProcessIDMoves()
         CPPUNIT_ASSERT_EQUAL( match[5].match_types[3],  0 );
     }
 }
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Interactions::testClearMatching()
+{
+    // Setup two valid processes.
+    std::vector<Process> processes;
+
+    std::vector<std::vector<std::string> > process_elements1(3);
+    process_elements1[0] = std::vector<std::string>(1, "A");
+    process_elements1[1] = std::vector<std::string>(1, "B");
+    process_elements1[2] = std::vector<std::string>(1, "V");
+
+    std::vector<std::vector<std::string> > process_elements2(3);
+    process_elements2[0] = std::vector<std::string>(1, "B");
+    process_elements2[1] = std::vector<std::string>(1, "A");
+    process_elements2[2] = std::vector<std::string>(1, "A");
+
+    std::vector<std::vector<double> > process_coordinates1(3, std::vector<double>(3, 0.0));
+    process_coordinates1[1][0] = -1.0;
+    process_coordinates1[1][1] =  0.0;
+    process_coordinates1[1][2] =  0.0;
+
+    process_coordinates1[2][0] =  0.3;
+    process_coordinates1[2][1] =  0.3;
+    process_coordinates1[2][2] =  0.3;
+
+    std::vector<int> move_origins;
+    move_origins.push_back(0);
+    move_origins.push_back(1);
+
+    std::vector<Coordinate> move_vectors;
+    move_vectors.push_back( Coordinate(-1.0, 0.0, 0.0) );
+    move_vectors.push_back( Coordinate( 1.0, 0.0, 0.0) );
+
+    // Possible types.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["V"] = 3;
+
+    const double rate = 13.7;
+    const Configuration c1(process_coordinates1, process_elements1, possible_types);
+    const Configuration c2(process_coordinates1, process_elements2, possible_types);
+
+    // Let this process be valid at site 0.
+    processes.push_back(Process(c1,c2,rate,std::vector<int>(1,0), move_origins, move_vectors));
+
+    // Let this process be valid at sites 0 and 2.
+    std::vector<int> sites_vector(2,0);
+    sites_vector[1] = 2;
+    processes.push_back(Process(c1, c2, rate, sites_vector, move_origins, move_vectors));
+
+    std::vector<std::vector<double> > process_coordinates2(3, std::vector<double>(3, 0.0));
+
+    process_coordinates2[1][0] =  0.7;
+    process_coordinates2[1][1] =  0.7;
+    process_coordinates2[1][2] = -0.3;
+
+    process_coordinates2[2][0] =  1.0;
+    process_coordinates2[2][1] =  1.0;
+    process_coordinates2[2][2] =  1.0;
+
+    move_vectors[0] = Coordinate( 0.7, 0.7, -0.3);
+    move_vectors[1] = Coordinate(-0.7,-0.7,  0.3);
+
+    const Configuration c3(process_coordinates2, process_elements1, possible_types);
+    const Configuration c4(process_coordinates2, process_elements2, possible_types);
+
+    // Let the process be valid at site 1.
+    processes.push_back(Process(c3,c4,rate,std::vector<int>(1,1), move_origins, move_vectors));
+
+    processes[0].addSite(32);
+    processes[1].addSite(432);
+    processes[1].addSite(443);
+    processes[1].addSite(431);
+    processes[2].addSite(112);
+    processes[2].addSite(124);
+
+    Interactions interactions(processes, true);
+
+    // Check that the processes have the expected number of sites listed.
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[0]->nSites()),
+                         1);
+
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[1]->nSites()),
+                         3);
+
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[2]->nSites()),
+                         2);
+
+    // Call the function to test.
+    interactions.clearMatching();
+
+
+    // These should now be zero.
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[0]->nSites()),
+                         0);
+
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[1]->nSites()),
+                         0);
+
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(interactions.processes()[2]->nSites()),
+                         0);
+
+}
+

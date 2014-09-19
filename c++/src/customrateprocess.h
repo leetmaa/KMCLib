@@ -26,6 +26,7 @@ public:
      */
     CustomRateProcess() {}
 
+
     /*! \brief Constructor for the process. Note that the configurations given
      *         to the process are local configurations and no periodic boundaries
      *         will be taken into consideration.
@@ -59,27 +60,21 @@ public:
      */
     virtual ~CustomRateProcess() {}
 
-    /*! \brief Query for the total rate.
-     *  \return : The total rate of the process.
-     */
-    virtual double totalRate() const;
-
     /*! \brief Add the index to the list of available sites.
-     *  \param index : The index to add.
-     *  \param rate  : Dummy argument needed for common interface.
+     *  \param index        : The index to add.
+     *  \param rate         : The rate of the process at the added site.
+     *  \param multiplicity : The multiplicity of the site, to be multiplied
+                              with the rate for determining the total rate.
      */
-    virtual void addSite(const int index, const double rate);
+    virtual void addSite(const int index,
+                         const double rate,
+                         const double multiplicity);
 
     /*! \brief Remove the index from the list of available sites.
      *  \param index : The index to remove.
      */
     virtual void removeSite(const int index);
 
-    /*! \brief Pick an available process with probability determined by
-     *         its individual rate.
-     *  \return : A correctly drawn available process.
-     */
-    virtual int pickSite() const;
 
     /*! \brief Update the rate table prior to drawing a rate.
      */
@@ -89,11 +84,6 @@ protected:
 
 private:
 
-    /// The list of individual site rates.
-    std::vector<double> site_rates_;
-
-    /// The incremental rates.
-    std::vector<double> incremental_rate_table_;
 
 };
 

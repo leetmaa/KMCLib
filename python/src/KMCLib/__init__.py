@@ -18,6 +18,7 @@ except:
 from CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
 from CoreComponents.KMCInteractions import KMCInteractions
 from CoreComponents.KMCProcess import KMCProcess
+from CoreComponents.KMCBucketProcess import KMCBucketProcess
 from CoreComponents.KMCConfiguration import KMCConfiguration
 from CoreComponents.KMCLattice import KMCLattice
 from CoreComponents.KMCLatticeModel import KMCLatticeModel
@@ -36,7 +37,8 @@ __all__ = ['KMCLocalConfiguration', 'KMCInteractions', 'KMCConfiguration',
            'KMCLattice', 'KMCLatticeModel', 'KMCUnitCell',
            'KMCControlParameters', 'KMCInteractionsFromScript',
            'KMCConfigurationFromScript', 'KMCRateCalculatorPlugin',
-           'KMCAnalysisPlugin', 'KMCBreakerPlugin', 'KMCProcess', 'OnTheFlyMSD',
+           'KMCAnalysisPlugin', 'KMCBreakerPlugin', 'KMCProcess',
+           'KMCBucketProcess', 'OnTheFlyMSD',
            'TimeStepDistribution', 'MPICommons']
 
 # Trick to initialize and finalize MPI only once.

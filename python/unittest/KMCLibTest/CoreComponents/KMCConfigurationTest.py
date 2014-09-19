@@ -1,7 +1,7 @@
 """" Module for testing KMCConfiguration """
 
 
-# Copyright (c)  2012  Mikael Leetmaa
+# Copyright (c)  2012-2014  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -339,6 +339,40 @@ class KMCConfigurationTest(unittest.TestCase):
                                                            types=types_1,
                                                            default_type=default_type))
 
+    # FIXME
+    def notestTypesBucketFormat(self):
+        """ Test that the configuration accepts the bucket input format. """
+        # Define the unit cell.
+        unit_cell = KMCUnitCell(cell_vectors=numpy.array([[2.1,0.0,0.0],
+                                                          [0.0,1.0,0.0],
+                                                          [0.0,0.0,1.0]]),
+                                basis_points=[[0.0,0.0,0.0]])
+
+        # And a lattice.
+        lattice = KMCLattice(unit_cell=unit_cell,
+                             repetitions=(10,1,1),
+                             periodic=(True,False,False))
+
+        # Populate the lattice with types.
+        types = [(2,"A"),
+                 "B",
+                 ["B", "B", "A"],
+                 ["B", (2,"A")],
+                 "B",
+                 "empty",
+                 [(3,"A")],
+                 [(1,"B"), "A"],
+                 [(2,"A")],
+                 "empty"]
+
+        # Setup the configuration.
+        config = KMCConfiguration(lattice=lattice,
+                                  types=types,
+                                  possible_types=['A','B','empty'])
+
+        # Retrieve the types information from the configuration backend.
+        # FXME: NEEDS IMPLEMENTATION
+        print config.types()
 
     def testLatticeMap(self):
         """ Make sure the lattice map we get correspond to the lattice we give. """
@@ -423,6 +457,7 @@ class KMCConfigurationTest(unittest.TestCase):
     def testQueries(self):
         """ Test the configuration's query functions. """
         config = KMCConfiguration.__new__(KMCConfiguration)
+        config._KMCConfiguration__use_buckets = False
 
         c0_ref = numpy.random.random()
         c1_ref = numpy.random.random()

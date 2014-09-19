@@ -132,19 +132,10 @@ unsigned long int hashCustomRateInput(const int index,
     ConfigBucketMatchList::const_iterator it1 = config_match_list.begin();
     while ( (*it1).distance <= cutoff && it1 != config_match_list.end())
     {
-
-        // ML: Needs fix for the general case.
-        int match_type = 0;
-        for (size_t i = 0; i < (*it1).match_types.size(); ++i)
+        for (int i = 0; i < (*it1).match_types.size(); ++i)
         {
-            if ((*it1).match_types[i] != 0)
-            {
-                match_type = i;
-                break;
-            }
+            data_to_hash.push_back((*it1).match_types[i]);
         }
-
-        data_to_hash.push_back(match_type);
         ++it1;
     }
 

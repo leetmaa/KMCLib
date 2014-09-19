@@ -22,6 +22,7 @@
 #include "customrateprocess.h"
 #include "coordinate.h"
 #include "matchlistentry.h"
+#include "typebucket.h"
 #include "matchlist.h"
 #include "simulationtimer.h"
 #include "ratecalculator.h"
@@ -53,6 +54,7 @@
 
  // Define the templates to use in Python.
 %template(StdVectorString) std::vector<std::string>;
+%template(StdVectorStdVectorString) std::vector<std::vector<std::string> >;
 %template(StdVectorDouble) std::vector<double>;
 %template(StdVectorInt) std::vector<int>;
 %template(StdVectorBool) std::vector<bool>;
@@ -67,7 +69,9 @@
 %template(StdVectorStdPairCoordinate) std::vector<std::pair<Coordinate, Coordinate> >;
 %template(StdVectorStdVectorCoordinate) std::vector<std::vector<Coordinate> >;
 %template(StdMapStringInt) std::map<std::string,int>;
+%template(StdVectorStdMapStringInt) std::vector<std::map<std::string,int> >;
 %template(StdVectorStdPairIntInt) std::vector<std::pair<int, int> >;
+%template(StdVectorTypeBucket) std::vector<TypeBucket>;
 
 // Include the definitions.
 %include "latticemodel.h"
@@ -78,6 +82,7 @@
 %include "customrateprocess.h"
 %include "coordinate.h"
 %include "matchlist.h"
+%include "typebucket.h"
 %include "matchlistentry.h"
 %include "simulationtimer.h"
 %include "ratecalculator.h"
@@ -107,5 +112,37 @@
         }
         (*self)[i] = value;
     };
+};
+
+
+// This extends the TypeBucket class with python indexing support.
+%extend TypeBucket
+{
+    int __getitem__(unsigned int i)
+    {
+        // Check bounds.
+        if (static_cast<int>(i) > (*self).size() - 1)
+        {
+            throw std::out_of_range("TypeBucket index out of range.");
+        }
+        return (*self)[i];
+    };
+
+    void __setitem__(unsigned int i, const int value)
+    {
+        // Check bounds.
+        if (static_cast<int>(i) > (*self).size() - 1)
+        {
+            throw std::out_of_range("TypeBucket index out of range.");
+        }
+        (*self)[i] = value;
+    };
+
+    int __len__()
+    {
+        return (*self).size();
+    }
+
+
 };
 

@@ -12,7 +12,7 @@ import numpy
 import inspect
 
 from KMCLib.CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
-from KMCLib.CoreComponents.KMCProcess import KMCProcess
+from KMCLib.CoreComponents.KMCBaseProcess import KMCBaseProcess
 from KMCLib.Utilities.CheckUtilities import checkSequence
 from KMCLib.Utilities.CheckUtilities import checkPositiveInteger
 from KMCLib.Utilities.CheckUtilities import checkSequenceOf
@@ -41,7 +41,10 @@ class KMCInteractions(object):
         :type implicit_wildcards:  bool
         """
         # Check the processes input.
-        self.__processes = checkSequenceOf(processes, KMCProcess, msg="The 'processes' input must be a list of KMCProcess instances.")
+        processes = checkSequenceOf(processes, KMCBaseProcess, msg="The 'processes' input must be a list of KMCProcess or KMCBucketProcess instances.")
+
+        # Store the processes.
+        self.__processes = processes
 
         # Check the implicit wildcard flag.
         if implicit_wildcards is None:
@@ -118,7 +121,7 @@ be a class (not instantiated) inheriting from the KMCRateCalculatorPlugin. """
 
             # Check the possible_types against the types in the processes.
             for process_number, process in enumerate(self.__processes):
-                all_elements = list(set(process.elementsBefore() + process.elementsAfter()))
+                all_elements = process.allPresentTypes()
                 if (not all([(e in possible_types) for e in all_elements])):
                     raise Error("Process %i contains elements not present in the list of possible types of the configuration."%(process_number))
 
@@ -153,9 +156,17 @@ the KMCRateCalculatorPlugin class itself. """
             for process_number, process in enumerate(self.__processes):
 
                 # Get the corresponding C++ objects.
-                cpp_config1   = process.localConfigurations()[0]._backend(possible_types)
-                cpp_config2   = process.localConfigurations()[1]._backend(possible_types)
-                rate_constant = process.rateConstant()
+                cpp_config1 = process.localConfigurations()[0]._backend(possible_types)
+
+                if len(process.localConfigurations()) == 2:
+                    cpp_config2 = process.localConfigurations()[1]._backend(possible_types)
+                else:
+                    # Take a copy of the first configuration and set the update from the
+                    # process.
+                    cpp_config2 = cpp_config1
+                    cpp_config2.setUpdateInfo(process._update())
+
+                rate_constant   = process.rateConstant()
 
                 basis_list = range(n_basis)
                 if process.basisSites() is not None:

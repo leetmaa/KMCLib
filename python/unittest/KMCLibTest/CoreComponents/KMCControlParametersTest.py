@@ -20,7 +20,7 @@ from KMCLib.CoreComponents.KMCControlParameters import KMCControlParameters
 class KMCControlParametersTest(unittest.TestCase):
     """ Class for testing the KMCControlParameters class. """
 
-    def testConstructionAndQuery(self):
+    def testConstructionAndQuery1(self):
         """ Test the construction of the control parametes object """
         # Default construction.
         control_params = KMCControlParameters()
@@ -30,6 +30,7 @@ class KMCControlParametersTest(unittest.TestCase):
         self.assertEqual(control_params.dumpInterval(), 1)
         self.assertEqual(control_params.seed(), 1)
         self.assertTrue(control_params.timeSeed())
+        self.assertTrue(control_params.dumpTimeInterval() is None)
 
         # Non-default construction.
         control_params = KMCControlParameters(number_of_steps=2000000,
@@ -43,6 +44,30 @@ class KMCControlParametersTest(unittest.TestCase):
         self.assertEqual(control_params.analysisInterval(), 888)
         self.assertEqual(control_params.seed(), 2013)
         self.assertFalse(control_params.timeSeed())
+
+    def testConstructionAndQuery2(self):
+        """ Test the construction of the control parametes object with a dump time interval """
+        # Non-default construction.
+        control_params = KMCControlParameters(number_of_steps=2000000,
+                                              analysis_interval=888,
+                                              seed=2013,
+                                              dump_time_interval=1.23)
+
+        # Check the values.
+        self.assertEqual(control_params.numberOfSteps(), 2000000)
+        self.assertEqual(control_params.analysisInterval(), 888)
+        self.assertEqual(control_params.seed(), 2013)
+        self.assertFalse(control_params.timeSeed())
+        self.assertAlmostEqual(control_params.dumpTimeInterval(), 1.23, 10)
+        self.assertTrue(control_params.dumpInterval() is None)
+
+        # Check that we cannot construct with both dump interval and
+        # dump time interval set.
+        self.assertRaises( Error,
+                           lambda : KMCControlParameters(number_of_steps=1,
+                                                         dump_interval=1,
+                                                         analysis_interval=1,
+                                                         dump_time_interval=1.23) )
 
     def testConstructionFail(self):
         """ Make sure we can not give invalid paramtes on construction. """
@@ -59,6 +84,14 @@ class KMCControlParametersTest(unittest.TestCase):
                            lambda : KMCControlParameters(number_of_steps=1,
                                                          dump_interval=1,
                                                          analysis_interval=-1) )
+        self.assertRaises( Error,
+                           lambda : KMCControlParameters(number_of_steps=1,
+                                                         analysis_interval=1,
+                                                         seed=-1234) )
+        self.assertRaises( Error,
+                           lambda : KMCControlParameters(number_of_steps=1,
+                                                         analysis_interval=1,
+                                                         dump_time_interval=-1234.0) )
 
         # Wrong type.
         self.assertRaises( Error,
@@ -72,8 +105,16 @@ class KMCControlParametersTest(unittest.TestCase):
         self.assertRaises( Error,
                            lambda : KMCControlParameters(number_of_steps=1,
                                                          dump_interval=1,
-                                                         analysis_interval="1") )
-
+                                                         analysis_interval="1"))
+        self.assertRaises( Error,
+                           lambda : KMCControlParameters(number_of_steps=1,
+                                                         dump_interval=1,
+                                                         analysis_interval=1,
+                                                         seed="1234") )
+        self.assertRaises( Error,
+                           lambda : KMCControlParameters(number_of_steps=1,
+                                                         analysis_interval=1,
+                                                         dump_time_interval="1234.0") )
 
 if __name__ == '__main__':
     unittest.main()

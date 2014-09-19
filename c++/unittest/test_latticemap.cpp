@@ -1,5 +1,5 @@
 /*
-  Copyright (c)  2012-2013  Mikael Leetmaa
+  Copyright (c)  2012-2014  Mikael Leetmaa
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -495,7 +495,7 @@ void Test_LatticeMap::testNeighbourIndicesLong()
 
     // Setup a configuration.
     std::vector<std::vector<double> > coordinates(repetitions[0]*repetitions[1]*repetitions[2]*basis, std::vector<double>(3,0.0));
-    std::vector<std::string> types;
+    std::vector<std::vector<std::string> > types;
     int cnt = 0;
     for (int i = 0; i < repetitions[0]; ++i)
     {
@@ -510,8 +510,8 @@ void Test_LatticeMap::testNeighbourIndicesLong()
                 coordinates[2*cnt+1][1] = j + 0.25;
                 coordinates[2*cnt+1][2] = k + 0.25;
                 ++cnt;
-                types.push_back("A");
-                types.push_back("B");
+                types.push_back(std::vector<std::string>(1, "A"));
+                types.push_back(std::vector<std::string>(1, "B"));
             }
         }
     }
@@ -553,10 +553,11 @@ void Test_LatticeMap::testNeighbourIndicesLong()
     ConfigBucketMatchList::const_iterator it0 = default_matchlist.begin();
     ConfigBucketMatchList::const_iterator it1 = one_shell_matchlist.begin();
 
-    // These should be equal.
+    // These should be identical.
     for ( ; it0 != default_matchlist.end(); ++it0, ++it1 )
     {
-        CPPUNIT_ASSERT( !((*it0) != (*it1)) );
+        CPPUNIT_ASSERT( (*it0).match_types.identical((*it1).match_types) );
+        CPPUNIT_ASSERT( (*it0).samePoint(*it1) );
     }
 
     // Check that they are correctly sorted.

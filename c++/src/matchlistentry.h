@@ -14,6 +14,7 @@
 #define __MATCHLISTENTRY__
 
 #include "coordinate.h"
+#include "typebucket.h"
 #include <cstdio>
 #include <cmath>
 
@@ -56,15 +57,15 @@ public:
     Coordinate move_coordinate;
 
     /// The match types used in bucket mode.
-    std::vector<int> match_types;
+    TypeBucket match_types;
 
     /// The update types used in bucket mode.
-    std::vector<int> update_types;
+    TypeBucket update_types;
 
     /*! \brief 'equal' for comparing points. NOTE: This operator does not
      *         compare match types.
      */
-    bool operator==(const MatchListEntry & m2) const
+    bool samePoint(const MatchListEntry & m2) const
     {
         // Check the distance.
         if (std::fabs(m2.distance - distance) > epsi__)
@@ -105,12 +106,6 @@ public:
         }
     }
 
-    /*! \brief Pure virtual 'not equal' operator.
-     */
-    virtual
-    bool operator!=(const MatchListEntry & m2) const=0;
-
-
 protected:
 
     /*! \brief Explicitly protected default constructor.
@@ -124,20 +119,6 @@ class ConfigBucketMatchListEntry : public MatchListEntry {
 
 public:
 
-    // FIXME: Only for testing. Replace with special function.
-    virtual
-    bool operator!=(const MatchListEntry & m2) const
-    {
-        for (size_t i = 0; i < match_types.size(); ++i)
-        {
-            if (m2.match_types[i] != match_types[i])
-            {
-                return true;
-            }
-        }
-
-        return !((*this) == m2);
-    }
 };
 
 
@@ -146,35 +127,22 @@ class ProcessBucketMatchListEntry : public MatchListEntry {
 
 public:
 
-    /*! \brief 'not equal' for comparing entries.
-     */
-    virtual
-    bool operator!=(const MatchListEntry & m2) const
+    bool match(const MatchListEntry & m2) const
     {
-        // ML: Rework this thing.
-
         // Handle the wildcard case.
         if (match_types[0] == 1)
         {
-            return false;
+            return true;
         }
-
-        // ML: Handle cases where we want an exact match.
-        //     Or a match with an upper bound also.
 
         // Check the type matching.
         else
         {
-            // ML: FIXME: PERFORMME
-            for (size_t i = 0; i < match_types.size(); ++i)
+            if (!match_types.match(m2.match_types))
             {
-                if (m2.match_types[i] < match_types[i])
-                {
-                    return true;
-                }
+                return false;
             }
-
-            return !((*this) == m2);
+            return ((*this).samePoint(m2));
         }
     }
 
@@ -185,9 +153,9 @@ public:
         index = -1;
         distance = c.distance;
         coordinate = c.coordinate;
-        match_types = std::vector<int>(c.match_types.size(), 0);
-        match_types[0] = 1; // Indicating wildcard.
-        update_types.resize(match_types.size());
+        match_types = TypeBucket(c.match_types.size());
+        match_types[0] = 1;           // Indicating wildcard.
+        update_types = match_types;   // Indicating wildcard.
     }
 
 };

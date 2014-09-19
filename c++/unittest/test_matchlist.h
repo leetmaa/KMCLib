@@ -31,6 +31,9 @@ public:
     CPPUNIT_TEST( testIsMatchIndexListMinimalPeriodic );
     CPPUNIT_TEST( testIsMatchIndexListComplicatedPeriodic );
     CPPUNIT_TEST( testConfigurationsToMatchList );
+    CPPUNIT_TEST( testConfigurationsToMatchList2 );
+    CPPUNIT_TEST( testMultiplicity );
+    CPPUNIT_TEST( testMultiplicity2 );
     CPPUNIT_TEST_SUITE_END();
 
     void testCall();
@@ -40,6 +43,9 @@ public:
     void testIsMatchIndexListMinimalPeriodic();
     void testIsMatchIndexListComplicatedPeriodic();
     void testConfigurationsToMatchList();
+    void testConfigurationsToMatchList2();
+    void testMultiplicity();
+    void testMultiplicity2();
 
 };
 

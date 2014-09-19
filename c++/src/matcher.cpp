@@ -27,8 +27,9 @@
 
 // -----------------------------------------------------------------------------
 //
-Matcher::Matcher() :
-    rate_table_()
+Matcher::Matcher(const size_t & sites, const size_t & processes) :
+    rate_table_(),
+    inverse_table_(sites, std::vector<bool>(processes, false))
 {
     // NOTHING HERE YET
 }
@@ -221,9 +222,9 @@ void Matcher::matchIndicesWithProcesses(const std::vector<std::pair<int,int> > &
         Process & process = (*interactions.processes()[p_idx]);
 
         // Perform the matching.
-        const bool in_list = process.isListed(index);
+        const bool in_list = inverse_table_[index][p_idx];
 
-        // ML: prototyping.
+        // ML:
         const bool is_match = whateverMatch(process.processMatchList(),
                                             configuration.configMatchList(index));
 
@@ -265,24 +266,29 @@ void Matcher::matchIndicesWithProcesses(const std::vector<std::pair<int,int> > &
             remove_tasks.push_back(t);
         }
 
-        // If match and previous match - update the rate.
-        else if (task_types[i] == 2)
+        else if (task_types[i] == 2 || task_types[i] == 3)
         {
-            RateTask t;
-            t.index   = index;
-            t.process = p_idx;
-            t.rate    = process.rateConstant();
-            update_tasks.push_back(t);
-        }
+            // Get the multiplicity.
+            const double m = multiplicity(process.processMatchList(),
+                                          configuration.configMatchList(index));
 
-        // If match and not previous match - add.
-        else if (task_types[i] == 3)
-        {
             RateTask t;
-            t.index   = index;
-            t.process = p_idx;
-            t.rate    = process.rateConstant();
-            add_tasks.push_back(t);
+            t.index        = index;
+            t.process      = p_idx;
+            t.rate         = process.rateConstant();
+            t.multiplicity = m;
+
+            // If match and previous match - update the rate.
+            if (task_types[i] == 2)
+            {
+                update_tasks.push_back(t);
+            }
+
+            // If match and not previous match - add.
+            else if (task_types[i] == 3)
+            {
+                add_tasks.push_back(t);
+            }
         }
     }
 
@@ -294,6 +300,9 @@ void Matcher::matchIndicesWithProcesses(const std::vector<std::pair<int,int> > &
 bool Matcher::isMatch(const ProcessBucketMatchList & process_match_list,
                       const ConfigBucketMatchList & index_match_list) const
 {
+    return whateverMatch(process_match_list, index_match_list);
+
+    /*
     if (index_match_list.size() < process_match_list.size())
     {
         return false;
@@ -314,6 +323,7 @@ bool Matcher::isMatch(const ProcessBucketMatchList & process_match_list,
 
     // All match, return true.
     return true;
+    */
 }
 
 
@@ -340,7 +350,7 @@ void Matcher::printMatchLists(const ProcessBucketMatchList & process_match_list,
         printf("%13f\n", (*it2).distance);
 
         printf("              [ ");
-        for (size_t i = 0; i < (*it1).match_types.size(); ++i)
+        for (int i = 0; i < (*it1).match_types.size(); ++i)
         {
             printf("%i ", (*it1).match_types[i]);
         }
@@ -348,7 +358,7 @@ void Matcher::printMatchLists(const ProcessBucketMatchList & process_match_list,
 
 
         printf("    [ ");
-        for (size_t i = 0; i < (*it2).match_types.size(); ++i)
+        for (int i = 0; i < (*it2).match_types.size(); ++i)
         {
             printf("%i ", (*it2).match_types[i]);
         }
@@ -357,7 +367,7 @@ void Matcher::printMatchLists(const ProcessBucketMatchList & process_match_list,
 
         ++step;
 
-        if ((*it1) != (*it2))
+        if (!(*it1).match(*it2))
         {
             printf("break at step %i\n", step);
             break;
@@ -390,7 +400,7 @@ void Matcher::printMatchLists(const ConfigBucketMatchList & process_match_list,
         printf("%13f\n", (*it2).distance);
 
         printf("              [ ");
-        for (size_t i = 0; i < (*it1).match_types.size(); ++i)
+        for (int i = 0; i < (*it1).match_types.size(); ++i)
         {
             printf("%i ", (*it1).match_types[i]);
         }
@@ -398,7 +408,7 @@ void Matcher::printMatchLists(const ConfigBucketMatchList & process_match_list,
 
 
         printf("    [ ");
-        for (size_t i = 0; i < (*it2).match_types.size(); ++i)
+        for (int i = 0; i < (*it2).match_types.size(); ++i)
         {
             printf("%i ", (*it2).match_types[i]);
         }
@@ -406,12 +416,6 @@ void Matcher::printMatchLists(const ConfigBucketMatchList & process_match_list,
 
 
         ++step;
-
-        //if ((*it1) != (*it2))
-        //{
-        //    printf("break at step %i\n", step);
-        //    break;
-        //}
     }
 
 }
@@ -437,7 +441,7 @@ void Matcher::printMatchList(const ConfigBucketMatchList & index_match_list) con
         printf("%13f\n", (*it2).distance);
 
         printf("    [ ");
-        for (size_t i = 0; i < (*it2).match_types.size(); ++i)
+        for (int i = 0; i < (*it2).match_types.size(); ++i)
         {
             printf("%i ", (*it2).match_types[i]);
         }
@@ -456,7 +460,7 @@ void Matcher::printMatchList(const ConfigBucketMatchList & index_match_list) con
 void Matcher::updateProcesses(const std::vector<RemoveTask> & remove_tasks,
                               const std::vector<RateTask>   & update_tasks,
                               const std::vector<RateTask>   & add_tasks,
-                              Interactions & interactions) const
+                              Interactions & interactions)
 {
     // This could perhaps be OpenMP parallelized.
 
@@ -466,6 +470,7 @@ void Matcher::updateProcesses(const std::vector<RemoveTask> & remove_tasks,
         const int index = remove_tasks[i].index;
         const int p_idx = remove_tasks[i].process;
         interactions.processes()[p_idx]->removeSite(index);
+        inverse_table_[index][p_idx] = false;
     }
 
     // Update.
@@ -485,6 +490,7 @@ void Matcher::updateProcesses(const std::vector<RemoveTask> & remove_tasks,
         const int p_idx   = add_tasks[i].process;
         const double rate = add_tasks[i].rate;
         interactions.processes()[p_idx]->addSite(index, rate);
+        inverse_table_[index][p_idx] = true;
     }
 }
 
@@ -521,14 +527,13 @@ double Matcher::updateSingleRate(const int index,
                                  const Configuration  & configuration,
                                  const RateCalculator & rate_calculator) const
 {
-    // ML: FIXME : Using the old interface for now.
-
     // Get the match lists.
     const ProcessBucketMatchList & process_match_list = process.processMatchList();
     const ConfigBucketMatchList & config_match_list   = configuration.configMatchList(index);
 
     // We will also need the elements.
-    const std::vector<std::string> & elements = configuration.elements();
+    const std::vector<std::vector<std::string> > & elements = configuration.elements();
+    const std::vector<TypeBucket> & types = configuration.types();
 
     // Get cutoff distance from the process.
     const double cutoff = process.cutoff();
@@ -539,73 +544,62 @@ double Matcher::updateSingleRate(const int index,
         ++it1;
         ++len;
     }
-    const ConfigBucketMatchList::const_iterator new_end = it1;
+
+    const size_t distance = it1 - config_match_list.begin();
 
     // Allocate memory for the numpy geometry and copy the data over.
     std::vector<double> numpy_geo(len*3);
-    std::vector<double>::iterator it_geo = numpy_geo.begin();
-    std::vector<std::string> types_before;
+    std::vector<std::string> types_before(distance);
+    std::vector<TypeBucket> occupations(distance);
 
-    it1 = config_match_list.begin();
-    for ( ; it1 != new_end; ++it1 )
+    for (size_t i = 0; i < distance; ++i)
     {
-        const Coordinate & coord   = (*it1).coordinate;
+        const Coordinate & coord = config_match_list[i].coordinate;
 
-        (*it_geo) = coord.x();
-        ++it_geo;
+        numpy_geo[3*i]   = coord.x();
+        numpy_geo[3*i+1] = coord.y();
+        numpy_geo[3*i+2] = coord.z();
 
-        (*it_geo) = coord.y();
-        ++it_geo;
-
-        (*it_geo) = coord.z();
-        ++it_geo;
-
-        const int idx = (*it1).index;
-        types_before.push_back(elements[idx]);
+        const int idx   = config_match_list[i].index;
+        types_before[i] = elements[idx][0];
+        occupations[i]  = types[idx];
     }
 
     // Types after the process.
     std::vector<std::string> types_after = types_before;
-
-    // Rewind the config match list iterator.
-    it1 = config_match_list.begin();
-
-    // Get the iterators to the process match list and types after.
-    ProcessBucketMatchList::const_iterator it2 = process_match_list.begin();
-    std::vector<std::string>::iterator it3 = types_after.begin();
-    const ProcessBucketMatchList::const_iterator end = process_match_list.end();
+    std::vector<TypeBucket> update(len, TypeBucket(occupations[0].size()));
 
     // Loop over the process match list and update the types_after vector.
-    for ( ; it2 != end; ++it1, ++it2, ++it3 )
+    for (size_t i = 0; i < process_match_list.size(); ++i)
     {
-        int update_type = -1; // = (*it2).update_type;
-        int match_type = -1;  // = (*it1).match_type;
+        const TypeBucket & update_types = process_match_list[i].update_types;
 
-        // FIXME:
-        // Slow, temoporary fix to use the old interface with the new bucket matchlists.
+        // Save the update types in the full update vector.
+        update[i] = update_types;
 
-        for (size_t i = 0; i < (*it1).match_types.size(); ++i)
+        // PERFORMME: This should be handeled more efficiently.
+
+        // Check that the update type is not 'zero'.
+        int sum = 0;
+        for (int j = 0; j < update_types.size(); ++j)
         {
-            if ((*it1).match_types[i] != 0)
-            {
-                match_type = i;
-                break;
-            }
+            sum += std::abs(update_types[j]);
         }
 
-        for (size_t i = 0; i < (*it2).update_types.size(); ++i)
+        if ( sum != 0  && !(update_types == 0) )
         {
-            if ((*it2).update_types[i] != 0)
-            {
-                update_type = i;
-                break;
-            }
-        }
 
-        // Set the type after process. NOTE: The > 0 is needed for handling wildcards.
-        if ( match_type != update_type  && update_type > 0)
-        {
-            (*it3) = configuration.typeName(update_type);
+            // For non-buckets only.
+            for (int j = 0; j < update_types.size(); ++j)
+            {
+                // Taking the first only.
+                if (update_types[j] == 1)
+                {
+                    types_after[i] = configuration.typeName(j);
+                    break;
+                }
+            }
+
         }
     }
 
@@ -616,13 +610,30 @@ double Matcher::updateSingleRate(const int index,
     const double global_y = configuration.coordinates()[index].y();
     const double global_z = configuration.coordinates()[index].z();
 
-    return rate_calculator.backendRateCallback(numpy_geo,
-                                               len,
-                                               types_before,
-                                               types_after,
-                                               rate_constant,
-                                               process_number,
-                                               global_x,
-                                               global_y,
-                                               global_z);
+    // Determine if we should use the buckets interface or not.
+    if (!process.bucketProcess())
+    {
+        return rate_calculator.backendRateCallback(numpy_geo,
+                                                   len,
+                                                   types_before,
+                                                   types_after,
+                                                   rate_constant,
+                                                   process_number,
+                                                   global_x,
+                                                   global_y,
+                                                   global_z);
+    }
+    else
+    {
+        return rate_calculator.backendRateCallbackBuckets(numpy_geo,
+                                                          len,
+                                                          occupations,
+                                                          update,
+                                                          configuration.typeNames(),
+                                                          rate_constant,
+                                                          process_number,
+                                                          global_x,
+                                                          global_y,
+                                                          global_z);
+    }
 }

@@ -31,6 +31,7 @@ public:
     CPPUNIT_TEST( testMatchLists );
     CPPUNIT_TEST( testTypeNameQuery );
     CPPUNIT_TEST( testAtomIDElementsCoordinatesMovedIDs );
+    CPPUNIT_TEST( testUpdateInfo );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstruction();
@@ -40,6 +41,7 @@ public:
     void testMatchLists();
     void testAtomIDElementsCoordinatesMovedIDs();
     void testTypeNameQuery();
+    void testUpdateInfo();
 
 };
 

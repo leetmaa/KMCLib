@@ -28,13 +28,13 @@ void Test_Process::testConstruction()
     possible_types["C"] = 0;
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("A");
-    elements1.push_back("B");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
 
-    std::vector<std::string> elements2;
-    elements2.push_back("C");
-    elements2.push_back("B");
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
 
     // Setup coordinates.
     std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
@@ -76,13 +76,13 @@ void Test_Process::testConstruction2()
     possible_types["C"] = 0;
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("A");
-    elements1.push_back("B");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
 
-    std::vector<std::string> elements2;
-    elements2.push_back("C");
-    elements2.push_back("B");
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
 
     // Setup coordinates.
     std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
@@ -143,13 +143,13 @@ void Test_Process::testConstruction3()
     possible_types["C"] = 0;
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("A");
-    elements1.push_back("B");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
 
-    std::vector<std::string> elements2;
-    elements2.push_back("C");
-    elements2.push_back("B");
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
 
     // Setup coordinates.
     std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
@@ -218,23 +218,23 @@ void Test_Process::testConstructionMoveVectors()
     possible_types["G"] = 6;
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("A");
-    elements1.push_back("B");
-    elements1.push_back("C");
-    elements1.push_back("D");
-    elements1.push_back("E");
-    elements1.push_back("F");
-    elements1.push_back("G");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "C"));
+    elements1.push_back(std::vector<std::string>(1, "D"));
+    elements1.push_back(std::vector<std::string>(1, "E"));
+    elements1.push_back(std::vector<std::string>(1, "F"));
+    elements1.push_back(std::vector<std::string>(1, "G"));
 
-    std::vector<std::string> elements2;
-    elements2.push_back("A");
-    elements2.push_back("G");
-    elements2.push_back("F");
-    elements2.push_back("D");
-    elements2.push_back("E");
-    elements2.push_back("C");
-    elements2.push_back("B");
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "A"));
+    elements2.push_back(std::vector<std::string>(1, "G"));
+    elements2.push_back(std::vector<std::string>(1, "F"));
+    elements2.push_back(std::vector<std::string>(1, "D"));
+    elements2.push_back(std::vector<std::string>(1, "E"));
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
 
     // Setup coordinates.
     std::vector<std::vector<double> > coords(7,std::vector<double>(3,0.0));
@@ -334,23 +334,23 @@ void Test_Process::testConstructionMoveVectors2()
     possible_types["G"] = 6;
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("A");
-    elements1.push_back("F");
-    elements1.push_back("G");
-    elements1.push_back("D");
-    elements1.push_back("E");
-    elements1.push_back("B");
-    elements1.push_back("C");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "F"));
+    elements1.push_back(std::vector<std::string>(1, "G"));
+    elements1.push_back(std::vector<std::string>(1, "D"));
+    elements1.push_back(std::vector<std::string>(1, "E"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "C"));
 
-    std::vector<std::string> elements2;
-    elements2.push_back("A");
-    elements2.push_back("C");
-    elements2.push_back("B");
-    elements2.push_back("D");
-    elements2.push_back("E");
-    elements2.push_back("G");
-    elements2.push_back("F");
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "A"));
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+    elements2.push_back(std::vector<std::string>(1, "D"));
+    elements2.push_back(std::vector<std::string>(1, "E"));
+    elements2.push_back(std::vector<std::string>(1, "G"));
+    elements2.push_back(std::vector<std::string>(1, "F"));
 
     // Setup coordinates.
     std::vector<std::vector<double> > coords(7,std::vector<double>(3,0.0));
@@ -446,15 +446,15 @@ void Test_Process::testMatchList()
     possible_types["C"] = 0;
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("A");
-    elements1.push_back("B");
-    elements1.push_back("C");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "C"));
 
-    std::vector<std::string> elements2;
-    elements2.push_back("C");
-    elements2.push_back("B");
-    elements2.push_back("A");
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+    elements2.push_back(std::vector<std::string>(1, "A"));
 
     // Setup coordinates.
     std::vector<std::vector<double> > coords(3,std::vector<double>(3,0.0));
@@ -493,7 +493,7 @@ void Test_Process::testMatchList()
 
         CPPUNIT_ASSERT_EQUAL(entry.update_types[0], 1);
         CPPUNIT_ASSERT_EQUAL(entry.update_types[1], 0);
-        CPPUNIT_ASSERT_EQUAL(entry.update_types[2], 0);
+        CPPUNIT_ASSERT_EQUAL(entry.update_types[2],-1);
 
 
         // Make sure these coordinates are equal.
@@ -519,7 +519,7 @@ void Test_Process::testMatchList()
         CPPUNIT_ASSERT_EQUAL(entry.match_types[2], 0);
 
         CPPUNIT_ASSERT_EQUAL(entry.update_types[0], 0);
-        CPPUNIT_ASSERT_EQUAL(entry.update_types[1], 1);
+        CPPUNIT_ASSERT_EQUAL(entry.update_types[1], 0);
         CPPUNIT_ASSERT_EQUAL(entry.update_types[2], 0);
 
         // Make sure these coordinates are equal.
@@ -544,7 +544,7 @@ void Test_Process::testMatchList()
         CPPUNIT_ASSERT_EQUAL(entry.match_types[1], 0);
         CPPUNIT_ASSERT_EQUAL(entry.match_types[2], 0);
 
-        CPPUNIT_ASSERT_EQUAL(entry.update_types[0], 0);
+        CPPUNIT_ASSERT_EQUAL(entry.update_types[0],-1);
         CPPUNIT_ASSERT_EQUAL(entry.update_types[1], 0);
         CPPUNIT_ASSERT_EQUAL(entry.update_types[2], 1);
 
@@ -574,26 +574,26 @@ void Test_Process::testMatchListLong()
     possible_types["F"] = 5;
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("A");
-    elements1.push_back("B");
-    elements1.push_back("B");
-    elements1.push_back("B");
-    elements1.push_back("B");
-    elements1.push_back("B");
-    elements1.push_back("B");
-    elements1.push_back("B");
-    elements1.push_back("B");
-    std::vector<std::string> elements2;
-    elements2.push_back("C");
-    elements2.push_back("B");
-    elements2.push_back("B");
-    elements2.push_back("B");
-    elements2.push_back("B");
-    elements2.push_back("B");
-    elements2.push_back("B");
-    elements2.push_back("B");
-    elements2.push_back("B");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
 
     // Setup coordinates.
     std::vector<std::vector<double> > process_coords(9,std::vector<double>(3,0.0));
@@ -719,13 +719,13 @@ void Test_Process::testAddAndRemoveSite()
     possible_types["C"] = 0;
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("A");
-    elements1.push_back("B");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
 
-    std::vector<std::string> elements2;
-    elements2.push_back("C");
-    elements2.push_back("B");
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
 
     // Setup coordinates.
     std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
@@ -780,7 +780,161 @@ void Test_Process::testAddAndRemoveSite()
     CPPUNIT_ASSERT( !process.isListed(-123) );
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 0);
 
-    // This will crash since it is illegal.
+    // This would crash with a segfault since it is illegal.
+    // process.removeSite(-123);
+    // process.removeSite(1234);
+
+    // DONE
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Process::testClearSites()
+{
+    // Setup a valid possible types map.
+    std::map<std::string,int> possible_types;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["C"] = 0;
+
+    // Setup the two configurations.
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+
+    // Setup coordinates.
+    std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
+    coords[1][0] =  1.0;
+    coords[1][1] =  1.3;
+    coords[1][2] = -4.4;
+
+    // The configurations.
+    const Configuration config1(coords, elements1, possible_types);
+    const Configuration config2(coords, elements2, possible_types);
+
+    // Construct the process.
+    const double rate = 13.7;
+    const std::vector<int> basis_sites(1,0);
+    Process process(config1, config2, rate, basis_sites);
+
+    // Check that there are no listed indices by default.
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 0);
+
+    // Add a few indices.
+    process.addSite(1234, 1.0,  1.0);
+    process.addSite(3,    1.0,  5.0);
+    process.addSite(11,   1.0, 11.0);
+    process.addSite(-123, 1.0,  9.0);
+
+    // Check that these indices are now there.
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 4);
+
+    // Check that the total rate is the rate times the multiplicities.
+    const double rate_should_be = (1.0 + 5.0 + 11.0 + 9.0) * rate;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( process.totalRate(), rate_should_be, 1.0e-10);
+
+    // Clear.
+    process.clearSites();
+
+    // Check.
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 0);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( process.totalRate(), 0.0, 1.0e-10);
+
+    // DONE
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Process::testAddAndRemoveSiteMultiplicity()
+{
+    // Setup a valid possible types map.
+    std::map<std::string,int> possible_types;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["C"] = 0;
+
+    // Setup the two configurations.
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+
+    // Setup coordinates.
+    std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
+    coords[1][0] =  1.0;
+    coords[1][1] =  1.3;
+    coords[1][2] = -4.4;
+
+    // The configurations.
+    const Configuration config1(coords, elements1, possible_types);
+    const Configuration config2(coords, elements2, possible_types);
+
+    // Construct the process.
+    const double rate = 13.0;
+    const std::vector<int> basis_sites(1,0);
+    Process process(config1, config2, rate, basis_sites);
+
+    // Check that there are no listed indices by default.
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 0);
+
+    // Add a few indices.
+    process.addSite(1234, 1.0,  1.0);
+    process.addSite(3,    1.0,  5.0);
+    process.addSite(11,   1.0, 11.0);
+    process.addSite(-123, 1.0,  9.0);
+
+    // Check that these indices are now there.
+    CPPUNIT_ASSERT( process.isListed(1234) );
+    CPPUNIT_ASSERT( process.isListed(3)    );
+    CPPUNIT_ASSERT( process.isListed(11)   );
+    CPPUNIT_ASSERT( process.isListed(-123) );
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 4);
+
+    // Check that the total rate is the rate times the multiplicities.
+    double rate_should_be = (1.0 + 5.0 + 11.0 + 9.0) * rate;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( process.totalRate(), rate_should_be, 1.0e-10);
+
+    // Remove two of the indices.
+    process.removeSite(3);
+    process.removeSite(11);
+
+    // Check again.
+    CPPUNIT_ASSERT( process.isListed(1234) );
+    CPPUNIT_ASSERT( !process.isListed(3)   );
+    CPPUNIT_ASSERT( !process.isListed(11)  );
+    CPPUNIT_ASSERT( process.isListed(-123) );
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 2);
+
+    // Check that the total rate is the rate times the multiplicities.
+    rate_should_be = (1.0 + 9.0) * rate;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( process.totalRate(), rate_should_be, 1.0e-10);
+
+    // Remove the remaining two indices.
+    process.removeSite(-123);
+    process.removeSite(1234);
+
+    // Check.
+    CPPUNIT_ASSERT( !process.isListed(1234) );
+    CPPUNIT_ASSERT( !process.isListed(3)    );
+    CPPUNIT_ASSERT( !process.isListed(11)   );
+    CPPUNIT_ASSERT( !process.isListed(-123) );
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(process.nSites()), 0);
+
+    // Check that the total rate is the rate times the multiplicities.
+    rate_should_be = (0.0) * rate;
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( process.totalRate(), rate_should_be, 1.0e-10);
+
+
+    // This would crash with a segfault since it is illegal.
     // process.removeSite(-123);
     // process.removeSite(1234);
 
@@ -792,13 +946,41 @@ void Test_Process::testAddAndRemoveSite()
 //
 void Test_Process::testPickSite()
 {
-    // Default construct a process.
-    Process process;
+    // Setup a valid possible types map.
+    std::map<std::string,int> possible_types;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["C"] = 0;
+
+    // Setup the two configurations.
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+
+    // Setup coordinates.
+    std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
+    coords[1][0] =  1.0;
+    coords[1][1] =  1.3;
+    coords[1][2] = -4.4;
+
+    // The configurations.
+    const Configuration config1(coords, elements1, possible_types);
+    const Configuration config2(coords, elements2, possible_types);
+
+    // Construct the process.
+    const double rate = 1.0;
+    const std::vector<int> basis_sites(1,0);
+    Process process(config1, config2, rate, basis_sites);
 
     // Add sites.
     process.addSite(12);
     process.addSite(199);
     process.addSite(19);
+    process.updateRateTable();
 
     // Get the cite.
     int counter12  = 0;
@@ -831,9 +1013,87 @@ void Test_Process::testPickSite()
     }
 
     // Test.
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0 * n_loop / (3 * n_loop) , 1.0 * counter12 / n_loop,  1.0e-2);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0 * n_loop / (3 * n_loop) , 1.0 * counter19 / n_loop,  1.0e-2);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0 * n_loop / (3 * n_loop) , 1.0 * counter199 / n_loop, 1.0e-2);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0/3.0 , 1.0 * counter12 / n_loop,  1.0e-2);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0/3.0 , 1.0 * counter19 / n_loop,  1.0e-2);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 1.0/3.0 , 1.0 * counter199 / n_loop, 1.0e-2);
+
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Process::testPickSiteMultiplicity()
+{
+    // Setup a valid possible types map.
+    std::map<std::string,int> possible_types;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["C"] = 0;
+
+    // Setup the two configurations.
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
+
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
+
+    // Setup coordinates.
+    std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
+    coords[1][0] =  1.0;
+    coords[1][1] =  1.3;
+    coords[1][2] = -4.4;
+
+    // The configurations.
+    const Configuration config1(coords, elements1, possible_types);
+    const Configuration config2(coords, elements2, possible_types);
+
+    // Construct the process.
+    const double rate = 1.0;
+    const std::vector<int> basis_sites(1,0);
+    Process process(config1, config2, rate, basis_sites);
+
+    // Add sites.
+    process.addSite(12,  1.0, 3.0);
+    process.addSite(199, 1.0, 5.0);
+    process.addSite(19,  1.0, 7.0);
+    process.updateRateTable();
+
+    // Get the cite.
+    int counter12  = 0;
+    int counter19  = 0;
+    int counter199 = 0;
+
+    seedRandom(false, 97);
+    const int n_loop = 1000000;
+
+    for (int i = 0; i < n_loop; ++i)
+    {
+        const int site = process.pickSite();
+        CPPUNIT_ASSERT( ! (site != 12 && site != 199 && site != 19) );
+
+        // Count how often each gets selected.
+        if (site == 12)
+        {
+            ++counter12;
+        }
+
+        if (site == 199)
+        {
+            ++counter199;
+        }
+
+        if (site == 19)
+        {
+            ++counter19;
+        }
+    }
+
+    // Test.
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 3.0/15.0, 1.0 * counter12  / n_loop, 1.0e-2);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 5.0/15.0, 1.0 * counter199 / n_loop, 1.0e-2);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( 7.0/15.0, 1.0 * counter19  / n_loop, 1.0e-2);
 
 }
 
@@ -849,13 +1109,13 @@ void Test_Process::testAffectedIndices()
     possible_types["C"] = 0;
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("A");
-    elements1.push_back("B");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
 
-    std::vector<std::string> elements2;
-    elements2.push_back("C");
-    elements2.push_back("B");
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
 
     // Setup coordinates.
     std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
@@ -896,13 +1156,13 @@ void Test_Process::testCutoffAndRange()
     possible_types["C"] = 0;
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("A");
-    elements1.push_back("B");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
 
-    std::vector<std::string> elements2;
-    elements2.push_back("C");
-    elements2.push_back("B");
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
 
     // Setup coordinates.
     std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
@@ -940,13 +1200,13 @@ void Test_Process::testProcessNumber()
     possible_types["C"] = 0;
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("A");
-    elements1.push_back("B");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
 
-    std::vector<std::string> elements2;
-    elements2.push_back("C");
-    elements2.push_back("B");
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
 
     // Setup coordinates.
     std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));
@@ -995,13 +1255,13 @@ void Test_Process::testCacheRate()
     possible_types["C"] = 0;
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("A");
-    elements1.push_back("B");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1, "A"));
+    elements1.push_back(std::vector<std::string>(1, "B"));
 
-    std::vector<std::string> elements2;
-    elements2.push_back("C");
-    elements2.push_back("B");
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1, "C"));
+    elements2.push_back(std::vector<std::string>(1, "B"));
 
     // Setup coordinates.
     std::vector<std::vector<double> > coords(2,std::vector<double>(3,0.0));

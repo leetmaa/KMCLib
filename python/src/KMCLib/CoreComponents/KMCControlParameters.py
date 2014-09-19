@@ -1,13 +1,14 @@
 """ Module for the KMCControlParameters """
 
 
-# Copyright (c)  2012-2013  Mikael Leetmaa
+# Copyright (c)  2012-2014  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
 #
 
 from KMCLib.Utilities.CheckUtilities import checkPositiveInteger
+from KMCLib.Exceptions.Error import Error
 
 class KMCControlParameters(object):
     """
@@ -18,7 +19,8 @@ class KMCControlParameters(object):
                  number_of_steps=None,
                  dump_interval=None,
                  analysis_interval=None,
-                 seed=None):
+                 seed=None,
+                 dump_time_interval=None):
         """
         Constructuor for the KMCControlParameters object that
         holds all parameters controlling the flow of the KMC simulation.
@@ -41,15 +43,21 @@ class KMCControlParameters(object):
                      seeded based on the wall-clock time.
         :type seed: int
 
+        :param dump_time_interval: The simulation time between subsequent trajectory
+                              dumps. The default value is None, causing the dump_interval parameter to determine the behavior.
+        :type dump_interval: int
+
         """
         # Check and set the number of steps.
         self.__number_of_steps = checkPositiveInteger(number_of_steps,
                                                       0,
                                                       "number_of_steps")
 
-        self.__dump_interval = checkPositiveInteger(dump_interval,
-                                                    1,
-                                                    "dump_interval")
+        self.__dump_interval = None
+        if dump_interval is not None:
+            self.__dump_interval = checkPositiveInteger(dump_interval,
+                                                        1,
+                                                        "dump_interval")
 
         self.__analysis_interval = checkPositiveInteger(analysis_interval,
                                                         1,
@@ -59,6 +67,22 @@ class KMCControlParameters(object):
         self.__seed = checkPositiveInteger(seed,
                                            1,
                                            "seed")
+
+        if dump_time_interval is not None:
+            if not isinstance(dump_time_interval, float):
+                raise Error("The 'dump_time_interval' parameter must be of type float.")
+            if dump_time_interval <= 0:
+                raise Error("The 'dump_time_interval' parameter must be greater than zero.")
+
+        self.__dump_time_interval = dump_time_interval
+
+        # Check that dump_time_interval and dump_interval not both are different from None.
+        if (self.__dump_time_interval is not None) and (self.__dump_interval is not None):
+            raise Error("The 'dump_time_interval' and the 'dump_interval' parameters can not both be used.")
+
+        # If both are None, set the dump_interval to 1.
+        if (self.__dump_interval is None) and (self.__dump_time_interval is None):
+            self.__dump_interval = 1
 
     def numberOfSteps(self):
         """
@@ -75,6 +99,14 @@ class KMCControlParameters(object):
         :returns: The dump interval.
         """
         return self.__dump_interval
+
+    def dumpTimeInterval(self):
+        """
+        Query for the dump time interval.
+
+        :returns: The dump time interval.
+        """
+        return self.__dump_time_interval
 
     def analysisInterval(self):
         """

@@ -1,7 +1,7 @@
 """ Module for the KMCProcess class """
 
 
-# Copyright (c)  2013  Mikael Leetmaa
+# Copyright (c)  2013-2014  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -9,19 +9,17 @@
 
 import numpy
 
-from KMCLib.Utilities.CoordinateUtilities import centerCoordinates
 from KMCLib.Utilities.CoordinateUtilities import sortCoordinatesDistance
-from KMCLib.Utilities.CheckUtilities import checkCoordinateList
 from KMCLib.Utilities.CheckUtilities import checkTypes
 from KMCLib.Utilities.CheckUtilities import checkSequence
 from KMCLib.Utilities.CheckUtilities import checkSequenceOfFloats
 from KMCLib.Utilities.CheckUtilities import checkSequenceOfPositiveIntegers
-from KMCLib.Utilities.CheckUtilities import checkPositiveInteger
 from KMCLib.Utilities.CheckUtilities import checkPositiveFloat
 from KMCLib.CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
+from KMCLib.CoreComponents.KMCBaseProcess import KMCBaseProcess
 from KMCLib.Exceptions.Error import Error
 
-class KMCProcess(object):
+class KMCProcess(KMCBaseProcess):
     """
     Class for representing a possible process in a lattice KMC simulation.
     """
@@ -69,12 +67,8 @@ class KMCProcess(object):
         :type rate_constant: float
 
         """
-        # Check the coordinates.
-        coordinates = checkCoordinateList(coordinates)
-
-        # Center the coordinates on the first entry.
-        center = 0
-        self.__coordinates = centerCoordinates(coordinates, center)
+        # Call the base class constructor.
+        super(KMCProcess, self).__init__(coordinates, basis_sites, rate_constant)
 
         # Check the types.
         elements_before = checkTypes(elements_before, len(coordinates))
@@ -84,11 +78,11 @@ class KMCProcess(object):
         self.__checkValidMoveElements(elements_before, elements_after)
 
         # All types checking done.
-        self.__elements_before = elements_before
-        self.__elements_after  = elements_after
+        self._elements_before = elements_before
+        self._elements_after  = elements_after
 
         # Check that the move vectors are compatible with the elements.
-        self.__move_vectors = self.__checkValidMoveVectors(move_vectors)
+        self._move_vectors = self.__checkValidMoveVectors(move_vectors)
 
         # Sort the coordinates and co-sort the elements and move vectors.
         self.__sortCoordinatesElementsAndMoveVectors()
@@ -108,9 +102,12 @@ class KMCProcess(object):
                                                   default_parameter=None,
                                                   parameter_name="rate_constant")
         # Setup the local configurations.
-        c1 = KMCLocalConfiguration(self.__coordinates, self.__elements_before, center)
-        c2 = KMCLocalConfiguration(self.__coordinates, self.__elements_after,  center)
-        self.__local_configurations = (c1, c2)
+        center = 0
+        c1 = KMCLocalConfiguration(self._coordinates, self._elements_before, center)
+        c2 = KMCLocalConfiguration(self._coordinates, self._elements_after,  center)
+        self._local_configurations = (c1, c2)
+
+        self._all_present_types = list(set(self.elementsBefore() + self.elementsAfter()))
 
     def __checkValidMoveElements(self, elements_before, elements_after):
         """
@@ -151,13 +148,13 @@ class KMCProcess(object):
 
         # Try to make the move with the move vectors and check that
         # we end up in the elements after list.
-        moved_elements = [] + self.__elements_before
+        moved_elements = [] + self._elements_before
         for (move_index, move_vector) in move_vectors:
-            old_coord = self.__coordinates[move_index]
+            old_coord = self._coordinates[move_index]
             new_coord = numpy.array(old_coord) + numpy.array(move_vector)   #    <- Elementwise addition.
 
             # Find which index this corresponds to.
-            subtracted = self.__coordinates - new_coord
+            subtracted = self._coordinates - new_coord
             reduced    = numpy.abs(sum(abs(subtracted.transpose())))
             boolean    = [ rr < 1.0e-8 for rr in reduced ]
             new_index  = numpy.where(boolean)
@@ -167,15 +164,15 @@ class KMCProcess(object):
 
             # Check that the the element at this position in the new elements
             # vector corresponds to the move.
-            if self.__elements_before[move_index] != self.__elements_after[new_index]:
+            if self._elements_before[move_index] != self._elements_after[new_index]:
                 raise Error("The move vector for index %i does not match the elements after move."%(move_index))
 
             # Perform the move.
-            moved_elements[new_index] = self.__elements_before[move_index]
+            moved_elements[new_index] = self._elements_before[move_index]
 
         # With all moves performed on the elements we check if we properly reconstructed
         # the elements after the move.
-        if (self.__elements_after != moved_elements):
+        if (self._elements_after != moved_elements):
             raise Error("Applying the move vectors to the elements_before does not generate the elements_after list.")
 
         return move_vectors
@@ -231,7 +228,7 @@ coordinates defining where the moved index goes."""
         """
         # Find the differing elements.
         pairs = []
-        for i, (e1, e2) in enumerate(zip(self.__elements_before, self.__elements_after)):
+        for i, (e1, e2) in enumerate(zip(self._elements_before, self._elements_after)):
             if e1 != e2:
                 pairs.append((e1,e2,i))
 
@@ -247,8 +244,8 @@ coordinates defining where the moved index goes."""
         index_0 = pairs[0][2]
         index_1 = pairs[1][2]
 
-        start = numpy.array(self.__coordinates[index_0])
-        end   = numpy.array(self.__coordinates[index_1])
+        start = numpy.array(self._coordinates[index_0])
+        end   = numpy.array(self._coordinates[index_1])
 
         vector_0 = numpy.array(end-start)
         vector_1 = numpy.array(start-end)
@@ -261,25 +258,25 @@ coordinates defining where the moved index goes."""
         and update the element order and move_vector indexing accordingly.
         """
         # Set up the original indexing.
-        original_indexing = range(len(self.__coordinates))
+        original_indexing = range(len(self._coordinates))
 
         # Sort, and co-sort coordinates and indices.
         (sorted_coords, dummy_distances, sorted_types_before, sorted_types_after, new_to_old_index) = \
-            sortCoordinatesDistance(coordinates = self.__coordinates,
+            sortCoordinatesDistance(coordinates = self._coordinates,
                                     center      = 0,
-                                    types1      = self.__elements_before,
-                                    types2      = self.__elements_after,
+                                    types1      = self._elements_before,
+                                    types2      = self._elements_after,
                                     co_sort     = original_indexing)
 
         # Fix the move vectors.
-        if len(self.__move_vectors) > 0:
+        if len(self._move_vectors) > 0:
             old_to_new_index = []
             for i in range(len(new_to_old_index)):
                 old_to_new_index.append(new_to_old_index.index(i))
 
             # Fixt the move vector indexing.
             move_vector_index = []
-            for v in self.__move_vectors:
+            for v in self._move_vectors:
                 move_vector_index.append( old_to_new_index[v[0]] )
 
             # Setup and sort the backmapping.
@@ -290,15 +287,15 @@ coordinates defining where the moved index goes."""
             # Construct the new move vectors.
             new_move_vectors = []
             for idx in sorted_indices:
-                new_move_vectors.append( (idx[1], self.__move_vectors[idx[0]][1]) )
+                new_move_vectors.append( (idx[1], self._move_vectors[idx[0]][1]) )
 
             # Set the move vectors.
-            self.__move_vectors = new_move_vectors
+            self._move_vectors = new_move_vectors
 
         # Set the new data on the class.
-        self.__coordinates = sorted_coords
-        self.__elements_before = sorted_types_before
-        self.__elements_after = sorted_types_after
+        self._coordinates = sorted_coords
+        self._elements_before = sorted_types_before
+        self._elements_after = sorted_types_after
 
     def __eq__(self, other):
         """ Implements the equal oprator. """
@@ -335,11 +332,11 @@ coordinates defining where the moved index goes."""
             return False
 
         # Check the move vectors.
-        if len(self.__move_vectors) != len(other._KMCProcess__move_vectors):
+        if len(self._move_vectors) != len(other._move_vectors):
             return False
 
             # For each move vector, loop through the others and find the one that matches.
-        for v1,v2 in zip(self.__move_vectors,other._KMCProcess__move_vectors):
+        for v1,v2 in zip(self._move_vectors,other._move_vectors):
             if v1[0] != v2[0]:
                 return False
             elif numpy.linalg.norm(numpy.array(v1[1])-numpy.array(v2[1])) > 1.0e-8:
@@ -348,47 +345,13 @@ coordinates defining where the moved index goes."""
         # Passed all tests, return true.
         return True
 
-    def localConfigurations(self):
-        """
-        Query for the local configurations.
-
-        :returns: The two local configurations in a tuple.
-        """
-        return self.__local_configurations
-
-    def basisSites(self):
-        """
-        Query for the basis sites.
-
-        :returns: The basis sites as stored on the class. Returns None if
-                  no basis sites were given on construction.
-        """
-        return self.__basis_sites
-
-    def rateConstant(self):
-        """
-        Query for the rate constant.
-
-        :returns: The rate constant stored on the class.
-        :rtype: float
-        """
-        return self.__rate_constant
-
-    def moveVectors(self):
-        """
-        Query for the move vectors.
-
-        :returns: The move vectors stored on the class.
-        """
-        return self.__move_vectors
-
     def elementsBefore(self):
         """
         Query for the elements before.
 
         :returns: The elements before stored on the class.
         """
-        return self.__elements_before
+        return self._elements_before
 
     def elementsAfter(self):
         """
@@ -396,7 +359,7 @@ coordinates defining where the moved index goes."""
 
         :returns: The elements before stored on the class.
         """
-        return self.__elements_after
+        return self._elements_after
 
     def _script(self, variable_name="process"):
         """
@@ -420,18 +383,18 @@ coordinates defining where the moved index goes."""
         coord_template = "[" + ff + "," + ff + "," + ff + "],\n"
 
         # For the first coordinate, if there are more than one coordinate.
-        if len(self.__coordinates) > 1:
-            c = self.__coordinates[0]
+        if len(self._coordinates) > 1:
+            c = self._coordinates[0]
             coords_string += coord_template%(c[0],c[1],c[2])
 
             # And the middle coordinates.
             coord_template = indent + "[" + ff + "," + ff + "," + ff + "],\n"
-            for c in self.__coordinates[1:-1]:
+            for c in self._coordinates[1:-1]:
                 coords_string += coord_template%(c[0],c[1],c[2])
 
         # Add the last coordinate (which is also the first if there is only one coordinate).
-        c = self.__coordinates[-1]
-        if len(self.__coordinates) == 1:
+        c = self._coordinates[-1]
+        if len(self._coordinates) == 1:
             coord_template = "[" + ff + "," + ff + "," + ff + "]]\n"
         else:
             coord_template = indent + "[" + ff + "," + ff + "," + ff + "]]\n"
@@ -441,8 +404,8 @@ coordinates defining where the moved index goes."""
         elements_before_string = "elements_before = "
         indent = " "*19
         line = "["
-        nT = len(self.__elements_before)
-        for i,t in enumerate(self.__elements_before):
+        nT = len(self._elements_before)
+        for i,t in enumerate(self._elements_before):
             # Add the type.
             line += "'" + t + "'"
             if i == nT-1:
@@ -463,8 +426,8 @@ coordinates defining where the moved index goes."""
         elements_after_string = "elements_after  = "
         indent = " "*19
         line = "["
-        nT = len(self.__elements_after)
-        for i,t in enumerate(self.__elements_after):
+        nT = len(self._elements_after)
+        for i,t in enumerate(self._elements_after):
             # Add the type.
             line += "'" + t + "'"
             if i == nT-1:
@@ -482,17 +445,17 @@ coordinates defining where the moved index goes."""
                 line = ""
 
         # Setup the move vector string.
-        if len(self.__move_vectors) == 0:
+        if len(self._move_vectors) == 0:
             move_vectors_string = "move_vectors    = None\n"
         else:
             move_vectors_string = "move_vectors    = ["
             indent = " "*19
             vector_template = "[" + ff + "," + ff + "," + ff + "]"
-            for i, (index, vector) in enumerate(self.__move_vectors):
+            for i, (index, vector) in enumerate(self._move_vectors):
 
                 move_vectors_string += "( %2i,"%(index) + vector_template%(vector[0], vector[1], vector[2])
 
-                if i < len(self.__move_vectors)-1:
+                if i < len(self._move_vectors)-1:
                     move_vectors_string += "),\n" + indent
                 else:
                     move_vectors_string += ")]\n"

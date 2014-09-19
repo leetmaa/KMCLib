@@ -160,18 +160,23 @@ class IsingSpinTest(unittest.TestCase):
         print "Time for cache run  (s):", t3-t2
         print "Time for fixed run  (s):", t4-t3
 
-        self.assertEqual(d0, 4062)
-        self.assertEqual(d1, 4062)
-        self.assertEqual(d2, 4320)
+        self.assertEqual(d0, 6340)
+        self.assertEqual(d1, 6340)
+        self.assertEqual(d2, 6482)
 
-        self.assertEqual(u0, 5938)
-        self.assertEqual(u1, 5938)
-        self.assertEqual(u2, 5680)
-
+        self.assertEqual(u0, 3660)
+        self.assertEqual(u1, 3660)
+        self.assertEqual(u2, 3518)
 
         # --------------------------------------------------------------------
         # Now, plot the last configuration from each trajectory and compare
         # with the images 'fixed_rates.png', 'custom_rates.png'
+
+        # FIXME: The immages should be updated to correspond to the result
+        #        from the latest version. The reason for the change is due
+        #        to changes in the order of a few calls to the random number
+        #        generator and thus only of statistical nature. But the
+        #        images must never the less be updated.
 
 
 if __name__ == '__main__':

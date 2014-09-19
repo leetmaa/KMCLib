@@ -97,9 +97,9 @@ void Test_Hash::testHashCustomRateInput()
     coords[1][2] = 0.1;
 
     // Setup elements.
-    std::vector<std::string> elements(2);
-    elements[0] = "A";
-    elements[1] = "B";
+    std::vector<std::vector<std::string> > elements(2);
+    elements[0] = std::vector<std::string>(1,"A");
+    elements[1] = std::vector<std::string>(1,"B");
 
     // Setup the mapping from element to integer.
     std::map<std::string, int> possible_types;
@@ -128,12 +128,12 @@ void Test_Hash::testHashCustomRateInput()
     // Construct a process that should match the second index.
 
     // Setup the two configurations.
-    std::vector<std::string> elements1;
-    elements1.push_back("B");
-    elements1.push_back("A");
-    std::vector<std::string> elements2;
-    elements2.push_back("C");
-    elements2.push_back("A");
+    std::vector<std::vector<std::string> > elements1;
+    elements1.push_back(std::vector<std::string>(1,"B"));
+    elements1.push_back(std::vector<std::string>(1,"A"));
+    std::vector<std::vector<std::string> > elements2;
+    elements2.push_back(std::vector<std::string>(1,"C"));
+    elements2.push_back(std::vector<std::string>(1,"A"));
     // Setup coordinates.
     std::vector<std::vector<double> > process_coords(2,std::vector<double>(3,0.0));
     process_coords[1][0] =  -0.5;
@@ -155,13 +155,13 @@ void Test_Hash::testHashCustomRateInput()
         // Get the hash.
         index = 1;
         const unsigned long int hash1 = hashCustomRateInput(index, process1, config);
-        const unsigned long int ref1 = 663948462431481124;
+        const unsigned long int ref1 = 18009609292013583759u;
         CPPUNIT_ASSERT_EQUAL(hash1, ref1);
 
         // Get the hash.
         index = 0;
         const unsigned long int hash0 = hashCustomRateInput(index, process1, config);
-        const unsigned long int ref0 = 5460844214287194975;
+        const unsigned long int ref0 = 4224368175550234772u;
         CPPUNIT_ASSERT_EQUAL(hash0, ref0);
     }
 
@@ -169,12 +169,12 @@ void Test_Hash::testHashCustomRateInput()
         // Check against another process that differs in the process number.
         index = 1;
         const unsigned long int hash1 = hashCustomRateInput(index, process2, config);
-        const unsigned long int ref1 = 7376371818039500683;
+        const unsigned long int ref1 = 4824710481459367137u;
         CPPUNIT_ASSERT_EQUAL(hash1, ref1);
 
         index = 0;
         const unsigned long int hash0 = hashCustomRateInput(index, process2, config);
-        const unsigned long int ref0 = 3751783971651441402;
+        const unsigned long int ref0 = 17780468236463825071u;
         CPPUNIT_ASSERT_EQUAL(hash0, ref0);
     }
 
