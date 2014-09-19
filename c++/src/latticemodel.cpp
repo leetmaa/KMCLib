@@ -64,6 +64,13 @@ void LatticeModel::calculateInitialMatching()
                                indices);
 }
 
+// -----------------------------------------------------------------------------
+//
+void LatticeModel::propagateTime()
+{
+    // Propagate the time.
+    simulation_timer_.propagateTime(interactions_.totalRate());
+}
 
 // -----------------------------------------------------------------------------
 //
@@ -77,9 +84,6 @@ void LatticeModel::singleStep()
 
     // Perform the operation.
     configuration_.performBucketProcess(process, site_index, lattice_map_);
-
-    // Propagate the time.
-    simulation_timer_.propagateTime(interactions_.totalRate());
 
     // Run the re-matching of the affected sites and their neighbours.
     const std::vector<int> & indices = \

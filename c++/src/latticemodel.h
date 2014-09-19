@@ -47,6 +47,10 @@ public:
      */
     void singleStep();
 
+    /*! \brief Function for updating the time for the single step.
+     */
+    void propagateTime();
+
     /*! \brief Query for the interactions.
      *  \return : A handle to the interactions stored on the class.
      */

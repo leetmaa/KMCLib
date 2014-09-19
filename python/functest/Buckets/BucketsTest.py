@@ -274,9 +274,9 @@ class BucketsTest(unittest.TestCase):
                                 interactions=interactions)
 
         # Control parameters.
-        control_parameters = KMCControlParameters(number_of_steps=100000,
-                                                  dump_interval=1000,
-                                                  seed=12)
+        control_parameters = KMCControlParameters(number_of_steps=10000000,
+                                                  seed=12,
+                                                  dump_time_interval=10.0)
 
         # Run the model.
         model.run(control_parameters=control_parameters,
@@ -294,15 +294,7 @@ class BucketsTest(unittest.TestCase):
             # One-liner to calculate the number of M1 on this row.
             distribution.append(len([t for i in this_row for t in types[i] if t == 'M1']))
 
-        ref_distribution = [0, 86, 34, 18, 14, 25, 13, 9, 2, 10,
-                            11, 4, 7, 9, 1, 5, 5, 1, 2, 2, 6, 2,
-                            1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0,
-                            0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
-                            0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,
-                            0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                            0, 2, 1, 0, 0, 1, 1, 3, 0, 1, 3, 1,
-                            2, 2, 1, 3, 1, 4, 3, 1, 10, 4, 15, 18,
-                            9, 28, 14, 14, 33, 84]
+        ref_distribution = [0, 108, 28, 21, 32, 13, 8, 13, 12, 8, 4, 6, 10, 2, 5, 2, 5, 3, 3, 1, 2, 2, 5, 3, 1, 1, 2, 0, 1, 0, 1, 0, 0, 0, 1, 2, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 2, 1, 0, 0, 0, 2, 1, 1, 3, 6, 0, 2, 5, 3, 3, 6, 2, 10, 5, 9, 9, 18, 16, 11, 23, 23, 33, 114]
 
         # Check.
         self.assertEqual( ref_distribution, distribution )
