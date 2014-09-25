@@ -206,8 +206,16 @@ void Test_Configuration::testPerformProcess()
     CPPUNIT_ASSERT( configuration.types()[351]  == 1 );
     CPPUNIT_ASSERT( configuration.types()[2517] == 1 );
 
+    // Check that the latest index and process numbers are zero before we perform the process.
+    CPPUNIT_ASSERT_EQUAL( configuration.latestEventProcess(), 0 );
+    CPPUNIT_ASSERT_EQUAL( configuration.latestEventSite(), 0 );
+
     // Peform the process.
     configuration.performBucketProcess(p, 1434, lattice_map);
+
+    // Check that the index and process number got saved on the configuration.
+    CPPUNIT_ASSERT_EQUAL( configuration.latestEventProcess(), p.processNumber() );
+    CPPUNIT_ASSERT_EQUAL( configuration.latestEventSite(), 1434 );
 
     // Check that the types were correctly updated.
     CPPUNIT_ASSERT( configuration.types()[1434] == 2 );

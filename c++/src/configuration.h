@@ -79,6 +79,16 @@ public:
     inline
     std::vector<int> movedAtomIDs() const;
 
+    /*! \brief Const query for the process number of the latest process performed.
+     *  \return : The number of the latest process performed.
+     */
+    int latestEventProcess() const { return latest_event_process_; }
+
+    /*! \brief Const query for the site index for the latest performed event.
+     *  \return : The latest site where a process was performed.
+     */
+    int latestEventSite() const { return latest_event_site_; }
+
     /*! \brief Const query for the moved atoms move vectors, in the same order as the id's.
      *  \return : A copy of the recent move vectors, resized to correct length.
      */
@@ -201,6 +211,12 @@ private:
 
     /// Mapping from string to int representation of types.
     std::map<std::string,int> possible_types_;
+
+    /// The process number of the latest event that took place.
+    int latest_event_process_;
+
+    /// The site index of the latest event that took place.
+    int latest_event_site_;
 
 };
 

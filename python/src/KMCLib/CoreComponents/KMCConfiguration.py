@@ -271,6 +271,18 @@ class KMCConfiguration(object):
         """
         return self._backend().movedAtomIDs()
 
+    def latestEventProcess(self):
+        """
+        Query for the process number of the latest event.
+        """
+        return self._backend().latestEventProcess()
+
+    def latestEventSite(self):
+        """
+        Query for the site index of the latest event.
+        """
+        return self._backend().latestEventSite()
+
     def lattice(self):
         """
         Query for the lattice.
