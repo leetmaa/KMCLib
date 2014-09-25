@@ -1,4 +1,4 @@
-""" Module for testing the on-the-fly MSD analysis. """
+""" Module for testing the time step distribution analysis. """
 
 
 # Copyright (c)  2013  Mikael Leetmaa

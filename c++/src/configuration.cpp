@@ -254,6 +254,10 @@ void Configuration::performBucketProcess(Process & process,
                                          const int site_index,
                                          const LatticeMap & lattice_map)
 {
+    // Store the process number for access from python.
+    latest_event_process_ = process.processNumber();
+    latest_event_site_    = site_index;
+
     // Get the proper match lists.
     const ProcessBucketMatchList & process_match_list = process.processMatchList();
     const ConfigBucketMatchList & site_match_list     = configMatchList(site_index);

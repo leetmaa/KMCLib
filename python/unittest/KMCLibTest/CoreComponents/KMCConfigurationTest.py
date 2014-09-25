@@ -473,13 +473,22 @@ class KMCConfigurationTest(unittest.TestCase):
                 return ("A", "B", "F")
             def atomIDCoordinates(self):
                 return (Backend.Coordinate(c0_ref,c1_ref,c2_ref),)
+            def movedAtomIDs(self):
+                return (123, 234)
+            def latestEventProcess(self):
+                return 995976943
+            def latestEventSite(self):
+                return 556462676
 
         config._KMCConfiguration__backend = BackendProxy()
 
         # Query and check.
-        atom_id_types  = config.atomIDTypes()
-        atom_id_coords = config.atomIDCoordinates()
-        lattice_types  = config.types()
+        atom_id_types        = config.atomIDTypes()
+        atom_id_coords       = config.atomIDCoordinates()
+        lattice_types        = config.types()
+        moved_atom_ids       = config.movedAtomIDs()
+        latest_event_process = config.latestEventProcess()
+        latest_event_site    = config.latestEventSite()
 
         self.assertEqual(atom_id_types, ("A","B","F"))
         self.assertEqual(lattice_types, ["B","F","A"])
@@ -487,6 +496,10 @@ class KMCConfigurationTest(unittest.TestCase):
         self.assertAlmostEqual(atom_id_coords[0][0], c0_ref, 10)
         self.assertAlmostEqual(atom_id_coords[0][1], c1_ref, 10)
         self.assertAlmostEqual(atom_id_coords[0][2], c2_ref, 10)
+
+        self.assertEqual(moved_atom_ids,      (123, 234))
+        self.assertEqual(latest_event_process, 995976943)
+        self.assertEqual(latest_event_site,    556462676)
 
     def testLatticeQuery(self):
         """ Test the query function for the lattice. """
