@@ -31,7 +31,9 @@ void Test_MatchList::testCall()
     m2[0].match_types = TypeBucket(3);
     m2[0].match_types[2] = 2;
     m2[0].distance = 1.2;
-    m2[0].coordinate = Coordinate(0.1, 0.2, 0.3);
+    m2[0].x = 0.1;
+    m2[0].y = 0.2;
+    m2[0].z = 0.3;
     m2[0].index = 0;
 
     whateverMatch(m1, m2);

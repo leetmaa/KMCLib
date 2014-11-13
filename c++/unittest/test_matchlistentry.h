@@ -27,6 +27,7 @@ public:
     CPPUNIT_TEST( testConstruction );
     CPPUNIT_TEST( testNotEqualOperator );
     CPPUNIT_TEST( testLessOperator );
+    CPPUNIT_TEST( testInitWildcard );
     CPPUNIT_TEST( testProcessBucketEntryConstruction );
     CPPUNIT_TEST( testConfigBucketEntryConstruction );
     CPPUNIT_TEST( testProcessConfigNotEqual );
@@ -40,6 +41,7 @@ public:
     void testConstruction();
     void testNotEqualOperator();
     void testLessOperator();
+    void testInitWildcard();
     void testProcessBucketEntryConstruction();
     void testConfigBucketEntryConstruction();
     void testProcessConfigNotEqual();

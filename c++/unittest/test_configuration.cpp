@@ -580,22 +580,19 @@ void Test_Configuration::testMatchLists()
         CPPUNIT_ASSERT_EQUAL( ref_1434[i].match_types,
                               configuration.configMatchList(1434)[i].match_types );
 
-        CPPUNIT_ASSERT_EQUAL( ref_1434[i].update_types.size(),
-                              configuration.configMatchList(1434)[i].update_types.size() );
-
         CPPUNIT_ASSERT_EQUAL( ref_1434[i].index,
                               configuration.configMatchList(1434)[i].index );
         CPPUNIT_ASSERT_DOUBLES_EQUAL( ref_1434[i].distance,
                                       configuration.configMatchList(1434)[i].distance,
                                       1.0e-14 );
-        CPPUNIT_ASSERT_DOUBLES_EQUAL( ref_1434[i].coordinate.x(),
-                                      configuration.configMatchList(1434)[i].coordinate.x(),
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( ref_1434[i].x,
+                                      configuration.configMatchList(1434)[i].x,
                                       1.0e-14 );
-        CPPUNIT_ASSERT_DOUBLES_EQUAL( ref_1434[i].coordinate.y(),
-                                      configuration.configMatchList(1434)[i].coordinate.y(),
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( ref_1434[i].y,
+                                      configuration.configMatchList(1434)[i].y,
                                       1.0e-14 );
-        CPPUNIT_ASSERT_DOUBLES_EQUAL( ref_1434[i].coordinate.z(),
-                                      configuration.configMatchList(1434)[i].coordinate.z(),
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( ref_1434[i].z,
+                                      configuration.configMatchList(1434)[i].z,
                                       1.0e-14 );
 
     }
@@ -673,25 +670,22 @@ void Test_Configuration::testMatchLists()
         CPPUNIT_ASSERT_EQUAL( ref2_1434[i].match_types,
                               configuration.configMatchList(1434)[i].match_types );
 
-        CPPUNIT_ASSERT_EQUAL( ref2_1434[i].update_types,
-                              configuration.configMatchList(1434)[i].update_types );
-
         CPPUNIT_ASSERT_EQUAL( ref2_1434[i].index, configuration.configMatchList(1434)[i].index );
 
         CPPUNIT_ASSERT_DOUBLES_EQUAL( ref2_1434[i].distance,
                                       configuration.configMatchList(1434)[i].distance,
                                       1.0e-14 );
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL( ref2_1434[i].coordinate.x(),
-                                      configuration.configMatchList(1434)[i].coordinate.x(),
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( ref2_1434[i].x,
+                                      configuration.configMatchList(1434)[i].x,
                                       1.0e-14 );
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL( ref2_1434[i].coordinate.y(),
-                                      configuration.configMatchList(1434)[i].coordinate.y(),
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( ref2_1434[i].y,
+                                      configuration.configMatchList(1434)[i].y,
                                       1.0e-14 );
 
-        CPPUNIT_ASSERT_DOUBLES_EQUAL( ref2_1434[i].coordinate.z(),
-                                      configuration.configMatchList(1434)[i].coordinate.z(),
+        CPPUNIT_ASSERT_DOUBLES_EQUAL( ref2_1434[i].z,
+                                      configuration.configMatchList(1434)[i].z,
                                       1.0e-14 );
 
     }

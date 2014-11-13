@@ -557,7 +557,7 @@ void Test_LatticeMap::testNeighbourIndicesLong()
     for ( ; it0 != default_matchlist.end(); ++it0, ++it1 )
     {
         CPPUNIT_ASSERT( (*it0).match_types.identical((*it1).match_types) );
-        CPPUNIT_ASSERT( (*it0).samePoint(*it1) );
+        CPPUNIT_ASSERT( samePoint(*it0, *it1) );
     }
 
     // Check that they are correctly sorted.
@@ -581,13 +581,13 @@ void Test_LatticeMap::testNeighbourIndicesLong()
     ConfigBucketMatchListEntry m2 = two_shell_matchlist[5*4*3*2+1];
     ConfigBucketMatchListEntry m3 = three_shell_matchlist[7*6*5*2+5];
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( m2.coordinate.x(), -2.0000000000e+00, 1.0e-10 );
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( m2.coordinate.y(), -1.0000000000e+00, 1.0e-10 );
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( m2.coordinate.z(), -1.0000000000e+00, 1.0e-10 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( m2.x, -2.0000000000e+00, 1.0e-10 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( m2.y, -1.0000000000e+00, 1.0e-10 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( m2.z, -1.0000000000e+00, 1.0e-10 );
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( m3.coordinate.x(), -2.0000000000e+00, 1.0e-10 );
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( m3.coordinate.y(), -3.0000000000e+00, 1.0e-10 );
-    CPPUNIT_ASSERT_DOUBLES_EQUAL( m3.coordinate.z(), -1.0000000000e+00, 1.0e-10 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( m3.x, -2.0000000000e+00, 1.0e-10 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( m3.y, -3.0000000000e+00, 1.0e-10 );
+    CPPUNIT_ASSERT_DOUBLES_EQUAL( m3.z, -1.0000000000e+00, 1.0e-10 );
 
     // DONE.
 }

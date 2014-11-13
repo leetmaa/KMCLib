@@ -183,9 +183,11 @@ const ConfigBucketMatchList & Configuration::configMatchList(const int origin_in
             (*it_match_list).match_types = types_[(*it_index)];
 
             // Save in the match list.
-            (*it_match_list).distance    = distance;
-            (*it_match_list).coordinate  = c;
-            (*it_match_list).index       = (*it_index);
+            (*it_match_list).distance = distance;
+            (*it_match_list).index = (*it_index);
+            (*it_match_list).x = c.x();
+            (*it_match_list).y = c.y();
+            (*it_match_list).z = c.z();
         }
     }
     // Periodic a-b
@@ -208,9 +210,11 @@ const ConfigBucketMatchList & Configuration::configMatchList(const int origin_in
             (*it_match_list).match_types = types_[(*it_index)];
 
             // Save in the match list.
-            (*it_match_list).distance    = distance;
-            (*it_match_list).coordinate  = c;
-            (*it_match_list).index       = (*it_index);
+            (*it_match_list).distance = distance;
+            (*it_match_list).index = (*it_index);
+            (*it_match_list).x = c.x();
+            (*it_match_list).y = c.y();
+            (*it_match_list).z = c.z();
         }
     }
     else {
@@ -236,9 +240,11 @@ const ConfigBucketMatchList & Configuration::configMatchList(const int origin_in
             (*it_match_list).match_types = types_[(*it_index)];
 
             // Save in the match list.
-            (*it_match_list).distance    = distance;
-            (*it_match_list).coordinate  = c;
-            (*it_match_list).index       = (*it_index);
+            (*it_match_list).distance = distance;
+            (*it_match_list).index = (*it_index);
+            (*it_match_list).x = c.x();
+            (*it_match_list).y = c.y();
+            (*it_match_list).z = c.z();
         }
     }
 

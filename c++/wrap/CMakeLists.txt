@@ -27,6 +27,7 @@ set_source_files_properties(backend.i PROPERTIES SWIG_FLAGS "")
 # SET COMPILER FLAGS TO IGNORE KNOWN SWIG GENERATED ERRORS
 # -----------------------------------------------------------------------------
 add_definitions( -Wno-uninitialized )
+add_definitions( -Wno-unused-but-set-variable )
 
 # For intel.
 if (USING_INTEL)

@@ -24,7 +24,6 @@ class Configuration;
 
 
 /// Define the match lists.
-typedef std::vector<MatchListEntry> MatchList;
 typedef std::vector<ProcessBucketMatchListEntry> ProcessBucketMatchList;
 typedef std::vector<ConfigBucketMatchListEntry> ConfigBucketMatchList;
 

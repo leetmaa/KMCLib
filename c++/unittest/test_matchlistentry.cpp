@@ -39,6 +39,33 @@ void Test_MatchListEntry::testLessOperator()
 
 // -------------------------------------------------------------------------- //
 //
+void Test_MatchListEntry::testInitWildcard()
+{
+    // Test that we can initialize a wildcard entry properly.
+    ConfigBucketMatchListEntry c;
+    c.distance = 12345.12345;
+    c.x = 43.32;
+    c.y = 13.12;
+    c.z = 21.31;
+    c.match_types = TypeBucket(3);
+
+    // Init the wildcard.
+    ProcessBucketMatchListEntry p;
+    p.initWildcard(c);
+
+    // Check the values.
+    CPPUNIT_ASSERT_EQUAL(p.index, -1);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(p.distance, c.distance, 1.0e-10);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(p.coordinate.x(), c.x, 1.0e-10);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(p.coordinate.y(), c.y, 1.0e-10);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL(p.coordinate.z(), c.z, 1.0e-10);
+    CPPUNIT_ASSERT_EQUAL(p.match_types.size(), c.match_types.size());
+    CPPUNIT_ASSERT_EQUAL(p.update_types.size(), c.match_types.size());
+}
+
+
+// -------------------------------------------------------------------------- //
+//
 void Test_MatchListEntry::testSamePoint()
 {
     // Two equal.
@@ -57,10 +84,11 @@ void Test_MatchListEntry::testSamePoint()
         m2.match_types = TypeBucket(3);
         m2.match_types[2] = 3;
         m2.distance = 1.2;
-        m2.coordinate = Coordinate(0.1,0.2,0.34);
+        m2.x = 0.1;
+        m2.y = 0.2;
+        m2.z = 0.34;
 
-        CPPUNIT_ASSERT( m1.samePoint(m2) );
-        CPPUNIT_ASSERT( m2.samePoint(m1) );
+        CPPUNIT_ASSERT( samePoint(m1, m2) );
     }
 
     // Still the same point if we change th match types completely.
@@ -79,10 +107,11 @@ void Test_MatchListEntry::testSamePoint()
         m2.match_types = TypeBucket(3);
         m2.match_types[2] = 3;
         m2.distance = 1.2;
-        m2.coordinate = Coordinate(0.1,0.2,0.34);
+        m2.x = 0.1;
+        m2.y = 0.2;
+        m2.z = 0.34;
 
-        CPPUNIT_ASSERT( m1.samePoint(m2) );
-        CPPUNIT_ASSERT( m2.samePoint(m1) );
+        CPPUNIT_ASSERT( samePoint(m1, m2) );
     }
 
     // Not the same point if we chang the distance.
@@ -101,10 +130,11 @@ void Test_MatchListEntry::testSamePoint()
         m2.match_types = TypeBucket(3);
         m2.match_types[2] = 3;
         m2.distance = 1.2;
-        m2.coordinate = Coordinate(0.1,0.2,0.34);
+        m2.x = 0.1;
+        m2.y = 0.2;
+        m2.z = 0.34;
 
-        CPPUNIT_ASSERT( !m1.samePoint(m2) );
-        CPPUNIT_ASSERT( !m2.samePoint(m1) );
+        CPPUNIT_ASSERT( !samePoint(m1, m2) );
     }
     // Not the same point if we chang the coordinate in x.
     {
@@ -122,10 +152,12 @@ void Test_MatchListEntry::testSamePoint()
         m2.match_types = TypeBucket(3);
         m2.match_types[2] = 3;
         m2.distance = 1.2;
-        m2.coordinate = Coordinate(0.1,0.2,0.34);
+        m2.x = 0.1;
+        m2.y = 0.2;
+        m2.z = 0.34;
 
-        CPPUNIT_ASSERT( !m1.samePoint(m2) );
-        CPPUNIT_ASSERT( !m2.samePoint(m1) );
+        CPPUNIT_ASSERT( !samePoint(m1, m2) );
+
     }
     // Not the same point if we chang the coordinate in y.
     {
@@ -143,10 +175,11 @@ void Test_MatchListEntry::testSamePoint()
         m2.match_types = TypeBucket(3);
         m2.match_types[2] = 3;
         m2.distance = 1.2;
-        m2.coordinate = Coordinate(0.1,0.2,0.34);
+        m2.x = 0.1;
+        m2.y = 0.2;
+        m2.z = 0.34;
 
-        CPPUNIT_ASSERT( !m1.samePoint(m2) );
-        CPPUNIT_ASSERT( !m2.samePoint(m1) );
+        CPPUNIT_ASSERT( !samePoint(m1, m2) );
     }
     // Not the same point if we chang the coordinate in z.
     {
@@ -164,10 +197,11 @@ void Test_MatchListEntry::testSamePoint()
         m2.match_types = TypeBucket(3);
         m2.match_types[2] = 3;
         m2.distance = 1.2;
-        m2.coordinate = Coordinate(0.1,0.2,0.3401);
+        m2.x = 0.1;
+        m2.y = 0.2;
+        m2.z = 0.34;
 
-        CPPUNIT_ASSERT( !m1.samePoint(m2) );
-        CPPUNIT_ASSERT( !m2.samePoint(m1) );
+        CPPUNIT_ASSERT( !samePoint(m1, m2) );
     }
 }
 
@@ -199,7 +233,9 @@ void Test_MatchListEntry::testConfigBucketEntryConstruction()
     m0.match_types[4] = 0;
     m0.match_types[5] = 9;
     m0.distance = 1.2;
-    m0.coordinate = Coordinate(0.1,0.2,0.34);
+    m0.x = 0.1;
+    m0.y = 0.2;
+    m0.z = 0.34;
     m0.index = 123;
 }
 
@@ -224,7 +260,9 @@ void Test_MatchListEntry::testProcessConfigNotEqual()
         m2.match_types = TypeBucket(3);
         m2.match_types[2] = 3;
         m2.distance = 1.2;
-        m2.coordinate = Coordinate(0.1,0.2,0.34);
+        m2.x = 0.1;
+        m2.y = 0.2;
+        m2.z = 0.34;
 
         CPPUNIT_ASSERT( m1.match(m2) );
     }
@@ -242,7 +280,9 @@ void Test_MatchListEntry::testProcessConfigNotEqual()
         m2.match_types = TypeBucket(3);
         m2.match_types[1] = 2;
         m2.distance = 1.2;
-        m2.coordinate = Coordinate(0.1,0.2,0.34);
+        m2.x = 0.1;
+        m2.y = 0.2;
+        m2.z = 0.34;
 
         CPPUNIT_ASSERT( m1.match(m2) );
     }
@@ -264,7 +304,9 @@ void Test_MatchListEntry::testProcessConfigNotEqual()
         m2.match_types = TypeBucket(3);
         m2.match_types[2] = 3;
         m2.distance = 1.2;
-        m2.coordinate = Coordinate(0.1,0.2,0.34);
+        m2.x = 0.1;
+        m2.y = 0.2;
+        m2.z = 0.34;
         m2.index = 2;
 
         CPPUNIT_ASSERT( m1.match(m2) );
@@ -286,7 +328,9 @@ void Test_MatchListEntry::testProcessConfigNotEqual()
         m2.match_types = TypeBucket(3);
         m2.match_types[2] = 3;
         m2.distance = 1.2;
-        m2.coordinate = Coordinate(0.1,0.2,0.34);
+        m2.x = 0.1;
+        m2.y = 0.2;
+        m2.z = 0.34;
 
         // m2 match at m1, but not the other way around.
         CPPUNIT_ASSERT( !m1.match(m2) );
@@ -308,7 +352,10 @@ void Test_MatchListEntry::testProcessConfigNotEqual()
         m2.match_types = TypeBucket(3);
         m2.match_types[2] = 3;
         m2.distance = 1.22;
-        m2.coordinate = Coordinate(0.1,0.2,0.34);
+        m2.x = 0.1;
+        m2.y = 0.2;
+        m2.z = 0.34;
+
 
         CPPUNIT_ASSERT( !m1.match(m2) );
     }
@@ -330,7 +377,10 @@ void Test_MatchListEntry::testProcessConfigNotEqual()
         m2.match_types = TypeBucket(3);
         m2.match_types[2] = 3;
         m2.distance = 1.200000001;
-        m2.coordinate = Coordinate(0.1,0.2,0.34);
+        m2.x = 0.1;
+        m2.y = 0.2;
+        m2.z = 0.34;
+
 
         CPPUNIT_ASSERT( m1.match(m2) );
     }
@@ -351,7 +401,9 @@ void Test_MatchListEntry::testProcessConfigNotEqual()
         m2.match_types = TypeBucket(3);
         m2.match_types[2] = 3;
         m2.distance = 1.2;
-        m2.coordinate = Coordinate(0.11,0.2,0.34);
+        m2.x = 0.11;
+        m2.y = 0.2;
+        m2.z = 0.34;
 
         CPPUNIT_ASSERT( !m1.match(m2) );
     }
@@ -370,8 +422,9 @@ void Test_MatchListEntry::testProcessConfigNotEqual()
         m2.match_types = TypeBucket(3);
         m2.match_types[2] = 3;
         m2.distance = 1.2;
-        m2.coordinate = Coordinate(0.1,0.2,0.34);
-        m2.coordinate = Coordinate(0.1,0.21,0.34);
+        m2.x = 0.1;
+        m2.y = 0.21;
+        m2.z = 0.34;
 
         CPPUNIT_ASSERT( !m1.match(m2) );
     }
@@ -390,8 +443,9 @@ void Test_MatchListEntry::testProcessConfigNotEqual()
         m2.match_types = TypeBucket(3);
         m2.match_types[2] = 3;
         m2.distance = 1.2;
-        m2.coordinate = Coordinate(0.1,0.2,0.34);
-        m2.coordinate = Coordinate(0.1,0.2,0.341);
+        m2.x = 0.1;
+        m2.y = 0.2;
+        m2.z = 0.341;
 
         CPPUNIT_ASSERT( !m1.match(m2) );
     }
@@ -411,11 +465,12 @@ void Test_MatchListEntry::testProcessBucketLessOperator()
 
         ConfigBucketMatchListEntry m2;
         m2.distance = 1.20;
-        m2.coordinate = Coordinate(0.1,0.2,0.34);
+        m2.x = 0.1;
+        m2.y = 0.2;
+        m2.z = 0.34;
         m2.index = 1;
 
         CPPUNIT_ASSERT( !(m1 < m2) );
-        CPPUNIT_ASSERT( !(m2 < m1) );
     }
 
     // e1 smaller than e2 in index -> equal
@@ -427,11 +482,12 @@ void Test_MatchListEntry::testProcessBucketLessOperator()
 
         ConfigBucketMatchListEntry m2;
         m2.distance = 1.20;
-        m2.coordinate = Coordinate(0.1,0.2,0.34);
+        m2.x = 0.1;
+        m2.y = 0.2;
+        m2.z = 0.34;
         m2.index = 3;
 
         CPPUNIT_ASSERT( !(m1 < m2) );
-        CPPUNIT_ASSERT( !(m2 < m1) );
     }
 
     // e1 smaller than e2 in match type, thus equal.
@@ -443,11 +499,12 @@ void Test_MatchListEntry::testProcessBucketLessOperator()
 
         ConfigBucketMatchListEntry m2;
         m2.distance = 1.20;
-        m2.coordinate = Coordinate(0.1,0.2,0.34);
+        m2.x = 0.1;
+        m2.y = 0.2;
+        m2.z = 0.34;
         m2.index = 1;
 
         CPPUNIT_ASSERT( !(m1 < m2) );
-        CPPUNIT_ASSERT( !(m2 < m1) );
     }
 
     // e1 smaller than e2 in update type
@@ -459,11 +516,12 @@ void Test_MatchListEntry::testProcessBucketLessOperator()
 
         ConfigBucketMatchListEntry m2;
         m2.distance = 1.20;
-        m2.coordinate = Coordinate(0.1,0.2,0.34);
+        m2.x = 0.1;
+        m2.y = 0.2;
+        m2.z = 0.34;
         m2.index = 1;
 
         CPPUNIT_ASSERT( !(m1 < m2) );
-        CPPUNIT_ASSERT( !(m2 < m1) );
 
     }
 
@@ -476,12 +534,12 @@ void Test_MatchListEntry::testProcessBucketLessOperator()
 
         ConfigBucketMatchListEntry m2;
         m2.distance = 1.20;
-        m2.coordinate = Coordinate(0.11,0.2,0.34);
+        m2.x = 0.11;
+        m2.y = 0.2;
+        m2.z = 0.34;
         m2.index = 1;
 
         CPPUNIT_ASSERT(  (m1 < m2) );
-        CPPUNIT_ASSERT( !(m2 < m1) );
-
     }
 
     // e1 smaller than e2 in y
@@ -493,11 +551,12 @@ void Test_MatchListEntry::testProcessBucketLessOperator()
 
         ConfigBucketMatchListEntry m2;
         m2.distance = 1.20;
-        m2.coordinate = Coordinate(0.1,0.21,0.34);
+        m2.x = 0.1;
+        m2.y = 0.21;
+        m2.z = 0.34;
         m2.index = 1;
 
         CPPUNIT_ASSERT(  (m1 < m2) );
-        CPPUNIT_ASSERT( !(m2 < m1) );
     }
 
     // e1 smaller than e2 in z
@@ -509,11 +568,12 @@ void Test_MatchListEntry::testProcessBucketLessOperator()
 
         ConfigBucketMatchListEntry m2;
         m2.distance = 1.20;
-        m2.coordinate = Coordinate(0.1,0.2,0.341);
+        m2.x = 0.1;
+        m2.y = 0.2;
+        m2.z = 0.341;
         m2.index = 1;
 
         CPPUNIT_ASSERT(  (m1 < m2) );
-        CPPUNIT_ASSERT( !(m2 < m1) );
     }
 
     // e1 smaller than e2 in z, also when the difference is tiny.
@@ -525,11 +585,12 @@ void Test_MatchListEntry::testProcessBucketLessOperator()
 
         ConfigBucketMatchListEntry m2;
         m2.distance = 1.20;
-        m2.coordinate = Coordinate(0.1,0.2,0.340000000000001);
+        m2.x = 0.1;
+        m2.y = 0.2;
+        m2.z = 0.340000000000001;
         m2.index = 1;
 
         CPPUNIT_ASSERT(  (m1 < m2) );
-        CPPUNIT_ASSERT( !(m2 < m1) );
     }
 }
 
@@ -542,7 +603,9 @@ void Test_MatchListEntry::testConfigBucketLessOperator()
     {
         ConfigBucketMatchListEntry m1;
         m1.distance = 1.20;
-        m1.coordinate = Coordinate(0.1,0.2,0.34);
+        m1.x = 0.1;
+        m1.y = 0.2;
+        m1.z = 0.34;
         m1.index = 1;
 
         ProcessBucketMatchListEntry m2;
@@ -550,7 +613,6 @@ void Test_MatchListEntry::testConfigBucketLessOperator()
         m2.coordinate = Coordinate(0.1,0.2,0.34);
         m2.index = 1;
 
-        CPPUNIT_ASSERT( !(m1 < m2) );
         CPPUNIT_ASSERT( !(m2 < m1) );
     }
 
@@ -558,7 +620,9 @@ void Test_MatchListEntry::testConfigBucketLessOperator()
     {
         ConfigBucketMatchListEntry m1;
         m1.distance = 1.20;
-        m1.coordinate = Coordinate(0.1,0.2,0.34);
+        m1.x = 0.1;
+        m1.y = 0.2;
+        m1.z = 0.34;
         m1.index = 1;
 
         ProcessBucketMatchListEntry m2;
@@ -566,7 +630,6 @@ void Test_MatchListEntry::testConfigBucketLessOperator()
         m2.coordinate = Coordinate(0.1,0.2,0.34);
         m2.index = 3;
 
-        CPPUNIT_ASSERT( !(m1 < m2) );
         CPPUNIT_ASSERT( !(m2 < m1) );
     }
 
@@ -574,7 +637,9 @@ void Test_MatchListEntry::testConfigBucketLessOperator()
     {
         ConfigBucketMatchListEntry m1;
         m1.distance = 1.20;
-        m1.coordinate = Coordinate(0.1,0.2,0.34);
+        m1.x = 0.1;
+        m1.y = 0.2;
+        m1.z = 0.34;
         m1.index = 1;
 
         ProcessBucketMatchListEntry m2;
@@ -582,7 +647,6 @@ void Test_MatchListEntry::testConfigBucketLessOperator()
         m2.coordinate = Coordinate(0.1,0.2,0.34);
         m2.index = 1;
 
-        CPPUNIT_ASSERT( !(m1 < m2) );
         CPPUNIT_ASSERT( !(m2 < m1) );
     }
 
@@ -590,7 +654,9 @@ void Test_MatchListEntry::testConfigBucketLessOperator()
     {
         ConfigBucketMatchListEntry m1;
         m1.distance = 1.20;
-        m1.coordinate = Coordinate(0.1,0.2,0.34);
+        m1.x = 0.1;
+        m1.y = 0.2;
+        m1.z = 0.34;
         m1.index = 1;
 
         ProcessBucketMatchListEntry m2;
@@ -598,7 +664,6 @@ void Test_MatchListEntry::testConfigBucketLessOperator()
         m2.coordinate = Coordinate(0.1,0.2,0.34);
         m2.index = 1;
 
-        CPPUNIT_ASSERT( !(m1 < m2) );
         CPPUNIT_ASSERT( !(m2 < m1) );
 
     }
@@ -607,7 +672,9 @@ void Test_MatchListEntry::testConfigBucketLessOperator()
     {
         ConfigBucketMatchListEntry m1;
         m1.distance = 1.20;
-        m1.coordinate = Coordinate(0.1,0.2,0.34);
+        m1.x = 0.1;
+        m1.y = 0.2;
+        m1.z = 0.34;
         m1.index = 1;
 
         ProcessBucketMatchListEntry m2;
@@ -615,8 +682,7 @@ void Test_MatchListEntry::testConfigBucketLessOperator()
         m2.coordinate = Coordinate(0.11,0.2,0.34);
         m2.index = 1;
 
-        CPPUNIT_ASSERT(  (m1 < m2) );
-        CPPUNIT_ASSERT( !(m2 < m1) );
+        CPPUNIT_ASSERT(  !(m2 < m1) );
 
     }
 
@@ -624,7 +690,9 @@ void Test_MatchListEntry::testConfigBucketLessOperator()
     {
         ConfigBucketMatchListEntry m1;
         m1.distance = 1.20;
-        m1.coordinate = Coordinate(0.1,0.2,0.34);
+        m1.x = 0.1;
+        m1.y = 0.2;
+        m1.z = 0.34;
         m1.index = 1;
 
         ProcessBucketMatchListEntry m2;
@@ -632,15 +700,16 @@ void Test_MatchListEntry::testConfigBucketLessOperator()
         m2.coordinate = Coordinate(0.1,0.21,0.34);
         m2.index = 1;
 
-        CPPUNIT_ASSERT(  (m1 < m2) );
-        CPPUNIT_ASSERT( !(m2 < m1) );
+        CPPUNIT_ASSERT(  !(m2 < m1) );
     }
 
     // e1 smaller than e2 in z
     {
         ConfigBucketMatchListEntry m1;
         m1.distance = 1.20;
-        m1.coordinate = Coordinate(0.1,0.2,0.34);
+        m1.x = 0.1;
+        m1.y = 0.2;
+        m1.z = 0.34;
         m1.index = 1;
 
         ProcessBucketMatchListEntry m2;
@@ -648,7 +717,6 @@ void Test_MatchListEntry::testConfigBucketLessOperator()
         m2.coordinate = Coordinate(0.1,0.2,0.341);
         m2.index = 1;
 
-        CPPUNIT_ASSERT(  (m1 < m2) );
         CPPUNIT_ASSERT( !(m2 < m1) );
     }
 
@@ -656,7 +724,9 @@ void Test_MatchListEntry::testConfigBucketLessOperator()
     {
         ConfigBucketMatchListEntry m1;
         m1.distance = 1.20;
-        m1.coordinate = Coordinate(0.1,0.2,0.34);
+        m1.x = 0.1;
+        m1.y = 0.2;
+        m1.z = 0.34;
         m1.index = 1;
 
         ProcessBucketMatchListEntry m2;
@@ -664,8 +734,7 @@ void Test_MatchListEntry::testConfigBucketLessOperator()
         m2.coordinate = Coordinate(0.1,0.2,0.340000000000001);
         m2.index = 1;
 
-        CPPUNIT_ASSERT(  (m1 < m2) );
-        CPPUNIT_ASSERT( !(m2 < m1) );
+        CPPUNIT_ASSERT(  !(m2 < m1) );
     }
 }
 

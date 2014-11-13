@@ -17,15 +17,74 @@
 #include "typebucket.h"
 #include <cstdio>
 #include <cmath>
+#include <cstdint>
 
 
-/*! \brief The epsilon value for comparing lattice positions.
+// Forward declarations.
+class ProcessBucketMatchListEntry;
+class MinimalMatchListEntry;
+
+
+/*! \brief 'equal' for comparing points. NOTE: This operator does not
+ *         compare match types.
  */
-static double epsi__ = 1.0e-5;
+//inline
+bool samePoint(const MinimalMatchListEntry & m1,
+               const MinimalMatchListEntry & m2);
+
+/*! \brief 'equal' for comparing points. NOTE: This operator does not
+ *         compare match types.
+ */
+//inline
+bool samePoint(const ProcessBucketMatchListEntry & m1,
+               const MinimalMatchListEntry & m2);
+
+
+/*! \brief 'less than' for sorting matchlists.
+ */
+//inline
+bool operator<(const MinimalMatchListEntry & m1,
+               const MinimalMatchListEntry & m2);
+
+
+bool operator<(const ProcessBucketMatchListEntry & m1,
+               const MinimalMatchListEntry & m2);
+
+bool operator<(const ProcessBucketMatchListEntry & m1,
+               const ProcessBucketMatchListEntry & m2);
 
 
 /// The base class for the match list entries.
-class MatchListEntry {
+class MinimalMatchListEntry {
+
+public:
+    /// The index in the global structure.
+    int index;
+
+    /// The distance.
+    double distance;
+
+    /// The coordinate.
+    double x;
+    double y;
+    double z;
+
+    /// The match types used in bucket mode.
+    TypeBucket match_types;
+};
+
+
+
+/// Match list entry for the configuration bucket match list.
+class ConfigBucketMatchListEntry : public MinimalMatchListEntry {
+
+public:
+
+};
+
+
+/// Match list entry for the process bucket match list.
+class ProcessBucketMatchListEntry {
 
 public:
 
@@ -62,72 +121,8 @@ public:
     /// The update types used in bucket mode.
     TypeBucket update_types;
 
-    /*! \brief 'equal' for comparing points. NOTE: This operator does not
-     *         compare match types.
-     */
-    bool samePoint(const MatchListEntry & m2) const
-    {
-        // Check the distance.
-        if (std::fabs(m2.distance - distance) > epsi__)
-        {
-            return false;
-        }
-        // Check the coordinate.
-        else if (std::fabs(m2.coordinate.x() - coordinate.x()) > epsi__)
-        {
-            return false;
-        }
-        else if (std::fabs(m2.coordinate.y() - coordinate.y()) > epsi__)
-        {
-            return false;
-        }
-        else if (std::fabs(m2.coordinate.z() - coordinate.z()) > epsi__)
-        {
-            return false;
-        }
-        return true;
-    }
 
-    /*! \brief 'less than' for sorting matchlists.
-     */
-    bool operator<(const MatchListEntry & m2) const
-    {
-        // Sort along distance, type and coordinate.
-        if (std::fabs(m2.distance - distance) < epsi__)
-        {
-            // If the distances are practically the same,
-            // check the coordinate.
-            return (coordinate < m2.coordinate);
-        }
-        else
-        {
-            // Sort wrt. distance.
-            return (distance < m2.distance);
-        }
-    }
-
-protected:
-
-    /*! \brief Explicitly protected default constructor.
-     */
-    MatchListEntry() {};
-};
-
-
-/// Match list entry for the configuration bucket match list.
-class ConfigBucketMatchListEntry : public MatchListEntry {
-
-public:
-
-};
-
-
-/// Match list entry for the process bucket match list.
-class ProcessBucketMatchListEntry : public MatchListEntry {
-
-public:
-
-    bool match(const MatchListEntry & m2) const
+    bool match(const MinimalMatchListEntry & m2) const
     {
         // Handle the wildcard case.
         if (match_types[0] == 1)
@@ -142,23 +137,24 @@ public:
             {
                 return false;
             }
-            return ((*this).samePoint(m2));
+            return samePoint((*this), m2);
         }
     }
 
-    // FIXME: Dummy, needed temporarily, while we have two different classes.
+    /*! \brief Create a wildcard entry from a config bucket matchlist entry.
+     *  \param c : The match list entry to use as template.
+     */
     void initWildcard(const ConfigBucketMatchListEntry & c)
     {
-        has_move_coordinate = c.has_move_coordinate;
         index = -1;
         distance = c.distance;
-        coordinate = c.coordinate;
-        match_types = TypeBucket(c.match_types.size());
+        coordinate = Coordinate(c.x, c.y, c.z);
+        match_types  = TypeBucket(c.match_types.size());
+        update_types = TypeBucket(c.match_types.size());
         match_types[0] = 1;           // Indicating wildcard.
-        update_types = match_types;   // Indicating wildcard.
     }
-
 };
+
 
 
 #endif // __MATCHLISTENTRY__

@@ -44,7 +44,7 @@ void Test_Matcher::testIsMatchMatchList()
 
     const int n_types = 9;
 
-    m.match_types = TypeBucket(n_types);
+    m.match_types  = TypeBucket(n_types);
     m.update_types = TypeBucket(n_types);
 
     m.match_types[3]  = 1;
@@ -87,8 +87,10 @@ void Test_Matcher::testIsMatchMatchList()
 
     n.match_types = TypeBucket(n_types);
     n.match_types[3] = 1;
-    n.distance     = 1.2;
-    n.coordinate   = Coordinate(0.1,2.0,0.34);
+    n.distance = 1.2;
+    n.x = 0.1;
+    n.y = 2.0;
+    n.z = 0.34;
     index_match_list.push_back(n);
 
     // Reset.
@@ -96,8 +98,10 @@ void Test_Matcher::testIsMatchMatchList()
 
     // Add new value.
     n.match_types[1] = 1;
-    n.distance     = 1.6;
-    n.coordinate   = Coordinate(1.1,2.0,0.34);
+    n.distance = 1.6;
+    n.x = 1.1;
+    n.y = 2.0;
+    n.z = 0.34;
     index_match_list.push_back(n);
 
     // Reset.
@@ -106,16 +110,20 @@ void Test_Matcher::testIsMatchMatchList()
     // Add new value.
     n.match_types[8] = 1;
 
-    n.distance     = 1.9;
-    n.coordinate   = Coordinate(0.1,5.2,0.34);
+    n.distance = 1.9;
+    n.x = 0.1;
+    n.y = 5.2;
+    n.z = 0.34;
     index_match_list.push_back(n);
 
     // These two are equal.
     CPPUNIT_ASSERT( matcher.isMatch(process_match_list, index_match_list) );
 
     // It works also if the index match list is longer.
-    n.distance     = 1.93;
-    n.coordinate   = Coordinate(0.13,5.2,0.34);
+    n.distance = 1.93;
+    n.x = 0.13;
+    n.y = 5.2;
+    n.z = 0.34;
     index_match_list.push_back(n);
 
     // These two are still equal.
@@ -128,7 +136,7 @@ void Test_Matcher::testIsMatchMatchList()
     m.match_types[3]  = 1;
     m.update_types[2] = 1;
     m.distance     = 1.93;
-    m.coordinate   = Coordinate(0.13,5.2,0.34);
+    m.coordinate   = Coordinate(0.13, 5.2, 0.34);
     process_match_list.push_back(m);
 
     // Reset.
@@ -142,7 +150,7 @@ void Test_Matcher::testIsMatchMatchList()
     m.match_types[8]  = 1;
     m.update_types[3] = 1;
     m.distance     = 1.93;
-    m.coordinate   = Coordinate(0.13,5.2,0.34);
+    m.coordinate   = Coordinate(0.13, 5.2, 0.34);
     process_match_list[3] = m;
 
     // These two are again equal.
@@ -198,7 +206,9 @@ void Test_Matcher::testIsMatchWildcard()
     n.match_types = TypeBucket(n_types);
     n.match_types[3] = 1;
     n.distance     = 1.2;
-    n.coordinate   = Coordinate(0.1,2.0,0.34);
+    n.x = 0.1;
+    n.y = 2.0;
+    n.z = 0.34;
     index_match_list.push_back(n);
     // Reset.
     n.match_types[3] = 0;
@@ -206,14 +216,18 @@ void Test_Matcher::testIsMatchWildcard()
     // Note that no wildcard here.
     n.match_types[1] = 1;
     n.distance     = 1.6;
-    n.coordinate   = Coordinate(1.1,2.0,0.34);
+    n.x = 1.1;
+    n.y = 2.0;
+    n.z = 0.34;
     index_match_list.push_back(n);
     // Reset.
     n.match_types[1] = 0;
 
     n.match_types[8] = 1;
     n.distance     = 1.9;
-    n.coordinate   = Coordinate(0.1,5.2,0.34);
+    n.x = 0.1;
+    n.y = 5.2;
+    n.z = 0.34;
     index_match_list.push_back(n);
     // Reset.
     n.match_types[8] = 0;

@@ -28,6 +28,7 @@
 #include "test_hash.h"
 #include "test_ratetable.h"
 #include "test_typebucket.h"
+#include "test_memory.h"
 
 // -------------------------------------------------------------------------- //
 // Add tests.
@@ -51,3 +52,6 @@ CPPUNIT_TEST_SUITE_REGISTRATION( Test_RateCalculator );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_RateTable );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_SimulationTimer );
 CPPUNIT_TEST_SUITE_REGISTRATION( Test_TypeBucket );
+
+// Only used for profiling.
+// CPPUNIT_TEST_SUITE_REGISTRATION( Test_Memory );

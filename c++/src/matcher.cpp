@@ -554,7 +554,9 @@ double Matcher::updateSingleRate(const int index,
 
     for (size_t i = 0; i < distance; ++i)
     {
-        const Coordinate & coord = config_match_list[i].coordinate;
+        const Coordinate coord(config_match_list[i].x,
+                               config_match_list[i].y,
+                               config_match_list[i].z);
 
         numpy_geo[3*i]   = coord.x();
         numpy_geo[3*i+1] = coord.y();
