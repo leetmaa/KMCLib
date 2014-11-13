@@ -28,14 +28,21 @@ set_source_files_properties(backend.i PROPERTIES SWIG_FLAGS "")
 # -----------------------------------------------------------------------------
 add_definitions( -Wno-uninitialized )
 
-# For older g++.
-add_definitions( -Wno-missing-field-initializers )
-add_definitions( -Wno-write-strings )
+# For intel.
+if (USING_INTEL)
+   message( STATUS "Ignoring Intel SWIG warnings")
+  # Add intel options here.
+else()
+  message( STATUS "Ignoring g++ SWIG warnings")
+  # For older g++.
+  add_definitions( -Wno-missing-field-initializers )
+  add_definitions( -Wno-write-strings )
+  add_definitions( -fno-strict-aliasing )
+endif()
 
 # For clang - FIXME
 #add_definitions( -Wno-self-assign )
 #add_definitions( -Wno-dynamic-class-memaccess )
-add_definitions( -fno-strict-aliasing )
 
 # Add the target.
 swig_add_module( Backend python backend.i )

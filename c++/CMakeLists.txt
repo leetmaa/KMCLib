@@ -47,10 +47,16 @@ endif()
 # SET THE COMPILER
 # -----------------------------------------------------------------------------
 
+# Check for supported compilers and set the flags.
+if (${CMAKE_CXX_COMPILER_ID} MATCHES "Intel")
+  message( STATUS "Using the Intel compiler" )
+  set( USING_INTEL TRUE )
+  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-Bsymbolic -O3 -fPIC -Wall -Wextra -Werror -pedantic")
+  set( CMAKE_CXX_FLAGS_DEBUG "-g -pg" )
+  set( CMAKE_CXX_FLAGS_RELEASE  "" )
+  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO  "-g -pg" )
 
-# Check for supported compiler and set the flags.
-if (CMAKE_COMPILER_IS_GNUCXX)
-
+elseif (CMAKE_COMPILER_IS_GNUCXX)
   # Do not use -Bsymbolic-functions with g++ on Mac OS X
   if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC -Wall -Wextra -Werror -pedantic")
