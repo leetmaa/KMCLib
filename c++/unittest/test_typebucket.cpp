@@ -354,3 +354,28 @@ void Test_TypeBucket::testMatch()
 
 }
 
+
+// -------------------------------------------------------------------------- //
+//
+void Test_TypeBucket::testAdd()
+{
+    TypeBucket t1(3);
+    t1[0] =  12;
+    t1[1] =   0;
+    t1[2] = -12;
+
+    TypeBucket t2(3);
+    t2[0] =  7;
+    t2[1] = -8;
+    t2[2] = 13;
+
+    // Add.
+    TypeBucket t3(3);
+    t3 = t1.add(t2);
+
+    // Check.
+    CPPUNIT_ASSERT_EQUAL(t3[0], t1[0] + t2[0]);
+    CPPUNIT_ASSERT_EQUAL(t3[1], t1[1] + t2[1]);
+    CPPUNIT_ASSERT_EQUAL(t3[2], t1[2] + t2[2]);
+
+}

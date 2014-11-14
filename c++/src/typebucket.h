@@ -16,6 +16,7 @@
 
 #include <vector>
 #include <stdexcept>
+#include <cstring>
 
 // Forward declarations if any.
 
@@ -28,11 +29,10 @@ public:
 
     /*! \brief Default constructor needed for use in std::vector SWIG wrapping.
      */
-    TypeBucket() {}
+    TypeBucket();
 
     // ML:
     ~TypeBucket();
-
 
     /*! \brief Constructor for the type bucket. Initialized with zeros.
      *  \param size : The size of the bucket.
@@ -45,27 +45,31 @@ public:
      */
     TypeBucket(const TypeBucket & other);
 
+    // ML
+    void operator=(const TypeBucket & other);
+
     /*! \brief Get the number of slots in the bucket.
      *  \return : The size of the data vector.
      */
-    int size() const { return static_cast<int>(data_.size()); }
+    int size() const { return size_; }
 
     /*! \brief Access operator. Const version.
      *  \param i : The index to access at.
      *  \return : A copy of the element to access.
      */
-    int operator[](const int i) const { return data_[i]; }
+    int operator[](const int i) const { return static_cast<int>(raw_data_[i]); }
 
     /*! \brief Access operator, non-const version.
      *  \param i : The index to access at.
      *  \return : A copy of the element to access.
      */
-    int & operator[](const int i) { return data_[i]; }
+    int & operator[](const int i) { return raw_data_[i]; }
 
     /*! \brief Check if the buckets are identical.
      *  \return : True if identical.
      */
-    bool identical(const TypeBucket & other) const { return data_ == other.data_; }
+    inline
+    bool identical(const TypeBucket & other) const;
 
     /*! \brief Check if the bucket has only one slot filled
                with one atom at slot i.
@@ -117,8 +121,14 @@ protected:
 
 private:
 
+    /// The size of the bucket.
+    int size_;
+
     /// The bucket data field.
-    std::vector<int> data_;
+    //std::vector<int> data_;
+
+    /// The bucket raw data field.
+    int * raw_data_;
 
 };
 
@@ -130,9 +140,31 @@ private:
 
 // -----------------------------------------------------------------------------
 //
+bool TypeBucket::identical(const TypeBucket & other) const
+{
+    if (size_ != other.size_)
+    {
+        return false;
+    }
+
+    for (int i = 0; i < size_; ++i)
+    {
+        if (raw_data_[i] != other.raw_data_[i])
+        {
+            return false;
+        }
+    }
+
+    return true;
+
+}
+
+
+// -----------------------------------------------------------------------------
+//
 bool TypeBucket::operator==(const int i) const
 {
-    if (size() <= i)
+    if (size_ <= i)
     {
         throw std::runtime_error("Fatal backend error. Out of bound in bucket comparison.");
     }
@@ -140,13 +172,13 @@ bool TypeBucket::operator==(const int i) const
     // ML: This is slow, but will only be used untill we are fully
     //     rid of the old style type implementation.
 
-    for (int j = 0; j < size(); ++j)
+    for (int j = 0; j < size_; ++j)
     {
-        if (i != j && data_[j] != 0)
+        if (i != j && raw_data_[j] != 0)
         {
             return false;
         }
-        else if (i == j && data_[j] != 1)
+        else if (i == j && raw_data_[j] != 1)
         {
             return false;
         }
@@ -160,29 +192,20 @@ bool TypeBucket::operator==(const int i) const
 //
 bool TypeBucket::greaterOrEqual(const TypeBucket & other) const
 {
-    if (data_.size() != other.data_.size())
+    if (size_ != other.size_)
     {
         throw std::runtime_error("Fatal backend error. Size must match in bucket comparisons.");
     }
 
-    return data_ >= other.data_;
-}
-
-
-// -----------------------------------------------------------------------------
-//
-bool TypeBucket::match(const TypeBucket & other) const
-{
-    if (data_.size() != other.data_.size())
+    for (int i = 0; i < size_; ++i)
     {
-        throw std::runtime_error("Fatal backend error. Size must match in bucket comparisons.");
-    }
-
-    for (int i = 0; i < size(); ++i)
-    {
-        if (data_[i] > other.data_[i])
+        if (raw_data_[i] < other.raw_data_[i])
         {
             return false;
+        }
+        else if (raw_data_[i] > other.raw_data_[i])
+        {
+            return true;
         }
     }
 
@@ -192,18 +215,40 @@ bool TypeBucket::match(const TypeBucket & other) const
 
 // -----------------------------------------------------------------------------
 //
+bool TypeBucket::match(const TypeBucket & other) const
+{
+    if (size_ != other.size_)
+    {
+        throw std::runtime_error("Fatal backend error. Size must match in bucket comparisons.");
+    }
+
+    for (int i = 0; i < size_; ++i)
+    {
+        if (raw_data_[i] > other.raw_data_[i])
+        {
+            return false;
+        }
+    }
+
+    return true;
+
+}
+
+
+// -----------------------------------------------------------------------------
+//
 TypeBucket TypeBucket::add(const TypeBucket & other) const
 {
-    if (data_.size() != other.data_.size())
+    if (size_ != other.size_)
     {
         throw std::runtime_error("Fatal backend error. Size must match in bucket additions.");
     }
 
-    TypeBucket t(data_.size());
+    TypeBucket t(size_);
 
-    for (size_t i = 0; i < data_.size(); ++i)
+    for (int i = 0; i < size_; ++i)
     {
-        t.data_[i] = data_[i] + other.data_[i];
+        t.raw_data_[i] = raw_data_[i] + other.raw_data_[i];
     }
 
     return t;
@@ -214,13 +259,14 @@ TypeBucket TypeBucket::add(const TypeBucket & other) const
 //
 bool TypeBucket::lessThan(const TypeBucket & other) const
 {
-    if (data_.size() != other.data_.size())
+    if (size_ != other.size_)
     {
         throw std::runtime_error("Fatal backend error. Size must match in bucket comparisons.");
     }
 
-    return data_ < other.data_;
+    return !greaterOrEqual(other);
 }
+
 
 // -----------------------------------------------------------------------------
 // NON-MEMBER FUNCTION DECLARATIONS FOLLOW.

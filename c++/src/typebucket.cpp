@@ -11,31 +11,56 @@
  */
 
 #include <iostream>
-
+#include <cstring>
 #include "typebucket.h"
+
+
+// -----------------------------------------------------------------------------
+//
+TypeBucket::TypeBucket() :
+    size_(0),
+    raw_data_(NULL)
+{
+    // NOTHING HERE
+}
+
 
 // -----------------------------------------------------------------------------
 //
 TypeBucket::TypeBucket(const int size) :
-    data_(size, 0)
+    size_(size)
 {
-    // NOTHING HERE
+    raw_data_ = (int*)malloc(sizeof(int)*size_);
+
+    memset(raw_data_, 0U, sizeof(int)*size_);
+
 }
 
 
 // -----------------------------------------------------------------------------
 //
 TypeBucket::TypeBucket(const TypeBucket & other) :
-    data_(other.data_)
+    size_(other.size_)
 {
-    // NOTHING HERE
+    raw_data_ = (int*)malloc(sizeof(int)*size_);
+    memcpy(raw_data_, other.raw_data_, sizeof(int)*size_);
 }
 
 
 // -----------------------------------------------------------------------------
 //
+void TypeBucket::operator=(const TypeBucket & other)
+{
+    size_ = other.size_;
+    raw_data_ = (int*)realloc(raw_data_, sizeof(int)*size_);
+    memcpy(raw_data_, other.raw_data_, sizeof(int)*size_);
+}
+
+// -----------------------------------------------------------------------------
+//
 TypeBucket::~TypeBucket()
 {
+    free(raw_data_);
 }
 
 

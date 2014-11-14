@@ -35,6 +35,7 @@ public:
     CPPUNIT_TEST( testLessThan );
     CPPUNIT_TEST( testComparisonOperator );
     CPPUNIT_TEST( testMatch );
+    CPPUNIT_TEST( testAdd );
     CPPUNIT_TEST_SUITE_END();
 
     void testDefaultConstruction();
@@ -49,6 +50,7 @@ public:
     void testAssignmentOperator();
     void testComparisonOperator();
     void testMatch();
+    void testAdd();
 
 };
 
