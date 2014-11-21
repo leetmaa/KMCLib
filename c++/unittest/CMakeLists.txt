@@ -27,4 +27,4 @@ add_library( unittest EXCLUDE_FROM_ALL ${CppSources} )
 add_executable( test.x EXCLUDE_FROM_ALL testRunner )
 
 # Define the libraries to link the test.x executable against.
-target_link_libraries( test.x ${CPPUNIT} unittest src )
+target_link_libraries( test.x ${CPPUNIT} unittest src custom )

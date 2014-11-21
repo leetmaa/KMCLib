@@ -33,6 +33,26 @@ def stringListToStdVectorString(string_list):
     return cpp_list
 
 
+def stdVectorStringToStringList(cpp_list):
+    """
+    Converts a std::vector<std::string> to a list of strings.
+
+    :param cpp_list: The std::vector to convert.
+
+    :returns: A corresponding list of strings.
+    """
+    # Get the size.
+    size = cpp_list.size()
+
+    # Loop over the vector and append.
+    string_list = []
+    for i in range(size):
+        string_list.append(cpp_list[i])
+
+    # Done.
+    return string_list
+
+
 def stringListToStdVectorStdVectorString(string_list):
     """
     Converts a list of strings to a std::vector<std::vector<std::string> >

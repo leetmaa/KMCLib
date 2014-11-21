@@ -267,21 +267,21 @@ class BucketsTest(unittest.TestCase):
         # Set up the interactions.
         interactions = KMCInteractions(processes=[p0, p1, p2, p3, p4],
                                        implicit_wildcards=True)
-        interactions.setRateCalculator(rate_calculator=Bucket2DRateCalculator)
+        interactions.setRateCalculator(rate_calculator="BucketsTestCalculator")
 
         # Construct the lattice mode.
         model = KMCLatticeModel(configuration=config,
                                 interactions=interactions)
 
         # Control parameters.
-        control_parameters = KMCControlParameters(number_of_steps=10000000,
+        control_parameters = KMCControlParameters(number_of_steps=118817,
                                                   seed=12,
                                                   dump_time_interval=10.0)
 
         # Run the model.
         model.run(control_parameters=control_parameters,
-                  trajectory_filename="traj.py",
-                  breakers=[Breaker()])
+                  trajectory_filename="traj.py")
+        #breakers=[Breaker()])
 
         # Make a simple analysis of the distribution of M1 in the structure.
         distribution = []

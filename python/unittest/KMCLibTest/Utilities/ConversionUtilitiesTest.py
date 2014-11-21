@@ -15,6 +15,7 @@ from KMCLib.Backend import Backend
 
 # Import from the module we test.
 from KMCLib.Utilities.ConversionUtilities import stringListToStdVectorString
+from KMCLib.Utilities.ConversionUtilities import stdVectorStringToStringList
 from KMCLib.Utilities.ConversionUtilities import stringListToStdVectorStdVectorString
 from KMCLib.Utilities.ConversionUtilities import bucketListToStdVectorStdVectorString
 from KMCLib.Utilities.ConversionUtilities import numpy2DArrayToStdVectorStdVectorDouble
@@ -43,6 +44,23 @@ class ConversionUtilitiesTest(unittest.TestCase):
         # Check the values.
         list_from_cpp = list(cpp_repr)
         self.assertEqual(string_list, list_from_cpp)
+
+    def testStdVectorStringToStringList(self):
+        """ Test the conversion of a std::vector<std::string> to a string list. """
+        # Take a list of strings.
+        cpp_list = Backend.StdVectorString()
+        ref_list = ["AAA","BB","AbC","def"]
+        for s in ref_list:
+            cpp_list.push_back(s)
+
+        # Convert.
+        py_repr = stdVectorStringToStringList(cpp_list)
+
+        # Check the type.
+        self.assertTrue(isinstance(py_repr, list))
+
+        # Check the result.
+        self.assertEqual(py_repr, ref_list)
 
     def testStringListToStdVectorStdVectorString(self):
         """ Test the conversion of a string list to a std::vector<std::string>. """

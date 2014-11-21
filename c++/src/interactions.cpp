@@ -19,6 +19,7 @@
 #include "ratecalculator.h"
 #include "matchlist.h"
 
+
 // -----------------------------------------------------------------------------
 // Function for comparing two entries in the probability list.
 bool pairComp(const std::pair<double,int> & p1,

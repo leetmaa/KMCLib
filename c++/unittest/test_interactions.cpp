@@ -39,6 +39,7 @@ void Test_Interactions::testConstruction()
     // DONE
 }
 
+
 // -------------------------------------------------------------------------- //
 //
 void Test_Interactions::testQuery()

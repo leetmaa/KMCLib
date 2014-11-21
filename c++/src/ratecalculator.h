@@ -1,5 +1,5 @@
 /*
-  Copyright (c)  2013  Mikael Leetmaa
+  Copyright (c)  2013 - 2014  Mikael Leetmaa
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -49,15 +49,17 @@ public:
      * \param global_z       : The global coordinate in the z direction for the central site.
      * \return : The base class implementation returns the rate constant unmodified.
      */
-    virtual double backendRateCallback(const std::vector<double> geometry,
-                                       const int len,
-                                       const std::vector<std::string> & types_before,
-                                       const std::vector<std::string> & types_after,
-                                       const double rate_constant,
-                                       const int process_number,
-                                       const double global_x,
-                                       const double global_y,
-                                       const double global_z) const { return rate_constant; }
+    virtual
+    double backendRateCallback(const std::vector<double> geometry,
+                               const int len,
+                               const std::vector<std::string> & types_before,
+                               const std::vector<std::string> & types_after,
+                               const double rate_constant,
+                               const int process_number,
+                               const double global_x,
+                               const double global_y,
+                               const double global_z) const {
+        return rate_constant; }
 
     /*! \brief The backend callback function for sending bucket process information
      *         to objects inheriting from this class. The KMCRateCalculatorPlugin
@@ -75,16 +77,18 @@ public:
      * \param global_z       : The global coordinate in the z direction for the central site.
      * \return : The base class implementation returns the rate constant unmodified.
      */
-    virtual double backendRateCallbackBuckets(const std::vector<double> geometry,
-                                              const int len,
-                                              const std::vector<TypeBucket> & occupation,
-                                              const std::vector<TypeBucket> & update,
-                                              const std::vector<std::string> & type_map,
-                                              const double rate_constant,
-                                              const int process_number,
-                                              const double global_x,
-                                              const double global_y,
-                                              const double global_z) const { return rate_constant; }
+    virtual
+    double backendRateCallbackBuckets(const std::vector<double> geometry,
+                                      const int len,
+                                      const std::vector<TypeBucket> & occupation,
+                                      const std::vector<TypeBucket> & update,
+                                      const std::vector<std::string> & type_map,
+                                      const double rate_constant,
+                                      const int process_number,
+                                      const double global_x,
+                                      const double global_y,
+                                      const double global_z) const {
+                return rate_constant; }
 
 
 protected:

@@ -90,6 +90,7 @@
 %include "ontheflymsd.h"
 %include "random.h"
 
+
 // This extends the Coordinate class with python indexing support.
 %extend Coordinate
 {
@@ -142,7 +143,4 @@
     {
         return (*self).size();
     }
-
-
 };
-
