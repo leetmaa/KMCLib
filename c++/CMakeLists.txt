@@ -96,6 +96,12 @@ include_directories( ${KMCLib_SOURCE_DIR}/externals/include )
 add_subdirectory(src)
 
 # -----------------------------------------------------------------------------
+# ADD THE CUSTOM TARGET
+# -----------------------------------------------------------------------------
+
+add_subdirectory(custom)
+
+# -----------------------------------------------------------------------------
 # ADD THE TESTS TARGET
 # -----------------------------------------------------------------------------
 
@@ -111,5 +117,10 @@ add_subdirectory(wrap)
 # ADD THE INSTALL TARGET
 # -----------------------------------------------------------------------------
 
-install( FILES ${CMAKE_BINARY_DIR}/wrap/Backend.py ${CMAKE_BINARY_DIR}/wrap/_Backend.so
-         DESTINATION ${CMAKE_BINARY_DIR}/../../python/src/KMCLib/Backend/ )
+install( FILES
+               ${CMAKE_BINARY_DIR}/wrap/Backend.py
+               ${CMAKE_BINARY_DIR}/wrap/_Backend.so
+               ${CMAKE_BINARY_DIR}/wrap/Custom.py
+               ${CMAKE_BINARY_DIR}/wrap/_Custom.so
+         DESTINATION
+               ${CMAKE_BINARY_DIR}/../../python/src/KMCLib/Backend/ )

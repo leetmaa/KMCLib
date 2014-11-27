@@ -17,7 +17,6 @@
 #include "typebucket.h"
 #include <cstdio>
 #include <cmath>
-#include <cstdint>
 
 
 // Forward declarations.

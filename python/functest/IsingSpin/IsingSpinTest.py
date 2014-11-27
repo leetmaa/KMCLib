@@ -59,8 +59,6 @@ class IsingSpinTest(unittest.TestCase):
         """ Test the Ising model with custom rates. """
         # --------------------------------------------------------------------
         # Setup a calculation with custom rates and no caching.
-
-        # FIXME: Find out a less hacky way to do this.
         CustomRateCalculator.cacheRates = falseFunction
         t1 = time.clock()
 
@@ -86,8 +84,6 @@ class IsingSpinTest(unittest.TestCase):
 
         # --------------------------------------------------------------------
         # Setup a calculation with custom rates and caching.
-
-        # FIXME: Find out a less hacky way to do this.
         CustomRateCalculator.cacheRates = trueFunction
 
         # Load the configuration and interactions.
@@ -111,6 +107,29 @@ class IsingSpinTest(unittest.TestCase):
         t3 = time.clock()
 
         # --------------------------------------------------------------------
+        # Setup a calculation with custom rates and caching.
+
+        # Load the configuration and interactions.
+        configuration = KMCConfigurationFromScript("config.py")
+        interactions  = KMCInteractionsFromScript("custom_processes.py")
+
+        # Set the rate calculator.
+        interactions.setRateCalculator(rate_calculator="IsingTestCalculator")
+
+        # Create the model.
+        model = KMCLatticeModel(configuration, interactions)
+
+        # Define the parameters.
+        control_parameters = KMCControlParameters(number_of_steps=1000000,
+                                                  dump_interval=10000,
+                                                  seed=13997)
+
+        # Run the simulation - save trajectory to 'custom_traj_cache.py'
+        model.run(control_parameters, trajectory_filename="custom_traj_cache.py")
+
+        t4 = time.clock()
+
+        # --------------------------------------------------------------------
         # Setup the same calculation with fixed rates.
 
         configuration = KMCConfigurationFromScript("config.py")
@@ -127,7 +146,7 @@ class IsingSpinTest(unittest.TestCase):
         # Run the simulation - save trajectory to 'fixed_traj.py'
         model.run(control_parameters, trajectory_filename="fixed_traj.py")
 
-        t4 = time.clock()
+        t5 = time.clock()
         # --------------------------------------------------------------------
         # Check that the results are the same.
         global_dict = {}
@@ -158,7 +177,8 @@ class IsingSpinTest(unittest.TestCase):
         # values.
         print "Time for custom run (s):", t2-t1
         print "Time for cache run  (s):", t3-t2
-        print "Time for fixed run  (s):", t4-t3
+        print "Time for cache C++ run (s):", t4-t3
+        print "Time for fixed run  (s):", t5-t4
 
         self.assertEqual(d0, 6340)
         self.assertEqual(d1, 6340)
