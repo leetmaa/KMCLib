@@ -9,6 +9,7 @@
 import unittest
 import numpy
 import os
+import time
 
 # Import the interface.
 from KMCLib import *
@@ -279,8 +280,11 @@ class BucketsTest(unittest.TestCase):
                                                   dump_time_interval=10.0)
 
         # Run the model.
+        t1 = time.clock()
         model.run(control_parameters=control_parameters,
-                  trajectory_filename="traj.py")
+                  trajectory_filename="traj1.py")
+        t2 = time.clock()
+
         #breakers=[Breaker()])
 
         # Make a simple analysis of the distribution of M1 in the structure.
@@ -294,11 +298,71 @@ class BucketsTest(unittest.TestCase):
             # One-liner to calculate the number of M1 on this row.
             distribution.append(len([t for i in this_row for t in types[i] if t == 'M1']))
 
-        ref_distribution = [0, 108, 28, 21, 32, 13, 8, 13, 12, 8, 4, 6, 10, 2, 5, 2, 5, 3, 3, 1, 2, 2, 5, 3, 1, 1, 2, 0, 1, 0, 1, 0, 0, 0, 1, 2, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 2, 1, 0, 0, 0, 2, 1, 1, 3, 6, 0, 2, 5, 3, 3, 6, 2, 10, 5, 9, 9, 18, 16, 11, 23, 23, 33, 114]
+        ref_distribution = [0, 82, 34, 16, 26, 16, 11, 10, 9, 6, 9, 4, 7, 3, 1, 4, 3, 4, 4, 3, 0, 4, 0, 2, 2, 1, 2, 1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 2, 0, 2, 0, 2, 2, 0, 1, 3, 1, 2, 4, 1, 2, 5, 2, 3, 5, 4, 6, 7, 12, 12, 11, 6, 24, 20, 32, 60, 73]
 
         # Check.
         self.assertEqual( ref_distribution, distribution )
 
+        # Populate the lattice with types.
+        types = [["d"],["d"],["d"]] * rep_a * rep_b
+
+        # Add creation sites and block sites.
+        for i,c in enumerate(lattice.sites()):
+            if (c[0] == 1.0 or c[0] == rep_a - 1) and c[1]%1 == 0:
+                types[i] = ["C", "d"]
+            elif c[0] == 0.0:
+                types[i] = ["x"]
+
+        # Add a random distribution of roughly 20% ions "I".
+        numpy.random.seed(8765621)
+        for i,(c,t) in enumerate(zip(lattice.sites(), types)):
+            if c[0]%1 == 0.5 or c[1]%1 == 0.5:
+                if numpy.random.rand() < 0.2:
+                    types[i] = ["I"]
+
+        # The starting configuration.
+        config = KMCConfiguration(lattice=lattice,
+                                  types=types,
+                                  possible_types=["C","I", "M1", "d", "x"])
+
+        # Set up the interactions.
+        interactions = KMCInteractions(processes=[p0, p1, p2, p3, p4],
+                                       implicit_wildcards=True)
+        interactions.setRateCalculator(rate_calculator=Bucket2DRateCalculator)
+
+        # Construct the lattice mode.
+        model = KMCLatticeModel(configuration=config,
+                                interactions=interactions)
+
+        # Control parameters.
+        control_parameters = KMCControlParameters(number_of_steps=118817,
+                                                  seed=12,
+                                                  dump_time_interval=10.0)
+
+        # Run the model.
+        t3 = time.clock()
+        model.run(control_parameters=control_parameters,
+                  trajectory_filename="traj2.py")
+        t4 = time.clock()
+
+        # Check the results.
+        distribution = []
+        types = config.types()
+        row = numpy.array([0, 3, 6, 9, 12, 15, 18, 21, 24, 27])
+        for i in range(len(config.types())/(len(row)*3)):
+            this_row = row + numpy.ones(len(row), dtype=int)*i*30
+
+            # One-liner to calculate the number of M1 on this row.
+            distribution.append(len([t for i in this_row for t in types[i] if t == 'M1']))
+
+        # Check.
+        self.assertEqual( ref_distribution, distribution )
+
+        # Print the times.
+        print "Time for custom C++ run:    ", t2-t1
+        print "Time for custom Python run: ", t4-t3
+
+        # Check that the trajectories are identical.
 
 class Breaker(KMCBreakerPlugin):
     """
