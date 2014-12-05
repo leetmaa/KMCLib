@@ -1,4 +1,4 @@
-# Copyright (c)  2012-2013  Mikael Leetmaa
+# Copyright (c)  2012-2014  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -51,7 +51,7 @@ endif()
 if (${CMAKE_CXX_COMPILER_ID} MATCHES "Intel")
   message( STATUS "Using the Intel compiler" )
   set( USING_INTEL TRUE )
-  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-Bsymbolic -O3 -fPIC -Wall -Wextra -Werror -pedantic")
+  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-Bsymbolic -O3 -fPIC -Wall -Wextra -Werror -pedantic -std=c++0x")
   set( CMAKE_CXX_FLAGS_DEBUG "-g -pg" )
   set( CMAKE_CXX_FLAGS_RELEASE  "" )
   set( CMAKE_CXX_FLAGS_RELWITHDEBINFO  "-g -pg" )
@@ -59,9 +59,9 @@ if (${CMAKE_CXX_COMPILER_ID} MATCHES "Intel")
 elseif (CMAKE_COMPILER_IS_GNUCXX)
   # Do not use -Bsymbolic-functions with g++ on Mac OS X
   if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC -Wall -Wextra -Werror -pedantic")
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC -Wall -Wextra -Werror -pedantic -std=c++0x")
   else()
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-Bsymbolic -O3 -fPIC -Wall -Wextra -Werror -pedantic")
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-Bsymbolic -O3 -fPIC -Wall -Wextra -Werror -pedantic -std=c++0x")
   endif()
 
   set( CMAKE_CXX_FLAGS_DEBUG "-g -pg" )

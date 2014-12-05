@@ -71,8 +71,8 @@ class Diffusion3DTest(unittest.TestCase):
         D_x1 = fit(time[0:15],  msd[0:15],  std[0:15])
         D_x2 = fit(time[16:29], msd[16:29], std[16:29])
 
-        self.assertAlmostEqual(D_x1,  9.87474444578, 10)
-        self.assertAlmostEqual(D_x2,  5.91094837822, 10)
+        self.assertAlmostEqual(D_x1,  9.79062641161, 10)
+        self.assertAlmostEqual(D_x2,  4.99913982584, 10)
 
         # Y direction.
         msd = raw_data[:,2]
@@ -81,8 +81,8 @@ class Diffusion3DTest(unittest.TestCase):
         D_y1 = fit(time[0:15],  msd[0:15],  std[0:15])
         D_y2 = fit(time[16:29], msd[16:29], std[16:29])
 
-        self.assertAlmostEqual(D_y1, 12.12991057560, 10)
-        self.assertAlmostEqual(D_y2, 11.69420204200, 10)
+        self.assertAlmostEqual(D_y1, 12.2805811246, 10)
+        self.assertAlmostEqual(D_y2, 11.8666583636, 10)
 
         # Z direction.
         msd = raw_data[:,3]
@@ -92,8 +92,8 @@ class Diffusion3DTest(unittest.TestCase):
         D_z1 = fit(time[0:15],  msd[0:15],  std[0:15])
         D_z2 = fit(time[16:29], msd[16:29], std[16:29])
 
-        self.assertAlmostEqual(D_z1, 13.76808317130, 10)
-        self.assertAlmostEqual(D_z2, 23.01902989970, 10)
+        self.assertAlmostEqual(D_z1, 13.7622088252, 10)
+        self.assertAlmostEqual(D_z2, 23.1511983564, 10)
 
 
 def fit(time, msd, std):

@@ -51,6 +51,8 @@ class IsingSpinTest(unittest.TestCase):
 
     def testWithAndWithoutCustomRates(self):
         """ Test the Ising model with custom rates. """
+        seed = 965434567
+
         # --------------------------------------------------------------------
         # Setup a calculation with custom rates.
 
@@ -69,7 +71,7 @@ class IsingSpinTest(unittest.TestCase):
         # Define the parameters.
         control_parameters = KMCControlParameters(number_of_steps=1000000,
                                                   dump_interval=10000,
-                                                  seed=13997)
+                                                  seed=seed)
 
         # Run the simulation - save trajectory to 'custom_traj.py'
         model.run(control_parameters, trajectory_filename="custom_traj.py")
@@ -88,7 +90,7 @@ class IsingSpinTest(unittest.TestCase):
         # Define the parameters.
         control_parameters = KMCControlParameters(number_of_steps=1000000,
                                                   dump_interval=10000,
-                                                  seed=13997)
+                                                  seed=seed)
 
         # Run the simulation - save trajectory to 'fixed_traj.py'
         model.run(control_parameters, trajectory_filename="fixed_traj.py")
@@ -114,11 +116,11 @@ class IsingSpinTest(unittest.TestCase):
 
         # Excact values will depend on the seed. Check against hardcoded
         # values.
-        self.assertEqual(d1, 4062)
-        self.assertEqual(d2, 4320)
+        self.assertEqual(d1, 4658)
+        self.assertEqual(d2, 5618)
 
-        self.assertEqual(u1, 5938)
-        self.assertEqual(u2, 5680)
+        self.assertEqual(u1, 5342)
+        self.assertEqual(u2, 4382)
 
         print "Time for custom run (s):", t2-t1
         print "Time for fixed run  (s):", t3-t2
