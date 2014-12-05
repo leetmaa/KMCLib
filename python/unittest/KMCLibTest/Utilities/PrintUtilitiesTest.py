@@ -1,7 +1,7 @@
 """ Module for testing the common print utilities. """
 
 
-# Copyright (c)  2013  Mikael Leetmaa
+# Copyright (c)  2013-2014  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -73,7 +73,7 @@ class PrintUtilitiesTest(unittest.TestCase):
             # Check.
             if MPICommons.myRank() == 0:
                 ref_str = """# -----------------------------------------------------------------------------
-# KMCLib version 1.1a0-devel
+# KMCLib version 2.0.a0-devel
 # **WARNING** This is a potentially broken development version of KMCLib.
 # Distributed under the GPLv3 license
 # Copyright (C)  2012-2014  Mikael Leetmaa

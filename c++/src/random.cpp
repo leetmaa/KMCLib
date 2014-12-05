@@ -11,27 +11,19 @@
  *         interfaces.
  */
 
-//#define __CPP11__
-
 #include "random.h"
 #include "mpicommons.h"
 #include "mpiroutines.h"
 #include <ctime>
 
 // c++11
-#ifdef __CPP11__
 #include <random>
-#else
-#include "externals/cslarsenmt.h"
-#endif
 
 // -----------------------------------------------------------------------------
 // The random number generator and distributions.
 
 // c++11
-#ifdef __CPP11__
 static std::mt19937 rng;
-#endif
 
 
 // -----------------------------------------------------------------------------
@@ -59,12 +51,8 @@ void seedRandom(const bool time_seed, int seed)
     }
 
     // Seed.
-#ifdef __CPP11__
     // c++11
     rng.seed(seed);
-#else
-    mt::srand(seed);
-#endif
 }
 
 
@@ -72,11 +60,7 @@ void seedRandom(const bool time_seed, int seed)
 //
 double randomDouble01()
 {
-#ifdef __CPP11__
     // c++11
     return std::generate_canonical<double, 32>(rng);
-#else
-    return  mt::randf_co();
-#endif
 }
 

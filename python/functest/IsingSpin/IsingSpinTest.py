@@ -57,6 +57,8 @@ class IsingSpinTest(unittest.TestCase):
 
     def testWithAndWithoutCustomRates(self):
         """ Test the Ising model with custom rates. """
+        seed = 965434567
+#13997
         # --------------------------------------------------------------------
         # Setup a calculation with custom rates and no caching.
         CustomRateCalculator.cacheRates = falseFunction
@@ -75,7 +77,7 @@ class IsingSpinTest(unittest.TestCase):
         # Define the parameters.
         control_parameters = KMCControlParameters(number_of_steps=1000000,
                                                   dump_interval=10000,
-                                                  seed=13997)
+                                                  seed=seed)
 
         # Run the simulation - save trajectory to 'custom_traj.py'
         model.run(control_parameters, trajectory_filename="custom_traj.py")
@@ -99,10 +101,10 @@ class IsingSpinTest(unittest.TestCase):
         # Define the parameters.
         control_parameters = KMCControlParameters(number_of_steps=1000000,
                                                   dump_interval=10000,
-                                                  seed=13997)
+                                                  seed=seed)
 
         # Run the simulation - save trajectory to 'custom_traj_cache.py'
-        model.run(control_parameters, trajectory_filename="custom_traj_cache.py")
+        model.run(control_parameters, trajectory_filename="custom_traj_py_cache.py")
 
         t3 = time.clock()
 
@@ -122,10 +124,10 @@ class IsingSpinTest(unittest.TestCase):
         # Define the parameters.
         control_parameters = KMCControlParameters(number_of_steps=1000000,
                                                   dump_interval=10000,
-                                                  seed=13997)
+                                                  seed=seed)
 
         # Run the simulation - save trajectory to 'custom_traj_cache.py'
-        model.run(control_parameters, trajectory_filename="custom_traj_cache.py")
+        model.run(control_parameters, trajectory_filename="custom_traj_cpp_cache.py")
 
         t4 = time.clock()
 
@@ -141,7 +143,7 @@ class IsingSpinTest(unittest.TestCase):
         # Define the parameters.
         control_parameters = KMCControlParameters(number_of_steps=1000000,
                                                   dump_interval=10000,
-                                                  seed=13997)
+                                                  seed=seed)
 
         # Run the simulation - save trajectory to 'fixed_traj.py'
         model.run(control_parameters, trajectory_filename="fixed_traj.py")
@@ -156,8 +158,13 @@ class IsingSpinTest(unittest.TestCase):
 
         global_dict = {}
         local_dict  = {}
-        execfile("custom_traj_cache.py", global_dict, local_dict)
-        elem_cache  = local_dict["types"][-1]
+        execfile("custom_traj_py_cache.py", global_dict, local_dict)
+        elem_cache_py  = local_dict["types"][-1]
+
+        global_dict = {}
+        local_dict  = {}
+        execfile("custom_traj_cpp_cache.py", global_dict, local_dict)
+        elem_cache_cpp  = local_dict["types"][-1]
 
         global_dict = {}
         local_dict  = {}
@@ -167,8 +174,11 @@ class IsingSpinTest(unittest.TestCase):
         d0 = len([e for e in elem_custom if e == "D"] )
         u0 = len([e for e in elem_custom if e == "U"] )
 
-        d1 = len([e for e in elem_cache if e == "D"] )
-        u1 = len([e for e in elem_cache if e == "U"] )
+        d1 = len([e for e in elem_cache_py if e == "D"] )
+        u1 = len([e for e in elem_cache_py if e == "U"] )
+
+        d11 = len([e for e in elem_cache_cpp if e == "D"] )
+        u11 = len([e for e in elem_cache_cpp if e == "U"] )
 
         d2 = len([e for e in elem_fixed if e == "D"] )
         u2 = len([e for e in elem_fixed if e == "U"] )
@@ -180,13 +190,15 @@ class IsingSpinTest(unittest.TestCase):
         print "Time for cache C++ run (s):", t4-t3
         print "Time for fixed run  (s):", t5-t4
 
-        self.assertEqual(d0, 6340)
-        self.assertEqual(d1, 6340)
-        self.assertEqual(d2, 6482)
+        self.assertEqual(d0,  3358)
+        self.assertEqual(d1,  3358)
+        self.assertEqual(d11, 3358)
+        self.assertEqual(d2,  3726)
 
-        self.assertEqual(u0, 3660)
-        self.assertEqual(u1, 3660)
-        self.assertEqual(u2, 3518)
+        self.assertEqual(u0,  6642)
+        self.assertEqual(u1,  6642)
+        self.assertEqual(u11, 6642)
+        self.assertEqual(u2,  6274)
 
         # --------------------------------------------------------------------
         # Now, plot the last configuration from each trajectory and compare

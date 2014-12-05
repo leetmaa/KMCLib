@@ -69,6 +69,7 @@ class BucketsTest(unittest.TestCase):
                                 interactions=interactions)
 
         ref_types = [['A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A', 'A'], ['A'], ['A', 'A', 'A'], ['A'], ['B']]
+
         self.assertEqual(ref_types, config.types())
 
         # Control parameters.
@@ -298,8 +299,7 @@ class BucketsTest(unittest.TestCase):
             # One-liner to calculate the number of M1 on this row.
             distribution.append(len([t for i in this_row for t in types[i] if t == 'M1']))
 
-        ref_distribution = [0, 108, 28, 21, 32, 13, 8, 13, 12, 8, 4, 6, 10, 2, 5, 2, 5, 3, 3, 1, 2, 2, 5, 3, 1, 1, 2, 0, 1, 0, 1, 0, 0, 0, 1, 2, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 2, 1, 0, 0, 0, 2, 1, 1, 3, 6, 0, 2, 5, 3, 3, 6, 2, 10, 5, 9, 9, 18, 16, 11, 23, 23, 33, 114]
-
+        ref_distribution = [0, 104, 36, 17, 23, 10, 18, 6, 3, 7, 5, 3, 6, 5, 5, 3, 2, 4, 8, 4, 0, 1, 2, 0, 0, 4, 2, 1, 0, 0, 1, 0, 0, 0, 0, 3, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 1, 1, 0, 1, 1, 2, 1, 2, 2, 1, 2, 1, 3, 4, 5, 4, 10, 7, 5, 8, 10, 4, 10, 8, 17, 26, 20, 38, 13, 78]
         # Check.
         self.assertEqual( ref_distribution, distribution )
 
