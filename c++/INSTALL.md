@@ -37,3 +37,35 @@ the functionality tests in python to get a hint at how to do it, and check the
 source manual if needed.
 
 *Good luck!*
+
+
+# Quick install guide for KMCLib 1.1 on Mac OSX with clang.
+
+## 1) Make sure you have SWIG with python extensions installed.
+How you do this is up to you. For Mac OSX with macports:
+"sudo port install swig && sudo port install swig-python",
+but there might be other ways.
+
+## 2) Build the included external dependencies.
+"cd KMCLib/c++/externals",
+"CXX='clang++ -stdlib=libc++'  make"
+
+## 3) Build KMCLib C++ tests and backend.
+"cd KMCLib/c++",
+"mkdir build",
+"cd build",
+Mac with clang: "CXX=clang++ cmake .."
+"make test.x",
+"./unittest/test.x",
+"make install"
+
+## 4) Run the Python tests.
+Place your "KMCLib/python/src" directory in your PYTHONPATH variable and run
+"python KMCLib/python/unittest/utest.py" and each of the tests under
+"KMCLib/python/functest/". We have used *python 2.7* for all development and
+testing.
+
+## DONE
+You should now be ready to start setting up your KMC models. Have a look at
+the functionality tests in python to get a hint at how to do it, and check the
+source manual if needed.
