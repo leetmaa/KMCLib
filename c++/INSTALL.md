@@ -48,13 +48,13 @@ but there might be other ways.
 
 ## 2) Build the included external dependencies.
 "cd KMCLib/c++/externals",
-"CXX='clang++ -stdlib=libc++'  make"
+"CXX='clang++ -stdlib=libc++' CC=clang make"
 
 ## 3) Build KMCLib C++ tests and backend.
 "cd KMCLib/c++",
 "mkdir build",
 "cd build",
-Mac with clang: "CXX=clang++ cmake .."
+Mac with clang: "CXX=clang++ CC=clang cmake .."
 "make test.x",
 "./unittest/test.x",
 "make install"
@@ -63,7 +63,9 @@ Mac with clang: "CXX=clang++ cmake .."
 Place your "KMCLib/python/src" directory in your PYTHONPATH variable and run
 "python KMCLib/python/unittest/utest.py" and each of the tests under
 "KMCLib/python/functest/". We have used *python 2.7* for all development and
-testing.
+testing. Make sure you are using the machin python /usr/bin/python2.7 or you
+might end up with an error saying
+"Fatal Python error: PyThreadState_Get: no current thread".
 
 ## DONE
 You should now be ready to start setting up your KMC models. Have a look at
