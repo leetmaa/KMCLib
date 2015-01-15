@@ -46,6 +46,7 @@ elseif (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
   add_definitions( -Wno-unused-variable )
   add_definitions( -Wno-dynamic-class-memaccess )
   add_definitions( -Wno-self-assign )
+  add_definitions( -Wno-deprecated )
 
   # ML: Do we need these here?
   add_definitions( -Wno-missing-field-initializers )
