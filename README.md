@@ -32,7 +32,7 @@ After discovering an issue with the external Mersenne-twister random number gene
 The code manual (http://leetmaa.github.io/KMCLib/manual-v1.0/) includes full documentation of the Python interface and several usage examples, as well as installation instructions for both Linux and Mac.
 
 ### Known issues
-The *KMCLib 1.1* release is still in BETA, meaning some minor updates and bug-fixes can be expected in the near future; the installation documentation for the new platforms is not yet done but will soon be updated, and the clang support is not yet fully implemented and tested. As allways, if you find any bugs or issues, or if you have suggestions for improvements, please let me know.
+The *KMCLib 1.1* release is still in BETA, meaning some minor updates and bug-fixes can be expected in the near future; the installation documentation for all new platforms is not yet done but will soon be updated. As allways, if you find any bugs or issues, or if you have suggestions for improvements, please let me know.
 
 ### Obtain a copy
 The program is distributed under the GPLv3 license and can be obtained from the *KMCLib* git repository https://github.com/leetmaa/KMCLib/releases/tag/v1.1-b1
