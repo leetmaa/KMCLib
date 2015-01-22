@@ -151,7 +151,7 @@ must be given as string."""
 
         # Print the initial matching information if above the verbosity threshold.
         if self.__verbosity_level > 9:
-            self._printMatchInfo(cpp_model)
+            self.__printMatchInfo(cpp_model)
 
         # Check that we have at least one available process to  run the KMC simulation.
         if cpp_model.interactions().totalAvailableSites() == 0:
@@ -272,7 +272,5 @@ must be given as string."""
         prettyPrint("")
         prettyPrint(" Matching Information: ")
         for i,p in enumerate(cpp_processes):
-            prettyPrint("")
-            prettyPrint(" Process %i available on sites: "%(i), p.sites())
-        prettyPrint("")
+            print i,p.sites()
 
