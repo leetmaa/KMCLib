@@ -1,5 +1,5 @@
 /*
-  Copyright (c)  2012-2013  Mikael Leetmaa
+  Copyright (c)  2012-2015  Mikael Leetmaa
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -1137,4 +1137,82 @@ void Test_Configuration::testUpdateInfo()
     CPPUNIT_ASSERT_EQUAL(update[1]["A"], ret_update[1]["A"]);
     CPPUNIT_ASSERT_EQUAL(update[1]["B"], ret_update[1]["B"]);
     CPPUNIT_ASSERT_EQUAL(update[2]["B"], ret_update[2]["B"]);
+}
+
+
+// -------------------------------------------------------------------------- //
+//
+void Test_Configuration::testParticlesPerType()
+{
+    // Setup coordinates.
+    std::vector<std::vector<double> > coords(5, std::vector<double>(3, 0.0));
+    coords[0][0]  = 0.1;
+    coords[0][1]  = 0.2;
+    coords[0][2]  = 0.3;
+    coords[1][0]  = 0.4;
+    coords[1][1]  = 0.5;
+    coords[1][2]  = 0.6;
+    coords[2][0]  = 0.7;
+    coords[2][1]  = 0.8;
+    coords[2][2]  = 0.9;
+    coords[3][0]  = 1.1;
+    coords[3][1] = 1.2;
+    coords[3][2] = 1.3;
+    coords[4][0] = 3.6;
+    coords[4][1] = 3.5;
+    coords[4][2] = 3.4;
+
+    // Setup elements.
+    std::vector< std::vector<std::string> > elements(5);
+    elements[0] = std::vector<std::string>(2, "A");
+    elements[0].push_back("G");
+
+    elements[1] = std::vector<std::string>(3, "B");
+    elements[1].push_back("G");
+    elements[1].push_back("G");
+
+    elements[2] = std::vector<std::string>(4, "D");
+    elements[2].push_back("G");
+    elements[2].push_back("G");
+    elements[2].push_back("G");
+
+    elements[3] = std::vector<std::string>(5, "H");
+    elements[3].push_back("G");
+    elements[3].push_back("G");
+    elements[3].push_back("G");
+    elements[3].push_back("G");
+
+    elements[4] = std::vector<std::string>(1, "J");
+    elements[4].push_back("G");
+    elements[4].push_back("J");
+
+    // Setup the mapping from element to integer.
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["D"] = 3;
+    possible_types["H"] = 4;
+    possible_types["J"] = 5;
+    possible_types["G"] = 6;
+
+    // Construct the configuration.
+    Configuration config(coords, elements, possible_types);
+
+    // Get the particles per type.
+    const std::vector<int> particles_per_type_1 = config.particlesPerType();
+
+    // Check the length.
+    CPPUNIT_ASSERT_EQUAL( particles_per_type_1.size(), possible_types.size() );
+
+    // Check the content.
+    CPPUNIT_ASSERT_EQUAL( particles_per_type_1[0], 0);
+    CPPUNIT_ASSERT_EQUAL( particles_per_type_1[1], 2);
+    CPPUNIT_ASSERT_EQUAL( particles_per_type_1[2], 3);
+    CPPUNIT_ASSERT_EQUAL( particles_per_type_1[3], 4);
+    CPPUNIT_ASSERT_EQUAL( particles_per_type_1[4], 5);
+    CPPUNIT_ASSERT_EQUAL( particles_per_type_1[5], 2);
+    CPPUNIT_ASSERT_EQUAL( particles_per_type_1[6], 11);
+
+    // DONE
 }

@@ -259,6 +259,14 @@ class KMCConfiguration(object):
         """
         return self.__possible_types
 
+    def particlesPerType(self):
+        """
+        Query function for the number of particles per type.
+
+        :returns: The current number of particles per type.
+        """
+        return self._backend().particlesPerType()
+
     def cellRepetitions(self):
         """
         Query for the primitive cell repetitions.

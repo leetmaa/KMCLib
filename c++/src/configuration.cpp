@@ -389,3 +389,23 @@ void Configuration::performBucketProcess(Process & process,
     }
 }
 
+
+// -----------------------------------------------------------------------------
+//
+std::vector<int> Configuration::particlesPerType() const
+{
+    // Allocate space for the return values.
+    std::vector<int> particles_per_type(possible_types_.size(), 0);
+
+    // Loop over each site and sum the number of particle.
+    for (size_t i = 0; i < types_.size(); ++i)
+    {
+        for (size_t j = 0; j < particles_per_type.size(); ++j)
+        {
+            particles_per_type[j] += types_[i][j];
+        }
+    }
+
+    // DONE.
+    return particles_per_type;
+}

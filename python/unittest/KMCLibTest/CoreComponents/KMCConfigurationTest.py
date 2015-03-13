@@ -1,7 +1,7 @@
 """" Module for testing KMCConfiguration """
 
 
-# Copyright (c)  2012-2014  Mikael Leetmaa
+# Copyright (c)  2012-2015  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -479,6 +479,8 @@ class KMCConfigurationTest(unittest.TestCase):
                 return 995976943
             def latestEventSite(self):
                 return 556462676
+            def particlesPerType(self):
+                return (123, 467, 432)
 
         config._KMCConfiguration__backend = BackendProxy()
 
@@ -489,6 +491,7 @@ class KMCConfigurationTest(unittest.TestCase):
         moved_atom_ids       = config.movedAtomIDs()
         latest_event_process = config.latestEventProcess()
         latest_event_site    = config.latestEventSite()
+        particles_per_type   = config.particlesPerType()
 
         self.assertEqual(atom_id_types, ("A","B","F"))
         self.assertEqual(lattice_types, ["B","F","A"])
@@ -500,6 +503,7 @@ class KMCConfigurationTest(unittest.TestCase):
         self.assertEqual(moved_atom_ids,      (123, 234))
         self.assertEqual(latest_event_process, 995976943)
         self.assertEqual(latest_event_site,    556462676)
+        self.assertEqual(particles_per_type,  (123, 467, 432))
 
     def testLatticeQuery(self):
         """ Test the query function for the lattice. """

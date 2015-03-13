@@ -168,6 +168,10 @@ public:
      */
     const std::map<std::string,int> & possibleTypes() const { return possible_types_; }
 
+    /*! \brief Query for the number of particles per type.
+     *  \return : A vector holding the number of particles per type.
+     */
+    std::vector<int> particlesPerType() const;
 
 protected:
 

@@ -64,6 +64,7 @@ cppunit: ./src/cppunit-1.12.1/INSTALL_STAMP
 	make && \
 	make check && \
 	make install && \
+	cp ./src/cppunit/.libs/libcppunit* ../../lib/cppunit/lib/
 	touch BUILD_STAMP && \
 	cd -
 

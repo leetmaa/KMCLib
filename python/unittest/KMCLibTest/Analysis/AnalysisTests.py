@@ -12,12 +12,14 @@ import unittest
 from OnTheFlyMSDTest import OnTheFlyMSDTest
 from TimeStepDistributionTest import TimeStepDistributionTest
 from ProcessStatisticsTest import ProcessStatisticsTest
+from CompositionTest import CompositionTest
 
 def suite():
     suite = unittest.TestSuite(
         [unittest.TestLoader().loadTestsFromTestCase(OnTheFlyMSDTest),
          unittest.TestLoader().loadTestsFromTestCase(TimeStepDistributionTest),
          unittest.TestLoader().loadTestsFromTestCase(ProcessStatisticsTest),
+         unittest.TestLoader().loadTestsFromTestCase(CompositionTest),
          ])
     return suite
 
