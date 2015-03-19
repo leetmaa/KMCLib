@@ -55,7 +55,7 @@ class CompositionTest(unittest.TestCase):
 
         # Get a proxy config.
         class DummyConfig:
-            def possibleTypes(self):
+            def _backendTypeNames(self):
                 return ("a","b","c","d","e")
             def particlesPerType(self):
                 return (1,2,3,4,5)
@@ -80,13 +80,13 @@ class CompositionTest(unittest.TestCase):
 
         # Get a proxy config.
         class DummyConfig:
-            def possibleTypes(self):
+            def _backendTypeNames(self):
                 return ("a","b","c","d","e")
             def particlesPerType(self):
                 return (1,2,3,4,5)
 
         class DummyConfig2:
-            def possibleTypes(self):
+            def _backendTypeNames(self):
                 return ("a","b","c","d","e")
             def particlesPerType(self):
                 return (5,4,3,2,1)
@@ -173,13 +173,13 @@ class CompositionTest(unittest.TestCase):
 
         # Get a proxy config.
         class DummyConfig:
-            def possibleTypes(self):
+            def _backendTypeNames(self):
                 return ("a","b","c","d","e")
             def particlesPerType(self):
                 return (1,2,3,4,5)
 
         class DummyConfig2:
-            def possibleTypes(self):
+            def _backendTypeNames(self):
                 return ("a","b","c","d","e")
             def particlesPerType(self):
                 return (5,4,3,2,1)
@@ -198,10 +198,10 @@ class CompositionTest(unittest.TestCase):
         cc.printResults(stream)
 
         ref_str = \
-"""       time          a          b          c          d          e
-      0.000      1.000      2.000      3.000      4.000      5.000
-      2.000      5.000      4.000      3.000      2.000      1.000
-      4.000      3.000      3.000      3.000      3.000      3.000
+"""            time               b               c               d               e
+       1.000e+00       2.000e+00       3.000e+00       4.000e+00       5.000e+00
+       3.000e+00       4.000e+00       3.000e+00       2.000e+00       1.000e+00
+       5.000e+00       3.000e+00       3.000e+00       3.000e+00       3.000e+00
 """
         # Reference checked by hand.
         if MPICommons.isMaster():
@@ -215,13 +215,13 @@ class CompositionTest(unittest.TestCase):
 
         # Get a proxy config.
         class DummyConfig:
-            def possibleTypes(self):
+            def _backendTypeNames(self):
                 return ("a","b","c","d","e")
             def particlesPerType(self):
                 return (1,2,3,4,5)
 
         class DummyConfig2:
-            def possibleTypes(self):
+            def _backendTypeNames(self):
                 return ("a","b","c","d","e")
             def particlesPerType(self):
                 return (5,4,3,2,1)
@@ -243,7 +243,7 @@ class CompositionTest(unittest.TestCase):
         diff = numpy.linalg.norm(cc.data() - ref_data)
         self.assertAlmostEqual(diff, 0.0, 10)
 
-        ref_time = numpy.array([ 0.,  2.,  4.])
+        ref_time = numpy.array([ 1.,  3.,  5.])
         diff = numpy.linalg.norm(cc.times() - ref_time)
         self.assertAlmostEqual(diff, 0.0, 10)
 

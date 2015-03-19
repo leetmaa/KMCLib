@@ -319,6 +319,14 @@ class KMCConfiguration(object):
         # Return the backend.
         return self.__backend
 
+    # ML: NEEDS TEST
+    def _backendTypeNames(self):
+        """
+        Get a tuple with the type names order the same way as the buckets
+        backend implementation.
+        """
+        return self.__backend.typeNames()
+
     def _latticeMap(self):
         """
         Get a c++ lattice map describing the lattice.

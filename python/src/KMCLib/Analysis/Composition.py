@@ -45,10 +45,10 @@ class Composition(KMCAnalysisPlugin):
         """
         # Set the initial values.
         self.__last_time     = time
-        self.__empty_count   = numpy.array([0]*len(configuration.possibleTypes()))
+        self.__empty_count   = numpy.array([0]*len(configuration._backendTypeNames()))
         self.__current_count = numpy.array(configuration.particlesPerType())
         self.__current_steps = 1
-        self.__possible_types = configuration.possibleTypes()
+        self.__type_names    = configuration._backendTypeNames()
 
     def registerStep(self, step, time, configuration):
         """
@@ -83,26 +83,26 @@ class Composition(KMCAnalysisPlugin):
         if MPICommons.isMaster():
 
             # The format string for the values.
-            format_str = " %10.3f"*(len(self.__empty_count)+1)
+            format_str = " %15.3e"*(len(self.__empty_count))
             format_str += "\n"
 
             # The format string for the counts.
-            format_str_1 = " %10s"*(len(self.__empty_count)+1)
+            format_str_1 = " %15s"*(len(self.__empty_count))
             format_str_1 += "\n"
 
             types_str = ["time"]
-            for t in self.__possible_types:
+            for t in self.__type_names[1:]:
                 types_str.append(t)
 
             stream.write(format_str_1%tuple(types_str))
 
             for i,d in enumerate(self.__data):
                 # Calculate the time.
-                t  = i * self.__time_interval
+                t  = i * self.__time_interval + (self.__time_interval / 2.0)
 
                 # Append the values.
                 tt = [t]
-                for dd in d:
+                for dd in d[1:]:
                     tt.append(dd)
 
                 # Print.
@@ -117,8 +117,9 @@ class Composition(KMCAnalysisPlugin):
 
     def times(self):
         """
-        Query for the times.
+        Query for the times. The times are reported
+        at the middle of the collecction interval.
         :returns: The times corresponding to the data.
         """
         # Calculate and return the time.
-        return numpy.array([i * self.__time_interval for i,d in enumerate(self.__data)])
+        return numpy.array([i * self.__time_interval + (self.__time_interval / 2.0) for i,d in enumerate(self.__data)])

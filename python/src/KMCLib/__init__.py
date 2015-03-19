@@ -1,7 +1,7 @@
 """ Module for easy KMC from python. """
 
 
-# Copyright (c)  2013  Mikael Leetmaa
+# Copyright (c)  2013-2015  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -26,6 +26,8 @@ from CoreComponents.KMCUnitCell import KMCUnitCell
 from CoreComponents.KMCControlParameters import KMCControlParameters
 from Analysis.OnTheFlyMSD import OnTheFlyMSD
 from Analysis.TimeStepDistribution import TimeStepDistribution
+from Analysis.ProcessStatistics import ProcessStatistics
+from Analysis.Composition import Composition
 from Utilities.SaveAndReadUtilities import KMCInteractionsFromScript
 from Utilities.SaveAndReadUtilities import KMCConfigurationFromScript
 from PluginInterfaces.KMCRateCalculatorPlugin import KMCRateCalculatorPlugin
@@ -39,7 +41,8 @@ __all__ = ['KMCLocalConfiguration', 'KMCInteractions', 'KMCConfiguration',
            'KMCConfigurationFromScript', 'KMCRateCalculatorPlugin',
            'KMCAnalysisPlugin', 'KMCBreakerPlugin', 'KMCProcess',
            'KMCBucketProcess', 'OnTheFlyMSD',
-           'TimeStepDistribution', 'MPICommons']
+           'TimeStepDistribution', 'Composition',
+           'ProcessStatistics', 'MPICommons']
 
 # Trick to initialize and finalize MPI only once.
 MPICommons.init()
