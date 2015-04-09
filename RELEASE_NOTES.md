@@ -1,3 +1,9 @@
+##v1.1-b2 (April 9 2015)
+***KMCLib* is now in version 1.1 BETA-2**
+
+The switch over to using random numbers from the standard (C++11) library is completed and KMCLib now supports using both the Mersenne-Twister and the RANLUX PRNG:s through the standard C++ library. Additionally the standard minimal PRNG is also available, as well as true random numbers if you have a random device installed. The make system is upgraded to provide support for additional platforms and compilers. We now support using the **clang** compiler on Mac OSX, and the **Intel C++ compiler** under Linux. Support for the **Intel C++ compiler** was requested for use in particular on large computer clusters with little flexibility to change compilers. The *KMCLib 1.1* release is in BETA-2. All features for version 1.1 are implemented and no known issues remain, however there is work to be done on the manual and documentation before the final 1.1 release.
+
+
 ##v1.1-b1 (December 17 2014)
 ***KMCLib* is now in version 1.1 BETA-1**
 
