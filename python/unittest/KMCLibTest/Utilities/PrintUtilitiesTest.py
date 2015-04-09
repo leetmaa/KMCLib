@@ -76,7 +76,7 @@ class PrintUtilitiesTest(unittest.TestCase):
 # KMCLib version 2.0.a0-devel
 # **WARNING** This is a potentially broken development version of KMCLib.
 # Distributed under the GPLv3 license
-# Copyright (C)  2012-2014  Mikael Leetmaa
+# Copyright (C)  2012-2015  Mikael Leetmaa
 # Developed by Mikael Leetmaa <leetmaa@kth.se>
 #
 # This program is distributed in the hope that it will be useful

@@ -1,4 +1,4 @@
-# Copyright (c)  2012-2014  Mikael Leetmaa
+# Copyright (c)  2012-2015  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -79,9 +79,28 @@ elseif (CMAKE_COMPILER_IS_GNUCXX)
     add_definitions( -Wno-long-long )
   endif()
 
-# Only g++ supported.
+elseif (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
+  message( STATUS "Using compiler ${CMAKE_CXX_COMPILER_ID}")
+
+  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC -Wall -Wextra -Werror -pedantic -stdlib=libc++  -std=c++11")
+  set( CMAKE_CXX_FLAGS_DEBUG "-g -pg" )
+  set( CMAKE_CXX_FLAGS_RELEASE  "" )
+  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO  "" )
+
+  # Allow for unused parameters.
+  add_definitions( -Wno-unused-parameter )
+
+  if(MPI)
+    message( STATUS "Using Clang via ${MPI} [ WARNING - NOT TESTED ]" )
+    # Workaround for known mpich c++ bug.
+    add_definitions( -DMPICH_IGNORE_CXX_SEEK )
+    add_definitions( -DMPICH_SKIP_MPICXX )
+    add_definitions( -Wno-long-long )
+  endif()
+
+# Only g++, Intel and Clang supported.
 else()
-  message( FATAL_ERROR "Invalid CXX compiler. Make sure you have g++ installed" )
+  message( FATAL_ERROR "Invalid CXX compiler. Only g++, Intel and Clang supported" )
 endif()
 
 # Includsion from the source.

@@ -1,7 +1,7 @@
 """ Module for testing the KMCLatticeModel class. """
 
 
-# Copyright (c)  2012-2014  Mikael Leetmaa
+# Copyright (c)  2012-2015  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -1166,6 +1166,165 @@ STEP 1000
                            lambda : ab_flip_model.run(control_parameters,
                                                       trajectory_filename=xyz_trajectory_filename,
                                                       trajectory_type=123) )
+
+
+    def testRunRngType(self):
+        """ Test that it is possible to run with each of the supported PRNG:s. """
+        # Cell.
+        cell_vectors = [[   1.000000e+00,   0.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   1.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   0.000000e+00,   1.000000e+00]]
+
+        basis_points = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+
+        unit_cell = KMCUnitCell(
+            cell_vectors=cell_vectors,
+            basis_points=basis_points)
+
+        # Lattice.
+        lattice = KMCLattice(
+            unit_cell=unit_cell,
+            repetitions=(4,4,1),
+            periodic=(True, True, False))
+
+        # Configuration.
+        types = ['B']*16
+        possible_types = ['A','B']
+        configuration = KMCConfiguration(
+            lattice=lattice,
+            types=types,
+            possible_types=possible_types)
+
+        # Interactions.
+        coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+        process_0 = KMCProcess(coordinates,
+                               ['A'],
+                               ['B'],
+                               basis_sites=[0],
+                               rate_constant=4.0)
+        process_1 = KMCProcess(coordinates,
+                               ['B'],
+                               ['A'],
+                               basis_sites=[0],
+                               rate_constant=1.0)
+
+        processes = [process_0, process_1]
+        interactions = KMCInteractions(processes)
+
+        # Setup the models.
+        ab_flip_model_MT       = KMCLatticeModel(configuration, interactions)
+        ab_flip_model_RANLUX24 = KMCLatticeModel(configuration, interactions)
+        ab_flip_model_RANLUX48 = KMCLatticeModel(configuration, interactions)
+        ab_flip_model_MINSTD   = KMCLatticeModel(configuration, interactions)
+        ab_flip_model_DEVICE   = KMCLatticeModel(configuration, interactions)
+
+        # Run the model for 10000 steps with MT.
+        ab_flip_model_MT.run(KMCControlParameters(number_of_steps=10000,
+                                                  dump_interval=5000,
+                                                  seed=2013,
+                                                  rng_type="MT"))
+
+        # Get the simulation time out.
+        t_MT = ab_flip_model_MT._KMCLatticeModel__cpp_timer.simulationTime()
+
+        # Run the model for 10000 steps with RANLUX24.
+        ab_flip_model_RANLUX24.run(KMCControlParameters(number_of_steps=10000,
+                                                        dump_interval=5000,
+                                                        seed=2013,
+                                                        rng_type="RANLUX24"))
+        # Get the simulation time out.
+        t_RANLUX24 = ab_flip_model_RANLUX24._KMCLatticeModel__cpp_timer.simulationTime()
+
+
+        # Run the model for 10000 steps with RANLUX48.
+        ab_flip_model_RANLUX48.run(KMCControlParameters(number_of_steps=10000,
+                                                        dump_interval=5000,
+                                                        seed=2013,
+                                                        rng_type="RANLUX48"))
+        # Get the simulation time out.
+        t_RANLUX48 = ab_flip_model_RANLUX48._KMCLatticeModel__cpp_timer.simulationTime()
+
+        # Run the model for 10000 steps with MINSTD.
+        ab_flip_model_MINSTD.run(KMCControlParameters(number_of_steps=10000,
+                                                      dump_interval=5000,
+                                                      seed=2013,
+                                                      rng_type="MINSTD"))
+        # Get the simulation time out.
+        t_MINSTD = ab_flip_model_MINSTD._KMCLatticeModel__cpp_timer.simulationTime()
+
+        # These values should be simillar but not equal. Check against hardcoded values.
+        self.assertAlmostEqual(t_MT,       392.034039977, 5)
+        self.assertAlmostEqual(t_RANLUX24, 394.639740751, 5)
+        self.assertAlmostEqual(t_RANLUX48, 386.730028929, 5)
+        self.assertAlmostEqual(t_MINSTD,   392.494055839, 5)
+
+    def testRunRngTypeDevice(self):
+        """ Test to use the PRNG DEVICE. """
+        # Cell.
+        cell_vectors = [[   1.000000e+00,   0.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   1.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   0.000000e+00,   1.000000e+00]]
+
+        basis_points = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+
+        unit_cell = KMCUnitCell(
+            cell_vectors=cell_vectors,
+            basis_points=basis_points)
+
+        # Lattice.
+        lattice = KMCLattice(
+            unit_cell=unit_cell,
+            repetitions=(4,4,1),
+            periodic=(True, True, False))
+
+        # Configuration.
+        types = ['B']*16
+        possible_types = ['A','B']
+        configuration = KMCConfiguration(
+            lattice=lattice,
+            types=types,
+            possible_types=possible_types)
+
+        # Interactions.
+        coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+        process_0 = KMCProcess(coordinates,
+                               ['A'],
+                               ['B'],
+                               basis_sites=[0],
+                               rate_constant=4.0)
+        process_1 = KMCProcess(coordinates,
+                               ['B'],
+                               ['A'],
+                               basis_sites=[0],
+                               rate_constant=1.0)
+
+        processes = [process_0, process_1]
+        interactions = KMCInteractions(processes)
+
+        # Setup the model.
+        ab_flip_model_DEVICE   = KMCLatticeModel(configuration, interactions)
+
+        support_device = False
+
+        if (not support_device):
+            # If DEVICE is not supported on your system this is the test you should run.
+            self.assertRaises( Error,
+                               lambda: ab_flip_model_DEVICE.run(KMCControlParameters(number_of_steps=10000,
+                                                                                     dump_interval=5000,
+                                                                                     seed=2013,
+                                                                                     rng_type="DEVICE")))
+
+        else:
+            # If DEVICE is supported the aboove test will fail, and you should run this tests instead.
+
+            # Run the model for 10000 steps with DEVICE.
+            ab_flip_model_DEVICE.run(KMCControlParameters(number_of_steps=10000,
+                                                          dump_interval=5000,
+                                                          seed=2013,
+                                                          rng_type="DEVICE"))
+            # Get the simulation time out.
+            t_DEVICE = ab_flip_model_DEVICE._KMCLatticeModel__cpp_timer.simulationTime()
+            self.assertTrue(t_DEVICE < 410.0 and t_DEVICE > 370.0)
 
     def testRunWithBreaker(self):
         """ Test that a breaker kan be given to the run method. """

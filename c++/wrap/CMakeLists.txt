@@ -59,18 +59,31 @@ add_definitions( -Wno-unused-but-set-variable )
 # For intel.
 if (USING_INTEL)
    message( STATUS "Ignoring Intel SWIG warnings")
-  # Add intel options here.
-else()
+  add_definitions( -Wno-unused-but-set-variable )
+
+elseif (CMAKE_COMPILER_IS_GNUCXX)
   message( STATUS "Ignoring g++ SWIG warnings")
+  add_definitions( -Wno-unused-but-set-variable )
   # For older g++.
   add_definitions( -Wno-missing-field-initializers )
   add_definitions( -Wno-write-strings )
   add_definitions( -fno-strict-aliasing )
+
+elseif (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
+  message( STATUS "Ignoring Clang SWIG warnings")
+  add_definitions( -Wno-unused-variable )
+  add_definitions( -Wno-dynamic-class-memaccess )
+  add_definitions( -Wno-self-assign )
+  add_definitions( -Wno-deprecated )
+
+  # ML: Do we need these here?
+  add_definitions( -Wno-missing-field-initializers )
+  add_definitions( -Wno-write-strings )
+  add_definitions( -fno-strict-aliasing )
+
+
 endif()
 
-# For clang - FIXME
-#add_definitions( -Wno-self-assign )
-#add_definitions( -Wno-dynamic-class-memaccess )
 
 # Add the target.
 swig_add_module( Backend python backend.i )
@@ -101,4 +114,3 @@ else()#${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   swig_link_libraries( Backend src )
   swig_link_libraries( Custom  custom src )
 endif()
-

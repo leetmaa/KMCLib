@@ -25,9 +25,17 @@ public:
 
     CPPUNIT_TEST_SUITE( Test_Random );
     CPPUNIT_TEST( testSeedAndCall );
+    CPPUNIT_TEST( testCallMT );
+    CPPUNIT_TEST( testCallRANLUX24 );
+    CPPUNIT_TEST( testCallRANLUX48 );
+    CPPUNIT_TEST( testCallMINSTD );
     CPPUNIT_TEST_SUITE_END();
 
     void testSeedAndCall();
+    void testCallMT();
+    void testCallRANLUX24();
+    void testCallRANLUX48();
+    void testCallMINSTD();
 
 };
 

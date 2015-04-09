@@ -1,7 +1,7 @@
 """ Module for the KMCLatticeModel """
 
 
-# Copyright (c)  2012-2014  Mikael Leetmaa
+# Copyright (c)  2012-2015  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -151,7 +151,10 @@ must be given as string."""
             msg = "Each element in the 'breakers' list must be an instance of KMCBreakerPlugin."
             breakers = checkSequenceOf(breakers, KMCBreakerPlugin, msg)
 
-        # Seed the backend random number generator.
+        # Set and seed the backend random number generator.
+        if not Backend.setRngType(control_parameters.rngType()):
+            raise Error("DEVICE random number generator is not supported by your system, or the std::random_device in the standard C++ library you use is implemented using a pseudo random number generator (entropy=0).")
+
         Backend.seedRandom(control_parameters.timeSeed(),
                            control_parameters.seed())
 
@@ -325,5 +328,5 @@ must be given as string."""
         prettyPrint("")
         prettyPrint(" Matching Information: ")
         for i,p in enumerate(cpp_processes):
-            print i, p.sites()
+            print i,p.sites()
 

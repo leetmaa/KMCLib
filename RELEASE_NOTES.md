@@ -1,3 +1,9 @@
+##v1.1-b1 (December 17 2014)
+***KMCLib* is now in version 1.1 BETA-1**
+
+After discovering an issue with the external Mersenne-twister random number generator included in the previous version of *KMCLib*, we have decided to make the switch over to using **C++11** and the Mersenne-twister random number generator from the standard (C++11) library. This means you will no longer be able to use *KMCLib* with a compiler older than **gcc 4.6**. With this update we also took the opportunity to upgrade the make system to provide support for additional platforms and compilers. Several users have reported difficulties installing *KMCLib* on Mac OSX. From version 1.1 we will support using the **clang** compiler, which we believe will make the installation procedure a lot smoother on Mac OSX. *KMCLib 1.1* will also have support for using the **Intel C++ compiler** under Linux. This was requested for use in particular on large computer clusters with little flexibility to change compilers. The *KMCLib 1.1* release is still in BETA, meaning some minor updates and bug-fixes can be expected in the near future; the installation documentation for the new platforms is not yet done but will soon be updated, and the clang support is not yet fully implemented and tested.
+
+
 ##v1.0 (May 6 2014)
 ***KMCLib* version 1.0 is ready for release.**
 
