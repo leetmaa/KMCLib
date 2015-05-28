@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Installation &mdash; KMCLib 1.0.0 documentation</title>
+    <title>Installation &mdash; KMCLib 1.1 documentation</title>
     
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '1.0.0',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -28,7 +28,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/theme_extras.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
-    <link rel="top" title="KMCLib 1.0.0 documentation" href="index.html" />
+    <link rel="top" title="KMCLib 1.1 documentation" href="index.html" />
     <link rel="next" title="Usage examples" href="usage.html" />
     <link rel="prev" title="Algorithm" href="algorithm.html" /> 
   </head>
@@ -40,7 +40,7 @@
 
 
       <div class="header"><h1 class="heading"><a href="index.html">
-          <span>KMCLib 1.0.0 documentation</span></a></h1>
+          <span>KMCLib 1.1 documentation</span></a></h1>
         <h2 class="heading"><span>Installation</span></h2>
       </div>
       <div class="topnav">
@@ -66,20 +66,25 @@ installed and tested on. If you have successfully installed on another
 system we would be happy to receive your updates to these install
 instructions.</p>
 <p>This table shows on which systems we have successfully
-installed and tested the current version of KMCLib. If you have
-information for other systems, compilers or library versions please
+installed and tested the current version of KMCLib. Looking at the
+span of different compiler and OS versions that work it is reasonable
+to assume that the program can be successfully installed on many other
+systems as well. If you have
+information for other systems, compilers, or library versions please
 let us know.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="23%" />
-<col width="14%" />
-<col width="24%" />
-<col width="13%" />
-<col width="14%" />
-<col width="14%" />
+<col width="18%" />
+<col width="33%" />
+<col width="19%" />
+<col width="10%" />
+<col width="11%" />
+<col width="11%" />
 </colgroup>
 <thead valign="bottom">
-<tr class="row-odd"><th class="head">OS</th>
+<tr class="row-odd"><th class="head" colspan="6">VERSION 1.1</th>
+</tr>
+<tr class="row-even"><th class="head">OS</th>
 <th class="head">Compiler</th>
 <th class="head">MPI</th>
 <th class="head">cppunit</th>
@@ -88,62 +93,71 @@ let us know.</p>
 </tr>
 </thead>
 <tbody valign="top">
+<tr class="row-odd"><td>Ubuntu 14.4 LTS</td>
+<td>GCC 4.8.2</td>
+<td>OpenMPI 1.8.4</td>
+<td>1.13.0</td>
+<td>2.7.6</td>
+<td>2.0.11</td>
+</tr>
 <tr class="row-even"><td>Ubuntu 12.4 LTS</td>
 <td>GCC 4.6.3</td>
-<td>MPICH2 3.0.2</td>
+<td>MPICH2 1.4.1</td>
 <td>1.12.1</td>
 <td>2.7.3</td>
 <td>2.0.4</td>
 </tr>
-<tr class="row-odd"><td>CentOS release 5.9</td>
-<td>GCC 4.6.3</td>
-<td>Intel MPI 4.0.3.008</td>
+<tr class="row-odd"><td>CentOS release 6.6</td>
+<td>icpc-15.0.1 (gcc 4.8.2 runtime lib)</td>
+<td>Intel MPI 5.0.2.044</td>
 <td>1.12.1</td>
-<td>2.7.2</td>
-<td>2.0.4</td>
+<td>2.7.3</td>
+<td>1.3.4</td>
 </tr>
-<tr class="row-even"><td>Mac OSX 10.5.8</td>
-<td>GCC 4.2.1</td>
-<td>Open MPI 1.2.3</td>
+<tr class="row-even"><td>Mac OSX 10.10.3</td>
+<td>Clang 6.1</td>
+<td>&#8211;</td>
 <td>1.12.1</td>
-<td>2.7.2</td>
-<td>1.3.31</td>
+<td>2.7.6</td>
+<td>3.0.2</td>
 </tr>
-<tr class="row-odd"><td>Mac OSX 10.8.5</td>
-<td>GCC 4.2.1</td>
+<tr class="row-odd"><td>Mac OSX 10.9.5</td>
+<td>Clang 6.0</td>
+<td>&#8211;</td>
+<td>1.12.1</td>
+<td>2.7.5</td>
+<td>3.0.5</td>
+</tr>
+<tr class="row-even"><td>Mac OSX 10.8.5</td>
+<td>Clang 4.2</td>
 <td>&#8211;</td>
 <td>1.12.1</td>
 <td>2.7.2</td>
 <td>2.0.9</td>
 </tr>
-<tr class="row-even"><td>Mac OSX 10.9.1</td>
-<td>GCC 4.7.3</td>
-<td>&#8211;</td>
-<td>1.12.1</td>
-<td>2.7.6</td>
-<td>2.0.11</td>
-</tr>
 </tbody>
 </table>
 <div class="section" id="compiler">
 <h2>Compiler<a class="headerlink" href="#compiler" title="Permalink to this headline">¶</a></h2>
-<p>To compile <tt class="xref py py-mod docutils literal"><span class="pre">KMCLib</span></tt> you will need a <strong>C++ compiler</strong> installed on your
-system. The current version only supports the <strong>g++</strong> compiler. If
-you want to use another compiler you will have to modify the make
-system accordingly. If you compile <tt class="xref py py-mod docutils literal"><span class="pre">KMCLib</span></tt> using
-another compiler please let us know so we can include your updates in
-the official release.</p>
+<p>To compile <tt class="xref py py-mod docutils literal"><span class="pre">KMCLib</span></tt> you will need a <strong>C++11 compiler</strong> installed on your
+system. The current version supports the <strong>g++ (GCC)</strong>, <strong>icpc(Intel)</strong> and
+<strong>Clang (Mac OSX)</strong> compilers. If you want to use another compiler you
+will have to modify the make system accordingly. If you compile
+<tt class="xref py py-mod docutils literal"><span class="pre">KMCLib</span></tt> using another compiler please let us know so we can
+include your updates in the official release.</p>
 </div>
 <div class="section" id="mpi">
 <h2>MPI<a class="headerlink" href="#mpi" title="Permalink to this headline">¶</a></h2>
 <p>To build the <em>parallel</em> version of the code you will also need an <strong>MPI</strong>
 implementation installed on your system, and you will be asked to
-specify the compiler wrapper script you want to use, such as e.g. <strong>mpicxx</strong>.</p>
+specify the compiler wrapper script you want to use, such as e.g. <strong>mpicxx</strong>.
+The current version of <tt class="xref py py-mod docutils literal"><span class="pre">KMCLib</span></tt> has been tested using <strong>MPICH2</strong>,
+<strong>OpenMPI</strong> and <strong>Intel-MPI</strong> as indicated in the table above.</p>
 </div>
 <div class="section" id="make-system">
 <h2>Make system<a class="headerlink" href="#make-system" title="Permalink to this headline">¶</a></h2>
 <p>The make system is based on <strong>CMake</strong>. Installing <strong>CMake</strong>
-can be done by typing on Linux:</p>
+can be done by typing on Ubuntu:</p>
 <div class="highlight-python"><pre>sudo apt-get install swig</pre>
 </div>
 <p>and on Mac OSX using macports:</p>
@@ -154,7 +168,7 @@ can be done by typing on Linux:</p>
 <h2>SWIG<a class="headerlink" href="#swig" title="Permalink to this headline">¶</a></h2>
 <p>To generate the Python wrappings for the C++ code you must have
 <strong>SWIG</strong> with python extensions installed.
-On Linux:</p>
+On Ubuntu:</p>
 <div class="highlight-python"><pre>sudo apt-get install swig</pre>
 </div>
 <p>On Mac OSX with macports:</p>
@@ -164,62 +178,81 @@ On Linux:</p>
 <div class="section" id="build-the-externals">
 <h2>Build the externals<a class="headerlink" href="#build-the-externals" title="Permalink to this headline">¶</a></h2>
 <p>All other external dependencies are included with
-<tt class="xref py py-mod docutils literal"><span class="pre">KMCLib</span></tt>. These are the <strong>CPPUNIT</strong> library for C++ unit tests,
-and a Mersenne-Twister implementation.</p>
-<p>You can build the externals by typing:</p>
+<tt class="xref py py-mod docutils literal"><span class="pre">KMCLib</span></tt>. For the current release this consists only of the
+<strong>CPPUNIT</strong> library for C++ unit tests. If you are on a Linux system
+and already have cppunit installed you can skip building the
+externals (or install it using your package management system)
+however if you are using the clang compiler on Mac building
+the externals is required.</p>
+<p>You build the externals by typing:</p>
 <div class="highlight-python"><pre>cd KMCLib/c++/externals
-CXX=g++ make</pre>
+CC=&lt;c-compiler&gt; CXX=&lt;c++-compiler&gt; make</pre>
 </div>
+<p>Where you replace &lt;c-compiler&gt; and &lt;c++-compiler&gt; with your compiler.
+See the table above for a list of tested compilers for different systems.</p>
+<p>Using Clang on Mac OSX 10.8 you will have to use <tt class="docutils literal"><span class="pre">CXX=&quot;clang++</span> <span class="pre">-stdlib=libc++&quot;</span></tt>.</p>
 </div>
 <div class="section" id="build-c-and-test-the-backend">
 <h2>Build C++ and test the backend<a class="headerlink" href="#build-c-and-test-the-backend" title="Permalink to this headline">¶</a></h2>
 <p>For the build to work (on both Linux and Mac OSX) you will have to make
-sure that <strong>CMAke</strong> can find your python headers. This could be
+sure that <strong>CMake</strong> can find your python headers. This could be
 done by finding where they are located and placing them in your
 <tt class="docutils literal"><span class="pre">CPLUS_INCLUDE_PATH</span></tt>. Some thing like:</p>
 <div class="highlight-python"><pre>export CPLUS_INCLUDE_PATH=/usr/include/python2.7:${CPLUS_INCLUDE_PATH}</pre>
 </div>
-<p>in your <tt class="docutils literal"><span class="pre">.bashrc</span></tt> file typically helps. Note that the exact path may
-vary on different systems.</p>
+<p>in your <tt class="docutils literal"><span class="pre">.bashrc</span></tt> file typically does it, or:</p>
+<div class="highlight-python"><pre>export CPLUS_INCLUDE_PATH=/opt/local/Library/Frameworks/Python.framework/Versions/2.7/include/python2.7:${CPLUS_INCLUDE_PATH}</pre>
+</div>
+<p>in your <tt class="docutils literal"><span class="pre">.bash_profile</span></tt> file if you are on Mac OSX.
+<strong>Note that the exact path may vary on different systems.</strong> If you do
+not know what is right for your system you should try to find where
+your <tt class="docutils literal"><span class="pre">Python.h</span></tt> file is located, for the same version of python you
+intend to use when running the program later.</p>
 <p>Now, go to the <tt class="docutils literal"><span class="pre">KMCLib/c++</span></tt> directory and create the build director:</p>
 <div class="highlight-python"><pre>cd KMCLib/c++
 mkdir build
 cd build</pre>
 </div>
 <p>On Linux:</p>
-<div class="highlight-python"><pre>cmake -DMPI=mpiwrapper ..</pre>
+<div class="highlight-python"><pre>cmake -DMPI=&lt;mpiwrapper&gt; ..</pre>
 </div>
 <p>for the MPI version or:</p>
 <div class="highlight-python"><pre>cmake ..</pre>
 </div>
-<p>for the serial version. Replace <tt class="docutils literal"><span class="pre">mpiwrapper</span></tt> with the mpi compiler wrapper script you want to use, e.g. <tt class="docutils literal"><span class="pre">mpicxx</span></tt>.</p>
-<p>Mac with g++ and Python from macports instead do:</p>
-<div class="highlight-python"><pre>cmake -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc -DMACPORT=TRUE ..</pre>
+<p>for the serial version. Replace <tt class="docutils literal"><span class="pre">&lt;mpiwrapper&gt;</span></tt> with the mpi compiler wrapper script you want to use, e.g. <tt class="docutils literal"><span class="pre">mpicxx</span></tt>.</p>
+<p>On older versions of Mac OSX using <strong>clang</strong> you will have to do:</p>
+<div class="highlight-python"><pre>CC=clang CXX="clang++ -stdlib=libc++" cmake ..</pre>
 </div>
-<p>or leave <tt class="docutils literal"><span class="pre">-DMACPORT</span></tt> out to use machine Python. Add the
-<tt class="docutils literal"><span class="pre">-DMPI=mpiwrapper</span></tt> option to build the parallel version.</p>
+<p>while on newer versions <strong>OSX 10.9</strong> and <strong>OSX 10.10</strong> with <strong>clang 6</strong> use:</p>
+<div class="highlight-python"><pre>CC=clang CXX=clang++ cmake ..</pre>
+</div>
+<p>Add the <tt class="docutils literal"><span class="pre">-DMPI=&lt;mpiwrapper&gt;</span></tt> option to build the parallel version.
+(Note that this has not been tested on mac.)</p>
 <p>On all systems you then type:</p>
 <div class="highlight-python"><pre>make test.x
 ./unittest/test.x
 make install</pre>
 </div>
 <p>To make the tests, run the tests and install the <tt class="docutils literal"><span class="pre">Backend.py</span></tt> module.</p>
+<p>If the <tt class="docutils literal"><span class="pre">make</span> <span class="pre">install</span></tt> step complains about not finding <tt class="docutils literal"><span class="pre">Python.h</span></tt>
+then your CPLUS_INCLUDE_PATH variable has not been set correctly.</p>
 </div>
 <div class="section" id="run-the-python-tests">
 <h2>Run the Python tests<a class="headerlink" href="#run-the-python-tests" title="Permalink to this headline">¶</a></h2>
 <p>Put your <tt class="docutils literal"><span class="pre">KMCLib/python/src</span></tt> in your <tt class="docutils literal"><span class="pre">PYTHONPATH</span></tt>. If you use bash
 this can be done by putting:</p>
-<div class="highlight-python"><pre>export PYTHONPATH=/home/leetmaa/projects/KMCLib/python/src:${PYTHONPATH}</pre>
+<div class="highlight-python"><pre>export PYTHONPATH=&lt;absolute-path&gt;/KMCLib/python/src:${PYTHONPATH}</pre>
 </div>
-<p>in your <tt class="docutils literal"><span class="pre">.bashrc</span></tt> file.</p>
+<p>in your <tt class="docutils literal"><span class="pre">.bashrc</span></tt> file (or in <tt class="docutils literal"><span class="pre">.bash_profile</span></tt> on Mac OSX), where
+you replace <tt class="docutils literal"><span class="pre">&lt;absolute-path&gt;</span></tt> with the absolute path to the
+directory where KMCLib was installed.</p>
 <p>Now you should run the test by typing:</p>
 <div class="highlight-python"><pre>python KMCLib/python/unittest/utest.py</pre>
 </div>
 <p>and finally run each of the tests in the <tt class="docutils literal"><span class="pre">KMCLib/python/functest/</span></tt>
 directory.</p>
 <p>If the Python unit tests run without errors or failures your
-installation is finished and ready to use for performing
-KMC simulations.
+installation is finished and ready to use for performing KMC simulations.
 Have a look at the functionality tests in <tt class="docutils literal"><span class="pre">KMCLib/python/functest/</span></tt>
 to get a hint at how to do it, and you should also check this manual,
 particular the introductory usage example.</p>

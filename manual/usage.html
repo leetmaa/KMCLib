@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Usage examples &mdash; KMCLib 1.0.0 documentation</title>
+    <title>Usage examples &mdash; KMCLib 1.1 documentation</title>
     
     <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -17,7 +17,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '1.0.0',
+        VERSION:     '1.1',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -28,7 +28,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="_static/theme_extras.js"></script>
     <link rel="author" title="About these documents" href="about.html" />
-    <link rel="top" title="KMCLib 1.0.0 documentation" href="index.html" />
+    <link rel="top" title="KMCLib 1.1 documentation" href="index.html" />
     <link rel="next" title="KMCLib API" href="api.html" />
     <link rel="prev" title="Installation" href="install.html" /> 
   </head>
@@ -40,7 +40,7 @@
 
 
       <div class="header"><h1 class="heading"><a href="index.html">
-          <span>KMCLib 1.0.0 documentation</span></a></h1>
+          <span>KMCLib 1.1 documentation</span></a></h1>
         <h2 class="heading"><span>Usage examples</span></h2>
       </div>
       <div class="topnav">
@@ -61,7 +61,7 @@
 <span id="id1"></span><h1>Usage examples<a class="headerlink" href="#usage-examples" title="Permalink to this headline">¶</a></h1>
 <p>Perhaps the easiest way to get started with your own KMC modeling is
 to have a quick look at a few usage examples. We will take a look at
-three examples from the <tt class="xref py py-class docutils literal"><span class="pre">KMCLib</span></tt> functionality tests,
+three examples from the <tt class="xref py py-mod docutils literal"><span class="pre">KMCLib</span></tt> functionality tests,
 one-dimensional diffusion, the two-dimensional spin Ising model and
 three-dimensional diffusion.</p>
 <div class="section" id="one-dimensional-diffusion">
@@ -114,7 +114,7 @@ representing a move to the left and one a move to the right.
 For simulating Brownian motion the rate constant must be the same for
 both processes, corresponding to equal probability of moving to the
 left and to the right. The <tt class="xref py py-obj docutils literal"><span class="pre">move_vectors</span></tt> parameter can be
-left out since it default to <a class="reference external" href="http://docs.python.org/library/constants.html#None" title="(in Python v2.7)"><tt class="xref py py-obj docutils literal"><span class="pre">None</span></tt></a>, but we include it here
+left out since it defaults to <a class="reference external" href="http://docs.python.org/library/constants.html#None" title="(in Python v2.7)"><tt class="xref py py-obj docutils literal"><span class="pre">None</span></tt></a>, but we include it here
 for completeness.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="c"># Setup a diffusion process to the left.</span>
 <span class="n">coordinates_p0</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],[</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]]</span>
@@ -176,7 +176,10 @@ simulation by constructing a
 Giving <tt class="docutils literal"><span class="pre">seed=None</span></tt> is equivalent to not giving a seed
 value. If no seed is given the pseudo random number generator is
 seeded by the current time. For results to be exactly reproducible a
-specific seed value must be given.</p>
+specific seed value must be given. There is also the option here to
+choose which pseudo-random number generator to use. Not specifying
+any generator (as in this example) will give the default value,
+the Mersenne-Twister, as implemented in the C++11 standard library.</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">control_parameters</span> <span class="o">=</span> <span class="n">KMCControlParameters</span><span class="p">(</span><span class="n">number_of_steps</span><span class="o">=</span><span class="mi">2500000</span><span class="p">,</span>
                                           <span class="n">dump_interval</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span>
                                           <span class="n">analysis_interval</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
@@ -419,7 +422,15 @@ execute it with python.</p>
 <p>The Ising model we have implemented is below the critical
 temperature. Visualizing the structure along the trajectory should,
 since we started from a random configuration, show a transition from
-random to fully ordered spins. This figures illustrates the expected behavior.</p>
+random to fully ordered spins. This figures illustrates the expected
+behavior. Note that the exact details of the figure depends on the
+seed value given to the pseudo random number generator. In this example
+no seed was explicitly given and the default of taking the
+current time as seed was therefore used. Due to the stochastic nature of the
+algorithm and the simulated process the exact images as shown below can differ
+significantly from the once shown here for different seed values,
+however the <em>trend</em> in going from a disordered to an ordered structure
+should be the same.</p>
 <div class="figure align-center" style="width: 70%">
 <a class="reference internal image-reference" href="_images/ising.png"><img alt="Snapshots from the Ising model simulation along the trajectory." src="_images/ising.png" style="width: 855.6px; height: 244.8px;" /></a>
 <p class="caption">Snapshots from the Ising model KMC simulation. Since the
@@ -451,7 +462,7 @@ simpler solution in many cases.</p>
 </div>
 <div class="section" id="three-dimensional-diffusion">
 <h2>Three-dimensional diffusion<a class="headerlink" href="#three-dimensional-diffusion" title="Permalink to this headline">¶</a></h2>
-<p>We will finally demonstrate how you can use py:mod:<cite>KMCLib</cite> to setup and run a
+<p>We will finally demonstrate how you can use <tt class="xref py py-mod docutils literal"><span class="pre">KMCLib</span></tt> to setup and run a
 KMC model of a 3D bulk diffusion system. The example we show here is
 similar to the system used for timing in <a class="reference internal" href="references.html#ref-8">[Ref.8]</a>, and is taken from
 the functionality tests.</p>

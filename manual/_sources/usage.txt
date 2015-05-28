@@ -8,7 +8,7 @@
 
 Perhaps the easiest way to get started with your own KMC modeling is
 to have a quick look at a few usage examples. We will take a look at
-three examples from the :py:class:`KMCLib` functionality tests,
+three examples from the :py:mod:`KMCLib` functionality tests,
 one-dimensional diffusion, the two-dimensional spin Ising model and
 three-dimensional diffusion.
 
@@ -69,7 +69,7 @@ representing a move to the left and one a move to the right.
 For simulating Brownian motion the rate constant must be the same for
 both processes, corresponding to equal probability of moving to the
 left and to the right. The :py:obj:`move_vectors` parameter can be
-left out since it default to :py:obj:`None`, but we include it here
+left out since it defaults to :py:obj:`None`, but we include it here
 for completeness.
 ::
 
@@ -136,7 +136,10 @@ simulation by constructing a
 Giving ``seed=None`` is equivalent to not giving a seed
 value. If no seed is given the pseudo random number generator is
 seeded by the current time. For results to be exactly reproducible a
-specific seed value must be given.
+specific seed value must be given. There is also the option here to
+choose which pseudo-random number generator to use. Not specifying
+any generator (as in this example) will give the default value,
+the Mersenne-Twister, as implemented in the C++11 standard library.
 ::
 
     control_parameters = KMCControlParameters(number_of_steps=2500000,
@@ -410,7 +413,15 @@ Check the results
 The Ising model we have implemented is below the critical
 temperature. Visualizing the structure along the trajectory should,
 since we started from a random configuration, show a transition from
-random to fully ordered spins. This figures illustrates the expected behavior.
+random to fully ordered spins. This figures illustrates the expected
+behavior. Note that the exact details of the figure depends on the
+seed value given to the pseudo random number generator. In this example
+no seed was explicitly given and the default of taking the
+current time as seed was therefore used. Due to the stochastic nature of the
+algorithm and the simulated process the exact images as shown below can differ
+significantly from the once shown here for different seed values,
+however the *trend* in going from a disordered to an ordered structure
+should be the same.
 
 .. figure:: ising.png
    :scale: 40 %
@@ -447,7 +458,7 @@ simpler solution in many cases.
 
 Three-dimensional diffusion
 ===========================
-We will finally demonstrate how you can use py:mod:`KMCLib` to setup and run a
+We will finally demonstrate how you can use :py:mod:`KMCLib` to setup and run a
 KMC model of a 3D bulk diffusion system. The example we show here is
 similar to the system used for timing in [Ref.8]_, and is taken from
 the functionality tests.
