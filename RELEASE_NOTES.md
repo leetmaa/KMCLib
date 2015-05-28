@@ -1,8 +1,7 @@
-##v1.1-b2 (April 9 2015)
-***KMCLib* is now in version 1.1 BETA-2**
+##v1.1 (May 28 2015)
+***KMCLib* is now in version 1.1**
 
-The switch over to using random numbers from the standard (C++11) library is completed and KMCLib now supports using both the Mersenne-Twister and the RANLUX PRNG:s through the standard C++ library. Additionally the standard minimal PRNG is also available, as well as true random numbers if you have a random device installed. The make system is upgraded to provide support for additional platforms and compilers. We now support using the **clang** compiler on Mac OSX, and the **Intel C++ compiler** under Linux. Support for the **Intel C++ compiler** was requested for use in particular on large computer clusters with little flexibility to change compilers. The *KMCLib 1.1* release is in BETA-2. All features for version 1.1 are implemented and no known issues remain, however there is work to be done on the manual and documentation before the final 1.1 release.
-
+Version *1.1* introduces support for different random number generators, and increased support for different platforms and compiles. Random numbers are now generated using the standard (C++11) library and *KMCLib* from now on supports the use of both the Mersenne-Twister and the RANLUX PRNG:s through the standard C++ library. Additionally the standard minimal PRNG is also available, as well as true random numbers if you have a random device installed. The make system is upgraded to provide support for additional platforms and compilers. We now support the **clang** compiler on Mac OSX, and both the **gcc** and the **Intel C++ compiler** under Linux. Support for the **Intel C++ compiler** was requested for use in particular on large computer clusters with little flexibility to change compilers. At the time of writing there are no known bugs or issues, but as always, if you happen to find any bugs or issues, or if you have suggestions for improvements, please let me know.
 
 ##v1.1-b1 (December 17 2014)
 ***KMCLib* is now in version 1.1 BETA-1**
