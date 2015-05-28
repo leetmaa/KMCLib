@@ -35,7 +35,7 @@ The code manual (http://leetmaa.github.io/KMCLib/manual-v1.0/) includes full doc
 The *KMCLib 1.1* release is in BETA-2. All features for version 1.1 are implemented and no known issues remain, however there is work to be done on the manual and documentation before the final 1.1 release. As always, if you find any bugs or issues, or if you have suggestions for improvements, please let me know.
 
 ### Obtain a copy
-The program is distributed under the GPLv3 license and can be obtained from the *KMCLib* git repository https://github.com/leetmaa/KMCLib/releases/tag/v1.1-b1
+The program is distributed under the GPLv3 license and can be obtained from the *KMCLib* git repository https://github.com/leetmaa/KMCLib/releases/tag/v1.1-b2
 
 ### Use *KMCLib* in your own research
 If you would be interested to use this code in your research and need any assistance, or if you are interested in collaborations, please don't hesitate to send me an e-mail: leetmaa@kth.se

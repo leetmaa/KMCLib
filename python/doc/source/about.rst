@@ -5,7 +5,7 @@ About
 
 Legal
 ------
-KMCLib is distributed under the GPLv3 license. Copyright (C)  2012 - 2014  Mikael Leetmaa
+KMCLib is distributed under the GPLv3 license. Copyright (C)  2012 - 2015  Mikael Leetmaa
 
  This program is distributed in the hope that it will be useful
  but WITHOUT ANY WARRANTY; without even the implied warranty of

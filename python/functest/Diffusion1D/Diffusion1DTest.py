@@ -87,7 +87,7 @@ class Diffusion1DTest(unittest.TestCase):
                   analysis=[msd_analysis])
 
         # Only master does the testing.
-        
+
         if Backend.MPICommons.isMaster():
             # Save the analysis data to a file.
             with open('msd.data', 'w') as f:
