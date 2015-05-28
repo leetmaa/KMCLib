@@ -136,6 +136,25 @@ is also returned if a co_sort argument was given.</p>
 <span id="checkutilities"></span><h2>CheckUtilities<a class="headerlink" href="#module-KMCLib.Utilities.CheckUtilities" title="Permalink to this headline">¶</a></h2>
 <p>Module for holding common checking utility functions.</p>
 <dl class="function">
+<dt id="KMCLib.Utilities.CheckUtilities.checkAndNormaliseBucketEntry">
+<tt class="descclassname">KMCLib.Utilities.CheckUtilities.</tt><tt class="descname">checkAndNormaliseBucketEntry</tt><big>(</big><em>t</em><big>)</big><a class="headerlink" href="#KMCLib.Utilities.CheckUtilities.checkAndNormaliseBucketEntry" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check that the foramt of the type entry t is any of the valid
+&#8220;A&#8221; - single particle.
+(N,&#8221;A&#8221;) - numbered single particle.
+[&#8220;A&#8221;, (N1,&#8221;B&#8221;)] - a list with a combination of the other two.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>t</strong> &#8211; The type entry to check.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The normalized [(N,&#8221;A&#8221;)] formatted type.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="KMCLib.Utilities.CheckUtilities.checkCellVectors">
 <tt class="descclassname">KMCLib.Utilities.CheckUtilities.</tt><tt class="descname">checkCellVectors</tt><big>(</big><em>cell_vectors</em><big>)</big><a class="headerlink" href="#KMCLib.Utilities.CheckUtilities.checkCellVectors" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check that the cell vectors are of the correct dimensions and not fully linearly dependent.</p>
@@ -351,6 +370,23 @@ length.</p>
 <span id="conversionutilities"></span><h2>ConversionUtilities<a class="headerlink" href="#module-KMCLib.Utilities.ConversionUtilities" title="Permalink to this headline">¶</a></h2>
 <p>Module for holding common type conversion utility functions.</p>
 <dl class="function">
+<dt id="KMCLib.Utilities.ConversionUtilities.bucketListToStdVectorStdVectorString">
+<tt class="descclassname">KMCLib.Utilities.ConversionUtilities.</tt><tt class="descname">bucketListToStdVectorStdVectorString</tt><big>(</big><em>bucket_list</em><big>)</big><a class="headerlink" href="#KMCLib.Utilities.ConversionUtilities.bucketListToStdVectorStdVectorString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a list of the format [[(n,&#8221;A&#8221;), ...], ...]
+to a std::vector&lt; std::vector&lt;std::string&gt; &gt; representation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>bucket_list</strong> &#8211; The list to convert.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A corresponding std::vector&lt;std::vector&lt;std::string&gt; &gt; object.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="KMCLib.Utilities.ConversionUtilities.numpy2DArrayToStdVectorCoordinate">
 <tt class="descclassname">KMCLib.Utilities.ConversionUtilities.</tt><tt class="descname">numpy2DArrayToStdVectorCoordinate</tt><big>(</big><em>array</em><big>)</big><a class="headerlink" href="#KMCLib.Utilities.ConversionUtilities.numpy2DArrayToStdVectorCoordinate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert a Nx3 2D numpy array to a std::vector&lt;Coordinate&gt; representation.</p>
@@ -396,6 +432,59 @@ to a nx6 numpy array.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="KMCLib.Utilities.ConversionUtilities.stdVectorStringToStringList">
+<tt class="descclassname">KMCLib.Utilities.ConversionUtilities.</tt><tt class="descname">stdVectorStringToStringList</tt><big>(</big><em>cpp_list</em><big>)</big><a class="headerlink" href="#KMCLib.Utilities.ConversionUtilities.stdVectorStringToStringList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a std::vector&lt;std::string&gt; to a list of strings.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cpp_list</strong> &#8211; The std::vector to convert.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A corresponding list of strings.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="KMCLib.Utilities.ConversionUtilities.stdVectorTypeBucketToPython">
+<tt class="descclassname">KMCLib.Utilities.ConversionUtilities.</tt><tt class="descname">stdVectorTypeBucketToPython</tt><big>(</big><em>cpp_vector</em>, <em>cpp_type_map</em><big>)</big><a class="headerlink" href="#KMCLib.Utilities.ConversionUtilities.stdVectorTypeBucketToPython" title="Permalink to this definition">¶</a></dt>
+<dd><p>Translate a std::vector&lt;TypeBucket&gt; object to the python
+format [[(n, &#8220;A&#8221;), ... ], ... ] by using a map of the type
+std::vector&lt;std::string&gt;.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cpp_vector</strong> &#8211; The C++ vector to translate.</li>
+<li><strong>cpp_type_map</strong> &#8211; The type map to use.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="KMCLib.Utilities.ConversionUtilities.stringListToStdVectorStdVectorString">
+<tt class="descclassname">KMCLib.Utilities.ConversionUtilities.</tt><tt class="descname">stringListToStdVectorStdVectorString</tt><big>(</big><em>string_list</em><big>)</big><a class="headerlink" href="#KMCLib.Utilities.ConversionUtilities.stringListToStdVectorStdVectorString" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a list of strings to a std::vector&lt;std::vector&lt;std::string&gt; &gt;
+object with one elemnt in each of the inner vectors.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>string_list</strong> &#8211; The list of strings.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A corresponding std::vector&lt;std::vector&lt;std::string&gt; &gt; object.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="KMCLib.Utilities.ConversionUtilities.stringListToStdVectorString">
 <tt class="descclassname">KMCLib.Utilities.ConversionUtilities.</tt><tt class="descname">stringListToStdVectorString</tt><big>(</big><em>string_list</em><big>)</big><a class="headerlink" href="#KMCLib.Utilities.ConversionUtilities.stringListToStdVectorString" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts a list of strings to a std::vector&lt;std::string&gt; object.</p>
@@ -406,6 +495,39 @@ to a nx6 numpy array.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>string_list</strong> &#8211; The list of strings.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A corresponding std::vector&lt;std::string&gt; object.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="KMCLib.Utilities.ConversionUtilities.toShortBucketsFormat">
+<tt class="descclassname">KMCLib.Utilities.ConversionUtilities.</tt><tt class="descname">toShortBucketsFormat</tt><big>(</big><em>types_list</em><big>)</big><a class="headerlink" href="#KMCLib.Utilities.ConversionUtilities.toShortBucketsFormat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert any valid types information to the short buckets format,
+i.e. on the form [[(n,&#8221;A&#8221;), ...], ...]</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>types_list</strong> &#8211; The list to convert.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The types list in the short buckets format.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="KMCLib.Utilities.ConversionUtilities.typeBucketToList">
+<tt class="descclassname">KMCLib.Utilities.ConversionUtilities.</tt><tt class="descname">typeBucketToList</tt><big>(</big><em>type_bucket</em><big>)</big><a class="headerlink" href="#KMCLib.Utilities.ConversionUtilities.typeBucketToList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a TypeBucket to a numpy list.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>type_bucket</strong> &#8211; The type bucket to convert.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A corresponding python list.</td>
 </tr>
 </tbody>
 </table>
@@ -797,7 +919,7 @@ internal buffers.</p>
       </div>
 
     <div class="footer">
-        &copy; Copyright 2012 - 2014, Mikael Leetmaa.
+        &copy; Copyright 2012 - 2015, Mikael Leetmaa.
     </div>
   </body>
 </html>

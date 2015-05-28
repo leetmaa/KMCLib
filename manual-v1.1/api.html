@@ -85,6 +85,26 @@ simulation.</p>
 <em class="property">class </em><tt class="descclassname">KMCLib.</tt><tt class="descname">KMCConfiguration</tt><big>(</big><em>lattice=None</em>, <em>types=None</em>, <em>possible_types=None</em>, <em>default_type=None</em><big>)</big><a class="headerlink" href="#KMCLib.KMCConfiguration" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class for representing the configuration in a KMC simulation.</p>
 <dl class="method">
+<dt id="KMCLib.KMCConfiguration._KMCConfiguration__checkAndSetBucketsTypes">
+<tt class="descname">_KMCConfiguration__checkAndSetBucketsTypes</tt><big>(</big><em>types</em>, <em>default_type</em>, <em>possible_types</em><big>)</big><a class="headerlink" href="#KMCLib.KMCConfiguration._KMCConfiguration__checkAndSetBucketsTypes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCConfiguration._KMCConfiguration__checkAndSetLongTypes">
+<tt class="descname">_KMCConfiguration__checkAndSetLongTypes</tt><big>(</big><em>types</em>, <em>default_type</em>, <em>possible_types</em><big>)</big><a class="headerlink" href="#KMCLib.KMCConfiguration._KMCConfiguration__checkAndSetLongTypes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCConfiguration._KMCConfiguration__checkAndSetShortTypes">
+<tt class="descname">_KMCConfiguration__checkAndSetShortTypes</tt><big>(</big><em>types</em>, <em>default_type</em>, <em>possible_types</em><big>)</big><a class="headerlink" href="#KMCLib.KMCConfiguration._KMCConfiguration__checkAndSetShortTypes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCConfiguration._KMCConfiguration__detectTypesFormat">
+<tt class="descname">_KMCConfiguration__detectTypesFormat</tt><big>(</big><em>types</em><big>)</big><a class="headerlink" href="#KMCLib.KMCConfiguration._KMCConfiguration__detectTypesFormat" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="KMCLib.KMCConfiguration.__init__">
 <tt class="descname">__init__</tt><big>(</big><em>lattice=None</em>, <em>types=None</em>, <em>possible_types=None</em>, <em>default_type=None</em><big>)</big><a class="headerlink" href="#KMCLib.KMCConfiguration.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructor for the KMCConfiguration - the configuration object to use
@@ -142,6 +162,13 @@ in the ATK configuration.</td>
 </dd></dl>
 
 <dl class="method">
+<dt id="KMCLib.KMCConfiguration._backendTypeNames">
+<tt class="descname">_backendTypeNames</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCConfiguration._backendTypeNames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a tuple with the type names order the same way as the buckets
+backend implementation.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="KMCLib.KMCConfiguration._script">
 <tt class="descname">_script</tt><big>(</big><em>variable_name='configuration'</em><big>)</big><a class="headerlink" href="#KMCLib.KMCConfiguration._script" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate a KMCLib Python script representation of this configuration.</p>
@@ -178,6 +205,18 @@ that can generate this configuration.</td>
 </dd></dl>
 
 <dl class="method">
+<dt id="KMCLib.KMCConfiguration.latestEventProcess">
+<tt class="descname">latestEventProcess</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCConfiguration.latestEventProcess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query for the process number of the latest event.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCConfiguration.latestEventSite">
+<tt class="descname">latestEventSite</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCConfiguration.latestEventSite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query for the site index of the latest event.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="KMCLib.KMCConfiguration.lattice">
 <tt class="descname">lattice</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCConfiguration.lattice" title="Permalink to this definition">¶</a></dt>
 <dd><p>Query for the lattice.</p>
@@ -187,6 +226,20 @@ that can generate this configuration.</td>
 <dt id="KMCLib.KMCConfiguration.movedAtomIDs">
 <tt class="descname">movedAtomIDs</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCConfiguration.movedAtomIDs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Query for the moved atom_id:s of the last move.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCConfiguration.particlesPerType">
+<tt class="descname">particlesPerType</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCConfiguration.particlesPerType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query function for the number of particles per type.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The current number of particles per type.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -441,21 +494,6 @@ matching.</li>
 </dd></dl>
 
 <dl class="method">
-<dt id="KMCLib.KMCProcess.basisSites">
-<tt class="descname">basisSites</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCProcess.basisSites" title="Permalink to this definition">¶</a></dt>
-<dd><p>Query for the basis sites.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The basis sites as stored on the class. Returns None if
-no basis sites were given on construction.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
 <dt id="KMCLib.KMCProcess.elementsAfter">
 <tt class="descname">elementsAfter</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCProcess.elementsAfter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Query for the elements before.</p>
@@ -478,50 +516,6 @@ no basis sites were given on construction.</td>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The elements before stored on the class.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="KMCLib.KMCProcess.localConfigurations">
-<tt class="descname">localConfigurations</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCProcess.localConfigurations" title="Permalink to this definition">¶</a></dt>
-<dd><p>Query for the local configurations.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The two local configurations in a tuple.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="KMCLib.KMCProcess.moveVectors">
-<tt class="descname">moveVectors</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCProcess.moveVectors" title="Permalink to this definition">¶</a></dt>
-<dd><p>Query for the move vectors.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The move vectors stored on the class.</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="KMCLib.KMCProcess.rateConstant">
-<tt class="descname">rateConstant</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCProcess.rateConstant" title="Permalink to this definition">¶</a></dt>
-<dd><p>Query for the rate constant.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The rate constant stored on the class.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
 </tr>
 </tbody>
 </table>
@@ -874,7 +868,7 @@ states and barriers to use in the simulation.</li>
 
 <dl class="method">
 <dt id="KMCLib.KMCLatticeModel.run">
-<tt class="descname">run</tt><big>(</big><em>control_parameters=None</em>, <em>trajectory_filename=None</em>, <em>trajectory_type=None</em>, <em>analysis=None</em><big>)</big><a class="headerlink" href="#KMCLib.KMCLatticeModel.run" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">run</tt><big>(</big><em>control_parameters=None</em>, <em>trajectory_filename=None</em>, <em>trajectory_type=None</em>, <em>analysis=None</em>, <em>breakers=None</em><big>)</big><a class="headerlink" href="#KMCLib.KMCLatticeModel.run" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run the KMC lattice model simulation with specified parameters.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -890,6 +884,7 @@ The &#8216;lattice&#8217; format shows the types at the latice points.
 The &#8216;xyz&#8217; format gives type and coordinate for each particle.
 The default type is &#8216;lattice&#8217;.</li>
 <li><strong>analysis</strong> &#8211; A list of instantiated analysis objects that should be used for on-the-fly analysis.</li>
+<li><strong>breakers</strong> &#8211; A list of instantiated breaker objects to break the Monte Carlo loop with a custom criterion.</li>
 </ul>
 </td>
 </tr>
@@ -949,11 +944,11 @@ needed to run a <a class="reference internal" href="#KMCLib.KMCLatticeModel" tit
 <h3>Interface<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="KMCLib.KMCControlParameters">
-<em class="property">class </em><tt class="descclassname">KMCLib.</tt><tt class="descname">KMCControlParameters</tt><big>(</big><em>number_of_steps=None</em>, <em>dump_interval=None</em>, <em>analysis_interval=None</em>, <em>seed=None</em>, <em>rng_type=None</em><big>)</big><a class="headerlink" href="#KMCLib.KMCControlParameters" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><tt class="descclassname">KMCLib.</tt><tt class="descname">KMCControlParameters</tt><big>(</big><em>number_of_steps=None</em>, <em>dump_interval=None</em>, <em>analysis_interval=None</em>, <em>seed=None</em>, <em>dump_time_interval=None</em>, <em>rng_type=None</em><big>)</big><a class="headerlink" href="#KMCLib.KMCControlParameters" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class for handling the control parameters that goes in to a KMC simulation.</p>
 <dl class="method">
 <dt id="KMCLib.KMCControlParameters.__init__">
-<tt class="descname">__init__</tt><big>(</big><em>number_of_steps=None</em>, <em>dump_interval=None</em>, <em>analysis_interval=None</em>, <em>seed=None</em>, <em>rng_type=None</em><big>)</big><a class="headerlink" href="#KMCLib.KMCControlParameters.__init__" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">__init__</tt><big>(</big><em>number_of_steps=None</em>, <em>dump_interval=None</em>, <em>analysis_interval=None</em>, <em>seed=None</em>, <em>dump_time_interval=None</em>, <em>rng_type=None</em><big>)</big><a class="headerlink" href="#KMCLib.KMCControlParameters.__init__" title="Permalink to this definition">¶</a></dt>
 <dd><p>Constructuor for the KMCControlParameters object that
 holds all parameters controlling the flow of the KMC simulation.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -971,6 +966,8 @@ The default value is 1, i.e. analysis every step.</li>
 <li><strong>seed</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; The seed value to use for the backend random number generator.
 If no seed value is given the random numnber generator will be
 seeded based on the wall-clock time.</li>
+<li><strong>dump_time_interval</strong> &#8211; The simulation time between subsequent trajectory
+dumps. The default value is None, causing the dump_interval parameter to determine the behavior.</li>
 <li><strong>rng_type</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; <p>The type of pseudo random number generator to use.  The random
 number generators are the once in the standard C++ library and
 the supported types maps directly to the given C++ construction
@@ -979,15 +976,14 @@ as indicated here:</p>
 &#8216;MINSTD&#8217; for the &#8216;minimum standard&#8217; rng [rng = std::minstd_rand],
 &#8216;RANLUX24&#8217; for the 24-bit version of the ranlux rng [rng = std::ranlux24],
 &#8216;RANLUX48&#8217; for the 48-bit version of the ranlux rng [rng = std::ranlux48].</p>
-<p>The sequence of pseudo-random numbers is generated by repeated calls to
+<p>The sequence of pseudo-random numbers are then generated by repeated calls to
 std::generate_canonical&lt;double, 32&gt;(rng);</p>
 <p>See: <a class="reference external" href="http://en.cppreference.com/w/cpp/numeric/random">http://en.cppreference.com/w/cpp/numeric/random</a> for further details on
 C++ random number generators.</p>
 <p>There is also the option &#8216;DEVICE&#8217; for using a random device
 installed on the macine through [rng = std::random_device] in C++. Note
 however that you should spend some time evaluating this option to make
-sure it works as you expect if you have a random device installed, since this
-has not been tested with a random device by the KMCLib developers.</p>
+sure it works as you expect if you have a random device installed.</p>
 </li>
 </ul>
 </td>
@@ -1019,6 +1015,20 @@ has not been tested with a random device by the KMCLib developers.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The dump interval.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCControlParameters.dumpTimeInterval">
+<tt class="descname">dumpTimeInterval</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCControlParameters.dumpTimeInterval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query for the dump time interval.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The dump time interval.</td>
 </tr>
 </tbody>
 </table>
@@ -1093,7 +1103,7 @@ has not been tested with a random device by the KMCLib developers.</p>
       </div>
 
     <div class="footer">
-        &copy; Copyright 2012 - 2014, Mikael Leetmaa.
+        &copy; Copyright 2012 - 2015, Mikael Leetmaa.
     </div>
   </body>
 </html>
