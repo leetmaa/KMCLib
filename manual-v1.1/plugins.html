@@ -1,0 +1,324 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Plugin Interfaces &mdash; KMCLib 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="top" title="KMCLib 1.1 documentation" href="index.html" />
+    <link rel="next" title="Analysis" href="analysis.html" />
+    <link rel="prev" title="KMCLib API" href="api.html" /> 
+  </head>
+  <body>
+
+<div style="text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="_static/logo.png" border="0" alt="py4sci"/></a>
+</div>
+
+
+      <div class="header"><h1 class="heading"><a href="index.html">
+          <span>KMCLib 1.1 documentation</span></a></h1>
+        <h2 class="heading"><span>Plugin Interfaces</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="api.html">KMCLib API</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="analysis.html">Analysis</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="plugin-interfaces">
+<h1>Plugin Interfaces<a class="headerlink" href="#plugin-interfaces" title="Permalink to this headline">¶</a></h1>
+<p><tt class="xref py py-mod docutils literal"><span class="pre">KMCLib</span></tt> can easily be extended through the use of plugins,
+where the user can write extension to the code and get them easily
+integrated with the core functionality simply by deriving from a
+specified plugin base class and overloading certain functions
+on the base class.</p>
+<p>The plugins will always have a Python interface class to inherit from,
+also in the case when the actual code will be called from within the
+C++ core routines. This allows the user to write plugin extensions in Python
+without having to recompile the underlying C++ code.</p>
+<p>Calls from C++ to Python are managed through SWIG Director
+classes. These calls inevitably come with an overhead compared to
+calling compiled code within C++ (see the SWIG <a class="reference external" href="http://www.swig.org">documentation</a> for details).
+The overhead should fortunately in most
+realistic cases be negligible. On the other hand what happens inside
+the custom Python functions could very well be time consuming enough to
+require special attention and implementation in a compiled
+language. Such techniques will however not be covered here.</p>
+<div class="section" id="kmcratecalculatorplugin">
+<h2>KMCRateCalculatorPlugin<a class="headerlink" href="#kmcratecalculatorplugin" title="Permalink to this headline">¶</a></h2>
+<p>The <tt class="xref py py-class docutils literal"><span class="pre">KMCRateCalculatorPluin</span></tt> is used to customize the calculation of
+rates in the KMC simulation. A user defined <tt class="xref py py-class docutils literal"><span class="pre">RateCalculator</span></tt>
+plugin must
+inherit from the <a class="reference internal" href="#KMCLib.KMCRateCalculatorPlugin" title="KMCLib.KMCRateCalculatorPlugin"><tt class="xref py py-class docutils literal"><span class="pre">KMCRateCalculatorPlugin</span></tt></a> base class as in this example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">KMCLib.KMCRateCalculatorPlugin</span> <span class="kn">import</span> <span class="n">KMCRateCalculatorPlugin</span>
+
+<span class="c"># Define the derived class.</span>
+<span class="k">class</span> <span class="nc">CustomPlugin</span><span class="p">(</span><span class="n">KMCRateCalculatorPlugin</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">...</span> <span class="p">):</span>
+        <span class="c"># Implement the custom rate routine.</span>
+        <span class="o">...</span>
+
+    <span class="c"># Override the other base class API functions if needed.</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>The derived class is then given to the <a class="reference internal" href="api.html#KMCLib.KMCInteractions" title="KMCLib.KMCInteractions"><tt class="xref py py-class docutils literal"><span class="pre">KMCInteractions</span></tt></a>
+object to be used in the KMC simulation.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Construct the interactions object.</span>
+<span class="n">interactions</span> <span class="o">=</span> <span class="n">KMCInteractions</span><span class="p">(</span> <span class="o">...</span> <span class="p">)</span>
+
+<span class="c"># Set the custom rate calculator.</span>
+<span class="n">interactions</span><span class="o">.</span><span class="n">setRateCalculator</span><span class="p">(</span><span class="n">rate_calculator</span><span class="o">=</span><span class="n">CustomPlugin</span><span class="p">)</span>
+
+<span class="c"># Construct the KMCLatticeModel.</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">KMCLatticeModel</span><span class="p">(</span><span class="n">interactions</span><span class="o">=</span><span class="n">interactions</span><span class="p">,</span> <span class="o">...</span> <span class="p">)</span>
+</pre></div>
+</div>
+<p>When running a KMC simulation with a custom rate calculator defined,
+its <a class="reference internal" href="#KMCLib.KMCRateCalculatorPlugin.rate" title="KMCLib.KMCRateCalculatorPlugin.rate"><tt class="xref py py-meth docutils literal"><span class="pre">rate</span></tt></a> method will be called each time the rate of an available
+process is needed. The <a class="reference internal" href="#KMCLib.KMCRateCalculatorPlugin.rate" title="KMCLib.KMCRateCalculatorPlugin.rate"><tt class="xref py py-meth docutils literal"><span class="pre">rate</span></tt></a> method receives information about
+the geometry and the types before and after the process, as well as
+the unmodified rate constant associated with the process. It is then
+up to the user to handle the geometric and types information to
+compute a new rate based on the given information. The
+<a class="reference internal" href="#KMCLib.KMCRateCalculatorPlugin.rate" title="KMCLib.KMCRateCalculatorPlugin.rate"><tt class="xref py py-meth docutils literal"><span class="pre">rate</span></tt></a> method should return a valid rate for the particular
+process for the given geometry.</p>
+<p>Note that the <a class="reference internal" href="#KMCLib.KMCRateCalculatorPlugin.rate" title="KMCLib.KMCRateCalculatorPlugin.rate"><tt class="xref py py-meth docutils literal"><span class="pre">rate</span></tt></a> method of the custom rate calculator plugin
+could be called millions of times during a typical KMC
+simulation production run. It is therefore highly recommendable that
+code efficiency is kept in mind when implementing this type of custom
+extension.</p>
+<div class="section" id="interface">
+<h3>Interface<a class="headerlink" href="#interface" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="KMCLib.KMCRateCalculatorPlugin">
+<em class="property">class </em><tt class="descclassname">KMCLib.</tt><tt class="descname">KMCRateCalculatorPlugin</tt><a class="headerlink" href="#KMCLib.KMCRateCalculatorPlugin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for providing an interface to easily extend and customize
+the behaviour of the calculation of individual rates in the KMC simulation.</p>
+<dl class="method">
+<dt id="KMCLib.KMCRateCalculatorPlugin.initialize">
+<tt class="descname">initialize</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCRateCalculatorPlugin.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called as the last statement in the base class constructor
+to allow for custom setup of the object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCRateCalculatorPlugin.rate">
+<tt class="descname">rate</tt><big>(</big><em>coords</em>, <em>types_before</em>, <em>types_after</em>, <em>rate_constant</em>, <em>process_number</em>, <em>global_coordinate</em><big>)</big><a class="headerlink" href="#KMCLib.KMCRateCalculatorPlugin.rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called from the base class to get the rate for a particular
+local geometry. Any class inheriting from the plugin base class
+must provide an implementation of this function.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>coords</strong> &#8211; The coordinates of the configuration as a Nx3 numpy array
+in fractional units of the primitive cell.</li>
+<li><strong>types_before</strong> &#8211; The types before the process, as tuple of strings.</li>
+<li><strong>types_after</strong> &#8211; The types after the process, as tuple of strings.</li>
+<li><strong>rate_constant</strong> &#8211; The rate constant associated with the process
+to either update or replace.</li>
+<li><strong>process_number</strong> &#8211; The process id number.</li>
+<li><strong>global_coordinate</strong> &#8211; The global coordinate of the central index.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">The custom rate of the process. Note that the returned rate must
+not be negative or zero.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCRateCalculatorPlugin.cutoff">
+<tt class="descname">cutoff</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCRateCalculatorPlugin.cutoff" title="Permalink to this definition">¶</a></dt>
+<dd><p>To determine the radial cutoff of the geometry around the central
+lattice site to cut out and send down to the rustom rate function.
+If not implemented by derrived classes the default is to use
+the cutoff of the largetst process local geometry.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The desiered cutoff in primitive cell internal coordinates.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="kmcanalysisplugin">
+<h2>KMCAnalysisPlugin<a class="headerlink" href="#kmcanalysisplugin" title="Permalink to this headline">¶</a></h2>
+<p>The KMCAnalysisPlugin is used to perform on-the-fly custom analysis
+during the KMC simulation. A list of instantiated KMCAnalysisPlugin
+objects can be given to the <a class="reference internal" href="api.html#KMCLib.KMCLatticeModel.run" title="KMCLib.KMCLatticeModel.run"><tt class="xref py py-meth docutils literal"><span class="pre">run</span></tt></a> function of the <a class="reference internal" href="api.html#KMCLib.KMCLatticeModel" title="KMCLib.KMCLatticeModel"><tt class="xref py py-class docutils literal"><span class="pre">KMCLatticeModel</span></tt></a>.
+Each user-defined custom analysis object must inherit from the
+<a class="reference internal" href="#KMCLib.KMCAnalysisPlugin" title="KMCLib.KMCAnalysisPlugin"><tt class="xref py py-class docutils literal"><span class="pre">KMCAnalysisPlugin</span></tt></a> base class.
+Three functions are available to overload for setting up, handling
+updates after a step and finalizing the analysis.
+Here is an example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">KMCLib.KMCAnalysisPlugin</span> <span class="kn">import</span> <span class="n">KMCAnalysisPlugin</span>
+
+<span class="c"># Define the custom analysis class.</span>
+<span class="k">class</span> <span class="nc">CustomAnalysis</span><span class="p">(</span><span class="n">KMCAnalysisPlugin</span><span class="p">)</span>
+    <span class="sd">&quot;&quot;&quot; Custom analysis class &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">...</span> <span class="p">):</span>
+        <span class="c"># Initialize the object.</span>
+        <span class="o">...</span>
+
+    <span class="c"># Overload the interface functions.</span>
+    <span class="k">def</span> <span class="nf">setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">configuration</span><span class="p">):</span>
+        <span class="o">...</span>
+
+    <span class="k">def</span> <span class="nf">registerStep</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">configuration</span><span class="p">):</span>
+        <span class="o">...</span>
+
+    <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="o">...</span>
+
+<span class="c"># Instantiate the custom analysis object.</span>
+<span class="n">my_analysis1</span> <span class="o">=</span> <span class="n">CustomAnalysis</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="n">my_analysis2</span> <span class="o">=</span> <span class="n">CustomAnalysis</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="o">...</span>
+
+<span class="c"># Setup the list of analysis objects.</span>
+<span class="n">analysis</span> <span class="o">=</span> <span class="p">[</span><span class="n">my_analysis1</span><span class="p">,</span> <span class="n">my_analysis2</span><span class="p">,</span> <span class="o">...</span> <span class="p">]</span>
+
+<span class="c"># Setup the kmc lattice model to run (see documentation for parameters)</span>
+<span class="n">kmc_model</span> <span class="o">=</span> <span class="n">KMCLatticeMode</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+
+<span class="c"># Start the simulation with custom on-the-fly analysis every 10:th step.</span>
+<span class="n">kmc_mode</span><span class="o">.</span><span class="n">run</span><span class="p">(</span> <span class="o">...</span>
+              <span class="n">control_parameters</span><span class="o">=</span><span class="n">KMCControlParameters</span><span class="p">(</span> <span class="o">...</span>
+                                                       <span class="n">analysis_interval</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+              <span class="n">analysis</span><span class="o">=</span><span class="n">analysis</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Note that how often the <a class="reference internal" href="#KMCLib.KMCAnalysisPlugin.registerStep" title="KMCLib.KMCAnalysisPlugin.registerStep"><tt class="xref py py-meth docutils literal"><span class="pre">registerStep</span></tt></a>
+function is called during the simulation is controlled via the
+<tt class="xref py py-obj docutils literal"><span class="pre">analysis_interval</span></tt> parameter given to the <a class="reference internal" href="api.html#KMCLib.KMCControlParameters" title="KMCLib.KMCControlParameters"><tt class="xref py py-class docutils literal"><span class="pre">KMCControlParameters</span></tt></a>.</p>
+<div class="section" id="id1">
+<h3>Interface<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="KMCLib.KMCAnalysisPlugin">
+<em class="property">class </em><tt class="descclassname">KMCLib.</tt><tt class="descname">KMCAnalysisPlugin</tt><a class="headerlink" href="#KMCLib.KMCAnalysisPlugin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for providing an interface to easily extend and customize
+the behaviour of the on-the-fly analysis functionality of KMCLib.</p>
+<dl class="method">
+<dt id="KMCLib.KMCAnalysisPlugin.setup">
+<tt class="descname">setup</tt><big>(</big><em>step</em>, <em>time</em>, <em>configuration</em><big>)</big><a class="headerlink" href="#KMCLib.KMCAnalysisPlugin.setup" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function called right before the start of the KMC loop to allow for
+custom setup of the analysis object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>step</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; The simulation step number.</li>
+<li><strong>time</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; The simulation time.</li>
+<li><strong>configuration</strong> (<em>KMCConfiguration</em>) &#8211; The up to date configuration of the simulation.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCAnalysisPlugin.registerStep">
+<tt class="descname">registerStep</tt><big>(</big><em>step</em>, <em>time</em>, <em>configuration</em><big>)</big><a class="headerlink" href="#KMCLib.KMCAnalysisPlugin.registerStep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called from the KMC loop after each step.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>step</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; The simulation step number.</li>
+<li><strong>time</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; The simulation time.</li>
+<li><strong>configuration</strong> (<em>KMCConfiguration</em>) &#8211; The up to date configuration of the simulation.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCAnalysisPlugin.finalize">
+<tt class="descname">finalize</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCAnalysisPlugin.finalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called after the KMC loop to allow for custom finalization and
+post-processing of collected data.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCAnalysisPlugin.__init__">
+<tt class="descname">__init__</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCAnalysisPlugin.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>The constructor of the base-class.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="api.html">KMCLib API</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="analysis.html">Analysis</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012 - 2014, Mikael Leetmaa.
+    </div>
+  </body>
+</html>

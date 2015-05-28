@@ -1,0 +1,1099 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>KMCLib API &mdash; KMCLib 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="top" title="KMCLib 1.1 documentation" href="index.html" />
+    <link rel="next" title="Plugin Interfaces" href="plugins.html" />
+    <link rel="prev" title="Usage examples" href="usage.html" /> 
+  </head>
+  <body>
+
+<div style="text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="_static/logo.png" border="0" alt="py4sci"/></a>
+</div>
+
+
+      <div class="header"><h1 class="heading"><a href="index.html">
+          <span>KMCLib 1.1 documentation</span></a></h1>
+        <h2 class="heading"><span>KMCLib API</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="usage.html">Usage examples</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="plugins.html">Plugin Interfaces</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="kmclib-api">
+<h1>KMCLib API<a class="headerlink" href="#kmclib-api" title="Permalink to this headline">¶</a></h1>
+<p>Under the category &#8220;KMCLib API&#8221; goes all components you may need
+when performing KMC simulations with KMCLib, that are not part of the plugins.</p>
+<p>These are the objects you get when importing with:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">KMCLib</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+<p>It defineds the KMCLib API for setting up and running a KMC
+simulation. It is our intention that these interfaces will remain
+constant over time once we have a first official release out.</p>
+<div class="section" id="kmcconfiguration">
+<h2>KMCConfiguration<a class="headerlink" href="#kmcconfiguration" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="usage">
+<h3>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">¶</a></h3>
+<p>A <a class="reference internal" href="#KMCLib.KMCConfiguration" title="KMCLib.KMCConfiguration"><tt class="xref py py-class docutils literal"><span class="pre">KMCConfiguration</span></tt></a> consists of a <a class="reference internal" href="#KMCLib.KMCLattice" title="KMCLib.KMCLattice"><tt class="xref py py-class docutils literal"><span class="pre">KMCLattice</span></tt></a>
+and the element type information in each lattice site.
+A <a class="reference internal" href="#KMCLib.KMCConfiguration" title="KMCLib.KMCConfiguration"><tt class="xref py py-class docutils literal"><span class="pre">KMCConfiguration</span></tt></a> is given to the
+<a class="reference internal" href="#KMCLib.KMCLatticeModel" title="KMCLib.KMCLatticeModel"><tt class="xref py py-class docutils literal"><span class="pre">KMCLatticeModel</span></tt></a> to represent the initial geometry of the
+simulation.</p>
+</div>
+<div class="section" id="interface">
+<h3>Interface<a class="headerlink" href="#interface" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="KMCLib.KMCConfiguration">
+<em class="property">class </em><tt class="descclassname">KMCLib.</tt><tt class="descname">KMCConfiguration</tt><big>(</big><em>lattice=None</em>, <em>types=None</em>, <em>possible_types=None</em>, <em>default_type=None</em><big>)</big><a class="headerlink" href="#KMCLib.KMCConfiguration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for representing the configuration in a KMC simulation.</p>
+<dl class="method">
+<dt id="KMCLib.KMCConfiguration.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>lattice=None</em>, <em>types=None</em>, <em>possible_types=None</em>, <em>default_type=None</em><big>)</big><a class="headerlink" href="#KMCLib.KMCConfiguration.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor for the KMCConfiguration - the configuration object to use
+in the KMC simulations.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>lattice</strong> &#8211; The lattice of the configurartion as a KMCLattice.</li>
+<li><strong>types</strong> &#8211; The site types at the lattice points as a list, e.g. [&#8216;type1&#8217;,&#8217;type2&#8217;,..],
+ordered as [a,b,c,i] with i being the fastest and a the slowest index and
+a, b and c refers to the cell repetitions and i
+refers to the specific basis point in the cell. When using this format
+one cannot specify a default type, and the number of elements in the
+types list must match the number of grid points in the lattice. Alternatively
+one can specify the types input as a list of tuples specifying the a,b,c,i for each type,
+e.g. [(0,0,1,0,&#8217;a&#8217;), (0,0,1,1,&#8217;b&#8217;), ...]. If one uses the longer tuple format
+a default type should be given, which then will be used for all points not
+explicitly specified in the list.</li>
+<li><strong>possible_types</strong> &#8211; A list of possible types. If not given this list will be set to the
+types present in the types list by default.</li>
+<li><strong>default_type</strong> &#8211; This input parameter can only be given if the types are
+given in long format i.e. [(0,0,1,0,&#8217;a&#8217;), (0,0,1,1,&#8217;b&#8217;), ...]
+The default type will then be used for lattice sites
+not specified in the types list.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCConfiguration._atkScript">
+<tt class="descname">_atkScript</tt><big>(</big><em>types_map</em><big>)</big><a class="headerlink" href="#KMCLib.KMCConfiguration._atkScript" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate an ATK 12.8.2 compatible BulkConfiguration script of
+this configuration.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>types_map</strong> &#8211; A map between the KMCLib types used in this
+configuration and ATK type names as a dict,
+where keys are the type names used in this
+configuration and the corresponding values are the
+ATK types to be used given as strings. Any
+type not specified in the mapping will be left out
+in the ATK configuration.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">An ATK script as a string representing this configuration.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCConfiguration._script">
+<tt class="descname">_script</tt><big>(</big><em>variable_name='configuration'</em><big>)</big><a class="headerlink" href="#KMCLib.KMCConfiguration._script" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a KMCLib Python script representation of this configuration.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>variable_name</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; A name to use as variable name for
+the KMCConfiguration in the generated script.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A KMCLib Python script, as a string,
+that can generate this configuration.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCConfiguration.atomIDCoordinates">
+<tt class="descname">atomIDCoordinates</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCConfiguration.atomIDCoordinates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query for the coordinates per atom id.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCConfiguration.atomIDTypes">
+<tt class="descname">atomIDTypes</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCConfiguration.atomIDTypes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query for the types indexed according to the atom_ids.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCConfiguration.cellRepetitions">
+<tt class="descname">cellRepetitions</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCConfiguration.cellRepetitions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query for the primitive cell repetitions.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCConfiguration.lattice">
+<tt class="descname">lattice</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCConfiguration.lattice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query for the lattice.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCConfiguration.movedAtomIDs">
+<tt class="descname">movedAtomIDs</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCConfiguration.movedAtomIDs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query for the moved atom_id:s of the last move.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCConfiguration.possibleTypes">
+<tt class="descname">possibleTypes</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCConfiguration.possibleTypes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query function for the possible types dict.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The stored possible types dict.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCConfiguration.sites">
+<tt class="descname">sites</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCConfiguration.sites" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query function for the lattice sites.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The lattice sites.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCConfiguration.types">
+<tt class="descname">types</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCConfiguration.types" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query function for the types of the configuration.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The stored types list.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="notes">
+<h3>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h3>
+<p>For a lattice KMC simulation the lattice positions do not change
+during the simulation, but if <em>move vectors</em> are specified in the
+processes (see the <a class="reference internal" href="#KMCLib.KMCProcess" title="KMCLib.KMCProcess"><tt class="xref py py-class docutils literal"><span class="pre">KMCProcess</span></tt></a> documentation for details),
+the configuration keeps track of all individual atoms occupying the
+lattice sites. The <a class="reference internal" href="#KMCLib.KMCConfiguration" title="KMCLib.KMCConfiguration"><tt class="xref py py-class docutils literal"><span class="pre">KMCConfiguration</span></tt></a> has internally a dual
+representation of the geometry, keeping track of the type at each
+lattice site, as well as the coordinates for each atom-ID. The
+atom-IDs are assigned at the start of the simulation, or earlier
+when otherwise asked for via any of the query functions involving
+atom-IDs. The initial assignment of the atom-IDs follows the order of
+the given initial types.</p>
+<p>The <a class="reference internal" href="#KMCLib.KMCConfiguration" title="KMCLib.KMCConfiguration"><tt class="xref py py-class docutils literal"><span class="pre">KMCConfiguration</span></tt></a> comes with the ability to script
+itself using the <a class="reference internal" href="#KMCLib.KMCConfiguration._script" title="KMCLib.KMCConfiguration._script"><tt class="xref py py-meth docutils literal"><span class="pre">_script</span></tt></a> method,
+meaning that it can produce a string that, if interpreted
+as a Python script, generates a copy of the configuration. This can
+be a convenient way to store a configuration for later use, especially
+if the configuration was first generated using a more complex Python script.</p>
+<p>As an extra bonus <a class="reference internal" href="#KMCLib.KMCConfiguration" title="KMCLib.KMCConfiguration"><tt class="xref py py-class docutils literal"><span class="pre">KMCConfiguration</span></tt></a> can also
+generate a corresponding ATK script for easy visualization with
+VNL from <a class="reference external" href="http://www.quantumwise.com">QuantumWise</a>. Since the type of configuration used in VNL must have an element
+from the periodic system for each coordinate the
+<a class="reference internal" href="#KMCLib.KMCConfiguration._atkScript" title="KMCLib.KMCConfiguration._atkScript"><tt class="xref py py-meth docutils literal"><span class="pre">_atkScript</span></tt></a> method
+takes a dict as argument that translates the types to periodic table
+elements. Any type present in the <a class="reference internal" href="#KMCLib.KMCConfiguration" title="KMCLib.KMCConfiguration"><tt class="xref py py-class docutils literal"><span class="pre">KMCConfiguration</span></tt></a> which
+is not in the dict will be ignored when generating the ATK script.</p>
+<p>If you have suggestions for other scripts or file formats that you
+think would be convenient if the <a class="reference internal" href="#KMCLib.KMCConfiguration" title="KMCLib.KMCConfiguration"><tt class="xref py py-class docutils literal"><span class="pre">KMCConfiguration</span></tt></a> could
+generate you can easily extend the class with another method. You just
+follow the examples of the
+<a class="reference internal" href="#KMCLib.KMCConfiguration._script" title="KMCLib.KMCConfiguration._script"><tt class="xref py py-meth docutils literal"><span class="pre">_script</span></tt></a>
+and
+<a class="reference internal" href="#KMCLib.KMCConfiguration._atkScript" title="KMCLib.KMCConfiguration._atkScript"><tt class="xref py py-meth docutils literal"><span class="pre">_atkScript</span></tt></a> methods. We would
+of course be happy to see contributions of this kind being submitted
+back to us for inclusion in future releases.</p>
+</div>
+</div>
+<div class="section" id="kmcinteractions">
+<h2>KMCInteractions<a class="headerlink" href="#kmcinteractions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h3>Usage<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>A <a class="reference internal" href="#KMCLib.KMCInteractions" title="KMCLib.KMCInteractions"><tt class="xref py py-class docutils literal"><span class="pre">KMCInteractions</span></tt></a> object is given as one of the arguments
+when constructing the <a class="reference internal" href="#KMCLib.KMCLatticeModel" title="KMCLib.KMCLatticeModel"><tt class="xref py py-class docutils literal"><span class="pre">KMCLatticeModel</span></tt></a>, and contains information about <em>all</em>
+interactions in the simulated system.
+The <a class="reference internal" href="#KMCLib.KMCInteractions" title="KMCLib.KMCInteractions"><tt class="xref py py-class docutils literal"><span class="pre">KMCInteractions</span></tt></a>
+is constructed with a list of <em>all</em> possible elementary processes
+in the simulated system as a list of <a class="reference internal" href="#KMCLib.KMCProcess" title="KMCLib.KMCProcess"><tt class="xref py py-class docutils literal"><span class="pre">KMCProcess</span></tt></a> objects,
+and can also be equipped with a
+<a class="reference internal" href="plugins.html#KMCLib.KMCRateCalculatorPlugin" title="KMCLib.KMCRateCalculatorPlugin"><tt class="xref py py-class docutils literal"><span class="pre">KMCRateCalculatorPlugin</span></tt></a> by calling its
+<a class="reference internal" href="#KMCLib.KMCInteractions.setRateCalculator" title="KMCLib.KMCInteractions.setRateCalculator"><tt class="xref py py-meth docutils literal"><span class="pre">setRateCalculator</span></tt></a> method.
+An added custom rate calculator will have the ability to dynamically update the rate
+constants associated with the elementary processes at different
+lattice sites during the simulation.</p>
+</div>
+<div class="section" id="id2">
+<h3>Interface<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="KMCLib.KMCInteractions">
+<em class="property">class </em><tt class="descclassname">KMCLib.</tt><tt class="descname">KMCInteractions</tt><big>(</big><em>processes=None</em>, <em>implicit_wildcards=None</em><big>)</big><a class="headerlink" href="#KMCLib.KMCInteractions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for holding information about all possible interactions used in a
+Lattice KMC simulation.</p>
+<dl class="method">
+<dt id="KMCLib.KMCInteractions.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>processes=None</em>, <em>implicit_wildcards=None</em><big>)</big><a class="headerlink" href="#KMCLib.KMCInteractions.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor for the KMCInteractions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>processes</strong> &#8211; A list of possible processes in the simulation.</li>
+<li><strong>implicit_wildcards</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) &#8211; A flag indicating if implicit wildcards should be used in
+the matching of processes with the configuration. The default
+is True, i.e. to use implicit wildcards.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCInteractions.implicitWildcards">
+<tt class="descname">implicitWildcards</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCInteractions.implicitWildcards" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query for the implicit wildcard flag.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The implicit wildcard flag stored.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCInteractions.rateCalculator">
+<tt class="descname">rateCalculator</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCInteractions.rateCalculator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query for the rate calculator.
+:returns: The stored rate calculator.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCInteractions.setRateCalculator">
+<tt class="descname">setRateCalculator</tt><big>(</big><em>rate_calculator=None</em><big>)</big><a class="headerlink" href="#KMCLib.KMCInteractions.setRateCalculator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the rate calculator of the class. The rate calculator must be
+set before the backend is generated to take effect.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>rate_calculator</strong> &#8211; A class inheriting from the
+KMCRateCalculatorPlugin interface. If not given
+the rates specified for each process will be used unmodified.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="id3">
+<h3>Notes<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p>The <tt class="xref py py-obj docutils literal"><span class="pre">implicit_wildcards</span></tt> parameter to the constructor specifies how the
+local geometries of the <a class="reference internal" href="#KMCLib.KMCProcess" title="KMCLib.KMCProcess"><tt class="xref py py-class docutils literal"><span class="pre">KMCProcess</span></tt></a> input should be
+interpreted, and will have a crucial impact on the outcome of a simulation.
+If <tt class="docutils literal"><span class="pre">implicit_wildcards=True</span></tt> (default
+behavior), then the geometries of all processes will be compared to
+the geometry of the lattice at the type of basis site where the
+process is applicable as specified on construction of each
+<a class="reference internal" href="#KMCLib.KMCProcess" title="KMCLib.KMCProcess"><tt class="xref py py-class docutils literal"><span class="pre">KMCProcess</span></tt></a> object. If there are lattice sites within
+the cutoff of the process that are not specified in the process
+geometry these sites will be added to the process with a wild-card
+marker as type, meaning that any type on the corresponding lattice
+position will be regarded as a match when the process is compared to a
+lattice site. If <tt class="docutils literal"><span class="pre">implicit_wildcards=False</span></tt> only wild-cards
+explicitly specified in each <a class="reference internal" href="#KMCLib.KMCProcess" title="KMCLib.KMCProcess"><tt class="xref py py-class docutils literal"><span class="pre">KMCProcess</span></tt></a> will be
+considered. See the <a class="reference internal" href="#KMCLib.KMCProcess" title="KMCLib.KMCProcess"><tt class="xref py py-class docutils literal"><span class="pre">KMCProcess</span></tt></a> documentation for further details.</p>
+</div>
+</div>
+<div class="section" id="kmcprocess">
+<h2>KMCProcess<a class="headerlink" href="#kmcprocess" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id4">
+<h3>Usage<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>A <a class="reference internal" href="#KMCLib.KMCProcess" title="KMCLib.KMCProcess"><tt class="xref py py-class docutils literal"><span class="pre">KMCProcess</span></tt></a> represents an elementary process in the KMC
+simulation. Every possible way to move particles in the simulation
+must be represented with <a class="reference internal" href="#KMCLib.KMCProcess" title="KMCLib.KMCProcess"><tt class="xref py py-class docutils literal"><span class="pre">KMCProcess</span></tt></a> objects.
+A list of <a class="reference internal" href="#KMCLib.KMCProcess" title="KMCLib.KMCProcess"><tt class="xref py py-class docutils literal"><span class="pre">KMCProcess</span></tt></a> objects containing all this
+information must be specified to construct the
+the <a class="reference internal" href="#KMCLib.KMCInteractions" title="KMCLib.KMCInteractions"><tt class="xref py py-class docutils literal"><span class="pre">KMCInteractions</span></tt></a> object.</p>
+</div>
+<div class="section" id="id5">
+<h3>Interface<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="KMCLib.KMCProcess">
+<em class="property">class </em><tt class="descclassname">KMCLib.</tt><tt class="descname">KMCProcess</tt><big>(</big><em>coordinates=None</em>, <em>elements_before=None</em>, <em>elements_after=None</em>, <em>move_vectors=None</em>, <em>basis_sites=None</em>, <em>rate_constant=None</em><big>)</big><a class="headerlink" href="#KMCLib.KMCProcess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for representing a possible process in a lattice KMC simulation.</p>
+<dl class="method">
+<dt id="KMCLib.KMCProcess.__eq__">
+<tt class="descname">__eq__</tt><big>(</big><em>other</em><big>)</big><a class="headerlink" href="#KMCLib.KMCProcess.__eq__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implements the equal oprator.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCProcess.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>coordinates=None</em>, <em>elements_before=None</em>, <em>elements_after=None</em>, <em>move_vectors=None</em>, <em>basis_sites=None</em>, <em>rate_constant=None</em><big>)</big><a class="headerlink" href="#KMCLib.KMCProcess.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor for the KMCProcess.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>coordinates</strong> &#8211; The local coordinates, corresponding to the lattice
+positions of the surrounding of the center where
+the process will be preformed.</li>
+<li><strong>elements_before</strong> &#8211; The elements, as a list of strings,
+before the process is preformed.
+This list of elements will be used to match the
+local surroundings of each center in the
+simulation, to determine at which sites the
+process can be performed.</li>
+<li><strong>elements_after</strong> &#8211; The elements, as a list of strings,
+after the process is preformed.
+This list of elements will be used to update the
+local surrounding of the site where the process
+is performed.</li>
+<li><strong>move_vectors</strong> &#8211; A set of vectors in the local coordinates that define
+which elements are moved to which place in the move.
+The vectors are given as a list of tuples, where the first
+element in each tuple indicates which index is moved and
+the second element in the tuple is a vector in local coordinates
+indicating where the move is to.</li>
+<li><strong>basis_sites</strong> &#8211; The basis sites in the lattice at which the process
+can possibly be applied. Only if the length of this
+list is 1 can implicit wildcards be used for the
+matching.</li>
+<li><strong>rate_constant</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) &#8211; The rate constant associated with this process.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCProcess.basisSites">
+<tt class="descname">basisSites</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCProcess.basisSites" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query for the basis sites.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The basis sites as stored on the class. Returns None if
+no basis sites were given on construction.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCProcess.elementsAfter">
+<tt class="descname">elementsAfter</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCProcess.elementsAfter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query for the elements before.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The elements before stored on the class.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCProcess.elementsBefore">
+<tt class="descname">elementsBefore</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCProcess.elementsBefore" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query for the elements before.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The elements before stored on the class.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCProcess.localConfigurations">
+<tt class="descname">localConfigurations</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCProcess.localConfigurations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query for the local configurations.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The two local configurations in a tuple.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCProcess.moveVectors">
+<tt class="descname">moveVectors</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCProcess.moveVectors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query for the move vectors.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The move vectors stored on the class.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCProcess.rateConstant">
+<tt class="descname">rateConstant</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCProcess.rateConstant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query for the rate constant.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The rate constant stored on the class.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">float</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="id6">
+<h3>Notes<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<p>A process can be specified with or without <em>move vector</em> input. The
+simplest form of the <a class="reference internal" href="#KMCLib.KMCProcess" title="KMCLib.KMCProcess"><tt class="xref py py-class docutils literal"><span class="pre">KMCProcess</span></tt></a> uses no <em>move vectors</em>. In
+this case the <a class="reference internal" href="#KMCLib.KMCProcess" title="KMCLib.KMCProcess"><tt class="xref py py-class docutils literal"><span class="pre">KMCProcess</span></tt></a> is constructed with the local
+geometry around the type of lattice site it should be applied to, as well
+as with the corresponding list of types at the lattice sites before
+and after the process is applied. When the process is applied at a
+lattice site the type information at the involved sites is
+updated. With no <em>move vectors</em> given, the types information is updated
+without keeping track of which specific atom went to which new site.
+Tracking of individual atoms is some times necessary, e.g. when
+calculating the mean square displacement of atoms with the built in
+<a class="reference internal" href="analysis.html#KMCLib.OnTheFlyMSD" title="KMCLib.OnTheFlyMSD"><tt class="xref py py-class docutils literal"><span class="pre">OnTheFlyMSD</span></tt></a> analysis.
+To keep track of the positions of the individual atoms (or particles)
+in a simulation <em>move vectors</em> must be specified for all relevant
+processes.</p>
+<p>The <a class="reference internal" href="#KMCLib.KMCProcess" title="KMCLib.KMCProcess"><tt class="xref py py-class docutils literal"><span class="pre">KMCProcess</span></tt></a> can be specified with the use of
+wild-cards for matching any type at a certain lattice site. If a
+wild-card is explicitly specified (using the &#8216;*&#8217; symbol as type)
+it must stay in the same position in the <tt class="xref py py-obj docutils literal"><span class="pre">elements_before</span></tt> and
+<tt class="xref py py-obj docutils literal"><span class="pre">elements_after</span></tt> lists.
+Wild-cards can also be used by simply omitting the corresponding
+positions in the <tt class="xref py py-obj docutils literal"><span class="pre">coordinates</span></tt> and <tt class="xref py py-obj docutils literal"><span class="pre">elements</span></tt> lists
+and instead use the <tt class="docutils literal"><span class="pre">implicit_wildcards=True</span></tt> option when
+constructing the <a class="reference internal" href="#KMCLib.KMCInteractions" title="KMCLib.KMCInteractions"><tt class="xref py py-class docutils literal"><span class="pre">KMCInteractions</span></tt></a>. A restriction applies
+that implicit wild-cards can only be used for processes that are
+applicable at one type of basis site only (i.e. with <tt class="docutils literal"><span class="pre">len(basis_sites)=1</span></tt>).</p>
+</div>
+</div>
+<div class="section" id="kmclocalconfiguration">
+<h2>KMCLocalConfiguration<a class="headerlink" href="#kmclocalconfiguration" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id7">
+<h3>Usage<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference internal" href="#KMCLib.KMCLocalConfiguration" title="KMCLib.KMCLocalConfiguration"><tt class="xref py py-class docutils literal"><span class="pre">KMCLocalConfiguration</span></tt></a> is used to internally represent local geometry
+around a lattice site in the <a class="reference internal" href="#KMCLib.KMCProcess" title="KMCLib.KMCProcess"><tt class="xref py py-class docutils literal"><span class="pre">KMCProcess</span></tt></a> object.</p>
+</div>
+<div class="section" id="id8">
+<h3>Interface<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="KMCLib.KMCLocalConfiguration">
+<em class="property">class </em><tt class="descclassname">KMCLib.</tt><tt class="descname">KMCLocalConfiguration</tt><big>(</big><em>coordinates=None</em>, <em>types=None</em>, <em>center=None</em><big>)</big><a class="headerlink" href="#KMCLib.KMCLocalConfiguration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for representing the local environment around a central site
+in a Lattice KMC simulation.</p>
+<dl class="method">
+<dt id="KMCLib.KMCLocalConfiguration.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>coordinates=None</em>, <em>types=None</em>, <em>center=None</em><big>)</big><a class="headerlink" href="#KMCLib.KMCLocalConfiguration.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor for the KMCLocalConfiguration.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>coordinates</strong> &#8211; The coordinates of the configuration given as
+a 3xN sequence of floating point numbers, where
+N is the number of local sites.</li>
+<li><strong>types</strong> &#8211; The lattice site types at the specified coordinates given
+as a sequence of strings of length N.</li>
+<li><strong>center</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; The coordinate in the list to treat as the central site
+indexed from zero. If not given it will default to the
+first coordinate (i.e. center == 0).</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCLocalConfiguration.coordinates">
+<tt class="descname">coordinates</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCLocalConfiguration.coordinates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query function for the coordinates stored on the class.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The stored coordinates.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCLocalConfiguration.types">
+<tt class="descname">types</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCLocalConfiguration.types" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query function for the types stored on the class.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The stored types.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="kmcunitcell">
+<h2>KMCUnitCell<a class="headerlink" href="#kmcunitcell" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id9">
+<h3>Usage<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference internal" href="#KMCLib.KMCUnitCell" title="KMCLib.KMCUnitCell"><tt class="xref py py-class docutils literal"><span class="pre">KMCUnitCell</span></tt></a> is given as an argument when
+constructing a <a class="reference internal" href="#KMCLib.KMCLattice" title="KMCLib.KMCLattice"><tt class="xref py py-class docutils literal"><span class="pre">KMCLattice</span></tt></a> to use with a
+<a class="reference internal" href="#KMCLib.KMCConfiguration" title="KMCLib.KMCConfiguration"><tt class="xref py py-class docutils literal"><span class="pre">KMCConfiguration</span></tt></a>. The <a class="reference internal" href="#KMCLib.KMCUnitCell" title="KMCLib.KMCUnitCell"><tt class="xref py py-class docutils literal"><span class="pre">KMCUnitCell</span></tt></a>
+is specified both to obtain information on the basis sites to use
+in the repeated primitive cell when constructing the lattice,
+and also to obtain a mapping from Cartesian space to the internal
+geometry based on the lattice vectors of the primitive cell. This
+mapping has currently only one usage in KMCLib, when using
+the <a class="reference internal" href="analysis.html#KMCLib.OnTheFlyMSD" title="KMCLib.OnTheFlyMSD"><tt class="xref py py-class docutils literal"><span class="pre">OnTheFlyMSD</span></tt></a> analysis where a transformation to
+Cartesian coordinates is performed using the information provided
+from the <a class="reference internal" href="#KMCLib.KMCUnitCell" title="KMCLib.KMCUnitCell"><tt class="xref py py-class docutils literal"><span class="pre">KMCUnitCell</span></tt></a> class.</p>
+</div>
+<div class="section" id="id10">
+<h3>Interface<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="KMCLib.KMCUnitCell">
+<em class="property">class </em><tt class="descclassname">KMCLib.</tt><tt class="descname">KMCUnitCell</tt><big>(</big><em>cell_vectors=None</em>, <em>basis_points=None</em><big>)</big><a class="headerlink" href="#KMCLib.KMCUnitCell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for describing a unitcell.</p>
+<dl class="method">
+<dt id="KMCLib.KMCUnitCell.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>cell_vectors=None</em>, <em>basis_points=None</em><big>)</big><a class="headerlink" href="#KMCLib.KMCUnitCell.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor for the KMCUnitCell class.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>cell_vectors</strong> &#8211; A 3x3 matrix, nested lists or numpy array with
+rows corresponding to the a, b and c vectors in
+cartesian coordinates.</li>
+<li><strong>basis_points</strong> &#8211; A Nx3 matrix, nested lists or numpy array with
+each row corresponding to the fractional coordinates
+of a basis point.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCUnitCell.basis">
+<tt class="descname">basis</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCUnitCell.basis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query for the bais points.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The basis points stored on the class.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCUnitCell.cellVectors">
+<tt class="descname">cellVectors</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCUnitCell.cellVectors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query for the cell vectors.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The cell vectors stored on the class.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCUnitCell.transformToCartesian">
+<tt class="descname">transformToCartesian</tt><big>(</big><em>r</em><big>)</big><a class="headerlink" href="#KMCLib.KMCUnitCell.transformToCartesian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform an internal coordinate list to cartesian coordinates.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The coordinates in cartesian units.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="kmclattice">
+<h2>KMCLattice<a class="headerlink" href="#kmclattice" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id11">
+<h3>Usage<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference internal" href="#KMCLib.KMCLattice" title="KMCLib.KMCLattice"><tt class="xref py py-class docutils literal"><span class="pre">KMCLattice</span></tt></a> is used to define the topology of a lattice
+KMC simulation. It consists of a <a class="reference internal" href="#KMCLib.KMCUnitCell" title="KMCLib.KMCUnitCell"><tt class="xref py py-class docutils literal"><span class="pre">KMCUnitCell</span></tt></a> and information
+about repetitions of this cell and the periodicity of the lattice.
+The <a class="reference internal" href="#KMCLib.KMCLattice" title="KMCLib.KMCLattice"><tt class="xref py py-class docutils literal"><span class="pre">KMCLattice</span></tt></a> is used for input when constructing
+the <a class="reference internal" href="#KMCLib.KMCConfiguration" title="KMCLib.KMCConfiguration"><tt class="xref py py-class docutils literal"><span class="pre">KMCConfiguration</span></tt></a>.</p>
+</div>
+<div class="section" id="id12">
+<h3>Interface<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="KMCLib.KMCLattice">
+<em class="property">class </em><tt class="descclassname">KMCLib.</tt><tt class="descname">KMCLattice</tt><big>(</big><em>unit_cell=None</em>, <em>repetitions=None</em>, <em>periodic=None</em><big>)</big><a class="headerlink" href="#KMCLib.KMCLattice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for describing the lattice used in a KMC simulation.</p>
+<dl class="method">
+<dt id="KMCLib.KMCLattice.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>unit_cell=None</em>, <em>repetitions=None</em>, <em>periodic=None</em><big>)</big><a class="headerlink" href="#KMCLib.KMCLattice.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructor for the Lattice used in the KMC simulations.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>unit_cell</strong> &#8211; The unitcell object to represent the periodicity of the lattice.</li>
+<li><strong>repetitions</strong> &#8211; The repetitions of the unitcell along the a,b and c directions
+to create the full lattice, given as a list or tuple of three
+integers &gt; 0. If not given this defaults to (1,1,1)</li>
+<li><strong>periodic</strong> (<em>(bool,bool,bool)</em>) &#8211; A list or tuple indicating if periodicity should be used along the
+a, b and c directions. If not specified it defaults to (True,True,True)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCLattice.basis">
+<tt class="descname">basis</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCLattice.basis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query function for the basis.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The basis of the unit cell.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCLattice.periodic">
+<tt class="descname">periodic</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCLattice.periodic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query function for the periodicity.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The periodicity information along the a b and c directions.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCLattice.repetitions">
+<tt class="descname">repetitions</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCLattice.repetitions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query function for the repetitions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The repetitions used to construct the full lattice from the unit cell.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCLattice.sites">
+<tt class="descname">sites</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCLattice.sites" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query function for the sites data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The sites data in fractional units of the original unit cell.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCLattice.unitCell">
+<tt class="descname">unitCell</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCLattice.unitCell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query function for the unit cell.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The unit cell.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="kmclatticemodel">
+<h2>KMCLatticeModel<a class="headerlink" href="#kmclatticemodel" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id13">
+<h3>Usage<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference internal" href="#KMCLib.KMCLatticeModel" title="KMCLib.KMCLatticeModel"><tt class="xref py py-class docutils literal"><span class="pre">KMCLatticeModel</span></tt></a> is the central object in
+<tt class="xref py py-mod docutils literal"><span class="pre">KMCLib</span></tt> to perform a lattice KMC simulation. The model is
+constructed with a <a class="reference internal" href="#KMCLib.KMCConfiguration" title="KMCLib.KMCConfiguration"><tt class="xref py py-class docutils literal"><span class="pre">KMCConfiguration</span></tt></a> and
+<a class="reference internal" href="#KMCLib.KMCInteractions" title="KMCLib.KMCInteractions"><tt class="xref py py-class docutils literal"><span class="pre">KMCInteractions</span></tt></a>, and is run by calling its
+<a class="reference internal" href="#KMCLib.KMCLatticeModel.run" title="KMCLib.KMCLatticeModel.run"><tt class="xref py py-meth docutils literal"><span class="pre">run</span></tt></a> method with parameters given in a
+<a class="reference internal" href="#KMCLib.KMCControlParameters" title="KMCLib.KMCControlParameters"><tt class="xref py py-class docutils literal"><span class="pre">KMCControlParameters</span></tt></a> object.</p>
+</div>
+<div class="section" id="id14">
+<h3>Interface<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="KMCLib.KMCLatticeModel">
+<em class="property">class </em><tt class="descclassname">KMCLib.</tt><tt class="descname">KMCLatticeModel</tt><big>(</big><em>configuration=None</em>, <em>interactions=None</em><big>)</big><a class="headerlink" href="#KMCLib.KMCLatticeModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for representing a lattice KMC model.</p>
+<dl class="method">
+<dt id="KMCLib.KMCLatticeModel.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>configuration=None</em>, <em>interactions=None</em><big>)</big><a class="headerlink" href="#KMCLib.KMCLatticeModel.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>The KMCLatticeModel class is the central object in the KMCLib framework
+for running a KMC simulation. Once a configuration with a lattice is
+defined and a set of interactions are setup, the KMCLatticeModel object
+unites this information, checks that the given interactions match the
+configurations, and provides means for running a KMC Lattice simulation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>configuration</strong> &#8211; The KMCConfiguration to run the simulation for.</li>
+<li><strong>interactions</strong> &#8211; The KMCInteractions that specify possible local
+states and barriers to use in the simulation.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCLatticeModel.run">
+<tt class="descname">run</tt><big>(</big><em>control_parameters=None</em>, <em>trajectory_filename=None</em>, <em>trajectory_type=None</em>, <em>analysis=None</em><big>)</big><a class="headerlink" href="#KMCLib.KMCLatticeModel.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the KMC lattice model simulation with specified parameters.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>control_paramters</strong> &#8211; An instance of KMCControlParameters specifying
+number of steps to run etc.</li>
+<li><strong>trajectory_filename</strong> &#8211; The filename of the trajectory. If not given
+no trajectory will be saved.</li>
+<li><strong>trajectory_type</strong> &#8211; The type of trajectory to use. Either &#8216;lattice&#8217; or &#8216;xyz&#8217;.
+The &#8216;lattice&#8217; format shows the types at the latice points.
+The &#8216;xyz&#8217; format gives type and coordinate for each particle.
+The default type is &#8216;lattice&#8217;.</li>
+<li><strong>analysis</strong> &#8211; A list of instantiated analysis objects that should be used for on-the-fly analysis.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="id15">
+<h3>Notes<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
+<p>When running the model the <a class="reference internal" href="#KMCLib.KMCControlParameters" title="KMCLib.KMCControlParameters"><tt class="xref py py-class docutils literal"><span class="pre">KMCControlParameters</span></tt></a> specify
+how often the trajectory will be saved and how often information
+should be printed to standard output. This is controlled with the
+<tt class="xref py py-obj docutils literal"><span class="pre">dump_intervall</span></tt> parameter in the
+<a class="reference internal" href="#KMCLib.KMCControlParameters" title="KMCLib.KMCControlParameters"><tt class="xref py py-class docutils literal"><span class="pre">KMCControlParameters</span></tt></a> class. If no trajectory is needed
+the <tt class="xref py py-obj docutils literal"><span class="pre">trajectory_filename</span></tt> argument can be left
+empty. This will produce a warning message that no trajectory file is
+specified but the simulation will run correctly only without storing
+trajectory information.
+If no trajectory information is needed it can still be useful to store
+the last configuration to make a restart point to continue the
+simulation from if needed. This can be achieved by specifying a
+trajectory file name and setting the <tt class="xref py py-obj docutils literal"><span class="pre">dump_intervall</span></tt> equal to
+the <tt class="xref py py-obj docutils literal"><span class="pre">number_of_steps</span></tt> in the <a class="reference internal" href="#KMCLib.KMCControlParameters" title="KMCLib.KMCControlParameters"><tt class="xref py py-class docutils literal"><span class="pre">KMCControlParameters</span></tt></a>.
+A potential drawback using such approach is that no information will
+be printed to standard output during the simulation.</p>
+<p>Two different types of trajectory formats are currently implemented.
+<tt class="docutils literal"><span class="pre">trajectory_type='lattice'</span></tt> gives a lattice trajectory,
+where the lattice positions is specified only once, and at each step
+only the type at each lattice site is stored. Using <tt class="docutils literal"><span class="pre">trajectory_type='xyz'</span></tt>
+instead causes the trajectory to be stored with the coordinates and
+type for each atom-ID at each saved step.
+This type of trajectory is <em>only</em> meaningful if the
+processes specify <em>move_vectors</em> for how the individual atoms move
+during the simulation.</p>
+<p>Much flexibility and extendability is added to <tt class="xref py py-mod docutils literal"><span class="pre">KMCLib</span></tt>
+with the possibility to specify custom on-the-fly analysis objects
+that can be used in the simulation. These objects must inherit from
+the <a class="reference internal" href="plugins.html#KMCLib.KMCAnalysisPlugin" title="KMCLib.KMCAnalysisPlugin"><tt class="xref py py-class docutils literal"><span class="pre">KMCAnalysisPlugin</span></tt></a> interface and are given to the
+<a class="reference internal" href="#KMCLib.KMCLatticeModel.run" title="KMCLib.KMCLatticeModel.run"><tt class="xref py py-meth docutils literal"><span class="pre">run</span></tt></a> method in a list using the
+<tt class="docutils literal"><span class="pre">analysis=[...]</span></tt> parameter. How often analysis is performed is
+controlled using the <tt class="xref py py-obj docutils literal"><span class="pre">analysis_intervall</span></tt> parameter in the
+<a class="reference internal" href="#KMCLib.KMCControlParameters" title="KMCLib.KMCControlParameters"><tt class="xref py py-class docutils literal"><span class="pre">KMCControlParameters</span></tt></a> class.</p>
+</div>
+</div>
+<div class="section" id="kmccontrolparameters">
+<h2>KMCControlParameters<a class="headerlink" href="#kmccontrolparameters" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id16">
+<h3>Usage<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h3>
+<p><a class="reference internal" href="#KMCLib.KMCControlParameters" title="KMCLib.KMCControlParameters"><tt class="xref py py-class docutils literal"><span class="pre">KMCControlParameters</span></tt></a> is a container for parameters such as
+the number of steps and the seed to the random number generator,
+needed to run a <a class="reference internal" href="#KMCLib.KMCLatticeModel" title="KMCLib.KMCLatticeModel"><tt class="xref py py-class docutils literal"><span class="pre">KMCLatticeModel</span></tt></a>.</p>
+</div>
+<div class="section" id="id17">
+<h3>Interface<a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="KMCLib.KMCControlParameters">
+<em class="property">class </em><tt class="descclassname">KMCLib.</tt><tt class="descname">KMCControlParameters</tt><big>(</big><em>number_of_steps=None</em>, <em>dump_interval=None</em>, <em>analysis_interval=None</em>, <em>seed=None</em>, <em>rng_type=None</em><big>)</big><a class="headerlink" href="#KMCLib.KMCControlParameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class for handling the control parameters that goes in to a KMC simulation.</p>
+<dl class="method">
+<dt id="KMCLib.KMCControlParameters.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>number_of_steps=None</em>, <em>dump_interval=None</em>, <em>analysis_interval=None</em>, <em>seed=None</em>, <em>rng_type=None</em><big>)</big><a class="headerlink" href="#KMCLib.KMCControlParameters.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Constructuor for the KMCControlParameters object that
+holds all parameters controlling the flow of the KMC simulation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>number_of_steps</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; The number of KMC steps to take. If not provided
+the default value 0 will  be used.</li>
+<li><strong>dump_interval</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; The number of steps between subsequent trajectory
+dumps. The default value is 1, i.e. dump every step.</li>
+<li><strong>analysis_interval</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; The number of steps between subsequent calls to
+the custom analysis &#8216;registerStep&#8217; functions.
+The default value is 1, i.e. analysis every step.</li>
+<li><strong>seed</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) &#8211; The seed value to use for the backend random number generator.
+If no seed value is given the random numnber generator will be
+seeded based on the wall-clock time.</li>
+<li><strong>rng_type</strong> (<a class="reference external" href="http://docs.python.org/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) &#8211; <p>The type of pseudo random number generator to use.  The random
+number generators are the once in the standard C++ library and
+the supported types maps directly to the given C++ construction
+as indicated here:</p>
+<p>&#8216;MT&#8217; for Mersenne-Twister (Default) [rng = std::mt19937],
+&#8216;MINSTD&#8217; for the &#8216;minimum standard&#8217; rng [rng = std::minstd_rand],
+&#8216;RANLUX24&#8217; for the 24-bit version of the ranlux rng [rng = std::ranlux24],
+&#8216;RANLUX48&#8217; for the 48-bit version of the ranlux rng [rng = std::ranlux48].</p>
+<p>The sequence of pseudo-random numbers is generated by repeated calls to
+std::generate_canonical&lt;double, 32&gt;(rng);</p>
+<p>See: <a class="reference external" href="http://en.cppreference.com/w/cpp/numeric/random">http://en.cppreference.com/w/cpp/numeric/random</a> for further details on
+C++ random number generators.</p>
+<p>There is also the option &#8216;DEVICE&#8217; for using a random device
+installed on the macine through [rng = std::random_device] in C++. Note
+however that you should spend some time evaluating this option to make
+sure it works as you expect if you have a random device installed, since this
+has not been tested with a random device by the KMCLib developers.</p>
+</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCControlParameters.analysisInterval">
+<tt class="descname">analysisInterval</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCControlParameters.analysisInterval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query for the analysis interval.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The analysis interval.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCControlParameters.dumpInterval">
+<tt class="descname">dumpInterval</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCControlParameters.dumpInterval" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query for the dump interval.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The dump interval.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCControlParameters.numberOfSteps">
+<tt class="descname">numberOfSteps</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCControlParameters.numberOfSteps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query for the number of steps.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The number of steps.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCControlParameters.rngType">
+<tt class="descname">rngType</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCControlParameters.rngType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query for the pseudo random number generator type.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCControlParameters.seed">
+<tt class="descname">seed</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCControlParameters.seed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query for the seed value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The seed value.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="KMCLib.KMCControlParameters.timeSeed">
+<tt class="descname">timeSeed</tt><big>(</big><big>)</big><a class="headerlink" href="#KMCLib.KMCControlParameters.timeSeed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query for the time seed value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">The time seed value.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="usage.html">Usage examples</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="plugins.html">Plugin Interfaces</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012 - 2014, Mikael Leetmaa.
+    </div>
+  </body>
+</html>

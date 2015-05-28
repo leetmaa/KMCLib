@@ -1,0 +1,184 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Introduction &mdash; KMCLib 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="top" title="KMCLib 1.1 documentation" href="index.html" />
+    <link rel="next" title="Algorithm" href="algorithm.html" />
+    <link rel="prev" title="KMCLib user’s guide" href="index.html" /> 
+  </head>
+  <body>
+
+<div style="text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="_static/logo.png" border="0" alt="py4sci"/></a>
+</div>
+
+
+      <div class="header"><h1 class="heading"><a href="index.html">
+          <span>KMCLib 1.1 documentation</span></a></h1>
+        <h2 class="heading"><span>Introduction</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="index.html">KMCLib user&#8217;s guide</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="algorithm.html">Algorithm</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="introduction">
+<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<p>Welcome to the <tt class="xref py py-mod docutils literal"><span class="pre">KMCLib</span></tt> documentation!</p>
+<p><tt class="xref py py-mod docutils literal"><span class="pre">KMCLib</span></tt> is a
+Python/C++ implementation of the <em>lattice</em> KMC method distributed
+under the GPLv3 license. See the <a class="reference internal" href="about.html#about"><em>About</em></a> section for details.</p>
+<p>You can always find the latest stable version of the program
+here: <a class="reference external" href="https://github.com/leetmaa/KMCLib/releases">https://github.com/leetmaa/KMCLib/releases</a></p>
+<p>If you use KMCLib in your research please <strong>cite</strong> the
+scientific paper describing the program <a class="reference internal" href="references.html#ref-8">[Ref.8]</a>.</p>
+<p>This documentation describes version 1.1</p>
+<div class="section" id="why-kmc">
+<h2>Why KMC?<a class="headerlink" href="#why-kmc" title="Permalink to this headline">¶</a></h2>
+<p>KMC is a well known method for accelerated dynamics simulations of
+atomistic systems. The method builds on the
+separation of timescales between the fast vibrational motion on the
+one hand and the slow events of interest on the other. Only the slow
+events are simulated while all other motion in the system is regarded
+as equilibrated when each slow (and therefore rare) event takes
+place. Accurate calculations of energies for the elementary processes
+are typically combined with transition state theory estimates of the
+corresponding rates to build the input to the KMC simulation: an
+initial configuration and a list of elementary processes that governs
+the dynamics of the system.
+Since no motion that takes place on a short time scale
+is explicitly treated KMC simulations can often reach long time scales
+that are difficult to access with other methods.</p>
+<p>The <em>lattice</em> KMC method implemented in <tt class="xref py py-mod docutils literal"><span class="pre">KMCLib</span></tt> is a
+particularly efficient form of KMC suitable for
+simulating systems where the configuration can be expressed on a
+lattice in space, and where all process in the system take place on this
+lattice by changing the types associated with the lattice sites.
+Systems suitable for <em>lattice</em> KMC simulations are typically ordered
+materials such as the bulk of (defect) crystalline solids and their surfaces.
+<tt class="xref py py-mod docutils literal"><span class="pre">KMCLib</span></tt> implements the <em>lattice</em> KMC method.</p>
+<p>Several good description of the KMC method exists in the literature.
+<em>Arthur F. Voter</em> has written an introductory text to KMC
+simulations <a class="reference internal" href="references.html#ref-1">[Ref.1]</a> that I find particularly appealing.
+There is also a vast bulk of research
+literature on the subject, from the first publications of the
+method <a class="reference internal" href="references.html#ref-2">[Ref.2]</a>, <a class="reference internal" href="references.html#ref-3">[Ref.3]</a>, to several more recent reviews
+(e.g. <a class="reference internal" href="references.html#ref-4">[Ref.4]</a>, <a class="reference internal" href="references.html#ref-5">[Ref.5]</a>, <a class="reference internal" href="references.html#ref-6">[Ref.6]</a>, <a class="reference internal" href="references.html#ref-9">[Ref.9]</a>), as well
+as many research papers using the KMC method.</p>
+</div>
+<div class="section" id="why-kmclib">
+<h2>Why KMCLib?<a class="headerlink" href="#why-kmclib" title="Permalink to this headline">¶</a></h2>
+<p>Several implementations of the KMC method exist already.
+So why would you need another one?</p>
+<p>Searching the <a class="reference external" href="http://www.webofknowledge.com/">webofknowledge</a> publication database for papers using
+KMC you find that for the last couple of years several hundred
+papers using KMC were published each year. But only a small
+fraction of these publications used any of the publicly available
+KMC codes. Clearly the available codes do not meet everyone&#8217;s needs.
+A plausible explanation is that the KMC algorithm is simple enough so
+that anyone with some programming experience can write her own
+code. Combine this with the need for custom solutions for many
+systems you end up in a situation where most research groups have
+their own implementation of the method. This situation is not ideal.
+Since the majority of these codes never makes it to the public much
+work is wasted re-inventing the wheel rather than focusing on the
+models design.</p>
+<p>The <tt class="xref py py-mod docutils literal"><span class="pre">KMCLib</span></tt> project started from the need of a flexible KMC
+code  that did not require re-compilation to setup or modify a KMC model.
+We also needed the ability to study diffusion in complex bulk systems
+that required more flexibility than what could easily be obtained using
+the common approach of pre-defining all possible processes before
+the start of the simulation. For complex systems with many possible
+interactions this list easily grows out of hand. With the introduction
+of the custom rate calculator interface
+(<a class="reference internal" href="plugins.html#KMCLib.KMCRateCalculatorPlugin" title="KMCLib.KMCRateCalculatorPlugin"><tt class="xref py py-class docutils literal"><span class="pre">KMCRateCalculatorPlugin</span></tt></a>) we were able to combine
+well-defined processes on a lattice with rates that depend in a
+complex way on the surroundings.</p>
+<p>KMCLib can be used for studying reactions and diffusion of any surface
+or bulk system that can be expressed on a lattice in space, but is
+particularly well equipped for</p>
+<ul>
+<li><p class="first"><strong>Bulk diffusion studies</strong>, that are made easy through the built in mean square
+displacement (MSD) analysis and the ability to track individual
+atoms during the simulation.</p>
+</li>
+<li><p class="first"><strong>Extensions to the conventional KMC algorithm</strong>, where use of the
+custom rate calculator can solve the complexity problem where the
+number of elementary processes grows large for complex systems
+with long range interactions.</p>
+</li>
+<li><p class="first"><em>ab initio</em> KMC schemes with many complex interactions in dense bulk or
+complex surface systems, where the <tt class="xref py py-mod docutils literal"><span class="pre">KMCLib</span></tt> <strong>parallelization</strong>
+scheme over process-site pairs to match is most efficient.</p>
+<p>&#8216;</p>
+</li>
+</ul>
+<div class="section" id="other-kmc-codes">
+<h3>Other KMC codes<a class="headerlink" href="#other-kmc-codes" title="Permalink to this headline">¶</a></h3>
+<p>If you don&#8217;t find <tt class="xref py py-mod docutils literal"><span class="pre">KMCLib</span></tt> suitable for your needs I strongly
+encourage you to consider any of the other available KMC codes before
+you decide to implement the method yourself.</p>
+<p>For those who like a GUI to work with, and who don&#8217;t mind
+using a fortran compiler for setting up and running models,
+there is the <a class="reference external" href="http://mhoffman.github.io/kmos/">kmos</a> code.</p>
+<p>The <a class="reference external" href="http://spparks.sandia.gov/">SPPARKS</a> code requires you to write some C++ code to implement your model
+but provides a good alternative for massively parallel KMC simulations.</p>
+<p>A list of other available codes is provided by the kmos authors <a class="reference external" href="https://kmos.readthedocs.org/en/latest/troubleshooting/faq.html">here</a>.</p>
+</div>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="index.html">KMCLib user&#8217;s guide</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="algorithm.html">Algorithm</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012 - 2014, Mikael Leetmaa.
+    </div>
+  </body>
+</html>

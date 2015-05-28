@@ -1,0 +1,126 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Algorithm &mdash; KMCLib 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="top" title="KMCLib 1.1 documentation" href="index.html" />
+    <link rel="next" title="Installation" href="install.html" />
+    <link rel="prev" title="Introduction" href="intro.html" /> 
+  </head>
+  <body>
+
+<div style="text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="_static/logo.png" border="0" alt="py4sci"/></a>
+</div>
+
+
+      <div class="header"><h1 class="heading"><a href="index.html">
+          <span>KMCLib 1.1 documentation</span></a></h1>
+        <h2 class="heading"><span>Algorithm</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="intro.html">Introduction</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="install.html">Installation</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="algorithm">
+<h1>Algorithm<a class="headerlink" href="#algorithm" title="Permalink to this headline">¶</a></h1>
+<p><tt class="xref py py-mod docutils literal"><span class="pre">KMCLib</span></tt> implements the VSSM or <em>n-fold</em> way algorithm
+<a class="reference internal" href="references.html#ref-1">[Ref.1]</a> for performing <em>lattice</em> KMC simulations. The algorithm in
+its most simple form starts with an initial configuration on a lattice
+and a description of all possible elementary processes in the
+system with their corresponding reaction rates.</p>
+<ul class="simple">
+<li>The processes are matched with the local geometry at each
+lattice site and for each process the list of sites where it is
+available (<em>i.e.</em> where it is possible to perform the process) is
+stored.</li>
+<li>The total possible rate for each process is calculated and a
+process to perform is chosen with probability proportional to its
+relative total rate.</li>
+<li>A site to perform the chosen process at is selected at random from
+the list of sites where the chosen process is available.</li>
+<li>Time is propagated by drawing the length of the next time step
+randomly from an exponentially
+decreasing time distribution with the exponent given by the total
+possible rate in the system.</li>
+</ul>
+<p>We have also made modifications to the algorithm to include the
+possibility to run simulations with custom rates that are
+calculated on-the-fly during the simulation. This important feature
+adds enormous flexibility compared to only using fixed rate
+processes.</p>
+<p>The two different ways to determine the process rates (at simulation start-up
+or during the simulation) can easily be combined. Some
+of the processes can get their rates updated during the simulation while
+other rates are given from the start of the simulation.
+The rate update framework is very flexible and allows
+the user to define the desired behavior via
+Python code. It is <em>e.g.</em> possible to couple the update of the process rates
+to global or local geometrical parameters, such that a
+temperature or pressure gradient can affect the local rates of
+diffusion processes differently at different sites, or that the
+process rates are being modified at sites in the
+vicinity of certain atom types or geometrical features that may arise
+during the simulation.</p>
+<p>The <a class="reference internal" href="usage.html#usage-examples"><em>Usage examples</em></a> demonstrate how to use the custom rate
+modifications, and  the algorithm is described in full detail in
+<a class="reference internal" href="references.html#ref-8">[Ref.8]</a> where we also show timings and scaling behavior of
+<tt class="xref py py-mod docutils literal"><span class="pre">KMCLib</span></tt>. Remember that you can
+<em>always</em> look at the source code directly to investigate the
+implementation.</p>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="intro.html">Introduction</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="install.html">Installation</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012 - 2014, Mikael Leetmaa.
+    </div>
+  </body>
+</html>

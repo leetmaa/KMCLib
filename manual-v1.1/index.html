@@ -1,0 +1,146 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>KMCLib user’s guide &mdash; KMCLib 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="top" title="KMCLib 1.1 documentation" href="#" />
+    <link rel="next" title="Introduction" href="intro.html" /> 
+  </head>
+  <body>
+
+<div style="text-align: left; padding: 10px 10px 15px 15px">
+<a href="#"><img src="_static/logo.png" border="0" alt="py4sci"/></a>
+</div>
+
+
+      <div class="header"><h1 class="heading"><a href="#">
+          <span>KMCLib 1.1 documentation</span></a></h1>
+        <h2 class="heading"><span>KMCLib user’s guide</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        <a class="uplink" href="#">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="intro.html">Introduction</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="kmclib-user-s-guide">
+<h1>KMCLib user&#8217;s guide<a class="headerlink" href="#kmclib-user-s-guide" title="Permalink to this headline">¶</a></h1>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#why-kmc">Why KMC?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="intro.html#why-kmclib">Why KMCLib?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="algorithm.html">Algorithm</a></li>
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="install.html#compiler">Compiler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#mpi">MPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#make-system">Make system</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#swig">SWIG</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#build-the-externals">Build the externals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#build-c-and-test-the-backend">Build C++ and test the backend</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.html#run-the-python-tests">Run the Python tests</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#one-dimensional-diffusion">One-dimensional diffusion</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#an-ising-spin-model-with-custom-rate-calculator">An Ising spin model with custom rate calculator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#three-dimensional-diffusion">Three-dimensional diffusion</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">KMCLib API</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.html#kmcconfiguration">KMCConfiguration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#kmcinteractions">KMCInteractions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#kmcprocess">KMCProcess</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#kmclocalconfiguration">KMCLocalConfiguration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#kmcunitcell">KMCUnitCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#kmclattice">KMCLattice</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#kmclatticemodel">KMCLatticeModel</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.html#kmccontrolparameters">KMCControlParameters</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="plugins.html">Plugin Interfaces</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="plugins.html#kmcratecalculatorplugin">KMCRateCalculatorPlugin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="plugins.html#kmcanalysisplugin">KMCAnalysisPlugin</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="analysis.html">Analysis</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#on-the-fly-mean-square-displacement-msd">On-the-fly mean square displacement (MSD)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#time-step-distribution">Time-step distribution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="analysis.html#your-contributions">Your contributions</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="non_api.html">Non-API code</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="non_api.html#module-KMCLib.Utilities.CoordinateUtilities">CoordinateUtilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="non_api.html#module-KMCLib.Utilities.CheckUtilities">CheckUtilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="non_api.html#module-KMCLib.Utilities.ConversionUtilities">ConversionUtilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="non_api.html#module-KMCLib.Utilities.SaveAndReadUtilities">SaveAndReadUtilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="non_api.html#module-KMCLib.Utilities.PrintUtilities">PrintUtilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="non_api.html#error">Error</a></li>
+<li class="toctree-l2"><a class="reference internal" href="non_api.html#trajectory">Trajectory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="non_api.html#latticetrajectory">LatticeTrajectory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="non_api.html#xyztrajectory">XYZTrajectory</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">About</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="about.html#legal">Legal</a></li>
+<li class="toctree-l2"><a class="reference internal" href="about.html#credit">Credit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="about.html#how-to-cite">How to cite?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="about.html#contact">Contact</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        <a class="uplink" href="#">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="intro.html">Introduction</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012 - 2014, Mikael Leetmaa.
+    </div>
+  </body>
+</html>

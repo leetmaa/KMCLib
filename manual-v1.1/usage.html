@@ -1,0 +1,708 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Usage examples &mdash; KMCLib 1.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/haiku.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/print.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/theme_extras.js"></script>
+    <link rel="author" title="About these documents" href="about.html" />
+    <link rel="top" title="KMCLib 1.1 documentation" href="index.html" />
+    <link rel="next" title="KMCLib API" href="api.html" />
+    <link rel="prev" title="Installation" href="install.html" /> 
+  </head>
+  <body>
+
+<div style="text-align: left; padding: 10px 10px 15px 15px">
+<a href="index.html"><img src="_static/logo.png" border="0" alt="py4sci"/></a>
+</div>
+
+
+      <div class="header"><h1 class="heading"><a href="index.html">
+          <span>KMCLib 1.1 documentation</span></a></h1>
+        <h2 class="heading"><span>Usage examples</span></h2>
+      </div>
+      <div class="topnav">
+      
+        <p>
+        «&#160;&#160;<a href="install.html">Installation</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="api.html">KMCLib API</a>&#160;&#160;»
+        </p>
+
+      </div>
+      <div class="content">
+        
+        
+  <div class="section" id="usage-examples">
+<span id="id1"></span><h1>Usage examples<a class="headerlink" href="#usage-examples" title="Permalink to this headline">¶</a></h1>
+<p>Perhaps the easiest way to get started with your own KMC modeling is
+to have a quick look at a few usage examples. We will take a look at
+three examples from the <tt class="xref py py-mod docutils literal"><span class="pre">KMCLib</span></tt> functionality tests,
+one-dimensional diffusion, the two-dimensional spin Ising model and
+three-dimensional diffusion.</p>
+<div class="section" id="one-dimensional-diffusion">
+<h2>One-dimensional diffusion<a class="headerlink" href="#one-dimensional-diffusion" title="Permalink to this headline">¶</a></h2>
+<p>We will here set-up and run a lattice KMC model of single particle
+Brownian motion in one dimension. We start with importing
+<tt class="xref py py-mod docutils literal"><span class="pre">numpy</span></tt> and everything
+we need from <tt class="xref py py-mod docutils literal"><span class="pre">KMCLib</span></tt>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">KMCLib</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+</pre></div>
+</div>
+<div class="section" id="lattice">
+<h3>Lattice<a class="headerlink" href="#lattice" title="Permalink to this headline">¶</a></h3>
+<p>We use a one-dimensional lattice periodic in the <em>a</em>-direction, with
+(10x1x1) repetitions of the primitive cell.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># An orthogonal unit cell with 5.2 Angstrom between lattice points in &#39;a&#39;.</span>
+<span class="n">unit_cell</span> <span class="o">=</span> <span class="n">KMCUnitCell</span><span class="p">(</span><span class="n">cell_vectors</span><span class="o">=</span><span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mf">5.2</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>
+                                                  <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">],</span>
+                                                  <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">]]),</span>
+                        <span class="n">basis_points</span><span class="o">=</span><span class="p">[[</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">]])</span>
+
+<span class="c"># The lattice with periodicity in the &#39;a&#39; direction.</span>
+<span class="n">lattice</span> <span class="o">=</span> <span class="n">KMCLattice</span><span class="p">(</span><span class="n">unit_cell</span><span class="o">=</span><span class="n">unit_cell</span><span class="p">,</span>
+                     <span class="n">repetitions</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
+                     <span class="n">periodic</span><span class="o">=</span><span class="p">(</span><span class="bp">True</span><span class="p">,</span><span class="bp">False</span><span class="p">,</span><span class="bp">False</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="initial-configuration">
+<h3>Initial configuration<a class="headerlink" href="#initial-configuration" title="Permalink to this headline">¶</a></h3>
+<p>The initial configuration is generated by combining the lattice with
+initial types. The length of the types list must exactly match the
+number of lattice points in the lattice.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Initial types. Nine &quot;A&quot; and one &quot;B&quot; type particle.</span>
+<span class="n">types</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;A&quot;</span><span class="p">]</span><span class="o">*</span><span class="mi">10</span>
+<span class="n">types</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;B&quot;</span>
+
+<span class="c"># Generate the configuration. With the lattice, types and possible types.</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">KMCConfiguration</span><span class="p">(</span><span class="n">lattice</span><span class="o">=</span><span class="n">lattice</span><span class="p">,</span>
+                          <span class="n">types</span><span class="o">=</span><span class="n">types</span><span class="p">,</span>
+                          <span class="n">possible_types</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="s">&quot;B&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="interactions">
+<h3>Interactions<a class="headerlink" href="#interactions" title="Permalink to this headline">¶</a></h3>
+<p>The interactions consists of two <a class="reference internal" href="api.html#KMCLib.KMCProcess" title="KMCLib.KMCProcess"><tt class="xref py py-class docutils literal"><span class="pre">KMCProcess</span></tt></a> objects, one
+representing a move to the left and one a move to the right.
+For simulating Brownian motion the rate constant must be the same for
+both processes, corresponding to equal probability of moving to the
+left and to the right. The <tt class="xref py py-obj docutils literal"><span class="pre">move_vectors</span></tt> parameter can be
+left out since it defaults to <a class="reference external" href="http://docs.python.org/library/constants.html#None" title="(in Python v2.7)"><tt class="xref py py-obj docutils literal"><span class="pre">None</span></tt></a>, but we include it here
+for completeness.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Setup a diffusion process to the left.</span>
+<span class="n">coordinates_p0</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],[</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]]</span>
+<span class="n">p0</span> <span class="o">=</span> <span class="n">KMCProcess</span><span class="p">(</span><span class="n">coordinates</span><span class="o">=</span><span class="n">coordinates_p0</span><span class="p">,</span>
+                <span class="n">elements_before</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;B&quot;</span><span class="p">,</span><span class="s">&quot;A&quot;</span><span class="p">],</span>
+                <span class="n">elements_after</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="s">&quot;B&quot;</span><span class="p">],</span>
+                <span class="n">move_vectors</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                <span class="n">basis_sites</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">rate_constant</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+
+<span class="c"># Setup a diffusion process to the right.</span>
+<span class="n">coordinates_p1</span> <span class="o">=</span> <span class="p">[[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]]</span>
+<span class="n">p1</span> <span class="o">=</span> <span class="n">KMCProcess</span><span class="p">(</span><span class="n">coordinates</span><span class="o">=</span><span class="n">coordinates_p1</span><span class="p">,</span>
+                <span class="n">elements_before</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;B&quot;</span><span class="p">,</span><span class="s">&quot;A&quot;</span><span class="p">],</span>
+                <span class="n">elements_after</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;A&quot;</span><span class="p">,</span><span class="s">&quot;B&quot;</span><span class="p">],</span>
+                <span class="n">move_vectors</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                <span class="n">basis_sites</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">rate_constant</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+
+<span class="c"># Construct the interactions object.</span>
+<span class="n">interactions</span> <span class="o">=</span> <span class="n">KMCInteractions</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="p">[</span><span class="n">p0</span><span class="p">,</span> <span class="n">p1</span><span class="p">],</span>
+                               <span class="n">implicit_wildcards</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="construct-the-model">
+<h3>Construct the model<a class="headerlink" href="#construct-the-model" title="Permalink to this headline">¶</a></h3>
+<p>The lattice KMC model is generated by putting together the
+configuration and the interactions.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Generate the KMC model to run.</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">KMCLatticeModel</span><span class="p">(</span><span class="n">configuration</span><span class="o">=</span><span class="n">config</span><span class="p">,</span>
+                        <span class="n">interactions</span><span class="o">=</span><span class="n">interactions</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="analysis">
+<h3>Analysis<a class="headerlink" href="#analysis" title="Permalink to this headline">¶</a></h3>
+<p>We want to study diffusion using mean square displacement
+analysis. This can conveniently be done on-the-fly during the
+simulation, by attaching an <a class="reference internal" href="analysis.html#KMCLib.OnTheFlyMSD" title="KMCLib.OnTheFlyMSD"><tt class="xref py py-class docutils literal"><span class="pre">OnTheFlyMSD</span></tt></a> object
+to the simulation. We use 200 history steps, 100 bins and a maximum
+time-lag of 2500.0 time units. If the rate constants are given in Hz
+the time-lag should be given i seconds.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Setup the mean square displacement analysis.</span>
+<span class="n">msd_analysis</span> <span class="o">=</span> <span class="n">OnTheFlyMSD</span><span class="p">(</span><span class="n">history_steps</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+                           <span class="n">n_bins</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                           <span class="n">t_max</span><span class="o">=</span><span class="mf">2500.0</span><span class="p">,</span>
+                           <span class="n">track_type</span><span class="o">=</span><span class="s">&quot;B&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The algorithm for the on-the-fly mean square displacement analysis in
+<tt class="xref py py-mod docutils literal"><span class="pre">KMCLib</span></tt> is described in detail in <a class="reference internal" href="references.html#ref-7">[Ref.7]</a>.</p>
+</div>
+<div class="section" id="run">
+<h3>Run<a class="headerlink" href="#run" title="Permalink to this headline">¶</a></h3>
+<p>To run the model we need to specify the control parameters for the
+simulation by constructing a
+<a class="reference internal" href="api.html#KMCLib.KMCControlParameters" title="KMCLib.KMCControlParameters"><tt class="xref py py-class docutils literal"><span class="pre">KMCControlParameters</span></tt></a> object with desired argument values.
+Giving <tt class="docutils literal"><span class="pre">seed=None</span></tt> is equivalent to not giving a seed
+value. If no seed is given the pseudo random number generator is
+seeded by the current time. For results to be exactly reproducible a
+specific seed value must be given. There is also the option here to
+choose which pseudo-random number generator to use. Not specifying
+any generator (as in this example) will give the default value,
+the Mersenne-Twister, as implemented in the C++11 standard library.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">control_parameters</span> <span class="o">=</span> <span class="n">KMCControlParameters</span><span class="p">(</span><span class="n">number_of_steps</span><span class="o">=</span><span class="mi">2500000</span><span class="p">,</span>
+                                          <span class="n">dump_interval</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span>
+                                          <span class="n">analysis_interval</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                                          <span class="n">seed</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The model is run by calling its <a class="reference internal" href="api.html#KMCLib.KMCLatticeModel.run" title="KMCLib.KMCLatticeModel.run"><tt class="xref py py-meth docutils literal"><span class="pre">run</span></tt></a>
+function with the control parameters. If a trajectory should be saved
+a file name must be specified with the <tt class="xref py py-obj docutils literal"><span class="pre">trajectory_filename</span></tt>
+parameter. The analysis objects to attach to the simulation are given
+in the list specified with the <tt class="xref py py-obj docutils literal"><span class="pre">analysis</span></tt> keyword. The
+analysis objects can be any of the built in analysis, or any
+user-defined analysis object inheriting from the
+<a class="reference internal" href="plugins.html#KMCLib.KMCAnalysisPlugin" title="KMCLib.KMCAnalysisPlugin"><tt class="xref py py-class docutils literal"><span class="pre">KMCAnalysisPlugin</span></tt></a> class.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Run the model.</span>
+<span class="n">model</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">control_parameters</span><span class="o">=</span><span class="n">control_parameters</span><span class="p">,</span>
+          <span class="n">trajectory_filename</span><span class="o">=</span><span class="s">&quot;traj.py&quot;</span><span class="p">,</span>
+          <span class="n">analysis</span><span class="o">=</span><span class="p">[</span><span class="n">msd_analysis</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="save-the-results-to-file">
+<h3>Save the results to file<a class="headerlink" href="#save-the-results-to-file" title="Permalink to this headline">¶</a></h3>
+<p>After the simulation has finished it can be convenient to save the
+results of the analysis to a file. All built-in analysis has a
+<tt class="xref py py-meth docutils literal"><span class="pre">printResults()</span></tt> function that can be used to save results to a file.
+In this example we save the data to a file named <tt class="docutils literal"><span class="pre">save.data</span></tt>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;save.data&#39;</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">msd_analysis</span><span class="o">.</span><span class="n">printResults</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now you can plot the results with your favorite plotting
+tool. Plotting the MSD with error bars should look like this.</p>
+<div class="figure align-center" style="width: 50%">
+<a class="reference internal image-reference" href="_images/msd_1D.png"><img alt="MSD for one-dimensional example." src="_images/msd_1D.png" style="width: 552.0px; height: 378.0px;" /></a>
+<p class="caption">Resulting mean square displacement from the one-dimensional diffusion
+example. The data file is self explanatory. Column 1 holds
+the time-lag, column 2 holds the MSD in the <em>x</em>-direction and column
+9 holds the estimated standard deviation in <em>x</em>.</p>
+</div>
+</div>
+</div>
+<div class="section" id="an-ising-spin-model-with-custom-rate-calculator">
+<h2>An Ising spin model with custom rate calculator<a class="headerlink" href="#an-ising-spin-model-with-custom-rate-calculator" title="Permalink to this headline">¶</a></h2>
+<p>One of the first KMC publications presented the method for studying
+Ising spin systems <a class="reference internal" href="references.html#ref-2">[Ref.2]</a>. We will here look at an implementation
+of an Ising spin model similar to that of <a class="reference internal" href="references.html#ref-2">[Ref.2]</a> using a custom rate
+calculator in <tt class="xref py py-mod docutils literal"><span class="pre">KMCLib</span></tt>.</p>
+<div class="section" id="id5">
+<h3>Initial configuration<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>We want to use a two-dimensional lattice with 10.000 (100x100)
+lattice sites, with half the sites occupied by &#8220;U&#8221; types and half by
+&#8220;D&#8221; type. To generate such an initial structure we use a simple script
+and store it in a file named <tt class="docutils literal"><span class="pre">generate_config.py</span></tt>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">KMCLib</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="c"># Define the unit cell.</span>
+<span class="n">cell_vectors</span> <span class="o">=</span> <span class="p">[[</span>   <span class="mf">1.000000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">],</span>
+                <span class="p">[</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>   <span class="mf">1.000000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">],</span>
+                <span class="p">[</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>   <span class="mf">1.000000e+00</span><span class="p">]]</span>
+
+<span class="n">basis_points</span> <span class="o">=</span> <span class="p">[[</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">]]</span>
+
+<span class="n">unit_cell</span> <span class="o">=</span> <span class="n">KMCUnitCell</span><span class="p">(</span><span class="n">cell_vectors</span><span class="o">=</span><span class="n">cell_vectors</span><span class="p">,</span>
+                        <span class="n">basis_points</span><span class="o">=</span><span class="n">basis_points</span><span class="p">)</span>
+
+<span class="c"># Define the lattice.</span>
+<span class="n">lattice</span> <span class="o">=</span> <span class="n">KMCLattice</span><span class="p">(</span><span class="n">unit_cell</span><span class="o">=</span><span class="n">unit_cell</span><span class="p">,</span>
+                     <span class="n">repetitions</span><span class="o">=</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span>
+                     <span class="n">periodic</span><span class="o">=</span><span class="p">(</span><span class="bp">True</span><span class="p">,</span> <span class="bp">True</span><span class="p">,</span> <span class="bp">False</span><span class="p">))</span>
+
+<span class="c"># Generate the initial types.</span>
+<span class="n">types</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;U&#39;</span><span class="p">]</span><span class="o">*</span><span class="mi">10000</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5000</span><span class="p">):</span>
+    <span class="c"># find a site which is not yet occupied by a &quot;D&quot; type.</span>
+    <span class="n">pos</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span><span class="o">*</span><span class="mi">10000</span><span class="p">)</span>
+    <span class="k">while</span> <span class="p">(</span><span class="n">types</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span> <span class="o">==</span> <span class="s">&quot;D&quot;</span><span class="p">):</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">()</span><span class="o">*</span><span class="mi">10000</span><span class="p">)</span>
+    <span class="c"># Set the type.</span>
+    <span class="n">types</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;D&quot;</span>
+
+<span class="c"># Setup the configuration.</span>
+<span class="n">configuration</span> <span class="o">=</span> <span class="n">KMCConfiguration</span><span class="p">(</span><span class="n">lattice</span><span class="o">=</span><span class="n">lattice</span><span class="p">,</span>
+                                 <span class="n">types</span><span class="o">=</span><span class="n">types</span><span class="p">,</span>
+                                 <span class="n">possible_types</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;U&quot;</span><span class="p">,</span><span class="s">&quot;D&quot;</span><span class="p">])</span>
+
+<span class="c"># Use the _script() function to get a script that can generate the configuration.</span>
+<span class="k">print</span> <span class="s">&quot;from KMCLib import *&quot;</span>
+<span class="k">print</span> <span class="n">configuration</span><span class="o">.</span><span class="n">_script</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>We run the above script and save the output in a file named
+<tt class="docutils literal"><span class="pre">config.py</span></tt>.</p>
+<div class="highlight-python"><pre>python generate_config.py &gt; config.py</pre>
+</div>
+<p>Storing the initial configuration in a separate script is not
+necessary here, but we do it to later demonstrate the convenient ability to
+read in a configuration from a script.</p>
+</div>
+<div class="section" id="id6">
+<h3>Interactions<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<p>We will implement the Ising spin model using a <em>custom rate
+calculator</em> to describe the interactions. But all elementary
+processes, i.e. <em>what can happen</em> in the simulation, must still be
+described using the <a class="reference internal" href="api.html#KMCLib.KMCProcess" title="KMCLib.KMCProcess"><tt class="xref py py-class docutils literal"><span class="pre">KMCProcess</span></tt></a> class. If we take care of
+the specific rates using a <em>custom rate calculator</em> we can set all
+rate constants to 1.0 here. They will be modified later.</p>
+<p>There are two elementary processes in the system, flipping of &#8220;D&#8221; to
+&#8220;U&#8221; and flipping of &#8220;U&#8221; to &#8220;D&#8221;. We store this script in a file called
+<tt class="docutils literal"><span class="pre">interactions.py</span></tt>. Again, this is not strictly necessary, but a way
+to demonstrate the feature to load also the interactions from a script.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">KMCLib</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">coordinates</span> <span class="o">=</span> <span class="p">[[</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">]]</span>
+
+<span class="c"># Flip &#39;U&#39; to &#39;D&#39;.</span>
+<span class="n">process_0</span> <span class="o">=</span> <span class="n">KMCProcess</span><span class="p">(</span><span class="n">coordinates</span><span class="o">=</span><span class="n">coordinates</span><span class="p">,</span>
+                       <span class="n">elements_before</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;U&#39;</span><span class="p">],</span>
+                       <span class="n">elements_after</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;D&#39;</span><span class="p">],</span>
+                       <span class="n">basis_sites</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                       <span class="n">rate_constant</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+
+<span class="c"># Flip &#39;D&#39; to &#39;U&#39;.</span>
+<span class="n">process_1</span> <span class="o">=</span> <span class="n">KMCProcess</span><span class="p">(</span><span class="n">coordinates</span><span class="o">=</span><span class="n">coordinates</span><span class="p">,</span>
+                       <span class="n">elements_before</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;D&#39;</span><span class="p">],</span>
+                       <span class="n">elements_after</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;U&#39;</span><span class="p">],</span>
+                       <span class="n">basis_sites</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                       <span class="n">rate_constant</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+
+<span class="c"># Create the interactions object.</span>
+<span class="n">interactions</span> <span class="o">=</span> <span class="n">KMCInteractions</span><span class="p">(</span><span class="n">processes</span><span class="o">=</span><span class="p">[</span><span class="n">process_0</span><span class="p">,</span> <span class="n">process_1</span><span class="p">],</span>
+                               <span class="n">implicit_wildcards</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="custom-rate-calculator">
+<h3>Custom rate calculator<a class="headerlink" href="#custom-rate-calculator" title="Permalink to this headline">¶</a></h3>
+<p>The Hamiltonian of the Ising spin system we want to implement relates
+the energy of a spin configuration at a site with the spin of
+neighboring sites. The energy difference of flipping a &#8220;U&#8221; site to &#8220;D&#8221;
+is given by the number of &#8220;U&#8221; neighbors minus the number of &#8220;D&#8221;
+neighbors, while the opposite holds for the &#8220;D&#8221; to &#8220;U&#8221; flip. In
+accordance with <a class="reference internal" href="references.html#ref-2">[Ref.2]</a> the rate associated with a flip is given by</p>
+<div class="math">
+<p><img src="_images/math/25cd3156db54316e41f64148e43616b33301df0e.png" alt="\min(1.0, \exp(-\Delta E)"/></p>
+</div><p>Where <img class="math" src="_images/math/b255ecfecac2fe4200fabb2d0338b8aeaeaf97ac.png" alt="\Delta E"/> is the flipping energy in units of <img class="math" src="_images/math/5ce868f3b76218cf762cff5430141c8a31ba3128.png" alt="k_B T/J"/>.</p>
+<p>Our <em>custom rate calculator</em> must inherit from the
+<a class="reference internal" href="plugins.html#KMCLib.KMCRateCalculatorPlugin" title="KMCLib.KMCRateCalculatorPlugin"><tt class="xref py py-class docutils literal"><span class="pre">KMCRateCalculatorPlugin</span></tt></a> class. We also have to overload the
+<a class="reference internal" href="plugins.html#KMCLib.KMCRateCalculatorPlugin.rate" title="KMCLib.KMCRateCalculatorPlugin.rate"><tt class="xref py py-meth docutils literal"><span class="pre">rate</span></tt></a> method with our own
+custom function for the rate criterion. Finally we want to overload the
+<a class="reference internal" href="plugins.html#KMCLib.KMCRateCalculatorPlugin.cutoff" title="KMCLib.KMCRateCalculatorPlugin.cutoff"><tt class="xref py py-meth docutils literal"><span class="pre">cutoff</span></tt></a> function of the base
+class to make sure we are looking at the first shell of nearest neighbors.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">KMCLib</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">numpy</span>
+
+<span class="k">class</span> <span class="nc">CustomRateCalculator</span><span class="p">(</span><span class="n">KMCRateCalculatorPlugin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Class for defining the custom rates function for the KMCLib paper. &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geometry</span><span class="p">,</span> <span class="n">elements_before</span><span class="p">,</span> <span class="n">elements_after</span><span class="p">,</span> <span class="n">rate_constant</span><span class="p">,</span> <span class="n">process_number</span><span class="p">,</span> <span class="n">coordinate</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Overloaded base class API function &quot;&quot;&quot;</span>
+        <span class="n">diff</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+        <span class="c"># Get the number of U and D neighbours.</span>
+        <span class="n">u_neighbours</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span> <span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="p">[</span><span class="n">elements_before</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">elements_before</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">elements_before</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">elements_before</span><span class="p">[</span><span class="mi">4</span><span class="p">]]</span> <span class="k">if</span> <span class="n">e</span> <span class="o">==</span> <span class="s">&quot;U&quot;</span><span class="p">])</span>
+        <span class="n">d_neighbours</span> <span class="o">=</span> <span class="nb">len</span><span class="p">([</span> <span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="p">[</span><span class="n">elements_before</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">elements_before</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">elements_before</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">elements_before</span><span class="p">[</span><span class="mi">4</span><span class="p">]]</span> <span class="k">if</span> <span class="n">e</span> <span class="o">==</span> <span class="s">&quot;D&quot;</span><span class="p">])</span>
+
+        <span class="c"># Flipping U-&gt;D</span>
+        <span class="k">if</span> <span class="n">process_number</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c"># D neighbours count as negative, U neighbours as positive.</span>
+            <span class="n">diff</span> <span class="o">=</span> <span class="n">u_neighbours</span> <span class="o">-</span> <span class="n">d_neighbours</span>
+
+        <span class="c"># Flipping D-&gt;U</span>
+        <span class="k">if</span> <span class="n">process_number</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c"># U neighbours count as negative, D neighbours as positive.</span>
+            <span class="n">diff</span> <span class="o">=</span> <span class="n">d_neighbours</span> <span class="o">-</span> <span class="n">u_neighbours</span>
+
+        <span class="n">J</span>   <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="n">kbT</span> <span class="o">=</span> <span class="mf">1.0</span>
+
+        <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">numpy</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">diff</span><span class="o">*</span><span class="n">J</span><span class="o">/</span><span class="n">kbT</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">cutoff</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Determines the cutoff for this custom model &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mf">1.0</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="generate-the-model">
+<h3>Generate the model<a class="headerlink" href="#generate-the-model" title="Permalink to this headline">¶</a></h3>
+<p>We can now put our model together. Start by importing what we need
+from <tt class="xref py py-mod docutils literal"><span class="pre">KMCLib</span></tt>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">KMCLib</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+<p>We can now load the configuration from the <tt class="docutils literal"><span class="pre">config.py</span></tt> file we have
+saved, and we load the interactions from <tt class="docutils literal"><span class="pre">interactions.py</span></tt>.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Load the configuration and interactions.</span>
+<span class="n">configuration</span> <span class="o">=</span> <span class="n">KMCConfigurationFromScript</span><span class="p">(</span><span class="s">&quot;config.py&quot;</span><span class="p">)</span>
+<span class="n">interactions</span>  <span class="o">=</span> <span class="n">KMCInteractionsFromScript</span><span class="p">(</span><span class="s">&quot;interactions.py&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The interactions must be updated with our custom rate calculator. We
+do this either by defining the custom rate calculator class directly
+in our script, or by defining it in another script and loading it like
+a Python module. Adding the custom rate calculator to the interactions
+object is done using its
+<a class="reference internal" href="api.html#KMCLib.KMCInteractions.setRateCalculator" title="KMCLib.KMCInteractions.setRateCalculator"><tt class="xref py py-meth docutils literal"><span class="pre">setRateCalculator</span></tt></a> method.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Set the rate calculator.</span>
+<span class="n">interactions</span><span class="o">.</span><span class="n">setRateCalculator</span><span class="p">(</span><span class="n">rate_calculator</span><span class="o">=</span><span class="n">CustomRateCalculator</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We finally put the model together by combining the configuration and
+the interactions.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Create the model.</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">KMCLatticeModel</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">interactions</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="run-the-model">
+<h3>Run the model<a class="headerlink" href="#run-the-model" title="Permalink to this headline">¶</a></h3>
+<p>To run the model we use the <a class="reference internal" href="api.html#KMCLib.KMCControlParameters" title="KMCLib.KMCControlParameters"><tt class="xref py py-class docutils literal"><span class="pre">KMCControlParameters</span></tt></a> class to
+define the parameters and we run the model with a specified trajectory
+name to investigate later.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Define the parameters.</span>
+<span class="n">control_parameters</span> <span class="o">=</span> <span class="n">KMCControlParameters</span><span class="p">(</span><span class="n">number_of_steps</span><span class="o">=</span><span class="mi">1000000</span><span class="p">,</span>
+                                          <span class="n">dump_interval</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+
+<span class="c"># Run the simulation - save trajectory to &#39;ising_traj.py&#39;</span>
+<span class="n">model</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">control_parameters</span><span class="p">,</span> <span class="n">trajectory_filename</span><span class="o">=</span><span class="s">&quot;ising_traj.py&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We finally save the whole model in a script named <tt class="docutils literal"><span class="pre">model.py</span></tt> and
+execute it with python.</p>
+<div class="highlight-python"><pre>python model.py</pre>
+</div>
+</div>
+<div class="section" id="check-the-results">
+<h3>Check the results<a class="headerlink" href="#check-the-results" title="Permalink to this headline">¶</a></h3>
+<p>The Ising model we have implemented is below the critical
+temperature. Visualizing the structure along the trajectory should,
+since we started from a random configuration, show a transition from
+random to fully ordered spins. This figures illustrates the expected
+behavior. Note that the exact details of the figure depends on the
+seed value given to the pseudo random number generator. In this example
+no seed was explicitly given and the default of taking the
+current time as seed was therefore used. Due to the stochastic nature of the
+algorithm and the simulated process the exact images as shown below can differ
+significantly from the once shown here for different seed values,
+however the <em>trend</em> in going from a disordered to an ordered structure
+should be the same.</p>
+<div class="figure align-center" style="width: 70%">
+<a class="reference internal image-reference" href="_images/ising.png"><img alt="Snapshots from the Ising model simulation along the trajectory." src="_images/ising.png" style="width: 855.6px; height: 244.8px;" /></a>
+<p class="caption">Snapshots from the Ising model KMC simulation. Since the
+temperature is below the critical point we observe the transition
+from the initially random to almost completely ordered spins.</p>
+</div>
+</div>
+<div class="section" id="a-note-on-performance">
+<h3>A note on performance<a class="headerlink" href="#a-note-on-performance" title="Permalink to this headline">¶</a></h3>
+<p>The Ising model above was implemented using the <em>custom rate
+calculator</em>. But the number of possible interactions in this system
+is limited to 32 unique processes.
+It is therefor not too hard to implement the model
+using fixed rate processes instead. i.e., with no <em>custom rate
+calculator</em> to modify the rates during the simulation.
+Running this Ising model for 1000000 steps with custom rates takes
+close to four minutes on my laptop. Running a completely equivalent
+model implemented using fixed rates only takes a minute. Since the
+fixed rates implementation never have to go out to Python during the
+rate evaluation it outperforms the custom rates implementation in this
+case. If the interaction range would be larger the number of fixed
+rate processes to include would grow and at some point the custom rate
+implementation would be both faster and easier to implement.
+Any model that doesn&#8217;t change during the simulation can
+theoretically be implemented using processes with fixed rates,
+but using the <em>custom rate calculator</em> provides a much
+simpler solution in many cases.</p>
+</div>
+</div>
+<div class="section" id="three-dimensional-diffusion">
+<h2>Three-dimensional diffusion<a class="headerlink" href="#three-dimensional-diffusion" title="Permalink to this headline">¶</a></h2>
+<p>We will finally demonstrate how you can use <tt class="xref py py-mod docutils literal"><span class="pre">KMCLib</span></tt> to setup and run a
+KMC model of a 3D bulk diffusion system. The example we show here is
+similar to the system used for timing in <a class="reference internal" href="references.html#ref-8">[Ref.8]</a>, and is taken from
+the functionality tests.</p>
+<div class="section" id="id9">
+<h3>Initial configuration<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<p>We create an initial configuration of a fluorite structured metal oxide, with oxygen
+atoms, metal atoms, dopant atoms, vacancies in the oxygen sub-lattice and empty
+metal sites. We will only simulate diffusion on the oxygen sub-lattice
+and for convenience we chose to work with the primitive cell
+of the oxygen sub-lattice which causes half of the metal sites to be
+empty. Set up the lattice. We set the periodicity to <tt class="docutils literal"><span class="pre">False</span></tt> in the
+x-direction to produce a more interesting MSD curve to analyze later.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Unit cell</span>
+<span class="n">cell_vectors</span> <span class="o">=</span> <span class="p">[[</span>   <span class="mf">2.782000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">],</span>
+                <span class="p">[</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>   <span class="mf">2.782000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">],</span>
+                <span class="p">[</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>   <span class="mf">2.782000e+00</span><span class="p">]]</span>
+
+<span class="n">basis_points</span> <span class="o">=</span> <span class="p">[[</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">],</span>
+                <span class="p">[</span>   <span class="mf">5.000000e-01</span><span class="p">,</span>   <span class="mf">5.000000e-01</span><span class="p">,</span>   <span class="mf">5.000000e-01</span><span class="p">]]</span>
+
+<span class="n">unit_cell</span> <span class="o">=</span> <span class="n">KMCUnitCell</span><span class="p">(</span>
+    <span class="n">cell_vectors</span><span class="o">=</span><span class="n">cell_vectors</span><span class="p">,</span>
+    <span class="n">basis_points</span><span class="o">=</span><span class="n">basis_points</span><span class="p">)</span>
+
+<span class="c"># Lattice</span>
+<span class="n">lattice</span> <span class="o">=</span> <span class="n">KMCLattice</span><span class="p">(</span>
+    <span class="n">unit_cell</span><span class="o">=</span><span class="n">unit_cell</span><span class="p">,</span>
+    <span class="n">repetitions</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">20</span><span class="p">),</span>
+    <span class="n">periodic</span><span class="o">=</span><span class="p">(</span><span class="bp">False</span><span class="p">,</span> <span class="bp">True</span><span class="p">,</span> <span class="bp">True</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Populate the lattice with oxygen <tt class="docutils literal"><span class="pre">&quot;O&quot;</span></tt> or vacancy <tt class="docutils literal"><span class="pre">&quot;V&quot;</span></tt> atoms in all
+(0,0,0) positions, and fill half the (0.5, 0.5, 0.5) sites with metal
+<tt class="docutils literal"><span class="pre">&quot;M&quot;</span></tt> and half with empty <tt class="docutils literal"><span class="pre">&quot;E&quot;</span></tt> sites.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Loop over all cells, add the oxygen and metal positions.</span>
+<span class="n">size</span>  <span class="o">=</span> <span class="mi">20</span>
+<span class="n">types</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">k</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="n">j</span><span class="p">)</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">types</span> <span class="o">+=</span> <span class="p">[</span><span class="s">&quot;O&quot;</span><span class="p">,</span><span class="s">&quot;M&quot;</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">types</span> <span class="o">+=</span> <span class="p">[</span><span class="s">&quot;O&quot;</span><span class="p">,</span><span class="s">&quot;E&quot;</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">i</span><span class="o">+</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">%</span><span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">types</span> <span class="o">+=</span> <span class="p">[</span><span class="s">&quot;O&quot;</span><span class="p">,</span><span class="s">&quot;M&quot;</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">types</span> <span class="o">+=</span> <span class="p">[</span><span class="s">&quot;O&quot;</span><span class="p">,</span><span class="s">&quot;E&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>We now add vacancies in the oxygen sub-lattice, and dopants in the
+metal sites.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Add 3200 randomly positioned vacancies in the oxygen sub-lattice.</span>
+<span class="n">n_vacancies</span> <span class="o">=</span> <span class="mi">3200</span>
+<span class="n">defects</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">while</span> <span class="p">(</span><span class="n">defects</span> <span class="o">&lt;</span> <span class="n">n_vacancies</span> <span class="p">):</span>
+
+    <span class="n">position</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">)</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">types</span><span class="p">))</span>
+
+    <span class="c"># Make sure to replace oxygen sites.</span>
+    <span class="k">while</span> <span class="p">(</span><span class="n">types</span><span class="p">[</span><span class="n">position</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&quot;O&quot;</span><span class="p">):</span>
+        <span class="n">position</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">)</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">types</span><span class="p">))</span>
+
+    <span class="c"># Replace with a vacancy.</span>
+    <span class="n">types</span><span class="p">[</span><span class="n">position</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;V&quot;</span>
+    <span class="n">defects</span> <span class="o">+=</span> <span class="mi">1</span>
+
+<span class="c"># Add 1600 dopants in the metal sites.</span>
+<span class="n">n_dopants</span> <span class="o">=</span> <span class="mi">1600</span>
+<span class="n">dopants</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">while</span> <span class="p">(</span><span class="n">dopants</span> <span class="o">&lt;</span> <span class="n">n_dopants</span> <span class="p">):</span>
+
+    <span class="n">position</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">)</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">types</span><span class="p">))</span>
+
+    <span class="c"># Make sure to replace metal sites.</span>
+    <span class="k">while</span> <span class="p">(</span><span class="n">types</span><span class="p">[</span><span class="n">position</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&quot;M&quot;</span><span class="p">):</span>
+        <span class="n">position</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">1.0</span><span class="p">)</span><span class="o">*</span><span class="nb">len</span><span class="p">(</span><span class="n">types</span><span class="p">))</span>
+
+    <span class="c"># Replace with a dopant.</span>
+    <span class="n">types</span><span class="p">[</span><span class="n">position</span><span class="p">]</span> <span class="o">=</span> <span class="s">&quot;D&quot;</span>
+    <span class="n">dopants</span> <span class="o">+=</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>Put the lattice and types together to generate the initial
+configuration.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">config</span> <span class="o">=</span> <span class="n">KMCConfiguration</span><span class="p">(</span><span class="n">lattice</span><span class="o">=</span><span class="n">lattice</span><span class="p">,</span>
+                          <span class="n">types</span><span class="o">=</span><span class="n">types</span><span class="p">,</span>
+                          <span class="n">possible_types</span><span class="o">=</span><span class="p">[</span><span class="s">&quot;E&quot;</span><span class="p">,</span><span class="s">&quot;M&quot;</span><span class="p">,</span><span class="s">&quot;D&quot;</span><span class="p">,</span><span class="s">&quot;O&quot;</span><span class="p">,</span><span class="s">&quot;V&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id10">
+<h3>Interactions<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<p>A realistic simulation of this kind of complex 3D system typically
+includes many interactions and is often best described using a custom
+rate calculator. To make this example simple we will only have six
+processes, corresponding to an oxygen-vacancy jump in the positive and
+negative direction of the Cartesian directions.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Oxygen - Vacancy jump.</span>
+<span class="n">elements_before</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;V&#39;</span><span class="p">,</span> <span class="s">&#39;O&#39;</span><span class="p">]</span>
+<span class="n">elements_after</span>  <span class="o">=</span> <span class="p">[</span><span class="s">&#39;O&#39;</span><span class="p">,</span> <span class="s">&#39;V&#39;</span><span class="p">]</span>
+
+<span class="c"># Only on Oxygen sites.</span>
+<span class="n">basis_sites</span>     <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c"># Flow down in z.</span>
+<span class="n">rate_constant_up</span>     <span class="o">=</span> <span class="mf">0.9</span>
+<span class="n">rate_constant_down</span>   <span class="o">=</span> <span class="mf">1.1</span>
+
+<span class="c"># All other rates.</span>
+<span class="n">rate_constant</span>        <span class="o">=</span> <span class="mf">1.0</span>
+
+<span class="c"># Fill the list of processes.</span>
+<span class="n">processes</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="c"># Right.</span>
+<span class="n">coordinates</span> <span class="o">=</span> <span class="p">[[</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">],</span>
+               <span class="p">[</span>   <span class="mf">1.000000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">]]</span>
+<span class="n">processes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">KMCProcess</span><span class="p">(</span><span class="n">coordinates</span><span class="o">=</span><span class="n">coordinates</span><span class="p">,</span>
+                             <span class="n">elements_before</span><span class="o">=</span><span class="n">elements_before</span><span class="p">,</span>
+                             <span class="n">elements_after</span><span class="o">=</span><span class="n">elements_after</span><span class="p">,</span>
+                             <span class="n">basis_sites</span><span class="o">=</span><span class="n">basis_sites</span><span class="p">,</span>
+                             <span class="n">rate_constant</span><span class="o">=</span><span class="n">rate_constant</span><span class="p">)</span> <span class="p">)</span>
+
+<span class="c"># Left.</span>
+<span class="n">coordinates</span> <span class="o">=</span> <span class="p">[[</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">],</span>
+               <span class="p">[</span>  <span class="o">-</span><span class="mf">1.000000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">]]</span>
+<span class="n">processes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">KMCProcess</span><span class="p">(</span><span class="n">coordinates</span><span class="o">=</span><span class="n">coordinates</span><span class="p">,</span>
+                             <span class="n">elements_before</span><span class="o">=</span><span class="n">elements_before</span><span class="p">,</span>
+                             <span class="n">elements_after</span><span class="o">=</span><span class="n">elements_after</span><span class="p">,</span>
+                             <span class="n">basis_sites</span><span class="o">=</span><span class="n">basis_sites</span><span class="p">,</span>
+                             <span class="n">rate_constant</span><span class="o">=</span><span class="n">rate_constant</span><span class="p">)</span> <span class="p">)</span>
+
+<span class="c"># Forward.</span>
+<span class="n">coordinates</span> <span class="o">=</span> <span class="p">[[</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">],</span>
+               <span class="p">[</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>   <span class="mf">1.000000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">]]</span>
+<span class="n">processes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">KMCProcess</span><span class="p">(</span><span class="n">coordinates</span><span class="o">=</span><span class="n">coordinates</span><span class="p">,</span>
+                             <span class="n">elements_before</span><span class="o">=</span><span class="n">elements_before</span><span class="p">,</span>
+                             <span class="n">elements_after</span><span class="o">=</span><span class="n">elements_after</span><span class="p">,</span>
+                             <span class="n">basis_sites</span><span class="o">=</span><span class="n">basis_sites</span><span class="p">,</span>
+                             <span class="n">rate_constant</span><span class="o">=</span><span class="n">rate_constant</span><span class="p">)</span> <span class="p">)</span>
+
+<span class="c"># Back.</span>
+<span class="n">coordinates</span> <span class="o">=</span> <span class="p">[[</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">],</span>
+               <span class="p">[</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>  <span class="o">-</span><span class="mf">1.000000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">]]</span>
+<span class="n">processes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">KMCProcess</span><span class="p">(</span><span class="n">coordinates</span><span class="o">=</span><span class="n">coordinates</span><span class="p">,</span>
+                             <span class="n">elements_before</span><span class="o">=</span><span class="n">elements_before</span><span class="p">,</span>
+                             <span class="n">elements_after</span><span class="o">=</span><span class="n">elements_after</span><span class="p">,</span>
+                             <span class="n">basis_sites</span><span class="o">=</span><span class="n">basis_sites</span><span class="p">,</span>
+                             <span class="n">rate_constant</span><span class="o">=</span><span class="n">rate_constant</span><span class="p">)</span> <span class="p">)</span>
+
+<span class="c"># Up.</span>
+<span class="n">coordinates</span> <span class="o">=</span> <span class="p">[[</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">],</span>
+               <span class="p">[</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>   <span class="mf">1.000000e+00</span><span class="p">]]</span>
+<span class="n">processes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">KMCProcess</span><span class="p">(</span><span class="n">coordinates</span><span class="o">=</span><span class="n">coordinates</span><span class="p">,</span>
+                             <span class="n">elements_before</span><span class="o">=</span><span class="n">elements_before</span><span class="p">,</span>
+                             <span class="n">elements_after</span><span class="o">=</span><span class="n">elements_after</span><span class="p">,</span>
+                             <span class="n">basis_sites</span><span class="o">=</span><span class="n">basis_sites</span><span class="p">,</span>
+                             <span class="n">rate_constant</span><span class="o">=</span><span class="n">rate_constant_up</span><span class="p">)</span> <span class="p">)</span>
+
+<span class="c"># Down.</span>
+<span class="n">coordinates</span> <span class="o">=</span> <span class="p">[[</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">],</span>
+               <span class="p">[</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>   <span class="mf">0.000000e+00</span><span class="p">,</span>  <span class="o">-</span><span class="mf">1.000000e+00</span><span class="p">]]</span>
+<span class="n">processes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">KMCProcess</span><span class="p">(</span><span class="n">coordinates</span><span class="o">=</span><span class="n">coordinates</span><span class="p">,</span>
+                             <span class="n">elements_before</span><span class="o">=</span><span class="n">elements_before</span><span class="p">,</span>
+                             <span class="n">elements_after</span><span class="o">=</span><span class="n">elements_after</span><span class="p">,</span>
+                             <span class="n">basis_sites</span><span class="o">=</span><span class="n">basis_sites</span><span class="p">,</span>
+                             <span class="n">rate_constant</span><span class="o">=</span><span class="n">rate_constant_down</span><span class="p">)</span> <span class="p">)</span>
+
+<span class="c"># The final interactions object.</span>
+<span class="n">interactions</span> <span class="o">=</span> <span class="n">KMCInteractions</span><span class="p">(</span>
+    <span class="n">processes</span><span class="o">=</span><span class="n">processes</span><span class="p">,</span>
+    <span class="n">implicit_wildcards</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>We have used different rate constants in the positive and negative
+z-directions to create a flow of diffusing particles along z. We do
+this to despite the simplicity of this toy model show different
+diffusion behavior in x, y and z.</p>
+</div>
+<div class="section" id="run-with-msd-analysis">
+<h3>Run with MSD analysis<a class="headerlink" href="#run-with-msd-analysis" title="Permalink to this headline">¶</a></h3>
+<p>Setup the MSD analysis to track vacancy diffusion.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">msd_analysis</span> <span class="o">=</span> <span class="n">OnTheFlyMSD</span><span class="p">(</span><span class="n">history_steps</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
+                           <span class="n">n_bins</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                           <span class="n">t_max</span><span class="o">=</span><span class="mf">100.0</span><span class="p">,</span>
+                           <span class="n">track_type</span><span class="o">=</span><span class="s">&quot;V&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Create and run the model.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># Run the model.</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">KMCLatticeModel</span><span class="p">(</span><span class="n">configuration</span><span class="p">,</span> <span class="n">interactions</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">control_parameters</span><span class="p">,</span>
+          <span class="n">trajectory_filename</span><span class="o">=</span><span class="s">&quot;traj.py&quot;</span><span class="p">,</span>
+          <span class="n">analysis</span><span class="o">=</span><span class="p">[</span><span class="n">msd_analysis</span><span class="p">])</span>
+
+<span class="c"># Save the analysis data to a file.</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">&#39;msd.data&#39;</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">msd_analysis</span><span class="o">.</span><span class="n">printResults</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The file <tt class="docutils literal"><span class="pre">msd.data</span></tt> now contains the MSD data of the
+simulation. Plotting the MSD with errors in the x, y and z directions
+separately shows the expected behavior with confined motion in x
+(since we didn&#8217;t use periodicity in x), Brownian motion in y, and flow
+in the z direction.</p>
+<div class="figure align-center" style="width: 70%">
+<a class="reference internal image-reference" href="_images/MSD_3D.png"><img alt="MSD in the x, y and z directions." src="_images/MSD_3D.png" style="width: 786.0px; height: 224.4px;" /></a>
+<p class="caption">Mean square displacement (MSD) curves with estimated errors for the 3D diffusion
+model. The MSD in the x direction indicates confined dynamics,
+caused by not using periodic boundary condition in the x
+direction. The MSD in the y direction is linear indicating Brownian
+motion, caused by equal rates in the positive and negative
+directions and a sufficiently low concentration of diffusing
+particles. The MSD in the z direction grows quadratically
+indicative of motion with flow, caused by using asymmetric rate
+constants in the positive and negative directions.</p>
+</div>
+</div>
+</div>
+</div>
+
+
+      </div>
+      <div class="bottomnav">
+      
+        <p>
+        «&#160;&#160;<a href="install.html">Installation</a>
+        &#160;&#160;::&#160;&#160;
+        <a class="uplink" href="index.html">Contents</a>
+        &#160;&#160;::&#160;&#160;
+        <a href="api.html">KMCLib API</a>&#160;&#160;»
+        </p>
+
+      </div>
+
+    <div class="footer">
+        &copy; Copyright 2012 - 2014, Mikael Leetmaa.
+    </div>
+  </body>
+</html>
