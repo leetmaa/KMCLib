@@ -6,7 +6,7 @@
     <title>KMCLib by leetmaa</title>
 
     <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <link rel="stylesheet" href="stylesheets/github-dark.css">
     <script src="javascripts/scale.fix.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
@@ -28,13 +28,14 @@
       </header>
       <section>
         <h2>
-<a name="kmclib---a-general-framework-for-lattice-kinetic-monte-carlo-kmc-simulations" class="anchor" href="#kmclib---a-general-framework-for-lattice-kinetic-monte-carlo-kmc-simulations"><span class="octicon octicon-link"></span></a><em>KMCLib</em> - a general framework for lattice kinetic Monte Carlo (KMC) simulations</h2>
+<a id="kmclib---a-general-framework-for-lattice-kinetic-monte-carlo-kmc-simulations" class="anchor" href="#kmclib---a-general-framework-for-lattice-kinetic-monte-carlo-kmc-simulations" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+<em>KMCLib</em> - a general framework for lattice kinetic Monte Carlo (KMC) simulations</h2>
 
 <h3>
-<a name="license-and-copying" class="anchor" href="#license-and-copying"><span class="octicon octicon-link"></span></a>License and copying</h3>
+<a id="license-and-copying" class="anchor" href="#license-and-copying" aria-hidden="true"><span class="octicon octicon-link"></span></a>License and copying</h3>
 
 <pre><code>Developed by Mikael Leetmaa at the Royal Institute of Technology (KTH), Sweden.
-Copyright (c)  2012-2014  Mikael Leetmaa
+Copyright (c)  2012-2015  Mikael Leetmaa
 Released under the GPLv3 license, see 'LICENSE.txt' for details.
 </code></pre>
 
@@ -42,16 +43,19 @@ Released under the GPLv3 license, see 'LICENSE.txt' for details.
 
 <pre><code>Mikael Leetmaa and Natalia V. Skorodumova
 “KMCLib: A general framework for lattice kinetic Monte Carlo (KMC) simulations”
-Comput. Phys. Commun. (2014) DOI: 10.1016/j.cpc.2014.04.017
+Comput. Phys. Commun. 185 (2014) 2340
 </code></pre>
 
 <h3>
-<a name="kmclib-version-10-ready-for-release" class="anchor" href="#kmclib-version-10-ready-for-release"><span class="octicon octicon-link"></span></a><em>KMCLib</em> version 1.0 ready for release</h3>
+<a id="kmclib-is-now-in-version-11" class="anchor" href="#kmclib-is-now-in-version-11" aria-hidden="true"><span class="octicon octicon-link"></span></a>
+<em>KMCLib</em> is now in version 1.1</h3>
 
 <p><em>KMCLib</em> is a general framework for <em>lattice</em> kinetic Monte Carlo (KMC) simulations, to simulate the time evolution of systems of up to millions of particles in one, two or three dimensions. <em>KMCLib</em> is organized as a collection of Python frontend functions, classes and interfaces for performing efficient <em>lattice</em> KMC simulations, with all computationally heavy backend functionality implemented in C++.</p>
 
+<p>Version <em>1.1</em> introduces support for different random number generators, and increased support for different platforms and compiles. Random numbers are now generated using the standard (C++11) library and <em>KMCLib</em> from now on supports the use of both the Mersenne-Twister and the RANLUX PRNG:s through the standard C++ library. Additionally the standard minimal PRNG is also available, as well as true random numbers if you have a random device installed. The make system is upgraded to provide support for additional platforms and compilers. We now support the <strong>clang</strong> compiler on Mac OSX, and both the <strong>gcc</strong> and the <strong>Intel C++ compiler</strong> under Linux. Support for the <strong>Intel C++ compiler</strong> was requested for use in particular on large computer clusters with little flexibility to change compilers.</p>
+
 <h3>
-<a name="the-combination-of-features-makes-kmclib-unique" class="anchor" href="#the-combination-of-features-makes-kmclib-unique"><span class="octicon octicon-link"></span></a>The combination of features makes <em>KMCLib</em> unique</h3>
+<a id="the-combination-of-features-makes-kmclib-unique" class="anchor" href="#the-combination-of-features-makes-kmclib-unique" aria-hidden="true"><span class="octicon octicon-link"></span></a>The combination of features makes <em>KMCLib</em> unique</h3>
 
 <ul>
 <li>Python user interface - well documented, easily extended.</li>
@@ -61,27 +65,29 @@ Comput. Phys. Commun. (2014) DOI: 10.1016/j.cpc.2014.04.017
 <li>On-the-fly evaluation of custom rate expressions written in Python.</li>
 <li>Built in on-the-fly mean square displacement (MSD) analysis to facilitate diffusion studies.</li>
 <li>MPI parallelism without loss of accuracy.</li>
-</ul><h3>
-<a name="well-documented-with-usage-examples-and-install-instructions" class="anchor" href="#well-documented-with-usage-examples-and-install-instructions"><span class="octicon octicon-link"></span></a>Well documented with usage examples and install instructions</h3>
-
-<p>The code manual (<a href="http://leetmaa.github.io/KMCLib/manual-v1.0/">http://leetmaa.github.io/KMCLib/manual-v1.0/</a>) includes full documentation of the Python interface and several usage examples, as well as installation instructions for both Linux and Mac.</p>
+</ul>
 
 <h3>
-<a name="no-known-issues" class="anchor" href="#no-known-issues"><span class="octicon octicon-link"></span></a>No known issues</h3>
+<a id="well-documented-with-usage-examples-and-install-instructions" class="anchor" href="#well-documented-with-usage-examples-and-install-instructions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Well documented with usage examples and install instructions</h3>
 
-<p>After carefully testing the code and removing bugs and issues before the release of version 1.0 there are <em>no</em> known bugs or issues at the time of writing. This is of course no guarantee that there are none left to be found. So if you find any bugs or issues, or if you have suggestions for improvements, please let me know.</p>
-
-<h3>
-<a name="obtain-a-copy" class="anchor" href="#obtain-a-copy"><span class="octicon octicon-link"></span></a>Obtain a copy</h3>
-
-<p>The program is distributed under the GPLv3 license and can be obtained from the <em>KMCLib</em> git repository <a href="https://github.com/leetmaa/KMCLib/releases/tag/v1.0">https://github.com/leetmaa/KMCLib/releases/tag/v1.0</a></p>
+<p>The code manual (<a href="http://leetmaa.github.io/KMCLib/manual-v1.1/">http://leetmaa.github.io/KMCLib/manual-v1.1/</a>) includes full documentation of the Python interface and several usage examples, as well as installation instructions for both Linux and Mac.</p>
 
 <h3>
-<a name="use-kmclib-in-your-own-research" class="anchor" href="#use-kmclib-in-your-own-research"><span class="octicon octicon-link"></span></a>Use <em>KMCLib</em> in your own research</h3>
+<a id="known-issues" class="anchor" href="#known-issues" aria-hidden="true"><span class="octicon octicon-link"></span></a>Known issues</h3>
+
+<p>At the time of writing there are no known bugs or issues, but as always, if you happen to find any bugs or issues, or if you have suggestions for improvements, please let me know.</p>
+
+<h3>
+<a id="obtain-a-copy" class="anchor" href="#obtain-a-copy" aria-hidden="true"><span class="octicon octicon-link"></span></a>Obtain a copy</h3>
+
+<p>The program is distributed under the GPLv3 license and can be obtained from the <em>KMCLib</em> git repository <a href="https://github.com/leetmaa/KMCLib/releases/tag/v1.1">https://github.com/leetmaa/KMCLib/releases/tag/v1.1</a></p>
+
+<h3>
+<a id="use-kmclib-in-your-own-research" class="anchor" href="#use-kmclib-in-your-own-research" aria-hidden="true"><span class="octicon octicon-link"></span></a>Use <em>KMCLib</em> in your own research</h3>
 
 <p>If you would be interested to use this code in your research and need any assistance, or if you are interested in collaborations, please don't hesitate to send me an e-mail: <a href="mailto:leetmaa@kth.se">leetmaa@kth.se</a></p>
 
-<p>Mikael Leetmaa, May 6 2014</p>
+<p>Mikael Leetmaa, May 28 2015</p>
       </section>
     </div>
     <footer>
