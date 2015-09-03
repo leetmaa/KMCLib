@@ -15,7 +15,7 @@ here: https://github.com/leetmaa/KMCLib/releases
 If you use KMCLib in your research please **cite** the
 scientific paper describing the program [Ref.8]_.
 
-This documentation describes version 1.0.0
+This documentation describes version 1.1
 
 
 Why KMC?
@@ -50,7 +50,7 @@ simulations [Ref.1]_ that I find particularly appealing.
 There is also a vast bulk of research
 literature on the subject, from the first publications of the
 method [Ref.2]_, [Ref.3]_, to several more recent reviews
-(e.g. [Ref.4]_, [Ref.5]_, [Ref.6]_), as well
+(e.g. [Ref.4]_, [Ref.5]_, [Ref.6]_, [Ref.9]_), as well
 as many research papers using the KMC method.
 
 Why KMCLib?
