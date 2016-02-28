@@ -78,7 +78,6 @@ elseif (CMAKE_COMPILER_IS_GNUCXX)
     add_definitions( -DMPICH_SKIP_MPICXX )
     add_definitions( -Wno-long-long )
   endif()
-
 elseif (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
   message( STATUS "Using compiler ${CMAKE_CXX_COMPILER_ID}")
 
