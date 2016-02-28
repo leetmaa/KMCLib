@@ -33,7 +33,9 @@ Configuration::Configuration(const std::vector<std::vector<double> >  & coordina
     elements_(elements),
     atom_id_elements_(elements_.size()),
     match_lists_(elements_.size()),
-    possible_types_(possible_types)
+    possible_types_(possible_types),
+    latest_event_process_(0),
+    latest_event_site_(0)
 {
     // ML: FIXME: We assume here that if atom id's are to be used, only one
     //            atom per site is present. If more than one atom per site are
