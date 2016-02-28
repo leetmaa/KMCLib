@@ -7,3 +7,5 @@
 file( GLOB CppSources *.cpp )
 
 add_library( custom ${CppSources} )
+
+add_definitions( -Wno-unused-private-field )

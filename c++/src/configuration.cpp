@@ -13,6 +13,7 @@
 
 #include <cstdio>
 #include <algorithm>
+#include <cstdlib>
 
 #include "configuration.h"
 #include "latticemap.h"
@@ -293,6 +294,7 @@ void Configuration::performBucketProcess(Process & process,
         int sum = 0;
         for (int i = 0; i  < update_types.size(); ++i)
         {
+            // NOTE: Cast needed for clang.
             sum += std::abs(update_types[i]);
         }
 

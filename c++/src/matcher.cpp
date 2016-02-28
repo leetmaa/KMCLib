@@ -12,6 +12,7 @@
 
 #include <cstdio>
 #include <algorithm>
+#include <cstdlib>
 
 #include "matcher.h"
 #include "matchlist.h"

@@ -54,7 +54,6 @@ set_source_files_properties(custom.i PROPERTIES SWIG_FLAGS "")
 # SET COMPILER FLAGS TO IGNORE KNOWN SWIG GENERATED ERRORS
 # -----------------------------------------------------------------------------
 add_definitions( -Wno-uninitialized )
-add_definitions( -Wno-unused-but-set-variable )
 
 # For intel.
 if (USING_INTEL)
@@ -62,26 +61,16 @@ if (USING_INTEL)
   add_definitions( -Wno-unused-but-set-variable )
 
 elseif (CMAKE_COMPILER_IS_GNUCXX)
+  # Add intel options here.
+  add_definitions( -Wno-unused-but-set-variable )
+else()
   message( STATUS "Ignoring g++ SWIG warnings")
   add_definitions( -Wno-unused-but-set-variable )
   # For older g++.
   add_definitions( -Wno-missing-field-initializers )
   add_definitions( -Wno-write-strings )
   add_definitions( -fno-strict-aliasing )
-
-elseif (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
-  message( STATUS "Ignoring Clang SWIG warnings")
-  add_definitions( -Wno-unused-variable )
-  add_definitions( -Wno-dynamic-class-memaccess )
-  add_definitions( -Wno-self-assign )
-  add_definitions( -Wno-deprecated )
-
-  # ML: Do we need these here?
-  add_definitions( -Wno-missing-field-initializers )
-  add_definitions( -Wno-write-strings )
-  add_definitions( -fno-strict-aliasing )
-
-
+  add_definitions( -Wno-unused-but-set-variable )
 endif()
 
 
