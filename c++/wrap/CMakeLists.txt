@@ -61,9 +61,6 @@ if (USING_INTEL)
   add_definitions( -Wno-unused-but-set-variable )
 
 elseif (CMAKE_COMPILER_IS_GNUCXX)
-  # Add intel options here.
-  add_definitions( -Wno-unused-but-set-variable )
-else()
   message( STATUS "Ignoring g++ SWIG warnings")
   add_definitions( -Wno-unused-but-set-variable )
   # For older g++.
@@ -71,6 +68,11 @@ else()
   add_definitions( -Wno-write-strings )
   add_definitions( -fno-strict-aliasing )
   add_definitions( -Wno-unused-but-set-variable )
+else()
+  message( STATUS "Ignoring Clang SWIG warnings")
+  add_definitions( -Wno-unused-variable )
+  add_definitions( -Wno-self-assign )
+  add_definitions( -Wno-dynamic-class-memaccess )
 endif()
 
 
