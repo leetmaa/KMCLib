@@ -1,7 +1,7 @@
 """ Module for holding common printing utility functions. """
 
 
-# Copyright (c)  2013-2015  Mikael Leetmaa
+# Copyright (c)  2013-2016  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -44,10 +44,9 @@ def printHeader(output=None):
 
     # Write.
     prettyPrint("# -----------------------------------------------------------------------------", output)
-    prettyPrint("# KMCLib version 2.0.a0-devel", output)
-    prettyPrint("# **WARNING** This is a potentially broken development version of KMCLib.", output)
+    prettyPrint("# KMCLib version 2.0.a1", output)
     prettyPrint("# Distributed under the GPLv3 license", output)
-    prettyPrint("# Copyright (C)  2012-2015  Mikael Leetmaa", output)
+    prettyPrint("# Copyright (C)  2012-2016  Mikael Leetmaa", output)
     prettyPrint("# Developed by Mikael Leetmaa <leetmaa@kth.se>", output)
 
     prettyPrint("#", output)
