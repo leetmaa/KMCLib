@@ -1,5 +1,5 @@
 /*
-  Copyright (c)  2012-2013  Mikael Leetmaa
+  Copyright (c)  2012-2016  Mikael Leetmaa
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -88,22 +88,23 @@ void Test_Configuration::testConstruction()
 
 
 // ---------------------------------------------------------------------------//
-// Description: Test moved_atom_id_ and recent_move_vector 
+// Description: Test moved_atom_id_ and recent_move_vector
 //              lengths and memories allocation.
 // Author     : pytlab <shaozhengjiang@gmail.com>
 // Date       : 2016-03-28
+// Reviewed and accepted as a contribution by Mikael Leetmaa 2016-03-28.
 // ---------------------------------------------------------------------------//
 void Test_Configuration::testMovedAtomIDsRecentMoveVectorsSize()
 {
-    // Make a 3x3x3 structure
+    // Make a 3x3x3 structure.
     const int nI = 3;
     const int nJ = 3;
     const int nK = 3;
 
-    // Number of basis
+    // Number of basis.
     const int nB = 1;
 
-    // Coordinates and elements
+    // Coordinates and elements.
     std::vector<std::vector<double> > coordinates;
     std::vector<std::string> elements;
 
@@ -123,43 +124,43 @@ void Test_Configuration::testMovedAtomIDsRecentMoveVectorsSize()
         }
     }
 
-    // Possible types
+    // Possible types.
     std::map<std::string, int> possible_types;
     possible_types["*"] = 0;
     possible_types["A"] = 1;
     possible_types["B"] = 2;
     possible_types["V"] = 3;
 
-    // Setup a configuration
+    // Setup a configuration.
     Configuration configuration(coordinates, elements, possible_types);
 
-    // Setup a lattice map
-    std::vector<int> repetitions = {3, 3, 3};  // C++ 11
-    // no periodic for minimal matchlist testing
-    std::vector<bool> periodic = {false, false, false};  
+    // Setup a lattice map.
+    std::vector<int> repetitions = {3, 3, 3};
+    // No periodic for minimal matchlist testing.
+    std::vector<bool> periodic = {false, false, false};
     LatticeMap lattice_map(nB, repetitions, periodic);
 
-    // Initialize matchlists of configuration
+    // Initialize matchlists of configuration.
     const int range = 1;
     configuration.initMatchLists(lattice_map, range);
 
-    // Test lengths of minimal_matchlists
+    // Test lengths of minimal_matchlists.
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(configuration.minimalMatchList(0).size()), 8);
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(configuration.minimalMatchList(1).size()), 12);
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(configuration.minimalMatchList(13).size()), 27);
 
-    // Test size of moved_atom_ids_ before process performing
+    // Test size of moved_atom_ids_ before process performing.
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(configuration.movedAtomIDs().size()), 0);
     // Test size of recent_move_vectors_ before process performing
     CPPUNIT_ASSERT_EQUAL(static_cast<int>(configuration.recentMoveVectors().size()), 0);
 
 
-    // Now perform a process
+    // Now perform a process.
 
-    // Setup a process that can be performed at site 1
-    std::vector<std::string> process_elements1 = {"A", "A", "A", "A", "A", "A", 
+    // Setup a process that can be performed at site 1.
+    std::vector<std::string> process_elements1 = {"A", "A", "A", "A", "A", "A",
                                                   "A", "A", "A", "A", "A", "A"};
-    std::vector<std::string> process_elements2 = {"B", "V", "V", "B", "V", "B", 
+    std::vector<std::string> process_elements2 = {"B", "V", "V", "B", "V", "B",
                                                   "B", "V", "V", "B", "V", "B"};
     std::vector<std::vector<double> > process_coordinates = {
         {0.0, 0.0, 0.0}, {0.0, 0.0, -1.0}, {0.0, 0.0, 1.0},
@@ -177,19 +178,23 @@ void Test_Configuration::testMovedAtomIDsRecentMoveVectorsSize()
     // We know the process can take place at site 1.
     p.addSite(1, 0.0);
 
-    // Perform the process
-    // if there is no enough space in moved_atom_ids_ or recent_moved_vectors_,
-    // segmentation fault(core dumped) will be caused
+    // Perform the process.
+
+    // NOTE: The number of atoms affected here is 12.
+    //       If the moved_atoms_ids_ vector had the size of the first matchlist,
+    //       (as before the fix this test checks) then the size would be 8 and
+    //       there would not be enough space in moved_atom_ids_ and
+    //       recent_moved_vectors_ since causing a segmentation fault.
     configuration.performProcess(p, 1, lattice_map);
 
-    // Test entries in moved_atom_ids_
+    // Test entries in moved_atom_ids_.
     const int atom_ids[12] = {1, 0, 2, 4, 10, 3, 5, 9, 11, 13, 12, 14};
     for (int i = 0; i < 12; ++i)
     {
         CPPUNIT_ASSERT_EQUAL(configuration.movedAtomIDs()[i], atom_ids[i]);
     }
 
-    // Test recent_moved_vectors_
+    // Test recent_moved_vectors_.
     for (int i = 0; i < 12; ++i)
     {
         const Coordinate & coord = configuration.recentMoveVectors()[i];
