@@ -73,7 +73,7 @@ class PrintUtilitiesTest(unittest.TestCase):
             # Check.
             if MPICommons.myRank() == 0:
                 ref_str = """# -----------------------------------------------------------------------------
-# KMCLib version 2.0.a1
+# KMCLib version 2.0-a1
 # Distributed under the GPLv3 license
 # Copyright (C)  2012-2016  Mikael Leetmaa
 # Developed by Mikael Leetmaa <leetmaa@kth.se>
