@@ -87,6 +87,120 @@ void Test_Configuration::testConstruction()
 }
 
 
+// ---------------------------------------------------------------------------//
+// Description: Test moved_atom_id_ and recent_move_vector 
+//              lengths and memories allocation.
+// Author     : pytlab <shaozhengjiang@gmail.com>
+// Date       : 2016-03-28
+// ---------------------------------------------------------------------------//
+void Test_Configuration::testMovedAtomIDsRecentMoveVectorsSize()
+{
+    // Make a 3x3x3 structure
+    const int nI = 3;
+    const int nJ = 3;
+    const int nK = 3;
+
+    // Number of basis
+    const int nB = 1;
+
+    // Coordinates and elements
+    std::vector<std::vector<double> > coordinates;
+    std::vector<std::string> elements;
+
+    for (int i = 0; i < nI; ++i)
+    {
+        for (int j = 0; j < nJ; ++j)
+        {
+            for (int k = 0; k < nK; ++k)
+            {
+                std::vector<double> c(3);
+                c[0] = static_cast<double>(i);
+                c[1] = static_cast<double>(j);
+                c[2] = static_cast<double>(k);
+                coordinates.push_back(c);
+                elements.push_back("A");
+            }
+        }
+    }
+
+    // Possible types
+    std::map<std::string, int> possible_types;
+    possible_types["*"] = 0;
+    possible_types["A"] = 1;
+    possible_types["B"] = 2;
+    possible_types["V"] = 3;
+
+    // Setup a configuration
+    Configuration configuration(coordinates, elements, possible_types);
+
+    // Setup a lattice map
+    std::vector<int> repetitions = {3, 3, 3};  // C++ 11
+    // no periodic for minimal matchlist testing
+    std::vector<bool> periodic = {false, false, false};  
+    LatticeMap lattice_map(nB, repetitions, periodic);
+
+    // Initialize matchlists of configuration
+    const int range = 1;
+    configuration.initMatchLists(lattice_map, range);
+
+    // Test lengths of minimal_matchlists
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(configuration.minimalMatchList(0).size()), 8);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(configuration.minimalMatchList(1).size()), 12);
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(configuration.minimalMatchList(13).size()), 27);
+
+    // Test size of moved_atom_ids_ before process performing
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(configuration.movedAtomIDs().size()), 0);
+    // Test size of recent_move_vectors_ before process performing
+    CPPUNIT_ASSERT_EQUAL(static_cast<int>(configuration.recentMoveVectors().size()), 0);
+
+
+    // Now perform a process
+
+    // Setup a process that can be performed at site 1
+    std::vector<std::string> process_elements1 = {"A", "A", "A", "A", "A", "A", 
+                                                  "A", "A", "A", "A", "A", "A"};
+    std::vector<std::string> process_elements2 = {"B", "V", "V", "B", "V", "B", 
+                                                  "B", "V", "V", "B", "V", "B"};
+    std::vector<std::vector<double> > process_coordinates = {
+        {0.0, 0.0, 0.0}, {0.0, 0.0, -1.0}, {0.0, 0.0, 1.0},
+        {0.0, 1.0, -1.0}, {0.0, 1.0, 0.0}, {0.0, 1.0, 1.0},
+        {1.0, 0.0, -1.0}, {1.0, 0.0, 0.0}, {1.0, 0.0, 1.0},
+        {1.0, 1.0, -1.0}, {1.0, 1.0, 0.0}, {1.0, 1.0, 1.0},
+    };
+    const double rate = 13.9;
+    std::vector<int> basis_sites(1, 0);
+    Configuration c1(process_coordinates, process_elements1, possible_types);
+    Configuration c2(process_coordinates, process_elements2, possible_types);
+
+    Process p(c1, c2, rate, basis_sites);
+
+    // We know the process can take place at site 1.
+    p.addSite(1, 0.0);
+
+    // Perform the process
+    // if there is no enough space in moved_atom_ids_ or recent_moved_vectors_,
+    // segmentation fault(core dumped) will be caused
+    configuration.performProcess(p, 1, lattice_map);
+
+    // Test entries in moved_atom_ids_
+    const int atom_ids[12] = {1, 0, 2, 4, 10, 3, 5, 9, 11, 13, 12, 14};
+    for (int i = 0; i < 12; ++i)
+    {
+        CPPUNIT_ASSERT_EQUAL(configuration.movedAtomIDs()[i], atom_ids[i]);
+    }
+
+    // Test recent_moved_vectors_
+    for (int i = 0; i < 12; ++i)
+    {
+        const Coordinate & coord = configuration.recentMoveVectors()[i];
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.x(), 0.0, 1.0e-12);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.y(), 0.0, 1.0e-12);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL(coord.z(), 0.0, 1.0e-12);
+    }
+
+}
+
+
 // -------------------------------------------------------------------------- //
 //
 void Test_Configuration::testPerformProcess()
