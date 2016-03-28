@@ -13,7 +13,7 @@ When you use *KMCLib* in your research please **cite** the paper describing the 
     Comput. Phys. Commun. 185 (2014) 2340
     DOI: 10.1016/j.cpc.2014.04.017
 
-If you use version 1.1 or later I would also ask you to include this reference:
+If you use version *1.1* or later I would also ask you to include this reference:
 
     Mikael Leetmaa and Natalia V. Skorodumova
     “KMCLib 1.1: Extended random number support and technical updates to the KMCLib general framework for kinetic Monte-Carlo simulations“
@@ -32,7 +32,7 @@ The mean square displacement algorithm is described here:
 
 *KMCLib* is a general framework for *lattice* kinetic Monte Carlo (KMC) simulations, to simulate the time evolution of systems of up to millions of particles in one, two or three dimensions. *KMCLib* is organized as a collection of Python frontend functions, classes and interfaces for performing efficient *lattice* KMC simulations, with all computationally heavy backend functionality implemented in C++.
 
-Version *2.0* introduce support for having more than one particle per site. This was implemented to enable simulations of gas through porous solids as described in this paper:
+Version *2.0* introduces support for having more than one particle per lattice site in the simulations. This was implemented to enable simulations of gas through porous solids as described in this paper:
 
     Amber Mace, Mikael Leetmaa and Aatto Laaksonen
     “Temporal Coarse Graining of CO2 and N2 Diffusion in Zeolite NaKA: From the Quantum Scale to the Macroscopic“
@@ -52,7 +52,7 @@ Version *2.0* also comes with improved performance. A framework for writing cust
 ### Well documented with usage examples and install instructions
 The code manual (http://leetmaa.github.io/KMCLib/manual-v1.1/) includes full documentation of the Python interface and several usage examples, as well as installation instructions for both Linux and Mac.
 
-There is at the time of writing no manual for version *2.0*. All features in version 1.1 should be unchanged however. If ever in doubt please check the source code for details.
+There is at the time of writing no manual for version *2.0*. All features in version *1.1* should be unchanged however. If ever in doubt please check the source code for details.
 
 ### Known issues
 Version *2.0* is still in an *alpha* stage. The set of features might change before the full version *2.0*, and bugs may be found and fixed, however the quality of the code at this stage should meet the same standards with respect to quality as the previous full version *1.1*. There are at the time of writing no known major bugs or issues, but as always, if you happen to find any bugs or issues, or if you have suggestions for improvements, please let me know.
