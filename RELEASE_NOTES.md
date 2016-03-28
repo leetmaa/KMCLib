@@ -1,7 +1,12 @@
+##v2.0 alpha (Mars 28 2016)
+
+Version *2.0* introduces support for having more than one particle per lattice site in the simulations. This was implemented to enable simulations of gas through porous solids. Version *2.0* also comes with improved performance. A framework for writing custom rate calculators in C++ has been added for performance sensitive applications. Once your custom rate calculator is prototyped and tested in Python you can port it to C++ for increased performance. A caching mechanism for custom rates is now also in place, that can significantly reduce computational time for time consuming custom rates calculations.
+
 ##v1.1 (May 28 2015)
 ***KMCLib* is now in version 1.1**
 
 Version *1.1* introduces support for different random number generators, and increased support for different platforms and compiles. Random numbers are now generated using the standard (C++11) library and *KMCLib* from now on supports the use of both the Mersenne-Twister and the RANLUX PRNG:s through the standard C++ library. Additionally the standard minimal PRNG is also available, as well as true random numbers if you have a random device installed. The make system is upgraded to provide support for additional platforms and compilers. We now support the **clang** compiler on Mac OSX, and both the **gcc** and the **Intel C++ compiler** under Linux. Support for the **Intel C++ compiler** was requested for use in particular on large computer clusters with little flexibility to change compilers. At the time of writing there are no known bugs or issues, but as always, if you happen to find any bugs or issues, or if you have suggestions for improvements, please let me know.
+
 
 ##v1.1-b1 (December 17 2014)
 ***KMCLib* is now in version 1.1 BETA-1**

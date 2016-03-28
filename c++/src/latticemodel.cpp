@@ -27,7 +27,8 @@ LatticeModel::LatticeModel(Configuration & configuration,
     configuration_(configuration),
     simulation_timer_(simulation_timer),
     lattice_map_(lattice_map),
-    interactions_(interactions)
+    interactions_(interactions),
+    matcher_(configuration.coordinates().size(), interactions.processes().size())
 {
     // Setup the mapping between coordinates and processes.
     calculateInitialMatching();
@@ -45,6 +46,7 @@ void LatticeModel::calculateInitialMatching()
     configuration_.initMatchLists(lattice_map_, interactions_.maxRange());
 
     // Update the interactions matchlists.
+    interactions_.clearMatching();
     interactions_.updateProcessMatchLists(configuration_, lattice_map_);
 
    // Match all centeres.
@@ -54,12 +56,21 @@ void LatticeModel::calculateInitialMatching()
     {
         indices.push_back(i);
     }
+
+    // Match.
     matcher_.calculateMatching(interactions_,
                                configuration_,
                                lattice_map_,
                                indices);
 }
 
+// -----------------------------------------------------------------------------
+//
+void LatticeModel::propagateTime()
+{
+    // Propagate the time.
+    simulation_timer_.propagateTime(interactions_.totalRate());
+}
 
 // -----------------------------------------------------------------------------
 //
@@ -72,10 +83,7 @@ void LatticeModel::singleStep()
     const int site_index = process.pickSite();
 
     // Perform the operation.
-    configuration_.performProcess(process, site_index, lattice_map_);
-
-    // Propagate the time.
-    simulation_timer_.propagateTime(interactions_.totalRate());
+    configuration_.performBucketProcess(process, site_index, lattice_map_);
 
     // Run the re-matching of the affected sites and their neighbours.
     const std::vector<int> & indices = \

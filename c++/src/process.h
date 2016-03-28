@@ -16,7 +16,7 @@
 #include <vector>
 #include <map>
 #include <string>
-#include "matchlistentry.h"
+#include "matchlist.h"
 
 class Configuration;
 
@@ -65,28 +65,40 @@ public:
     /*! \brief Query for the total rate.
      *  \return : The total rate of the process.
      */
-    virtual double totalRate() const { return rate_ * sites_.size(); }
+    double totalRate() const { return total_rate_; }
 
     /*! \brief Add the index to the list of available sites.
-     *  \param index : The index to add.
-     *  \param rate  : Dummy argument needed for common interface.
+     *  \param index        : The index to add.
+     *  \param rate         : Dummy argument needed for common interface.
+     *  \param multiplicity : The multiplicity of the site, to be multiplied
+                              with the rate for determining the total rate.
      */
-    virtual void addSite(const int index, const double rate=0.0);
+    virtual void addSite(const int index,
+                         const double rate=0.0,
+                         const double multiplicity=1.0);
 
     /*! \brief Remove the index from the list of available sites.
      *  \param index : The index to remove.
      */
     virtual void removeSite(const int index);
 
-    /*! \brief Pick a random available process.
-     *  \return : A random available process.
+    /*! \brief Remove all indices from the list of available sites.
+     */
+    virtual void clearSites();
+
+    /*! \brief Pick a site weighted by its individual total rate (multiplicity).
+     *  \return : An available process.
      */
     virtual int pickSite() const;
 
-    /*! \brief Interface function for inherited classes.
-     *         This function does nothing if not overloaded.
+    /*! \brief Update the rate table prior to drawing a rate.
      */
-    virtual void updateRateTable() {}
+    virtual void updateRateTable();
+
+    /*! \brief Returns true if the process rates can be cached.
+     *  \return : True if rates can be cached. False if no caching is allowed.
+     */
+    bool cacheRate() const { return cache_rate_; }
 
     /*! \brief Query for the rate constant associated with the process.
      *  \return : The rate constant part of the of rate for the process.
@@ -113,12 +125,12 @@ public:
     /*! \brief Query for the configuration as a vector of match list entries.
      *  \return : The stored match list.
      */
-    const std::vector<MinimalMatchListEntry> & minimalMatchList() const { return minimal_match_list_; }
+    const ProcessBucketMatchList & processMatchList() const { return match_list_; }
 
     /*! \brief Query for the configuration as a vector of match list entries.
      *  \return : A reference to the stored match list.
      */
-    std::vector<MinimalMatchListEntry> & minimalMatchList() { return minimal_match_list_; }
+    ProcessBucketMatchList & processMatchList() { return match_list_; }
 
     /*! \brief Query for the latest affected indices.
      *  \return : The affected indices from the last time the process was
@@ -162,7 +174,15 @@ public:
      */
     int processNumber() const { return process_number_; }
 
+    /*! \brief Query for the flag indicating if this is a bucket process.
+     *  \return : The bucket process flag.
+     */
+    bool bucketProcess() const { return bucket_process_; }
+
 protected:
+
+    // If the process rate can be cached.
+    bool cache_rate_;
 
     /// The process number.
     int process_number_;
@@ -179,8 +199,17 @@ protected:
     /// The available sites for this process.
     std::vector<int> sites_;
 
+    /// The multiplicity for the available sites for this process.
+    std::vector<double> site_multiplicity_;
+
+    /// The list of individual site rates.
+    std::vector<double> site_rates_;
+
+    /// The incremental rates.
+    std::vector<double> incremental_rate_table_;
+
     /// The match list for comparing against local configurations.
-    std::vector<MinimalMatchListEntry> minimal_match_list_;
+    ProcessBucketMatchList match_list_;
 
     /*! \brief: The configuration indices that were affected last time
      *          the process was used to update a configuration.
@@ -192,6 +221,12 @@ protected:
 
     /// The atom id moves.
     std::vector< std::pair<int,int> > id_moves_;
+
+    /// Flag indicating if this is a bucket process or not.
+    bool bucket_process_;
+
+    /// The total available rate for this process.
+    double total_rate_;
 
 private:
 

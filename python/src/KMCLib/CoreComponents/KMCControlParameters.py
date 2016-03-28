@@ -1,7 +1,7 @@
 """ Module for the KMCControlParameters """
 
 
-# Copyright (c)  2012-2013  Mikael Leetmaa
+# Copyright (c)  2012-2014  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -21,6 +21,7 @@ class KMCControlParameters(object):
                  dump_interval=None,
                  analysis_interval=None,
                  seed=None,
+                 dump_time_interval=None,
                  rng_type=None):
         """
         Constructuor for the KMCControlParameters object that
@@ -43,6 +44,10 @@ class KMCControlParameters(object):
                      If no seed value is given the random numnber generator will be
                      seeded based on the wall-clock time.
         :type seed: int
+
+        :param dump_time_interval: The simulation time between subsequent trajectory
+                              dumps. The default value is None, causing the dump_interval parameter to determine the behavior.
+        :type dump_interval: int
 
         :param rng_type: The type of pseudo random number generator to use.  The random
                          number generators are the once in the standard C++ library and
@@ -72,9 +77,11 @@ class KMCControlParameters(object):
                                                       0,
                                                       "number_of_steps")
 
-        self.__dump_interval = checkPositiveInteger(dump_interval,
-                                                    1,
-                                                    "dump_interval")
+        self.__dump_interval = None
+        if dump_interval is not None:
+            self.__dump_interval = checkPositiveInteger(dump_interval,
+                                                        1,
+                                                        "dump_interval")
 
         self.__analysis_interval = checkPositiveInteger(analysis_interval,
                                                         1,
@@ -84,6 +91,22 @@ class KMCControlParameters(object):
         self.__seed = checkPositiveInteger(seed,
                                            1,
                                            "seed")
+
+        if dump_time_interval is not None:
+            if not isinstance(dump_time_interval, float):
+                raise Error("The 'dump_time_interval' parameter must be of type float.")
+            if dump_time_interval <= 0:
+                raise Error("The 'dump_time_interval' parameter must be greater than zero.")
+
+        self.__dump_time_interval = dump_time_interval
+
+        # Check that dump_time_interval and dump_interval not both are different from None.
+        if (self.__dump_time_interval is not None) and (self.__dump_interval is not None):
+            raise Error("The 'dump_time_interval' and the 'dump_interval' parameters can not both be used.")
+
+        # If both are None, set the dump_interval to 1.
+        if (self.__dump_interval is None) and (self.__dump_time_interval is None):
+            self.__dump_interval = 1
 
         # Check and set the random number generator type.
         self.__rng_type  = self.__checkRngType(rng_type, "MT")
@@ -122,6 +145,14 @@ class KMCControlParameters(object):
         :returns: The dump interval.
         """
         return self.__dump_interval
+
+    def dumpTimeInterval(self):
+        """
+        Query for the dump time interval.
+
+        :returns: The dump time interval.
+        """
+        return self.__dump_time_interval
 
     def analysisInterval(self):
         """

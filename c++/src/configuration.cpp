@@ -1,5 +1,5 @@
 /*
-  Copyright (c)  2012-2013  Mikael Leetmaa
+  Copyright (c)  2012-2014  Mikael Leetmaa
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -13,31 +13,47 @@
 
 #include <cstdio>
 #include <algorithm>
+#include <cstdlib>
 
 #include "configuration.h"
 #include "latticemap.h"
 #include "process.h"
+#include "matchlist.h"
 
 // Temporary data for the match list return.
-static std::vector<MinimalMatchListEntry> tmp_minimal_match_list__(0);
+static ConfigBucketMatchList tmp_match_list__(0);
+
 
 // -----------------------------------------------------------------------------
 //
-Configuration::Configuration(std::vector<std::vector<double> > const & coordinates,
-                             std::vector<std::string> const & elements,
+Configuration::Configuration(const std::vector<std::vector<double> >  & coordinates,
+                             const std::vector<std::vector<std::string> > & elements,
                              const std::map<std::string,int> & possible_types) :
     n_moved_(0),
     elements_(elements),
-    atom_id_elements_(elements),
-    match_lists_(elements_.size())
+    atom_id_elements_(elements_.size()),
+    match_lists_(elements_.size()),
+    possible_types_(possible_types),
+    latest_event_process_(0),
+    latest_event_site_(0)
 {
+    // ML: FIXME: We assume here that if atom id's are to be used, only one
+    //            atom per site is present. If more than one atom per site are
+    //            present, only the first atom will be detected and labeled with correct ID.
+    //            This must be handeled in a generic way in the release version.
+
+
     // Setup the coordinates and initial atom ids.
     for (size_t i = 0; i < coordinates.size(); ++i)
     {
         coordinates_.push_back( Coordinate(coordinates[i][0],
                                            coordinates[i][1],
                                            coordinates[i][2]));
+        // FIXME
         atom_id_.push_back(i);
+
+        // FIXME
+        atom_id_elements_[i] = elements_[i][0];
     }
 
     // Set the atom id coordinates to the same as the coordinates to start with.
@@ -67,10 +83,22 @@ Configuration::Configuration(std::vector<std::vector<double> > const & coordinat
     // Setup the types from the elements strings.
     for (size_t i = 0; i < elements_.size(); ++i)
     {
-        const std::string element = elements_[i];
-        const int type = possible_types.find(element)->second;
-        types_.push_back(type);
-     }
+        TypeBucket tb(type_names_.size());
+        for (size_t j = 0; j < elements_[i].size(); ++j)
+        {
+            // Get the element out at this point.
+            const std::string element = elements_[i][j];
+
+            // Get the type a numeric value.
+            const int type = possible_types.find(element)->second;
+
+            // Increase this type counter.
+            tb[type] += 1;
+        }
+
+        // Add to the types vector.
+        types_.push_back(tb);
+    }
 }
 
 
@@ -89,9 +117,9 @@ void Configuration::initMatchLists( const LatticeMap & lattice_map,
         // Calculate and store the match list.
         const int origin_index = i;
         const std::vector<int> neighbourhood = lattice_map.neighbourIndices(origin_index, range);
-        match_lists_[i] = minimalMatchList(origin_index,
-                                           neighbourhood,
-                                           lattice_map);
+        match_lists_[i] = configMatchList(origin_index,
+                                          neighbourhood,
+                                          lattice_map);
 
         // Store the maximum size
         tmp_size = match_lists_[i].size();
@@ -112,24 +140,24 @@ void Configuration::initMatchLists( const LatticeMap & lattice_map,
 //
 void Configuration::updateMatchList(const int index)
 {
-    // Update the match list's types information.
-    std::vector<MinimalMatchListEntry>::iterator it1   = match_lists_[index].begin();
-    const std::vector<MinimalMatchListEntry>::const_iterator end = match_lists_[index].end();
+    // Update the config match lists.
+    ConfigBucketMatchList::iterator it1 = match_lists_[index].begin();
+    const ConfigBucketMatchList::const_iterator end = match_lists_[index].end();
     for ( ; it1 != end; ++it1 )
     {
-        (*it1).match_type = types_[(*it1).index];
+        (*it1).match_types = types_[(*it1).index];
     }
 }
 
 
 // -----------------------------------------------------------------------------
 //
-const std::vector<MinimalMatchListEntry> & Configuration::minimalMatchList(const int origin_index,
-                                                                           const std::vector<int> & indices,
-                                                                           const LatticeMap & lattice_map) const
+const ConfigBucketMatchList & Configuration::configMatchList(const int origin_index,
+                                                             const std::vector<int> & indices,
+                                                             const LatticeMap & lattice_map) const
 {
     // Setup the return data.
-    tmp_minimal_match_list__.resize(indices.size());
+    tmp_match_list__.resize(indices.size());
 
     // Extract the coordinate of the first index.
     const Coordinate center = coordinates_[origin_index];
@@ -137,7 +165,7 @@ const std::vector<MinimalMatchListEntry> & Configuration::minimalMatchList(const
     // Setup the needed iterators.
     std::vector<int>::const_iterator it_index  = indices.begin();
     const std::vector<int>::const_iterator end = indices.end();
-    std::vector<MinimalMatchListEntry>::iterator it_match_list = tmp_minimal_match_list__.begin();
+    ConfigBucketMatchList::iterator it_match_list = tmp_match_list__.begin();
 
     const bool periodic_a = lattice_map.periodicA();
     const bool periodic_b = lattice_map.periodicB();
@@ -164,14 +192,14 @@ const std::vector<MinimalMatchListEntry> & Configuration::minimalMatchList(const
             const double distance = c.distanceToOrigin();
 
             // Get the type.
-            const int match_type = types_[(*it_index)];
+            (*it_match_list).match_types = types_[(*it_index)];
 
             // Save in the match list.
-            (*it_match_list).match_type  = match_type;
-            (*it_match_list).update_type = -1;
-            (*it_match_list).distance    = distance;
-            (*it_match_list).coordinate  = c;
-            (*it_match_list).index       = (*it_index);
+            (*it_match_list).distance = distance;
+            (*it_match_list).index = (*it_index);
+            (*it_match_list).x = c.x();
+            (*it_match_list).y = c.y();
+            (*it_match_list).z = c.z();
         }
     }
     // Periodic a-b
@@ -191,14 +219,14 @@ const std::vector<MinimalMatchListEntry> & Configuration::minimalMatchList(const
             const double distance = c.distanceToOrigin();
 
             // Get the type.
-            const int match_type = types_[(*it_index)];
+            (*it_match_list).match_types = types_[(*it_index)];
 
             // Save in the match list.
-            (*it_match_list).match_type  = match_type;
-            (*it_match_list).update_type = -1;
-            (*it_match_list).distance    = distance;
-            (*it_match_list).coordinate  = c;
-            (*it_match_list).index       = (*it_index);
+            (*it_match_list).distance = distance;
+            (*it_match_list).index = (*it_index);
+            (*it_match_list).x = c.x();
+            (*it_match_list).y = c.y();
+            (*it_match_list).z = c.z();
         }
     }
     else {
@@ -221,39 +249,40 @@ const std::vector<MinimalMatchListEntry> & Configuration::minimalMatchList(const
             const double distance = c.distanceToOrigin();
 
             // Get the type.
-            const int match_type = types_[(*it_index)];
+            (*it_match_list).match_types = types_[(*it_index)];
 
             // Save in the match list.
-            (*it_match_list).match_type  = match_type;
-            (*it_match_list).update_type = -1;
-            (*it_match_list).distance    = distance;
-            (*it_match_list).coordinate  = c;
-            (*it_match_list).index       = (*it_index);
+            (*it_match_list).distance = distance;
+            (*it_match_list).index = (*it_index);
+            (*it_match_list).x = c.x();
+            (*it_match_list).y = c.y();
+            (*it_match_list).z = c.z();
         }
     }
 
     // Sort and return.
-    std::sort(tmp_minimal_match_list__.begin(), tmp_minimal_match_list__.end());
-    return tmp_minimal_match_list__;
+    std::sort(tmp_match_list__.begin(), tmp_match_list__.end());
+    return tmp_match_list__;
 }
 
 
 // -----------------------------------------------------------------------------
 //
-void Configuration::performProcess(Process & process,
-                                   const int site_index,
-                                   const LatticeMap & lattice_map)
+void Configuration::performBucketProcess(Process & process,
+                                         const int site_index,
+                                         const LatticeMap & lattice_map)
 {
-    // PERFORMME
-    // Need to time and optimize the new parts of the routine.
+    // Store the process number for access from python.
+    latest_event_process_ = process.processNumber();
+    latest_event_site_    = site_index;
 
     // Get the proper match lists.
-    const std::vector<MinimalMatchListEntry> & process_match_list = process.minimalMatchList();
-    const std::vector<MinimalMatchListEntry> & site_match_list    = minimalMatchList(site_index);
+    const ProcessBucketMatchList & process_match_list = process.processMatchList();
+    const ConfigBucketMatchList & site_match_list     = configMatchList(site_index);
 
     // Iterators to the match list entries.
-    std::vector<MinimalMatchListEntry>::const_iterator it1 = process_match_list.begin();
-    std::vector<MinimalMatchListEntry>::const_iterator it2 = site_match_list.begin();
+    ProcessBucketMatchList::const_iterator it1 = process_match_list.begin();
+    ConfigBucketMatchList::const_iterator it2 = site_match_list.begin();
 
     // Iterators to the info storages.
     std::vector<int>::iterator it3 = process.affectedIndices().begin();
@@ -266,14 +295,22 @@ void Configuration::performProcess(Process & process,
     // Loop over the match lists and get the types and indices out.
     for( ; it1 != process_match_list.end(); ++it1, ++it2)
     {
-        // Get the type out of the process match list.
-        const int update_type = (*it1).update_type;
+        // Find out the update type.
+        const TypeBucket & update_types = (*it1).update_types;
 
         // Get the index out of the configuration match list.
         const int index = (*it2).index;
 
-        // NOTE: The > 0 is needed for handling the wildcard match.
-        if (types_[index] != update_type && update_type > 0)
+        // ML: Prototyping.
+        int sum = 0;
+        for (int i = 0; i  < update_types.size(); ++i)
+        {
+            // NOTE: Cast needed for clang.
+            sum += std::abs(update_types[i]);
+        }
+
+        // NOTE: The !(update_types[0] > 0) is needed for handling the wildcard match.
+        if (sum > 0 && !(update_types[0] > 0))
         {
             // Get the atom id to apply the move vector to.
             const int atom_id = atom_id_[index];
@@ -282,13 +319,35 @@ void Configuration::performProcess(Process & process,
             atom_id_coordinates_[atom_id] += (*it1).move_coordinate;
 
             // Set the type at this index.
-            types_[index]    = update_type;
-            elements_[index] = type_names_[update_type];
+            for (int i = 0; i < types_[index].size(); ++i)
+            {
+                types_[index][i] += update_types[i];
+            }
+
+            // Set the elements at this index.
+
+            // ML: FIXME: This is not a good solution.
+            //            We should store the update types as
+            //            a vector of strings in the match list entry,
+            //            instead of regenerating that list every time here.
+            std::vector<std::string> elements_at_index;
+            for (int i = 0; i < types_[index].size(); ++i)
+            {
+                for (int j = 0; j < types_[index][i]; ++j)
+                {
+                    elements_at_index.push_back(type_names_[i]);
+                }
+            }
+            elements_[index] = elements_at_index;
 
             // Update the atom id element.
             if (!(*it1).has_move_coordinate)
             {
-                atom_id_elements_[atom_id] = elements_[index];
+                // ML: FIXME: This behavior should be deprecated.
+                //            Now we only take the first occuring type at the site.
+                //            This is expected behavior but incorrect in general and
+                //            works only for one atom per site simulations.
+                atom_id_elements_[atom_id] = elements_[index][0];
             }
 
             // Mark this index as affected.
@@ -306,7 +365,7 @@ void Configuration::performProcess(Process & process,
         }
     }
 
-    // Perform the moves on all involved atom-ids.
+    // Perform the moves on all involved atom-IDs.
     const std::vector< std::pair<int,int> > & process_id_moves = process.idMoves();
 
     // Local vector to store the atom id updates in.
@@ -333,8 +392,33 @@ void Configuration::performProcess(Process & process,
 
         // Set the atom id at this lattice site index.
         atom_id_[index] = id;
-        atom_id_elements_[id] = elements_[index];
+
+
+        // ML: FIXME: This behavior should be deprecated.
+        // See above comment.
+        // Update the element type of this atom ID.
+        atom_id_elements_[id] = elements_[index][0];
 
     }
 }
 
+
+// -----------------------------------------------------------------------------
+//
+std::vector<int> Configuration::particlesPerType() const
+{
+    // Allocate space for the return values.
+    std::vector<int> particles_per_type(possible_types_.size(), 0);
+
+    // Loop over each site and sum the number of particle.
+    for (size_t i = 0; i < types_.size(); ++i)
+    {
+        for (size_t j = 0; j < particles_per_type.size(); ++j)
+        {
+            particles_per_type[j] += types_[i][j];
+        }
+    }
+
+    // DONE.
+    return particles_per_type;
+}

@@ -1,7 +1,7 @@
 """ Module for the LatticeTrajectory object """
 
 
-# Copyright (c)  2013  Mikael Leetmaa
+# Copyright (c)  2013-2014  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -14,7 +14,7 @@ import time
 
 from KMCLib.Backend.Backend import MPICommons
 from KMCLib.Utilities.Trajectory.Trajectory import Trajectory
-
+from KMCLib.Utilities.ConversionUtilities import toShortBucketsFormat
 
 class LatticeTrajectory(Trajectory):
     """
@@ -152,17 +152,51 @@ class LatticeTrajectory(Trajectory):
                     types_str = "types.append(["
                     indent = " "*14
                     row_length = len(types_str)
-                    for t in types[:-1]:
-                        row_length += len(t) + 2
-                        types_str += "\"" + t + "\"" + ","
 
-                        # Berak the row if above 70 positions.
-                        if row_length >= 70:
-                            types_str += "\n" + indent
-                            row_length = len(indent)
+                    if isinstance(types[:-1][0], str):
+                        for t in types[:-1]:
+                            row_length += len(t) + 2
+                            types_str += "\"" + t + "\"" + ","
 
-                    # Add the last type.
-                    types_str += "\"" + types[-1] + "\"" + "])\n"
+                            # Berak the row if above 70 positions.
+                            if row_length >= 70:
+                                types_str += "\n" + indent
+                                row_length = len(indent)
+
+                        # Add the last type.
+                        types_str += "\"" + types[-1] + "\"" + "])\n"
+
+                    # With bucket types.
+                    else:
+                        bucket_types = toShortBucketsFormat(types)
+
+                        # For all sites except the last.
+                        for bt in bucket_types[:-1]:
+
+                            # Start the types for this site.
+                            types_str += "["
+                            for t in bt[:-1]:
+                                types_str += "(" + str(t[0]) + ",\"" + t[1] + "\"),"
+                            if len(bt) > 0:
+                                t = bt[-1]
+                                types_str += "(" + str(t[0]) + ",\"" + t[1] + "\")"
+                                types_str += "],\n" + indent
+
+                            else:
+                                types_str += "],\n" + indent
+
+                        # For the last site.
+                        bt = bucket_types[-1]
+                        types_str += "["
+                        for t in bt[:-1]:
+                            types_str += "(" + str(t[0]) + ",\"" + t[1] + "\"),"
+                        if len(bt) > 0:
+                            t = bt[-1]
+                            types_str += "(" + str(t[0]) + ",\"" + t[1] + "\")]"
+                        else:
+                            types_str += "]"
+
+                        types_str += "])\n"
 
                     # Write it to file.
                     trajectory.write(types_str)

@@ -26,7 +26,7 @@ void Test_OnTheFlyMSD::testConstruction()
     coordinates[1][0] = 1.0;
     coordinates[1][1] = 2.0;
     coordinates[1][2] = 3.0;
-    const std::vector<std::string> elements(2, "AA");
+    const std::vector<std::vector<std::string> > elements(2, std::vector<std::string>(1, "AA"));
     std::map<std::string,int>  possible_types;
     possible_types["*"]  = 0;
     possible_types["AA"] = 1;
@@ -82,18 +82,18 @@ void Test_OnTheFlyMSD::testStepX()
 
     // Coordinates and elements.
     std::vector<std::vector<double> > coordinates;
-    std::vector<std::string> elements;
+    std::vector<std::vector<std::string> > elements;
 
     for (int i = 0; i < nI; ++i)
     {
         std::vector<double> c(3, 0.0);
         c[0] = static_cast<double>(i);
         coordinates.push_back(c);
-        elements.push_back("A");
+        elements.push_back(std::vector<std::string>(1, "A"));
     }
-    elements[0] = "V";
-    elements[2] = "V";
-    elements[4] = "V";
+    elements[0] = std::vector<std::string>(1, "V");
+    elements[2] = std::vector<std::string>(1, "V");
+    elements[4] = std::vector<std::string>(1, "V");
 
     // Possible types.
     std::map<std::string, int> possible_types;
@@ -119,15 +119,15 @@ void Test_OnTheFlyMSD::testStepX()
     configuration.initMatchLists(lattice_map, 1);
 
     // Setup a process that moves a V to the left.
-    std::vector<std::string> process_elements1(3);
-    process_elements1[0] = "V";
-    process_elements1[1] = "A";
-    process_elements1[2] = "A";
+    std::vector<std::vector<std::string> > process_elements1(3);
+    process_elements1[0] = std::vector<std::string>(1, "V");
+    process_elements1[1] = std::vector<std::string>(1, "A");
+    process_elements1[2] = std::vector<std::string>(1, "A");
 
-    std::vector<std::string> process_elements2(3);
-    process_elements2[0] = "A";
-    process_elements2[1] = "V";
-    process_elements2[2] = "A";
+    std::vector<std::vector<std::string> > process_elements2(3);
+    process_elements2[0] = std::vector<std::string>(1, "A");
+    process_elements2[1] = std::vector<std::string>(1, "V");
+    process_elements2[2] = std::vector<std::string>(1, "A");
 
     std::vector<std::vector<double> > process_coordinates(3, std::vector<double>(3, 0.0));
     process_coordinates[1][0] = -1.0;
@@ -177,7 +177,7 @@ void Test_OnTheFlyMSD::testStepX()
     const std::vector<int> & atom_id = configuration.atomID();
 
     // Peform the process.
-    configuration.performProcess(p1, 2, lattice_map);
+    configuration.performBucketProcess(p1, 2, lattice_map);
 
     // Check that we moved the correct indices.
     CPPUNIT_ASSERT_EQUAL(configuration.movedAtomIDs()[0], 2);
@@ -240,13 +240,13 @@ void Test_OnTheFlyMSD::testStepX()
     // ---------------------------------------------------------------------
 
     // Apply the reverse process.
-    process_elements1[0] = "A";
-    process_elements1[1] = "V";
-    process_elements1[2] = "A";
+    process_elements1[0] = std::vector<std::string>(1, "A");
+    process_elements1[1] = std::vector<std::string>(1, "V");
+    process_elements1[2] = std::vector<std::string>(1, "A");
 
-    process_elements2[0] = "V";
-    process_elements2[1] = "A";
-    process_elements2[2] = "A";
+    process_elements2[0] = std::vector<std::string>(1, "V");
+    process_elements2[1] = std::vector<std::string>(1, "A");
+    process_elements2[2] = std::vector<std::string>(1, "A");
 
     Configuration c3(process_coordinates, process_elements1, possible_types);
     Configuration c4(process_coordinates, process_elements2, possible_types);
@@ -254,7 +254,7 @@ void Test_OnTheFlyMSD::testStepX()
 
     p2.addSite(2, 0.0);
     configuration.updateMatchList(2);
-    configuration.performProcess(p2, 2, lattice_map);
+    configuration.performBucketProcess(p2, 2, lattice_map);
     time = 5.4;
     msd.registerStep(time, configuration);
 
@@ -289,11 +289,11 @@ void Test_OnTheFlyMSD::testStepX()
 
     // Apply the processes to the zeroth index.
     configuration.updateMatchList(0);
-    configuration.performProcess(p1, 0, lattice_map);
+    configuration.performBucketProcess(p1, 0, lattice_map);
     time += 5.2;
     msd.registerStep(time, configuration);
     configuration.updateMatchList(0);
-    configuration.performProcess(p2, 0, lattice_map);
+    configuration.performBucketProcess(p2, 0, lattice_map);
     time += 1.3;
     msd.registerStep(time, configuration);
 
@@ -303,11 +303,11 @@ void Test_OnTheFlyMSD::testStepX()
     for (int i = 0; i < 4; ++i)
     {
         configuration.updateMatchList(2);
-        configuration.performProcess(p1, 2, lattice_map);
+        configuration.performBucketProcess(p1, 2, lattice_map);
         time += 5.2;
         msd.registerStep(time, configuration);
         configuration.updateMatchList(2);
-        configuration.performProcess(p2, 2, lattice_map);
+        configuration.performBucketProcess(p2, 2, lattice_map);
         time += 1.3;
         msd.registerStep(time, configuration);
     }
@@ -355,18 +355,18 @@ void Test_OnTheFlyMSD::testStepY()
 
     // Coordinates and elements.
     std::vector<std::vector<double> > coordinates;
-    std::vector<std::string> elements;
+    std::vector<std::vector<std::string> > elements;
 
     for (int i = 0; i < nJ; ++i)
     {
         std::vector<double> c(3, 0.0);
         c[1] = static_cast<double>(i);
         coordinates.push_back(c);
-        elements.push_back("A");
+        elements.push_back(std::vector<std::string>(1, "A"));
     }
-    elements[0] = "V";
-    elements[2] = "V";
-    elements[4] = "V";
+    elements[0] = std::vector<std::string>(1, "V");
+    elements[2] = std::vector<std::string>(1, "V");
+    elements[4] = std::vector<std::string>(1, "V");
 
     // Possible types.
     std::map<std::string, int> possible_types;
@@ -392,15 +392,15 @@ void Test_OnTheFlyMSD::testStepY()
     configuration.initMatchLists(lattice_map, 1);
 
     // Setup a process that moves a V to the left.
-    std::vector<std::string> process_elements1(3);
-    process_elements1[0] = "V";
-    process_elements1[1] = "A";
-    process_elements1[2] = "A";
+    std::vector<std::vector<std::string> > process_elements1(3);
+    process_elements1[0] = std::vector<std::string>(1, "V");
+    process_elements1[1] = std::vector<std::string>(1, "A");
+    process_elements1[2] = std::vector<std::string>(1, "A");
 
-    std::vector<std::string> process_elements2(3);
-    process_elements2[0] = "A";
-    process_elements2[1] = "V";
-    process_elements2[2] = "A";
+    std::vector<std::vector<std::string> > process_elements2(3);
+    process_elements2[0] = std::vector<std::string>(1, "A");
+    process_elements2[1] = std::vector<std::string>(1, "V");
+    process_elements2[2] = std::vector<std::string>(1, "A");
 
     std::vector<std::vector<double> > process_coordinates(3, std::vector<double>(3, 0.0));
     process_coordinates[1][0] =  0.0;
@@ -450,7 +450,7 @@ void Test_OnTheFlyMSD::testStepY()
     const std::vector<int> & atom_id = configuration.atomID();
 
     // Peform the process.
-    configuration.performProcess(p1, 2, lattice_map);
+    configuration.performBucketProcess(p1, 2, lattice_map);
 
     // Check that we moved the correct indices.
     CPPUNIT_ASSERT_EQUAL(configuration.movedAtomIDs()[0], 2);
@@ -512,13 +512,13 @@ void Test_OnTheFlyMSD::testStepY()
     // ---------------------------------------------------------------------
 
     // Apply the reverse process.
-    process_elements1[0] = "A";
-    process_elements1[1] = "V";
-    process_elements1[2] = "A";
+    process_elements1[0] = std::vector<std::string>(1, "A");
+    process_elements1[1] = std::vector<std::string>(1, "V");
+    process_elements1[2] = std::vector<std::string>(1, "A");
 
-    process_elements2[0] = "V";
-    process_elements2[1] = "A";
-    process_elements2[2] = "A";
+    process_elements2[0] = std::vector<std::string>(1, "V");
+    process_elements2[1] = std::vector<std::string>(1, "A");
+    process_elements2[2] = std::vector<std::string>(1, "A");
 
     Configuration c3(process_coordinates, process_elements1, possible_types);
     Configuration c4(process_coordinates, process_elements2, possible_types);
@@ -526,7 +526,7 @@ void Test_OnTheFlyMSD::testStepY()
 
     p2.addSite(2, 0.0);
     configuration.updateMatchList(2);
-    configuration.performProcess(p2, 2, lattice_map);
+    configuration.performBucketProcess(p2, 2, lattice_map);
     time = 5.4;
     msd.registerStep(time, configuration);
 
@@ -561,11 +561,11 @@ void Test_OnTheFlyMSD::testStepY()
 
     // Apply the processes to the zeroth index.
     configuration.updateMatchList(0);
-    configuration.performProcess(p1, 0, lattice_map);
+    configuration.performBucketProcess(p1, 0, lattice_map);
     time += 5.2;
     msd.registerStep(time, configuration);
     configuration.updateMatchList(0);
-    configuration.performProcess(p2, 0, lattice_map);
+    configuration.performBucketProcess(p2, 0, lattice_map);
     time += 1.3;
     msd.registerStep(time, configuration);
 
@@ -575,11 +575,11 @@ void Test_OnTheFlyMSD::testStepY()
     for (int i = 0; i < 4; ++i)
     {
         configuration.updateMatchList(2);
-        configuration.performProcess(p1, 2, lattice_map);
+        configuration.performBucketProcess(p1, 2, lattice_map);
         time += 5.2;
         msd.registerStep(time, configuration);
         configuration.updateMatchList(2);
-        configuration.performProcess(p2, 2, lattice_map);
+        configuration.performBucketProcess(p2, 2, lattice_map);
         time += 1.3;
         msd.registerStep(time, configuration);
     }
@@ -626,18 +626,18 @@ void Test_OnTheFlyMSD::testStepZ()
 
     // Coordinates and elements.
     std::vector<std::vector<double> > coordinates;
-    std::vector<std::string> elements;
+    std::vector<std::vector<std::string> > elements;
 
     for (int i = 0; i < nK; ++i)
     {
         std::vector<double> c(3, 0.0);
         c[2] = static_cast<double>(i);
         coordinates.push_back(c);
-        elements.push_back("A");
+        elements.push_back(std::vector<std::string>(1, "A"));
     }
-    elements[0] = "V";
-    elements[2] = "V";
-    elements[4] = "V";
+    elements[0] = std::vector<std::string>(1, "V");
+    elements[2] = std::vector<std::string>(1, "V");
+    elements[4] = std::vector<std::string>(1, "V");
 
     // Possible types.
     std::map<std::string, int> possible_types;
@@ -663,15 +663,15 @@ void Test_OnTheFlyMSD::testStepZ()
     configuration.initMatchLists(lattice_map, 1);
 
     // Setup a process that moves a V to the left.
-    std::vector<std::string> process_elements1(3);
-    process_elements1[0] = "V";
-    process_elements1[1] = "A";
-    process_elements1[2] = "A";
+    std::vector<std::vector<std::string> > process_elements1(3);
+    process_elements1[0] = std::vector<std::string>(1, "V");
+    process_elements1[1] = std::vector<std::string>(1, "A");
+    process_elements1[2] = std::vector<std::string>(1, "A");
 
-    std::vector<std::string> process_elements2(3);
-    process_elements2[0] = "A";
-    process_elements2[1] = "V";
-    process_elements2[2] = "A";
+    std::vector<std::vector<std::string> > process_elements2(3);
+    process_elements2[0] = std::vector<std::string>(1, "A");
+    process_elements2[1] = std::vector<std::string>(1, "V");
+    process_elements2[2] = std::vector<std::string>(1, "A");
 
     std::vector<std::vector<double> > process_coordinates(3, std::vector<double>(3, 0.0));
     process_coordinates[1][0] =  0.0;
@@ -721,7 +721,7 @@ void Test_OnTheFlyMSD::testStepZ()
     const std::vector<int> & atom_id = configuration.atomID();
 
     // Peform the process.
-    configuration.performProcess(p1, 2, lattice_map);
+    configuration.performBucketProcess(p1, 2, lattice_map);
 
     // Check that we moved the correct indices.
     CPPUNIT_ASSERT_EQUAL(configuration.movedAtomIDs()[0], 2);
@@ -783,13 +783,13 @@ void Test_OnTheFlyMSD::testStepZ()
     // ---------------------------------------------------------------------
 
     // Apply the reverse process.
-    process_elements1[0] = "A";
-    process_elements1[1] = "V";
-    process_elements1[2] = "A";
+    process_elements1[0] = std::vector<std::string>(1, "A");
+    process_elements1[1] = std::vector<std::string>(1, "V");
+    process_elements1[2] = std::vector<std::string>(1, "A");
 
-    process_elements2[0] = "V";
-    process_elements2[1] = "A";
-    process_elements2[2] = "A";
+    process_elements2[0] = std::vector<std::string>(1, "V");
+    process_elements2[1] = std::vector<std::string>(1, "A");
+    process_elements2[2] = std::vector<std::string>(1, "A");
 
     Configuration c3(process_coordinates, process_elements1, possible_types);
     Configuration c4(process_coordinates, process_elements2, possible_types);
@@ -797,7 +797,7 @@ void Test_OnTheFlyMSD::testStepZ()
 
     p2.addSite(2, 0.0);
     configuration.updateMatchList(2);
-    configuration.performProcess(p2, 2, lattice_map);
+    configuration.performBucketProcess(p2, 2, lattice_map);
     time = 5.4;
     msd.registerStep(time, configuration);
 
@@ -832,11 +832,11 @@ void Test_OnTheFlyMSD::testStepZ()
 
     // Apply the processes to the zeroth index.
     configuration.updateMatchList(0);
-    configuration.performProcess(p1, 0, lattice_map);
+    configuration.performBucketProcess(p1, 0, lattice_map);
     time += 5.2;
     msd.registerStep(time, configuration);
     configuration.updateMatchList(0);
-    configuration.performProcess(p2, 0, lattice_map);
+    configuration.performBucketProcess(p2, 0, lattice_map);
     time += 1.3;
     msd.registerStep(time, configuration);
 
@@ -846,11 +846,11 @@ void Test_OnTheFlyMSD::testStepZ()
     for (int i = 0; i < 4; ++i)
     {
         configuration.updateMatchList(2);
-        configuration.performProcess(p1, 2, lattice_map);
+        configuration.performBucketProcess(p1, 2, lattice_map);
         time += 5.2;
         msd.registerStep(time, configuration);
         configuration.updateMatchList(2);
-        configuration.performProcess(p2, 2, lattice_map);
+        configuration.performBucketProcess(p2, 2, lattice_map);
         time += 1.3;
         msd.registerStep(time, configuration);
     }

@@ -6,6 +6,7 @@
 
 if (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
   set( CPPUNIT ${KMCLib_SOURCE_DIR}/externals/lib/cppunit/lib/libcppunit.dylib )
+  add_definitions( -Wno-unused-value )
 
 else()
   # Use the custom search path for the cppunit test library if given.
@@ -15,6 +16,11 @@ else()
                 ${KMCLib_SOURCE_DIR}/externals/lib/cppunit/lib )
 endif()
 
+# Use the custom search path for the cppunit test library if given.
+message( STATUS "Custom search path for -lcppunit: ${CPPUNIT_DIR}")
+find_library( CPPUNIT NAMES cppunit PATHS
+              ${CPPUNIT_DIR}
+              ${KMCLib_SOURCE_DIR}/externals/lib/cppunit/lib )
 message( STATUS "Found cppunit:  ${CPPUNIT}")
 
 # Find all test files.
@@ -37,4 +43,4 @@ add_library( unittest EXCLUDE_FROM_ALL ${CppSources} )
 add_executable( test.x EXCLUDE_FROM_ALL testRunner )
 
 # Define the libraries to link the test.x executable against.
-target_link_libraries( test.x ${CPPUNIT} unittest src )
+target_link_libraries( test.x ${CPPUNIT} unittest src custom )

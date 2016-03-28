@@ -1,7 +1,7 @@
 """ Module for the KMCRateCalculatorPlugin class """
 
 
-# Copyright (c)  2013  Mikael Leetmaa
+# Copyright (c)  2013-2014  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -12,6 +12,7 @@ import numpy
 
 from KMCLib.Backend import Backend
 from KMCLib.Exceptions.Error import Error
+from KMCLib.Utilities.ConversionUtilities import stdVectorTypeBucketToPython
 
 class KMCRateCalculatorPlugin(Backend.RateCalculator):
     """
@@ -19,15 +20,53 @@ class KMCRateCalculatorPlugin(Backend.RateCalculator):
     the behaviour of the calculation of individual rates in the KMC simulation.
     """
 
-    def __init__(self):
+    def __init__(self, configuration):
         """
         Base class constructor.
+
+        :param configuration: The KMCConfiguration
         """
         # Call the C++ base class constructor.
         Backend.RateCalculator.__init__(self)
 
+        # Store member data on the class.
+        self.configuration = configuration
+
         # Call the custom setup.
         self.initialize()
+
+    def backendRateCallbackBuckets(self,
+                                   cpp_coords,
+                                   coords_len,
+                                   occupations,
+                                   update,
+                                   types_map,
+                                   rate_constant,
+                                   process_number,
+                                   global_x,
+                                   global_y,
+                                   global_z):
+        """
+        Function called from C++ to get the rate. It function recieves
+        the data from C++ and parse it to a Python friendly format to send it
+        forward to the custom rate function.
+        """
+        # PERFORMME: move operations to C++.
+
+        # Determine the occupations after the move.
+        occupations_after = Backend.StdVectorTypeBucket()
+
+        for i in range(len(update)):
+            occupations_after.push_back(occupations[i].add(update[i]))
+
+        # Call and return the custom rate.
+        global_coordinate = (global_x, global_y, global_z)
+        return self.rate(numpy.array(cpp_coords).reshape(coords_len,3),
+                         stdVectorTypeBucketToPython(occupations, types_map),
+                         stdVectorTypeBucketToPython(occupations_after, types_map),
+                         rate_constant,
+                         process_number,
+                         global_coordinate)
 
     def backendRateCallback(self,
                             cpp_coords,
@@ -104,4 +143,32 @@ class KMCRateCalculatorPlugin(Backend.RateCalculator):
         """
         # Returning None results in default behaviour.
         return None
+
+    def cacheRates(self):
+        """
+        Method for determining if custom rates should be cached.
+        If caching is used for a process, the process will only be evaluated once
+        for each particular environment, not allowing for changes of the rate with
+        the global index or with the simulation time. If cached rates are used
+        processes can be exluded from the caching using the excludeFromCaching function.
+
+        :returns: True for caching or False for no caching. Defaults to False.
+        :rtype: bool
+        """
+        return False
+
+    def excludeFromCaching(self):
+        """
+        Method for exluding processes from the rate caching.
+        Overload for custom behavior. The method only takes effect if caching
+        is enabled with the cacheRates function.
+
+        :returns: A tuple of process numbers to exclue from caching.
+        :rtype: tuple
+        """
+        return ()
+
+
+
+
 

@@ -1,5 +1,5 @@
 /*
-  Copyright (c)  2012-2013  Mikael Leetmaa
+  Copyright (c)  2012-2014  Mikael Leetmaa
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -27,14 +27,29 @@ public:
     CPPUNIT_TEST( testConstruction );
     CPPUNIT_TEST( testNotEqualOperator );
     CPPUNIT_TEST( testLessOperator );
-    CPPUNIT_TEST( testQuery );
+    CPPUNIT_TEST( testInitWildcard );
+    CPPUNIT_TEST( testProcessBucketEntryConstruction );
+    CPPUNIT_TEST( testConfigBucketEntryConstruction );
+    CPPUNIT_TEST( testProcessConfigNotEqual );
+    CPPUNIT_TEST( testProcessBucketLessOperator );
+    CPPUNIT_TEST( testConfigBucketLessOperator );
+    CPPUNIT_TEST( testQueryProcessBucket );
+    CPPUNIT_TEST( testQueryConfigBucket );
+    CPPUNIT_TEST( testSamePoint );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstruction();
     void testNotEqualOperator();
     void testLessOperator();
-    void testQuery();
-
+    void testInitWildcard();
+    void testProcessBucketEntryConstruction();
+    void testConfigBucketEntryConstruction();
+    void testProcessConfigNotEqual();
+    void testProcessBucketLessOperator();
+    void testConfigBucketLessOperator();
+    void testQueryProcessBucket();
+    void testQueryConfigBucket();
+    void testSamePoint();
 };
 
 #endif

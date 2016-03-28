@@ -17,6 +17,7 @@
 #include "configuration.h"
 #include "latticemap.h"
 #include "ratecalculator.h"
+#include "matchlist.h"
 
 
 // -----------------------------------------------------------------------------
@@ -123,7 +124,7 @@ void Interactions::updateProcessMatchLists(const Configuration & configuration,
         }
 
         // Get the match list for this process.
-        std::vector<MinimalMatchListEntry> & process_matchlist = p.minimalMatchList();
+        ProcessBucketMatchList & process_matchlist = p.processMatchList();
 
         // Take out the basis position for the process.
         const int  basis_position = p.basisSites()[0];
@@ -134,12 +135,12 @@ void Interactions::updateProcessMatchLists(const Configuration & configuration,
         const int jj    = lattice_map.repetitionsB() / 2;
         const int kk    = lattice_map.repetitionsC() / 2;
         const int index = lattice_map.indicesFromCell(ii, jj, kk)[basis_position];
-        const std::vector<MinimalMatchListEntry> config_matchlist = configuration.minimalMatchList(index);
+        const ConfigBucketMatchList config_matchlist = configuration.configMatchList(index);
 
         // Perform the match where we add wildcards to fill the vacancies in the
         // process match list.
-        std::vector<MinimalMatchListEntry>::iterator it1 = process_matchlist.begin();
-        std::vector<MinimalMatchListEntry>::const_iterator it2 = config_matchlist.begin();
+        ProcessBucketMatchList::iterator it1 = process_matchlist.begin();
+        ConfigBucketMatchList::const_iterator it2 = config_matchlist.begin();
 
         // Insert the wildcards and update the indexing.
         int old_index = 0;
@@ -149,11 +150,11 @@ void Interactions::updateProcessMatchLists(const Configuration & configuration,
         for ( ; it1 != process_matchlist.end() && it2 != config_matchlist.end(); ++it1, ++it2 )
         {
             // Check if there is a match in lattice point.
-            if( !((*it1) == (*it2)) )
+            if( ! samePoint(*it1, *it2) )
             {
                 // If not matching, add a wildcard entry to it1.
-                MinimalMatchListEntry wildcard_entry = (*it2);
-                wildcard_entry.match_type = 0;
+                ProcessBucketMatchListEntry wildcard_entry;// = (*it2);
+                wildcard_entry.initWildcard(*it2);
 
                 it1 = process_matchlist.insert(it1, wildcard_entry);
                 // it1 now points to the newly inserted position.
@@ -164,6 +165,7 @@ void Interactions::updateProcessMatchLists(const Configuration & configuration,
             {
                 // Add the mapping.
                 index_mapping[old_index] = new_index;
+
                 ++old_index;
                 ++new_index;
            }
@@ -263,3 +265,16 @@ Process* Interactions::pickProcess()
 
     return process_pointers_[index];
 }
+
+
+// -----------------------------------------------------------------------------
+//
+void Interactions::clearMatching()
+{
+    for (size_t i = 0; i < process_pointers_.size(); ++i)
+    {
+        process_pointers_[i]->clearSites();
+    }
+}
+
+

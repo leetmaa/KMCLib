@@ -1,4 +1,4 @@
-# Copyright (c)  2012-2015  Mikael Leetmaa
+# Copyright (c)  2012-2016  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -59,14 +59,14 @@ if (${CMAKE_CXX_COMPILER_ID} MATCHES "Intel")
 elseif (CMAKE_COMPILER_IS_GNUCXX)
   # Do not use -Bsymbolic-functions with g++ on Mac OS X
   if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fPIC -Wall -Wextra -Werror -pedantic -std=c++0x")
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -ffast-math -fPIC -Wall -Wextra -Werror -pedantic -std=c++0x")
   else()
-    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-Bsymbolic -O3 -fPIC -Wall -Wextra -Werror -pedantic -std=c++0x")
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wl,-Bsymbolic -O3 -ffast-math -fPIC -Wall -Wextra -Werror -pedantic -std=c++0x")
   endif()
 
   set( CMAKE_CXX_FLAGS_DEBUG "-g -pg" )
   set( CMAKE_CXX_FLAGS_RELEASE  "" )
-  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO  "-g -pg" )
+  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO  "" )
 
   # Allow for unused parameters.
   add_definitions( -Wno-unused-parameter )
@@ -78,7 +78,6 @@ elseif (CMAKE_COMPILER_IS_GNUCXX)
     add_definitions( -DMPICH_SKIP_MPICXX )
     add_definitions( -Wno-long-long )
   endif()
-
 elseif (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
   message( STATUS "Using compiler ${CMAKE_CXX_COMPILER_ID}")
 
@@ -115,6 +114,12 @@ include_directories( ${KMCLib_SOURCE_DIR}/externals/include )
 add_subdirectory(src)
 
 # -----------------------------------------------------------------------------
+# ADD THE CUSTOM TARGET
+# -----------------------------------------------------------------------------
+
+add_subdirectory(custom)
+
+# -----------------------------------------------------------------------------
 # ADD THE TESTS TARGET
 # -----------------------------------------------------------------------------
 
@@ -130,5 +135,10 @@ add_subdirectory(wrap)
 # ADD THE INSTALL TARGET
 # -----------------------------------------------------------------------------
 
-install( FILES ${CMAKE_BINARY_DIR}/wrap/Backend.py ${CMAKE_BINARY_DIR}/wrap/_Backend.so
-         DESTINATION ${CMAKE_BINARY_DIR}/../../python/src/KMCLib/Backend/ )
+install( FILES
+               ${CMAKE_BINARY_DIR}/wrap/Backend.py
+               ${CMAKE_BINARY_DIR}/wrap/_Backend.so
+               ${CMAKE_BINARY_DIR}/wrap/Custom.py
+               ${CMAKE_BINARY_DIR}/wrap/_Custom.so
+         DESTINATION
+               ${CMAKE_BINARY_DIR}/../../python/src/KMCLib/Backend/ )

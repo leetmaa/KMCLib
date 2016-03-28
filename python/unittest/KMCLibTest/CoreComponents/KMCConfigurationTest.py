@@ -1,7 +1,7 @@
 """" Module for testing KMCConfiguration """
 
 
-# Copyright (c)  2012  Mikael Leetmaa
+# Copyright (c)  2012-2015  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -339,6 +339,40 @@ class KMCConfigurationTest(unittest.TestCase):
                                                            types=types_1,
                                                            default_type=default_type))
 
+    # FIXME
+    def notestTypesBucketFormat(self):
+        """ Test that the configuration accepts the bucket input format. """
+        # Define the unit cell.
+        unit_cell = KMCUnitCell(cell_vectors=numpy.array([[2.1,0.0,0.0],
+                                                          [0.0,1.0,0.0],
+                                                          [0.0,0.0,1.0]]),
+                                basis_points=[[0.0,0.0,0.0]])
+
+        # And a lattice.
+        lattice = KMCLattice(unit_cell=unit_cell,
+                             repetitions=(10,1,1),
+                             periodic=(True,False,False))
+
+        # Populate the lattice with types.
+        types = [(2,"A"),
+                 "B",
+                 ["B", "B", "A"],
+                 ["B", (2,"A")],
+                 "B",
+                 "empty",
+                 [(3,"A")],
+                 [(1,"B"), "A"],
+                 [(2,"A")],
+                 "empty"]
+
+        # Setup the configuration.
+        config = KMCConfiguration(lattice=lattice,
+                                  types=types,
+                                  possible_types=['A','B','empty'])
+
+        # Retrieve the types information from the configuration backend.
+        # FXME: NEEDS IMPLEMENTATION
+        print config.types()
 
     def testLatticeMap(self):
         """ Make sure the lattice map we get correspond to the lattice we give. """
@@ -423,6 +457,7 @@ class KMCConfigurationTest(unittest.TestCase):
     def testQueries(self):
         """ Test the configuration's query functions. """
         config = KMCConfiguration.__new__(KMCConfiguration)
+        config._KMCConfiguration__use_buckets = False
 
         c0_ref = numpy.random.random()
         c1_ref = numpy.random.random()
@@ -438,13 +473,25 @@ class KMCConfigurationTest(unittest.TestCase):
                 return ("A", "B", "F")
             def atomIDCoordinates(self):
                 return (Backend.Coordinate(c0_ref,c1_ref,c2_ref),)
+            def movedAtomIDs(self):
+                return (123, 234)
+            def latestEventProcess(self):
+                return 995976943
+            def latestEventSite(self):
+                return 556462676
+            def particlesPerType(self):
+                return (123, 467, 432)
 
         config._KMCConfiguration__backend = BackendProxy()
 
         # Query and check.
-        atom_id_types  = config.atomIDTypes()
-        atom_id_coords = config.atomIDCoordinates()
-        lattice_types  = config.types()
+        atom_id_types        = config.atomIDTypes()
+        atom_id_coords       = config.atomIDCoordinates()
+        lattice_types        = config.types()
+        moved_atom_ids       = config.movedAtomIDs()
+        latest_event_process = config.latestEventProcess()
+        latest_event_site    = config.latestEventSite()
+        particles_per_type   = config.particlesPerType()
 
         self.assertEqual(atom_id_types, ("A","B","F"))
         self.assertEqual(lattice_types, ["B","F","A"])
@@ -452,6 +499,11 @@ class KMCConfigurationTest(unittest.TestCase):
         self.assertAlmostEqual(atom_id_coords[0][0], c0_ref, 10)
         self.assertAlmostEqual(atom_id_coords[0][1], c1_ref, 10)
         self.assertAlmostEqual(atom_id_coords[0][2], c2_ref, 10)
+
+        self.assertEqual(moved_atom_ids,      (123, 234))
+        self.assertEqual(latest_event_process, 995976943)
+        self.assertEqual(latest_event_site,    556462676)
+        self.assertEqual(particles_per_type,  (123, 467, 432))
 
     def testLatticeQuery(self):
         """ Test the query function for the lattice. """

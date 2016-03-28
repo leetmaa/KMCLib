@@ -1,7 +1,7 @@
 """ Module for testing the common checking utilities. """
 
 
-# Copyright (c)  2012  Mikael Leetmaa
+# Copyright (c)  2012-2014  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -23,6 +23,7 @@ from KMCLib.Utilities.CheckUtilities import checkTypes
 from KMCLib.Utilities.CheckUtilities import checkCellVectors
 from KMCLib.Utilities.CheckUtilities import checkPositiveInteger
 from KMCLib.Utilities.CheckUtilities import checkPositiveFloat
+from KMCLib.Utilities.CheckUtilities import checkAndNormaliseBucketEntry
 
 # Implement the test.
 class CheckUtilitiesTest(unittest.TestCase):
@@ -283,6 +284,66 @@ class CheckUtilitiesTest(unittest.TestCase):
         self.assertRaises( Error,
                            lambda: checkPositiveFloat("1.1", 1.2, "fail") )
 
+    def testCheckAndNormaliseBucketEntry(self):
+        """ Check normalization of types information in the bucket format. """
+        # One A.
+        t = checkAndNormaliseBucketEntry("A")
+        self.assertEqual(t, [(1, "A")])
+
+        t = checkAndNormaliseBucketEntry(["A"])
+        self.assertEqual(t, [(1, "A")])
+
+        t = checkAndNormaliseBucketEntry([(1, "A")])
+        self.assertEqual(t, [(1, "A")])
+
+        # Two A.
+        t = checkAndNormaliseBucketEntry(["A", "A"])
+        self.assertEqual(t, [(2, "A")])
+
+        t = checkAndNormaliseBucketEntry((2, "A"))
+        self.assertEqual(t, [(2, "A")])
+
+        t = checkAndNormaliseBucketEntry([(2, "A")])
+        self.assertEqual(t, [(2, "A")])
+
+        t = checkAndNormaliseBucketEntry(["A", (1, "A")])
+        self.assertEqual(t, [(2, "A")])
+
+        t = checkAndNormaliseBucketEntry([(1, "A"), (1, "A")])
+        self.assertEqual(t, [(2, "A")])
+
+        # Three A.
+        t = checkAndNormaliseBucketEntry(["A", "A", "A"])
+        self.assertEqual(t, [(3, "A")])
+
+        t = checkAndNormaliseBucketEntry((3, "A"))
+        self.assertEqual(t, [(3, "A")])
+
+        t = checkAndNormaliseBucketEntry([(3, "A")])
+        self.assertEqual(t, [(3, "A")])
+
+        t = checkAndNormaliseBucketEntry(["A", (2, "A")])
+        self.assertEqual(t, [(3, "A")])
+
+        t = checkAndNormaliseBucketEntry(["A", (1, "A"), "A"])
+        self.assertEqual(t, [(3, "A")])
+
+        t = checkAndNormaliseBucketEntry([(2, "A"), (1, "A")])
+        self.assertEqual(t, [(3, "A")])
+
+        # Three A, four B.
+        t = checkAndNormaliseBucketEntry(["B", "B", "A", "A", "A", "B", "B"])
+        self.assertEqual(t, [(4, "B"), (3, "A")])
+
+        t = checkAndNormaliseBucketEntry(["A", "B", "B", "A", "A", "B", "B"])
+        self.assertEqual(t, [(3, "A"), (4, "B")])
+
+        t = checkAndNormaliseBucketEntry([(2, "B"), (3, "A"), "B", (1, "B")])
+        self.assertEqual(t, [(4, "B"), (3, "A")])
+
+        # Three A, four B, five C.
+        t = checkAndNormaliseBucketEntry(["B", "B", (2, "C"), "A", "A", "A", "B", "B", (2, "C"), "C"])
+        self.assertEqual(t, [(4, "B"), (5, "C"), (3, "A")])
 
 
 if __name__ == '__main__':

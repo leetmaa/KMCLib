@@ -14,6 +14,7 @@ from KMCLib.CoreComponents.KMCConfiguration import KMCConfiguration
 from KMCLib.CoreComponents.KMCInteractions import KMCInteractions
 from KMCLib.CoreComponents.KMCControlParameters import KMCControlParameters
 from KMCLib.PluginInterfaces.KMCAnalysisPlugin import KMCAnalysisPlugin
+from KMCLib.PluginInterfaces.KMCBreakerPlugin import KMCBreakerPlugin
 from KMCLib.Exceptions.Error import Error
 from KMCLib.Utilities.Trajectory.LatticeTrajectory import LatticeTrajectory
 from KMCLib.Utilities.Trajectory.XYZTrajectory import XYZTrajectory
@@ -73,8 +74,8 @@ class KMCLatticeModel(object):
             cpp_config       = self.__configuration._backend()
             cpp_lattice_map  = self.__configuration._latticeMap()
             cpp_interactions = self.__interactions._backend(self.__configuration.possibleTypes(),
-                                                            cpp_lattice_map.nBasis() )
-
+                                                            cpp_lattice_map.nBasis(),
+                                                            self.__configuration)
             # Construct a timer.
             self.__cpp_timer = Backend.SimulationTimer()
 
@@ -90,7 +91,8 @@ class KMCLatticeModel(object):
             control_parameters=None,
             trajectory_filename=None,
             trajectory_type=None,
-            analysis=None):
+            analysis=None,
+            breakers=None):
         """
         Run the KMC lattice model simulation with specified parameters.
 
@@ -105,6 +107,8 @@ class KMCLatticeModel(object):
                                     The 'xyz' format gives type and coordinate for each particle.
                                     The default type is 'lattice'.
         :param analysis:            A list of instantiated analysis objects that should be used for on-the-fly analysis.
+
+        :param breakers:            A list of instantiated breaker objects to break the Monte Carlo loop with a custom criterion.
         """
         # Check the input.
         if not isinstance(control_parameters, KMCControlParameters):
@@ -140,6 +144,13 @@ must be given as string."""
             msg = "Each element in the 'analyis' list must be an instance of KMCAnalysisPlugin."
             analysis = checkSequenceOf(analysis, KMCAnalysisPlugin, msg)
 
+        # Check the breakers.
+        if breakers is None:
+            breakers = []
+        else:
+            msg = "Each element in the 'breakers' list must be an instance of KMCBreakerPlugin."
+            breakers = checkSequenceOf(breakers, KMCBreakerPlugin, msg)
+
         # Set and seed the backend random number generator.
         if not Backend.setRngType(control_parameters.rngType()):
             raise Error("DEVICE random number generator is not supported by your system, or the std::random_device in the standard C++ library you use is implemented using a pseudo random number generator (entropy=0).")
@@ -161,6 +172,7 @@ must be given as string."""
             raise Error("No available processes. None of the processes defined as input match any position in the configuration. Change the initial configuration or processes to run KMC.")
 
         # Setup a trajectory object.
+        last_time = self.__cpp_timer.simulationTime()
         if use_trajectory:
             if trajectory_type == 'lattice':
                 trajectory = LatticeTrajectory(trajectory_filename=trajectory_filename,
@@ -187,16 +199,17 @@ must be given as string."""
         n_steps   = control_parameters.numberOfSteps()
         n_dump    = control_parameters.dumpInterval()
         n_analyse = control_parameters.analysisInterval()
+        dump_time = control_parameters.dumpTimeInterval()
+
         prettyPrint(" KMCLib: Runing for %i steps, starting from time: %f\n"%(n_steps, self.__cpp_timer.simulationTime()))
 
         # Run the KMC simulation.
         try:
             # Loop over the steps.
             step = 0
+            time_step = 0
             while(step < n_steps):
                 step += 1
-#            for s in range(n_steps):
-#                step = s+1
 
                 # Check if it is possible to take a step.
                 nP = cpp_model.interactions().totalAvailableSites()
@@ -204,14 +217,37 @@ must be given as string."""
                     raise Error("No more available processes.")
 
                 # Take a step.
-                cpp_model.singleStep()
+                time_before = self.__cpp_timer.simulationTime()
+                cpp_model.propagateTime()
+                time_after  = self.__cpp_timer.simulationTime()
 
-                if ((step)%n_dump == 0):
-                    prettyPrint(" KMCLib: %i steps executed. time: %20.10e "%(step, self.__cpp_timer.simulationTime()))
+                # Check if it is time to dump the previous step to the equidistant trajectory.
+                if ((dump_time is not None) and ((time_after-last_time) >= dump_time)):
+                    time_step += 1
+                    sample_time = time_step * dump_time
+                    prettyPrint(" KMCLib: %14i steps executed. time: %20.10e"%(step-1, sample_time))
+                    last_time = sample_time
 
                     # Perform IO using the trajectory object.
                     if use_trajectory:
-                        trajectory.append(simulation_time  = self.__cpp_timer.simulationTime(),
+                        trajectory.append(simulation_time  = time_before,
+                                          step             = step-1,
+                                          configuration    = self.__configuration)
+
+                # Update the model.
+                cpp_model.singleStep()
+
+                # Get the current simulation time.
+                now = self.__cpp_timer.simulationTime()
+
+                # Check if it is time to write a trajectory dump.
+                if ((dump_time is None) and ((step)%n_dump == 0)):
+                    last_time = now
+                    prettyPrint(" KMCLib: %i steps executed. time: %20.10e "%(step, now))
+
+                    # Perform IO using the trajectory object.
+                    if use_trajectory:
+                        trajectory.append(simulation_time  = now,
                                           step             = step,
                                           configuration    = self.__configuration)
 
@@ -219,8 +255,25 @@ must be given as string."""
                     # Run all other python analysis.
                     for ap in analysis:
                         ap.registerStep(step,
-                                        self.__cpp_timer.simulationTime(),
-                                        self.__configuration);
+                                        now,
+                                        self.__configuration)
+
+                # Check all custom break criteria.
+                break_the_loop = False
+                for b in breakers:
+
+                    # If it is time to evaluate this breaker.
+                    if ((step)%b.interval() == 0):
+                        break_the_loop = b.evaluate(step,
+                                                    now,
+                                                    self.__configuration)
+                        # Break the inner loop.
+                        if break_the_loop:
+                            break
+
+                # Break the main Monte-Carlo loop.
+                if break_the_loop:
+                    break
 
         finally:
 

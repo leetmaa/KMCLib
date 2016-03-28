@@ -1,5 +1,5 @@
 /*
-  Copyright (c)  2012-2013  Mikael Leetmaa
+  Copyright (c)  2012-2014  Mikael Leetmaa
 
   This file is part of the KMCLib project distributed under the terms of the
   GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -34,9 +34,9 @@ void Test_LatticeModel::testConstruction()
     coords[1][1] = 3.5;
     coords[1][2] = 2.1;
 
-    std::vector<std::string> elements(2);
-    elements[0] = "A";
-    elements[1] = "V";
+    std::vector<std::vector<std::string> > elements(2);
+    elements[0] = std::vector<std::string>(1, "A");
+    elements[1] = std::vector<std::string>(1, "V");
 
     std::map<std::string, int> possible_types;
     possible_types["*"] = 0;
@@ -95,7 +95,7 @@ void Test_LatticeModel::testSetupAndQuery()
 
     // Coordinates and elements.
     std::vector<std::vector<double> > coordinates;
-    std::vector<std::string> elements;
+    std::vector<std::vector<std::string> > elements;
 
     for (int i = 0; i < nI; ++i)
     {
@@ -110,7 +110,7 @@ void Test_LatticeModel::testSetupAndQuery()
                     c[1] = j + basis[b][1];
                     c[2] = k + basis[b][2];
                     coordinates.push_back(c);
-                    elements.push_back(basis_elements[b]);
+                    elements.push_back(std::vector<std::string>(1, basis_elements[b]));
                 }
             }
         }
@@ -139,8 +139,8 @@ void Test_LatticeModel::testSetupAndQuery()
 
     // A process that independent of local environment swaps a "B" to "V"
     {
-        const std::vector<std::string> process_elements1(1,"B");
-        const std::vector<std::string> process_elements2(1,"V");
+        const std::vector<std::vector<std::string> > process_elements1(1,std::vector<std::string>(1,"B"));
+        const std::vector<std::vector<std::string> > process_elements2(1,std::vector<std::string>(1,"V"));
         const std::vector<std::vector<double> > process_coordinates(1, std::vector<double>(3, 0.0));
         const double rate = 1.234;
         Configuration c1(process_coordinates, process_elements1, possible_types);
@@ -154,15 +154,15 @@ void Test_LatticeModel::testSetupAndQuery()
     // A process that finds an A between two B's in the 1,1,1 direction
     // and swap the A and the first B.
     {
-        std::vector<std::string> process_elements1(3);
-        process_elements1[0] = "A";
-        process_elements1[1] = "B";
-        process_elements1[2] = "B";
+        std::vector<std::vector<std::string> > process_elements1(3);
+        process_elements1[0] = std::vector<std::string>(1, "A");
+        process_elements1[1] = std::vector<std::string>(1, "B");
+        process_elements1[2] = std::vector<std::string>(1, "B");
 
-        std::vector<std::string> process_elements2(3);
-        process_elements2[0] = "B";
-        process_elements2[1] = "A";
-        process_elements2[2] = "B";
+        std::vector<std::vector<std::string> > process_elements2(3);
+        process_elements2[0] = std::vector<std::string>(1, "B");
+        process_elements2[1] = std::vector<std::string>(1, "A");
+        process_elements2[2] = std::vector<std::string>(1, "B");
 
         std::vector<std::vector<double> > process_coordinates(3, std::vector<double>(3, 0.0));
 
@@ -183,15 +183,15 @@ void Test_LatticeModel::testSetupAndQuery()
     // A process that finds a V between two A in the 1,1,1 direction
     // and turn the V into B.
     {
-        std::vector<std::string> process_elements1(3);
-        process_elements1[0] = "V";
-        process_elements1[1] = "B";
-        process_elements1[2] = "B";
+        std::vector<std::vector<std::string> > process_elements1(3);
+        process_elements1[0] = std::vector<std::string>(1, "V");
+        process_elements1[1] = std::vector<std::string>(1, "B");
+        process_elements1[2] = std::vector<std::string>(1, "B");
 
-        std::vector<std::string> process_elements2(3);
-        process_elements2[0] = "B";
-        process_elements2[1] = "A";
-        process_elements2[2] = "B";
+        std::vector<std::vector<std::string> > process_elements2(3);
+        process_elements2[0] = std::vector<std::string>(1, "B");
+        process_elements2[1] = std::vector<std::string>(1, "A");
+        process_elements2[2] = std::vector<std::string>(1, "B");
 
         std::vector<std::vector<double> > process_coordinates(3, std::vector<double>(3, 0.0));
 
@@ -269,16 +269,16 @@ void Test_LatticeModel::testSetupAndQuery()
     CPPUNIT_ASSERT( p3.sites().empty() );
 
     // Introduce a few different typed sites.
-    elements[0]    = "V";
-    elements[216]  = "V";   // These affects process 0,1 and 3
-    elements[1434] = "V";
-    elements[2101] = "V";   // This affects process 0,1 and 2
+    elements[0]    = std::vector<std::string>(1, "V");
+    elements[216]  = std::vector<std::string>(1, "V");   // These affects process 0,1 and 3
+    elements[1434] = std::vector<std::string>(1, "V");
+    elements[2101] = std::vector<std::string>(1, "V");   // This affects process 0,1 and 2
 
     // Get a new configuration.
     configuration = Configuration(coordinates, elements, possible_types);
 
     // Get a new lattice model to test.
-    LatticeModel lattice_model_2(configuration, timer, lattice_map, interactions);
+    const LatticeModel lattice_model_2(configuration, timer, lattice_map, interactions);
 
     // Get the interactions out and check.
     const Interactions ret_interactions_2 = lattice_model_2.interactions();
@@ -323,7 +323,7 @@ void Test_LatticeModel::testSingleStepFunction()
 
     // Coordinates and elements.
     std::vector<std::vector<double> > coordinates;
-    std::vector<std::string> elements;
+    std::vector<std::vector<std::string> > elements;
 
     for (int i = 0; i < nI; ++i)
     {
@@ -338,17 +338,17 @@ void Test_LatticeModel::testSingleStepFunction()
                     c[1] = j + basis[b][1];
                     c[2] = k + basis[b][2];
                     coordinates.push_back(c);
-                    elements.push_back(basis_elements[b]);
+                    elements.push_back(std::vector<std::string>(1, basis_elements[b]));
                 }
             }
         }
     }
 
     // Introduce a few different typed sites.
-    elements[0]    = "V";
-    elements[216]  = "V";   // These affects process 0,1 and 3
-    elements[1434] = "V";
-    elements[2101] = "V";   // This affects process 0,1 and 2
+    elements[0]    = std::vector<std::string>(1, "V");
+    elements[216]  = std::vector<std::string>(1, "V");   // These affects process 0,1 and 3
+    elements[1434] = std::vector<std::string>(1, "V");
+    elements[2101] = std::vector<std::string>(1, "V");   // This affects process 0,1 and 2
 
     // Possible types.
     std::map<std::string, int> possible_types;
@@ -374,8 +374,8 @@ void Test_LatticeModel::testSingleStepFunction()
 
     // A process that independent of local environment swaps a "B" to "V"
     {
-        const std::vector<std::string> process_elements1(1,"B");
-        const std::vector<std::string> process_elements2(1,"V");
+        const std::vector<std::vector<std::string> > process_elements1(1,std::vector<std::string>(1,"B"));
+        const std::vector<std::vector<std::string> > process_elements2(1,std::vector<std::string>(1,"V"));
         const std::vector<std::vector<double> > process_coordinates(1, std::vector<double>(3, 0.0));
         const double rate = 1.234;
         Configuration c1(process_coordinates, process_elements1, possible_types);
@@ -389,15 +389,15 @@ void Test_LatticeModel::testSingleStepFunction()
     // A process that finds an A between two B's in the 1,1,1 direction
     // and swap the A and the first B.
     {
-        std::vector<std::string> process_elements1(3);
-        process_elements1[0] = "A";
-        process_elements1[1] = "B";
-        process_elements1[2] = "B";
+        std::vector<std::vector<std::string> > process_elements1(3);
+        process_elements1[0] = std::vector<std::string>(1, "A");
+        process_elements1[1] = std::vector<std::string>(1, "B");
+        process_elements1[2] = std::vector<std::string>(1, "B");
 
-        std::vector<std::string> process_elements2(3);
-        process_elements2[0] = "B";
-        process_elements2[1] = "A";
-        process_elements2[2] = "B";
+        std::vector<std::vector<std::string> > process_elements2(3);
+        process_elements2[0] = std::vector<std::string>(1, "B");
+        process_elements2[1] = std::vector<std::string>(1, "A");
+        process_elements2[2] = std::vector<std::string>(1, "B");
 
         std::vector<std::vector<double> > process_coordinates(3, std::vector<double>(3, 0.0));
 
@@ -418,15 +418,15 @@ void Test_LatticeModel::testSingleStepFunction()
     // A process that finds a V between two A in the 1,1,1 direction
     // and turn the V into B.
     {
-        std::vector<std::string> process_elements1(3);
-        process_elements1[0] = "V";
-        process_elements1[1] = "B";
-        process_elements1[2] = "B";
+        std::vector<std::vector<std::string> > process_elements1(3);
+        process_elements1[0] = std::vector<std::string>(1, "V");
+        process_elements1[1] = std::vector<std::string>(1, "B");
+        process_elements1[2] = std::vector<std::string>(1, "B");
 
-        std::vector<std::string> process_elements2(3);
-        process_elements2[0] = "B";
-        process_elements2[1] = "A";
-        process_elements2[2] = "B";
+        std::vector<std::vector<std::string> > process_elements2(3);
+        process_elements2[0] = std::vector<std::string>(1, "B");
+        process_elements2[1] = std::vector<std::string>(1, "A");
+        process_elements2[2] = std::vector<std::string>(1, "B");
 
         std::vector<std::vector<double> > process_coordinates(3, std::vector<double>(3, 0.0));
 
@@ -492,23 +492,23 @@ void Test_LatticeModel::testTiming()
 
     // A process that moves a vacancy to the left with rate 10
     {
-        std::vector<std::string> process_elements1(7);
-        process_elements1[0] = "V";  // center
-        process_elements1[1] = "A";  // left
-        process_elements1[2] = "A";  // right
-        process_elements1[3] = "A";  // front
-        process_elements1[4] = "A";  // back
-        process_elements1[5] = "A";  // down
-        process_elements1[6] = "A";  // up
+        std::vector<std::vector<std::string> > process_elements1(7);
+        process_elements1[0] = std::vector<std::string>(1, "V");  // center
+        process_elements1[1] = std::vector<std::string>(1, "A");  // left
+        process_elements1[2] = std::vector<std::string>(1, "A");  // right
+        process_elements1[3] = std::vector<std::string>(1, "A");  // front
+        process_elements1[4] = std::vector<std::string>(1, "A");  // back
+        process_elements1[5] = std::vector<std::string>(1, "A");  // down
+        process_elements1[6] = std::vector<std::string>(1, "A");  // up
 
-        std::vector<std::string> process_elements2(7);
-        process_elements2[0] = "A";
-        process_elements2[1] = "V";
-        process_elements2[2] = "A";
-        process_elements2[3] = "A";
-        process_elements2[4] = "A";
-        process_elements2[5] = "A";
-        process_elements2[6] = "A";
+        std::vector<std::vector<std::string> > process_elements2(7);
+        process_elements2[0] = std::vector<std::string>(1, "A");
+        process_elements2[1] = std::vector<std::string>(1, "V");
+        process_elements2[2] = std::vector<std::string>(1, "A");
+        process_elements2[3] = std::vector<std::string>(1, "A");
+        process_elements2[4] = std::vector<std::string>(1, "A");
+        process_elements2[5] = std::vector<std::string>(1, "A");
+        process_elements2[6] = std::vector<std::string>(1, "A");
 
         const double rate = 10.0;
         Configuration c1(process_coordinates, process_elements1, possible_types);
@@ -521,23 +521,23 @@ void Test_LatticeModel::testTiming()
 
     // A process that moves a vacancy to the right with rate 10
     {
-        std::vector<std::string> process_elements1(7);
-        process_elements1[0] = "V";  // center
-        process_elements1[1] = "A";  // left
-        process_elements1[2] = "A";  // right
-        process_elements1[3] = "A";  // front
-        process_elements1[4] = "A";  // back
-        process_elements1[5] = "A";  // down
-        process_elements1[6] = "A";  // up
+        std::vector<std::vector<std::string> > process_elements1(7);
+        process_elements1[0] = std::vector<std::string>(1, "V");  // center
+        process_elements1[1] = std::vector<std::string>(1, "A");  // left
+        process_elements1[2] = std::vector<std::string>(1, "A");  // right
+        process_elements1[3] = std::vector<std::string>(1, "A");  // front
+        process_elements1[4] = std::vector<std::string>(1, "A");  // back
+        process_elements1[5] = std::vector<std::string>(1, "A");  // down
+        process_elements1[6] = std::vector<std::string>(1, "A");  // up
 
-        std::vector<std::string> process_elements2(7);
-        process_elements2[0] = "A";
-        process_elements2[1] = "A";
-        process_elements2[2] = "V";
-        process_elements2[3] = "A";
-        process_elements2[4] = "A";
-        process_elements2[5] = "A";
-        process_elements2[6] = "A";
+        std::vector<std::vector<std::string> > process_elements2(7);
+        process_elements2[0] = std::vector<std::string>(1, "A");
+        process_elements2[1] = std::vector<std::string>(1, "A");
+        process_elements2[2] = std::vector<std::string>(1, "V");
+        process_elements2[3] = std::vector<std::string>(1, "A");
+        process_elements2[4] = std::vector<std::string>(1, "A");
+        process_elements2[5] = std::vector<std::string>(1, "A");
+        process_elements2[6] = std::vector<std::string>(1, "A");
 
         const double rate = 10.0;
         Configuration c1(process_coordinates, process_elements1, possible_types);
@@ -549,23 +549,23 @@ void Test_LatticeModel::testTiming()
 
     // A process that moves a vacancy to the front with rate 10
     {
-        std::vector<std::string> process_elements1(7);
-        process_elements1[0] = "V";  // center
-        process_elements1[1] = "A";  // left
-        process_elements1[2] = "A";  // right
-        process_elements1[3] = "A";  // front
-        process_elements1[4] = "A";  // back
-        process_elements1[5] = "A";  // down
-        process_elements1[6] = "A";  // up
+        std::vector<std::vector<std::string> > process_elements1(7);
+        process_elements1[0] = std::vector<std::string>(1, "V");  // center
+        process_elements1[1] = std::vector<std::string>(1, "A");  // left
+        process_elements1[2] = std::vector<std::string>(1, "A");  // right
+        process_elements1[3] = std::vector<std::string>(1, "A");  // front
+        process_elements1[4] = std::vector<std::string>(1, "A");  // back
+        process_elements1[5] = std::vector<std::string>(1, "A");  // down
+        process_elements1[6] = std::vector<std::string>(1, "A");  // up
 
-        std::vector<std::string> process_elements2(7);
-        process_elements2[0] = "A";
-        process_elements2[1] = "A";
-        process_elements2[2] = "A";
-        process_elements2[3] = "V";
-        process_elements2[4] = "A";
-        process_elements2[5] = "A";
-        process_elements2[6] = "A";
+        std::vector<std::vector<std::string> > process_elements2(7);
+        process_elements2[0] = std::vector<std::string>(1, "A");
+        process_elements2[1] = std::vector<std::string>(1, "A");
+        process_elements2[2] = std::vector<std::string>(1, "A");
+        process_elements2[3] = std::vector<std::string>(1, "V");
+        process_elements2[4] = std::vector<std::string>(1, "A");
+        process_elements2[5] = std::vector<std::string>(1, "A");
+        process_elements2[6] = std::vector<std::string>(1, "A");
 
         const double rate = 10.0;
         Configuration c1(process_coordinates, process_elements1, possible_types);
@@ -577,23 +577,23 @@ void Test_LatticeModel::testTiming()
 
     // A process that moves a vacancy to the back with rate 10
     {
-        std::vector<std::string> process_elements1(7);
-        process_elements1[0] = "V";  // center
-        process_elements1[1] = "A";  // left
-        process_elements1[2] = "A";  // right
-        process_elements1[3] = "A";  // front
-        process_elements1[4] = "A";  // back
-        process_elements1[5] = "A";  // donw
-        process_elements1[6] = "A";  // up
+        std::vector<std::vector<std::string> > process_elements1(7);
+        process_elements1[0] = std::vector<std::string>(1, "V");  // center
+        process_elements1[1] = std::vector<std::string>(1, "A");  // left
+        process_elements1[2] = std::vector<std::string>(1, "A");  // right
+        process_elements1[3] = std::vector<std::string>(1, "A");  // front
+        process_elements1[4] = std::vector<std::string>(1, "A");  // back
+        process_elements1[5] = std::vector<std::string>(1, "A");  // donw
+        process_elements1[6] = std::vector<std::string>(1, "A");  // up
 
-        std::vector<std::string> process_elements2(7);
-        process_elements2[0] = "A";
-        process_elements2[1] = "A";
-        process_elements2[2] = "A";
-        process_elements2[3] = "A";
-        process_elements2[4] = "V";
-        process_elements2[5] = "A";
-        process_elements2[6] = "A";
+        std::vector<std::vector<std::string> > process_elements2(7);
+        process_elements2[0] = std::vector<std::string>(1, "A");
+        process_elements2[1] = std::vector<std::string>(1, "A");
+        process_elements2[2] = std::vector<std::string>(1, "A");
+        process_elements2[3] = std::vector<std::string>(1, "A");
+        process_elements2[4] = std::vector<std::string>(1, "V");
+        process_elements2[5] = std::vector<std::string>(1, "A");
+        process_elements2[6] = std::vector<std::string>(1, "A");
 
         const double rate = 10.0;
         Configuration c1(process_coordinates, process_elements1, possible_types);
@@ -605,23 +605,23 @@ void Test_LatticeModel::testTiming()
 
     // A process that moves a vacancy down with rate 10
     {
-        std::vector<std::string> process_elements1(7);
-        process_elements1[0] = "V";  // center
-        process_elements1[1] = "A";  // left
-        process_elements1[2] = "A";  // right
-        process_elements1[3] = "A";  // front
-        process_elements1[4] = "A";  // back
-        process_elements1[5] = "A";  // down
-        process_elements1[6] = "A";  // up
+        std::vector<std::vector<std::string> > process_elements1(7);
+        process_elements1[0] = std::vector<std::string>(1, "V");  // center
+        process_elements1[1] = std::vector<std::string>(1, "A");  // left
+        process_elements1[2] = std::vector<std::string>(1, "A");  // right
+        process_elements1[3] = std::vector<std::string>(1, "A");  // front
+        process_elements1[4] = std::vector<std::string>(1, "A");  // back
+        process_elements1[5] = std::vector<std::string>(1, "A");  // down
+        process_elements1[6] = std::vector<std::string>(1, "A");  // up
 
-        std::vector<std::string> process_elements2(7);
-        process_elements2[0] = "A";
-        process_elements2[1] = "A";
-        process_elements2[2] = "A";
-        process_elements2[3] = "A";
-        process_elements2[4] = "A";
-        process_elements2[5] = "V";
-        process_elements2[6] = "A";
+        std::vector<std::vector<std::string> > process_elements2(7);
+        process_elements2[0] = std::vector<std::string>(1, "A");
+        process_elements2[1] = std::vector<std::string>(1, "A");
+        process_elements2[2] = std::vector<std::string>(1, "A");
+        process_elements2[3] = std::vector<std::string>(1, "A");
+        process_elements2[4] = std::vector<std::string>(1, "A");
+        process_elements2[5] = std::vector<std::string>(1, "V");
+        process_elements2[6] = std::vector<std::string>(1, "A");
 
         const double rate = 10.0;
         Configuration c1(process_coordinates, process_elements1, possible_types);
@@ -633,23 +633,23 @@ void Test_LatticeModel::testTiming()
 
     // A process that moves a vacancy up with rate 10
     {
-        std::vector<std::string> process_elements1(7);
-        process_elements1[0] = "V";  // center
-        process_elements1[1] = "A";  // left
-        process_elements1[2] = "A";  // right
-        process_elements1[3] = "A";  // front
-        process_elements1[4] = "A";  // back
-        process_elements1[5] = "A";  // down
-        process_elements1[6] = "A";  // up
+        std::vector<std::vector<std::string> > process_elements1(7);
+        process_elements1[0] = std::vector<std::string>(1, "V");  // center
+        process_elements1[1] = std::vector<std::string>(1, "A");  // left
+        process_elements1[2] = std::vector<std::string>(1, "A");  // right
+        process_elements1[3] = std::vector<std::string>(1, "A");  // front
+        process_elements1[4] = std::vector<std::string>(1, "A");  // back
+        process_elements1[5] = std::vector<std::string>(1, "A");  // down
+        process_elements1[6] = std::vector<std::string>(1, "A");  // up
 
-        std::vector<std::string> process_elements2(7);
-        process_elements2[0] = "A";
-        process_elements2[1] = "A";
-        process_elements2[2] = "A";
-        process_elements2[3] = "A";
-        process_elements2[4] = "A";
-        process_elements2[5] = "A";
-        process_elements2[6] = "V";
+        std::vector<std::vector<std::string> > process_elements2(7);
+        process_elements2[0] = std::vector<std::string>(1, "A");
+        process_elements2[1] = std::vector<std::string>(1, "A");
+        process_elements2[2] = std::vector<std::string>(1, "A");
+        process_elements2[3] = std::vector<std::string>(1, "A");
+        process_elements2[4] = std::vector<std::string>(1, "A");
+        process_elements2[5] = std::vector<std::string>(1, "A");
+        process_elements2[6] = std::vector<std::string>(1, "V");
 
         const double rate = 10.0;
         Configuration c1(process_coordinates, process_elements1, possible_types);
@@ -663,23 +663,23 @@ void Test_LatticeModel::testTiming()
 
     // Left.
     {
-        std::vector<std::string> process_elements1(7);
-        process_elements1[0] = "V";  // center
-        process_elements1[1] = "A";  // left
-        process_elements1[2] = "V";  // right
-        process_elements1[3] = "A";  // front
-        process_elements1[4] = "A";  // back
-        process_elements1[5] = "A";  // down
-        process_elements1[6] = "A";  // up
+        std::vector<std::vector<std::string> > process_elements1(7);
+        process_elements1[0] = std::vector<std::string>(1, "V");  // center
+        process_elements1[1] = std::vector<std::string>(1, "A");  // left
+        process_elements1[2] = std::vector<std::string>(1, "V");  // right
+        process_elements1[3] = std::vector<std::string>(1, "A");  // front
+        process_elements1[4] = std::vector<std::string>(1, "A");  // back
+        process_elements1[5] = std::vector<std::string>(1, "A");  // down
+        process_elements1[6] = std::vector<std::string>(1, "A");  // up
 
-        std::vector<std::string> process_elements2(7);
-        process_elements2[0] = "A";
-        process_elements2[1] = "V";
-        process_elements2[2] = "V";
-        process_elements2[3] = "A";
-        process_elements2[4] = "A";
-        process_elements2[5] = "A";
-        process_elements2[6] = "A";
+        std::vector<std::vector<std::string> > process_elements2(7);
+        process_elements2[0] = std::vector<std::string>(1, "A");
+        process_elements2[1] = std::vector<std::string>(1, "V");
+        process_elements2[2] = std::vector<std::string>(1, "V");
+        process_elements2[3] = std::vector<std::string>(1, "A");
+        process_elements2[4] = std::vector<std::string>(1, "A");
+        process_elements2[5] = std::vector<std::string>(1, "A");
+        process_elements2[6] = std::vector<std::string>(1, "A");
 
         const double rate = 15.0;
         Configuration c1(process_coordinates, process_elements1, possible_types);
@@ -691,23 +691,23 @@ void Test_LatticeModel::testTiming()
 
     // Right.
     {
-        std::vector<std::string> process_elements1(7);
-        process_elements1[0] = "V";  // center
-        process_elements1[1] = "V";  // left
-        process_elements1[2] = "A";  // right
-        process_elements1[3] = "A";  // front
-        process_elements1[4] = "A";  // back
-        process_elements1[5] = "A";  // down
-        process_elements1[6] = "A";  // up
+        std::vector<std::vector<std::string> > process_elements1(7);
+        process_elements1[0] = std::vector<std::string>(1, "V");  // center
+        process_elements1[1] = std::vector<std::string>(1, "V");  // left
+        process_elements1[2] = std::vector<std::string>(1, "A");  // right
+        process_elements1[3] = std::vector<std::string>(1, "A");  // front
+        process_elements1[4] = std::vector<std::string>(1, "A");  // back
+        process_elements1[5] = std::vector<std::string>(1, "A");  // down
+        process_elements1[6] = std::vector<std::string>(1, "A");  // up
 
-        std::vector<std::string> process_elements2(7);
-        process_elements2[0] = "A";
-        process_elements2[1] = "V";
-        process_elements2[2] = "V";
-        process_elements2[3] = "A";
-        process_elements2[4] = "A";
-        process_elements2[5] = "A";
-        process_elements2[6] = "A";
+        std::vector<std::vector<std::string> > process_elements2(7);
+        process_elements2[0] = std::vector<std::string>(1, "A");
+        process_elements2[1] = std::vector<std::string>(1, "V");
+        process_elements2[2] = std::vector<std::string>(1, "V");
+        process_elements2[3] = std::vector<std::string>(1, "A");
+        process_elements2[4] = std::vector<std::string>(1, "A");
+        process_elements2[5] = std::vector<std::string>(1, "A");
+        process_elements2[6] = std::vector<std::string>(1, "A");
 
         const double rate = 15.0;
         Configuration c1(process_coordinates, process_elements1, possible_types);
@@ -719,23 +719,23 @@ void Test_LatticeModel::testTiming()
 
     // Front.
     {
-        std::vector<std::string> process_elements1(7);
-        process_elements1[0] = "V";  // center
-        process_elements1[1] = "A";  // left
-        process_elements1[2] = "A";  // right
-        process_elements1[3] = "A";  // front
-        process_elements1[4] = "V";  // back
-        process_elements1[5] = "A";  // down
-        process_elements1[6] = "A";  // up
+        std::vector<std::vector<std::string> > process_elements1(7);
+        process_elements1[0] = std::vector<std::string>(1, "V");  // center
+        process_elements1[1] = std::vector<std::string>(1, "A");  // left
+        process_elements1[2] = std::vector<std::string>(1, "A");  // right
+        process_elements1[3] = std::vector<std::string>(1, "A");  // front
+        process_elements1[4] = std::vector<std::string>(1, "V");  // back
+        process_elements1[5] = std::vector<std::string>(1, "A");  // down
+        process_elements1[6] = std::vector<std::string>(1, "A");  // up
 
-        std::vector<std::string> process_elements2(7);
-        process_elements2[0] = "A";
-        process_elements2[1] = "A";
-        process_elements2[2] = "A";
-        process_elements2[3] = "V";
-        process_elements2[4] = "V";
-        process_elements2[5] = "A";
-        process_elements2[6] = "A";
+        std::vector<std::vector<std::string> > process_elements2(7);
+        process_elements2[0] = std::vector<std::string>(1, "A");
+        process_elements2[1] = std::vector<std::string>(1, "A");
+        process_elements2[2] = std::vector<std::string>(1, "A");
+        process_elements2[3] = std::vector<std::string>(1, "V");
+        process_elements2[4] = std::vector<std::string>(1, "V");
+        process_elements2[5] = std::vector<std::string>(1, "A");
+        process_elements2[6] = std::vector<std::string>(1, "A");
 
         const double rate = 15.0;
         Configuration c1(process_coordinates, process_elements1, possible_types);
@@ -747,23 +747,23 @@ void Test_LatticeModel::testTiming()
 
     // Back.
     {
-        std::vector<std::string> process_elements1(7);
-        process_elements1[0] = "V";  // center
-        process_elements1[1] = "A";  // left
-        process_elements1[2] = "A";  // right
-        process_elements1[3] = "V";  // front
-        process_elements1[4] = "A";  // back
-        process_elements1[5] = "A";  // donw
-        process_elements1[6] = "A";  // up
+        std::vector<std::vector<std::string> > process_elements1(7);
+        process_elements1[0] = std::vector<std::string>(1, "V");  // center
+        process_elements1[1] = std::vector<std::string>(1, "A");  // left
+        process_elements1[2] = std::vector<std::string>(1, "A");  // right
+        process_elements1[3] = std::vector<std::string>(1, "V");  // front
+        process_elements1[4] = std::vector<std::string>(1, "A");  // back
+        process_elements1[5] = std::vector<std::string>(1, "A");  // donw
+        process_elements1[6] = std::vector<std::string>(1, "A");  // up
 
-        std::vector<std::string> process_elements2(7);
-        process_elements2[0] = "A";
-        process_elements2[1] = "A";
-        process_elements2[2] = "A";
-        process_elements2[3] = "V";
-        process_elements2[4] = "V";
-        process_elements2[5] = "A";
-        process_elements2[6] = "A";
+        std::vector<std::vector<std::string> > process_elements2(7);
+        process_elements2[0] = std::vector<std::string>(1, "A");
+        process_elements2[1] = std::vector<std::string>(1, "A");
+        process_elements2[2] = std::vector<std::string>(1, "A");
+        process_elements2[3] = std::vector<std::string>(1, "V");
+        process_elements2[4] = std::vector<std::string>(1, "V");
+        process_elements2[5] = std::vector<std::string>(1, "A");
+        process_elements2[6] = std::vector<std::string>(1, "A");
 
         const double rate = 15.0;
         Configuration c1(process_coordinates, process_elements1, possible_types);
@@ -775,23 +775,23 @@ void Test_LatticeModel::testTiming()
 
     // Down.
     {
-        std::vector<std::string> process_elements1(7);
-        process_elements1[0] = "V";  // center
-        process_elements1[1] = "A";  // left
-        process_elements1[2] = "A";  // right
-        process_elements1[3] = "A";  // front
-        process_elements1[4] = "A";  // back
-        process_elements1[5] = "A";  // down
-        process_elements1[6] = "V";  // up
+        std::vector<std::vector<std::string> > process_elements1(7);
+        process_elements1[0] = std::vector<std::string>(1, "V");  // center
+        process_elements1[1] = std::vector<std::string>(1, "A");  // left
+        process_elements1[2] = std::vector<std::string>(1, "A");  // right
+        process_elements1[3] = std::vector<std::string>(1, "A");  // front
+        process_elements1[4] = std::vector<std::string>(1, "A");  // back
+        process_elements1[5] = std::vector<std::string>(1, "A");  // down
+        process_elements1[6] = std::vector<std::string>(1, "V");  // up
 
-        std::vector<std::string> process_elements2(7);
-        process_elements2[0] = "A";
-        process_elements2[1] = "A";
-        process_elements2[2] = "A";
-        process_elements2[3] = "A";
-        process_elements2[4] = "A";
-        process_elements2[5] = "V";
-        process_elements2[6] = "V";
+        std::vector<std::vector<std::string> > process_elements2(7);
+        process_elements2[0] = std::vector<std::string>(1, "A");
+        process_elements2[1] = std::vector<std::string>(1, "A");
+        process_elements2[2] = std::vector<std::string>(1, "A");
+        process_elements2[3] = std::vector<std::string>(1, "A");
+        process_elements2[4] = std::vector<std::string>(1, "A");
+        process_elements2[5] = std::vector<std::string>(1, "V");
+        process_elements2[6] = std::vector<std::string>(1, "V");
 
         const double rate = 15.0;
         Configuration c1(process_coordinates, process_elements1, possible_types);
@@ -803,23 +803,23 @@ void Test_LatticeModel::testTiming()
 
     // Up.
     {
-        std::vector<std::string> process_elements1(7);
-        process_elements1[0] = "V";  // center
-        process_elements1[1] = "A";  // left
-        process_elements1[2] = "A";  // right
-        process_elements1[3] = "A";  // front
-        process_elements1[4] = "A";  // back
-        process_elements1[5] = "V";  // down
-        process_elements1[6] = "A";  // up
+        std::vector<std::vector<std::string> > process_elements1(7);
+        process_elements1[0] = std::vector<std::string>(1, "V");  // center
+        process_elements1[1] = std::vector<std::string>(1, "A");  // left
+        process_elements1[2] = std::vector<std::string>(1, "A");  // right
+        process_elements1[3] = std::vector<std::string>(1, "A");  // front
+        process_elements1[4] = std::vector<std::string>(1, "A");  // back
+        process_elements1[5] = std::vector<std::string>(1, "V");  // down
+        process_elements1[6] = std::vector<std::string>(1, "A");  // up
 
-        std::vector<std::string> process_elements2(7);
-        process_elements2[0] = "A";
-        process_elements2[1] = "A";
-        process_elements2[2] = "A";
-        process_elements2[3] = "A";
-        process_elements2[4] = "A";
-        process_elements2[5] = "V";
-        process_elements2[6] = "V";
+        std::vector<std::vector<std::string> > process_elements2(7);
+        process_elements2[0] = std::vector<std::string>(1, "A");
+        process_elements2[1] = std::vector<std::string>(1, "A");
+        process_elements2[2] = std::vector<std::string>(1, "A");
+        process_elements2[3] = std::vector<std::string>(1, "A");
+        process_elements2[4] = std::vector<std::string>(1, "A");
+        process_elements2[5] = std::vector<std::string>(1, "V");
+        process_elements2[6] = std::vector<std::string>(1, "V");
 
         const double rate = 15.0;
         Configuration c1(process_coordinates, process_elements1, possible_types);
@@ -839,7 +839,7 @@ void Test_LatticeModel::testTiming()
 
     // Coordinates and elements.
     std::vector<std::vector<double> > coordinates;
-    std::vector<std::string> elements;
+    std::vector<std::vector<std::string> > elements;
 
     // Seed the random number generator to make the test reproducible.
     seedRandom(false, 14159265);
@@ -858,11 +858,11 @@ void Test_LatticeModel::testTiming()
 
                 if (randomDouble01() < 0.05)
                 {
-                    elements.push_back("V");
+                    elements.push_back(std::vector<std::string>(1, "V"));
                 }
                 else
                 {
-                    elements.push_back("A");
+                    elements.push_back(std::vector<std::string>(1, "A"));
                 }
             }
         }

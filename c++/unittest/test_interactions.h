@@ -31,6 +31,7 @@ public:
     CPPUNIT_TEST( testMaxRange );
     CPPUNIT_TEST( testUpdateProcessMatchLists );
     CPPUNIT_TEST( testUpdateProcessIDMoves );
+    CPPUNIT_TEST( testClearMatching );
     CPPUNIT_TEST_SUITE_END();
 
     void testConstruction();
@@ -40,6 +41,7 @@ public:
     void testMaxRange();
     void testUpdateProcessMatchLists();
     void testUpdateProcessIDMoves();
+    void testClearMatching();
 
 };
 

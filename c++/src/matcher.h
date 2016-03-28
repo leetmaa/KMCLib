@@ -16,7 +16,8 @@
 
 #include <vector>
 
-#include "matchlistentry.h"
+#include "matchlist.h"
+#include "ratetable.h"
 
 // Forward declarations.
 class Interactions;
@@ -31,6 +32,7 @@ struct RateTask
     int index;
     int process;
     double rate;
+    double multiplicity;
 };
 
 
@@ -48,9 +50,11 @@ class Matcher {
 
 public:
 
-    /*! \brief Default constructor.
+    /*! \brief Constructor for the mather.
+     *  \param sites : The number of sites in the system.
+     *  \param processes : The number of processes in the system.
      */
-    Matcher();
+    Matcher(const size_t & sites, const size_t & processes);
 
     /*! \brief Calculate/update the matching of provided indices with
      *         all possible processes.
@@ -63,8 +67,7 @@ public:
     void calculateMatching(Interactions & interactions,
                            Configuration & configuration,
                            const LatticeMap & lattice_map,
-                           const std::vector<int> & indices) const;
-
+                           const std::vector<int> & indices);
 
     /*! \brief Calculate the matching for a list of match tasks (pairs of indices and processes).
      *  \param index_process_to_match : The list of indices and process numbers to match.
@@ -81,7 +84,6 @@ public:
                                    std::vector<RateTask>   & update_tasks,
                                    std::vector<RateTask>   & add_tasks) const;
 
-
     /*! \brief Update the rates of the rate tasks by calling the
      *         backend call-back function of the RateCalculator stored
      *         on the interactions object.
@@ -93,8 +95,7 @@ public:
     void updateRates(std::vector<double>         & new_rates,
                      const std::vector<RateTask> & tasks,
                      const Interactions          & interactions,
-                     const Configuration         & configuration) const;
-
+                     const Configuration         & configuration);
 
     /*! \brief Update the processes with the given tasks.
      *  \param remove_tasks  : A vector with remove tasks for updating the processes.
@@ -105,7 +106,7 @@ public:
     void updateProcesses(const std::vector<RemoveTask> & to_remove,
                          const std::vector<RateTask>   & to_update,
                          const std::vector<RateTask>   & to_add,
-                         Interactions & interactions) const;
+                         Interactions & interactions);
 
     /*! \brief Calculate the rate for a single process using the rate calculator.
      *  \param index           : The index to perform the process at.
@@ -135,13 +136,32 @@ public:
      *  \param index_match_list   : The index match list to compare.
      *  \return : True if match.
      */
-    bool isMatch(const std::vector<MinimalMatchListEntry> & process_match_list,
-                 const std::vector<MinimalMatchListEntry> & index_match_list) const;
+    bool isMatch(const ProcessBucketMatchList & process_match_list,
+                 const ConfigBucketMatchList & index_match_list) const;
+
+    /*! \brief Print the match lists to std out. Useful for debugging.
+     *  \param process_match_list : The process match list to compare against.
+     *  \param index_match_list   : The index match list to compare.
+     */
+    void printMatchLists(const ProcessBucketMatchList & process_match_list,
+                         const ConfigBucketMatchList & index_match_list) const;
+
+    void printMatchLists(const ConfigBucketMatchList & process_match_list,
+                         const ConfigBucketMatchList & index_match_list) const;
+
+    void printMatchList(const ConfigBucketMatchList & process_match_list) const;
+
 
 
 protected:
 
 private:
+
+    /// The rate table for storing calculated custom rates.
+    RateTable rate_table_;
+
+    /// The inverse matching information table.
+    std::vector<std::vector<bool> > inverse_table_;
 
 };
 

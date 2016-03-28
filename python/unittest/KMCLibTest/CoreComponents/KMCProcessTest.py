@@ -95,11 +95,13 @@ class KMCProcessTest(unittest.TestCase):
         self.assertAlmostEqual( norm, 0.0, 10 )
 
         # Check the elements before move.
-        ref_types = ["A", "C", "P", "D", "E", "B"]
+        ref_types = [[(1, "A")], [(1, "C")], [(1, "P")],
+                     [(1, "D")], [(1, "E")], [(1, "B")]]
         self.assertEqual( ref_types, config_before.types() )
 
         # Check the elements after move.
-        ref_types = ["B", "D", "P", "A", "E", "C"]
+        ref_types = [[(1, "B")], [(1, "D")], [(1, "P")],
+                     [(1, "A")], [(1, "E")], [(1, "C")]]
         self.assertEqual( ref_types, config_after.types() )
 
         ref_vectors = [(0, [ 1.5, 1.5, 1.5]),
@@ -278,7 +280,7 @@ class KMCProcessTest(unittest.TestCase):
         self.assertTrue( eq )
 
         # If se explicitly set the move vectors to empty on p2 they are not equal.
-        p2._KMCProcess__move_vectors = []
+        p2._move_vectors = []
         eq = (p1 == p2)
         self.assertFalse( eq )
 
@@ -287,29 +289,29 @@ class KMCProcessTest(unittest.TestCase):
         self.assertFalse( eq )
 
         # Now, make the other one empty also.
-        p1._KMCProcess__move_vectors = []
+        p1._move_vectors = []
         eq = (p1 == p2)
         self.assertTrue( eq )
 
         # Set explicitly to different vectors.
-        p1._KMCProcess__move_vectors = move_vectors = [(0, [1.0,2.0,3.0]),
-                                                       (1, [-1.0,-2.0,-3.0])]
+        p1._move_vectors = move_vectors = [(0, [1.0,2.0,3.0]),
+                                           (1, [-1.0,-2.0,-3.0])]
 
-        p2._KMCProcess__move_vectors = move_vectors = [(1, [1.0,2.0,3.0]),
-                                                       (0, [-1.0,-2.0,-3.0])]
+        p2._move_vectors = move_vectors = [(1, [1.0,2.0,3.0]),
+                                           (0, [-1.0,-2.0,-3.0])]
         eq = (p1 == p2)
         self.assertFalse( eq )
 
         # And the vector.
-        p2._KMCProcess__move_vectors = move_vectors = [(0, [1.0,2.0,3.0]),
-                                                       (1, [-1.0,-2.1,-3.0])]
+        p2._move_vectors = move_vectors = [(0, [1.0,2.0,3.0]),
+                                           (1, [-1.0,-2.1,-3.0])]
         eq = (p1 == p2)
         self.assertFalse( eq )
 
         # The length.
-        p2._KMCProcess__move_vectors = move_vectors = [(0, [1.0,2.0,3.0]),
-                                                       (1, [-1.0,-2.1,-3.0]),
-                                                       (2, [ 1.0,-2.1,-3.0])]
+        p2._move_vectors = move_vectors = [(0, [1.0,2.0,3.0]),
+                                           (1, [-1.0,-2.1,-3.0]),
+                                           (2, [ 1.0,-2.1,-3.0])]
         eq = (p1 == p2)
         self.assertFalse( eq )
 
@@ -634,11 +636,11 @@ class KMCProcessTest(unittest.TestCase):
                        [ 1.0, 2.0, 3.0],
                        [-1.0, 1.0, 5.0],
                        [ 8.0, 4.0, 7.0]]
-        process._KMCProcess__coordinates = coordinates
+        process._coordinates = coordinates
 
         # Give it element values.
-        process._KMCProcess__elements_before = ["A","B","D","F"]
-        process._KMCProcess__elements_after  = ["A","F","D","B"]
+        process._elements_before = ["A","B","D","F"]
+        process._elements_after  = ["A","F","D","B"]
 
         move_vectors = process._KMCProcess__reconstructMoveVectors()
 
@@ -657,8 +659,8 @@ class KMCProcessTest(unittest.TestCase):
         self.assertAlmostEqual( norm, 0.0, 10 )
 
         # Give it  new element values.
-        process._KMCProcess__elements_before = ["A","B","G","F"]
-        process._KMCProcess__elements_after  = ["A","F","D","B"]
+        process._elements_before = ["A","B","G","F"]
+        process._elements_after  = ["A","F","D","B"]
 
         move_vectors = process._KMCProcess__reconstructMoveVectors()
 

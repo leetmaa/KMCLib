@@ -22,7 +22,7 @@ class KMCRateCalculatorPluginTest(unittest.TestCase):
 
     def testConstructionBaseClass(self):
         """ Test that we can construct the base class. """
-        calculator = KMCRateCalculatorPlugin()
+        calculator = KMCRateCalculatorPlugin("DummyConfig")
         self.assertTrue( isinstance(calculator, KMCRateCalculatorPlugin) )
         self.assertTrue( isinstance(calculator, Backend.RateCalculator) )
 
@@ -35,7 +35,7 @@ class KMCRateCalculatorPluginTest(unittest.TestCase):
                 # Save something on the class here.
                 self._variable = 123
         # Construct.
-        calculator = RateCalc()
+        calculator = RateCalc("DumyConfig")
 
         # Check the type.
         self.assertTrue( isinstance(calculator, RateCalc) )
@@ -48,7 +48,7 @@ class KMCRateCalculatorPluginTest(unittest.TestCase):
 
     def testCutoff(self):
         """ Test that the base class has the cutoff function. """
-        rc = KMCRateCalculatorPlugin()
+        rc = KMCRateCalculatorPlugin("DummyConfig")
         self.assertTrue(hasattr(rc, "cutoff"))
         self.assertTrue(rc.cutoff() is None)
 
@@ -78,7 +78,7 @@ class KMCRateCalculatorPluginTest(unittest.TestCase):
                 return False
 
         # Construct.
-        calculator = RateCalc()
+        calculator = RateCalc("DummyConfig")
 
         # Send it to C++ to get the rate out, call it 4 times.
         cpp_coords = Backend.StdVectorCoordinate()

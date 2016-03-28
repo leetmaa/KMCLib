@@ -18,6 +18,7 @@ class TimeStepDistribution(KMCAnalysisPlugin):
     """
     Class for collecting the time step distribution during a simulation.
     """
+
     def __init__(self,
                  binsize=None):
         """
