@@ -79,6 +79,10 @@ Configuration::Configuration(std::vector<std::vector<double> > const & coordinat
 void Configuration::initMatchLists( const LatticeMap & lattice_map,
                                     const int range )
 {
+    // Store the max size of minimal_match_list_
+    size_t max_size = 0;
+    size_t tmp_size;
+
     // Loop over all lattice sites.
     for (size_t i = 0; i < types_.size(); ++i)
     {
@@ -88,13 +92,19 @@ void Configuration::initMatchLists( const LatticeMap & lattice_map,
         match_lists_[i] = minimalMatchList(origin_index,
                                            neighbourhood,
                                            lattice_map);
+
+        // Store the maximum size
+        tmp_size = match_lists_[i].size();
+        if ( tmp_size > max_size )
+        {
+            max_size = tmp_size;
+        }
     }
 
     // Now that we know the size of the match lists we can allocate
     // memory for the moved_atom_ids_ vector.
-    const size_t size = match_lists_[0].size();
-    moved_atom_ids_.resize(size);
-    recent_move_vectors_.resize(size);
+    moved_atom_ids_.resize(max_size);
+    recent_move_vectors_.resize(max_size);
 }
 
 
