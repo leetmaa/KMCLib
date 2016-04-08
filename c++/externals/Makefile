@@ -64,7 +64,7 @@ cppunit: ./src/cppunit-1.12.1/INSTALL_STAMP
 	make && \
 	make check && \
 	make install && \
-	cp ./src/cppunit/.libs/libcppunit* ../../lib/cppunit/lib/
+	cp ./src/cppunit/.libs/libcppunit* ../../lib/cppunit/lib/ && \
 	touch BUILD_STAMP && \
 	cd -
 
@@ -101,7 +101,7 @@ cppunit: ./src/cppunit-1.12.1/INSTALL_STAMP
 clean:
 	rm -r ./src/cppunit-1.12.1/ && \
 	rm -r ./src/md5/ && \
-	rm ./include/externals/*.h &&\
+	rm ./include/externals/*.h && \
 	rm -r ./include/cppunit && \
 	rm -r ./lib/cppunit/ && \
 	rm ./obj/*.o
