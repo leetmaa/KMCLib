@@ -1,4 +1,4 @@
-# Copyright (c)  2013-2014  Mikael Leetmaa
+# Copyright (c)  2013-2016  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -64,7 +64,7 @@ cppunit: ./src/cppunit-1.12.1/INSTALL_STAMP
 	make && \
 	make check && \
 	make install && \
-	cp ./src/cppunit/.libs/libcppunit* ../../lib/cppunit/lib/ && \
+	cp -r ./src/cppunit/.libs/libcppunit* ../../lib/cppunit/lib/ && \
 	touch BUILD_STAMP && \
 	cd -
 
