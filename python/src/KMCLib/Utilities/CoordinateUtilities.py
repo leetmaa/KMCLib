@@ -68,7 +68,7 @@ def sortCoordinatesDistance(coordinates, center, types1, types2=None, co_sort=No
 
     # Calculate the distance form the center.
     origin = coordinates[center]
-    distances = numpy.array([ numpy.linalg.norm(coord) for coord in coordinates ])
+    distances = numpy.array([ numpy.linalg.norm(coord - origin) for coord in coordinates ])
 
     # Setup the data to sort.
     to_sort = numpy.array([ (c[0],c[1],c[2],d,t1,t2,cs) for (c,d,t1,t2,cs) in zip(coordinates,distances,types1, types2, co_sort)],
