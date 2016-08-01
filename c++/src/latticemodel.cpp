@@ -87,7 +87,7 @@ void LatticeModel::singleStep()
 
     // Run the re-matching of the affected sites and their neighbours.
     const std::vector<int> & indices = \
-        lattice_map_.supersetNeighbourIndices(process.affectedIndices(), process.range());
+        lattice_map_.supersetNeighbourIndices(process.affectedIndices(), interactions_.maxRange());
 
     matcher_.calculateMatching(interactions_,
                                configuration_,
