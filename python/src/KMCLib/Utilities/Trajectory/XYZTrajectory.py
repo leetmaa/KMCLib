@@ -80,7 +80,7 @@ class XYZTrajectory(Trajectory):
 
                 # Repetitions.
                 repetitions = configuration.lattice().repetitions()
-                trajectory.write("REPETITIONS %i %i %i\n\n"%(repetitions[0], repetitions[2], repetitions[2]))
+                trajectory.write("REPETITIONS %i %i %i\n\n"%(repetitions[0], repetitions[1], repetitions[2]))
 
                 # Periodicity.
                 periodicity = configuration.lattice().periodic()

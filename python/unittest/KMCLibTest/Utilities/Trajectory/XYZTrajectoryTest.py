@@ -85,10 +85,10 @@ class XYZTrajectoryTest(unittest.TestCase):
                                 basis_points=[[0.0, 0.0, 0.0]])
         lattice = KMCLattice(unit_cell=unit_cell,
                              periodic=(True, True, True),
-                             repetitions=(4,4,4))
+                             repetitions=(4,2,3))
 
         config = KMCConfiguration(lattice=lattice,
-                                 types=["A","B","C","D"]*16)
+                                 types=["A","B","C"]*8)
 
         t = XYZTrajectory(trajectory_filename=trajectory_filename,
                           configuration=config,
@@ -111,7 +111,7 @@ a: 1.0000000000e+00 0.0000000000e+00 0.0000000000e+00
 b: 0.0000000000e+00 1.0000000000e+00 0.0000000000e+00
 c: 0.0000000000e+00 0.0000000000e+00 1.0000000000e+00
 
-REPETITIONS 4 4 4
+REPETITIONS 4 2 3
 
 PERIODICITY True True True
 
