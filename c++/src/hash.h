@@ -18,6 +18,8 @@
 #include <string>
 #include <vector>
 
+#include <cstdint>
+
 // Forward declarations.
 class Process;
 class Configuration;
@@ -35,7 +37,7 @@ std::string hashMD5(const std::string & message);
  *  \param message : The message to hash.
  *  \returns : The 64-bit 'MD5' digest of the message.
  */
-unsigned long int hash64MD5xor(const std::string & message);
+uint64_t hash64MD5xor(const std::string & message);
 
 
 /*! \brief Function for generating the MD5 hash as an xor-ed
@@ -43,7 +45,7 @@ unsigned long int hash64MD5xor(const std::string & message);
  *  \param message : The message to hash.
  *  \returns : The 64-bit 'MD5' digest of the message.
  */
-unsigned long int hash64MD5xor(std::vector<int> & message);
+uint64_t hash64MD5xor(std::vector<int> & message);
 
 
 /*! \brief Function for generating the MD5 hash as two 64-bit integers.
@@ -52,8 +54,8 @@ unsigned long int hash64MD5xor(std::vector<int> & message);
  *  \param result2 (out) : The last 64-bits of the hash.
  */
 void hashMD5(const std::string & message,
-             unsigned long int & result1,
-             unsigned long int & result2);
+             uint64_t & result1,
+             uint64_t & result2);
 
 
 /*! \brief Core md5 work horse. The only place we call the external
@@ -64,9 +66,9 @@ void hashMD5(const std::string & message,
  *  \param result2 (out) : The last 64-bits of the digest.
  */
 void md5Core(void *message,
-             const unsigned long int size,
-             unsigned long int & result1,
-             unsigned long int & result2);
+             const uint64_t size,
+             uint64_t & result1,
+             uint64_t & result2);
 
 
 /*! \brief Function for generating a 64-bit hash from the input to the
@@ -76,7 +78,7 @@ void md5Core(void *message,
  *  \param configuration : The global configuration of the system.
  *  \returns: 64-bit hash value.
  */
-unsigned long int hashCustomRateInput(const int index,
+uint64_t hashCustomRateInput(const int index,
                                       const Process & process,
                                       const Configuration & configurartion);
 
