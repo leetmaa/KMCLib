@@ -28,7 +28,10 @@ SimulationTimer::SimulationTimer() :
 void SimulationTimer::propagateTime(const double total_rate)
 {
     // Propagate the time of the system.
-    const double rnd = randomDouble01();
+    double rnd;
+    do
+        double rnd = randomDouble01();
+    while (rnd < 1e-323);
     const double dt  = -std::log(rnd)/total_rate;
     simulation_time_ += dt;
 }
