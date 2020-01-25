@@ -8,7 +8,7 @@
 #
 
 import unittest
-import StringIO
+import io
 import numpy
 
 from KMCLib.Backend.Backend import MPICommons
@@ -194,7 +194,7 @@ class CompositionTest(unittest.TestCase):
         cc.registerStep(6, 12.0, config2)
         cc.registerStep(7, 20.0, config2)
 
-        stream = StringIO.StringIO()
+        stream = io.StringIO()
         cc.printResults(stream)
 
         ref_str = \

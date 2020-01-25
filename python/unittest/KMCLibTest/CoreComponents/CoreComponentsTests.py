@@ -9,14 +9,14 @@
 
 import unittest
 
-from KMCConfigurationTest import KMCConfigurationTest
-from KMCControlParametersTest import KMCControlParametersTest
-from KMCInteractionsTest import KMCInteractionsTest
-from KMCLatticeModelTest import KMCLatticeModelTest
-from KMCLatticeTest import KMCLatticeTest
-from KMCLocalConfigurationTest import KMCLocalConfigurationTest
-from KMCProcessTest import KMCProcessTest
-from KMCUnitCellTest import KMCUnitCellTest
+from .KMCConfigurationTest import KMCConfigurationTest
+from .KMCControlParametersTest import KMCControlParametersTest
+from .KMCInteractionsTest import KMCInteractionsTest
+from .KMCLatticeModelTest import KMCLatticeModelTest
+from .KMCLatticeTest import KMCLatticeTest
+from .KMCLocalConfigurationTest import KMCLocalConfigurationTest
+from .KMCProcessTest import KMCProcessTest
+from .KMCUnitCellTest import KMCUnitCellTest
 
 def suite():
     suite = unittest.TestSuite(

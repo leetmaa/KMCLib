@@ -372,7 +372,7 @@ class KMCConfigurationTest(unittest.TestCase):
 
         # Retrieve the types information from the configuration backend.
         # FXME: NEEDS IMPLEMENTATION
-        print config.types()
+        print(config.types())
 
     def testLatticeMap(self):
         """ Make sure the lattice map we get correspond to the lattice we give. """
@@ -665,8 +665,8 @@ lattice = KMCLattice(
 
 types = ['ThisIsTheTypeOfMyOnlySiteInThisUnrealisticallyShortStructure']
 
-possible_types = ['A','CDEFGHI','ThisIsTheTypeOfMyOnlySiteInThisUnrealisticallyShortStructure',
-                  'B']
+possible_types = ['ThisIsTheTypeOfMyOnlySiteInThisUnrealisticallyShortStructure',
+                  'A','B','CDEFGHI']
 
 config = KMCConfiguration(
     lattice=lattice,
@@ -932,6 +932,3 @@ bulk_configuration = BulkConfiguration(
 
 if __name__ == '__main__':
     unittest.main()
-
-
-

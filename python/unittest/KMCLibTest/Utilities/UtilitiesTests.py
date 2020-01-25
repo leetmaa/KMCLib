@@ -9,13 +9,13 @@
 
 import unittest
 
-from CheckUtilitiesTest import CheckUtilitiesTest
-from CoordinateUtilitiesTest import CoordinateUtilitiesTest
-from ConversionUtilitiesTest import ConversionUtilitiesTest
-from SaveAndReadUtilitiesTest import SaveAndReadUtilitiesTest
-from PrintUtilitiesTest import PrintUtilitiesTest
+from .CheckUtilitiesTest import CheckUtilitiesTest
+from .CoordinateUtilitiesTest import CoordinateUtilitiesTest
+from .ConversionUtilitiesTest import ConversionUtilitiesTest
+from .SaveAndReadUtilitiesTest import SaveAndReadUtilitiesTest
+from .PrintUtilitiesTest import PrintUtilitiesTest
 
-from Trajectory import TrajectoryTests
+from .Trajectory import TrajectoryTests
 
 def suite():
     suite = unittest.TestSuite(

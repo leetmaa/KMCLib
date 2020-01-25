@@ -9,7 +9,7 @@
 
 import unittest
 
-from WrappingTest import WrappingTest
+from .WrappingTest import WrappingTest
 
 def suite():
     suite = unittest.TestSuite(

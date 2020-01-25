@@ -8,7 +8,7 @@
 #
 
 import unittest
-import StringIO
+import io
 import sys
 
 from KMCLib.Backend.Backend import MPICommons
@@ -27,7 +27,7 @@ class PrintUtilitiesTest(unittest.TestCase):
         # Print to stdout.
         original_sys_stdout = sys.stdout
         try:
-            stream_1   = StringIO.StringIO()
+            stream_1   = io.StringIO()
             sys.stdout = stream_1
 
             # Print to stdout.
@@ -46,7 +46,7 @@ class PrintUtilitiesTest(unittest.TestCase):
             sys.stdout = original_sys_stdout
 
         # Print to another stream.
-        stream_2 = StringIO.StringIO()
+        stream_2 = io.StringIO()
         ref_str = "This is what we print next time."
         prettyPrint(ref_str, output=stream_2)
 
@@ -64,7 +64,7 @@ class PrintUtilitiesTest(unittest.TestCase):
         original_sys_stdout = sys.stdout
 
         try:
-            stream_1   = StringIO.StringIO()
+            stream_1   = io.StringIO()
             sys.stdout = stream_1
 
             # Print to stdout.
@@ -99,7 +99,7 @@ class PrintUtilitiesTest(unittest.TestCase):
             sys.stdout = original_sys_stdout
 
         # Print to another stream.
-        stream_2 = StringIO.StringIO()
+        stream_2 = io.StringIO()
         prettyPrint(ref_str, output=stream_2)
 
         # Check.

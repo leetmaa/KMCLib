@@ -286,7 +286,7 @@ class KMCLatticeModelTest(unittest.TestCase):
         if MPICommons.isMaster():
             global_dict = {}
             local_dict  = {}
-            execfile(trajectory_filename, global_dict, local_dict)
+            exec(compile(open(trajectory_filename, "rb").read(), trajectory_filename, 'exec'), global_dict, local_dict)
 
             # Count the first frame.
             elem = local_dict["types"][0]
@@ -368,7 +368,7 @@ class KMCLatticeModelTest(unittest.TestCase):
         if MPICommons.isMaster():
             global_dict = {}
             local_dict  = {}
-            execfile(trajectory_filename, global_dict, local_dict)
+            exec(compile(open(trajectory_filename, "rb").read(), trajectory_filename, 'exec'), global_dict, local_dict)
 
             # Count the first frame.
             elem = local_dict["types"][0]
@@ -448,7 +448,7 @@ class KMCLatticeModelTest(unittest.TestCase):
         if MPICommons.isMaster():
             global_dict = {}
             local_dict  = {}
-            execfile(trajectory_filename, global_dict, local_dict)
+            exec(compile(open(trajectory_filename, "rb").read(), trajectory_filename, 'exec'), global_dict, local_dict)
 
             # Count the first frame.
             elem = local_dict["types"][0]
@@ -548,7 +548,7 @@ class KMCLatticeModelTest(unittest.TestCase):
         if MPICommons.isMaster():
             global_dict = {}
             local_dict  = {}
-            execfile(trajectory_filename, global_dict, local_dict)
+            exec(compile(open(trajectory_filename, "rb").read(), trajectory_filename, 'exec'), global_dict, local_dict)
 
             # Count the first frame.
             elem = local_dict["types"][0]
@@ -669,7 +669,7 @@ class KMCLatticeModelTest(unittest.TestCase):
         if MPICommons.isMaster():
             global_dict = {}
             local_dict  = {}
-            execfile(trajectory_filename, global_dict, local_dict)
+            exec(compile(open(trajectory_filename, "rb").read(), trajectory_filename, 'exec'), global_dict, local_dict)
 
             # Count the first frame.
             elem = local_dict["types"][0]
@@ -831,14 +831,14 @@ class KMCLatticeModelTest(unittest.TestCase):
         if MPICommons.isMaster():
             global_dict = {}
             local_dict  = {}
-            execfile(ref_trajectory_filename, global_dict, local_dict)
+            exec(compile(open(ref_trajectory_filename, "rb").read(), ref_trajectory_filename, 'exec'), global_dict, local_dict)
 
             # Check the times.
             ref_times = numpy.array(local_dict["times"])
 
             global_dict = {}
             local_dict  = {}
-            execfile(trajectory_filename, global_dict, local_dict)
+            exec(compile(open(trajectory_filename, "rb").read(), trajectory_filename, 'exec'), global_dict, local_dict)
             cache_times = numpy.array(local_dict["times"])
 
             # Check that they equal in length.
