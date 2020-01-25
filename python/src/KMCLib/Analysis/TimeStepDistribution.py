@@ -52,7 +52,7 @@ class TimeStepDistribution(KMCAnalysisPlugin):
 
         # Make sure we have place for the bin.
         while len(self.__histogram) <= b:
-            new_len = len(self.__histogram) + len(self.__histogram)/10
+            new_len = len(self.__histogram) + len(self.__histogram) // 10
             self.__histogram.resize(new_len)
 
         # Increment the value at this bin.
@@ -101,6 +101,6 @@ class TimeStepDistribution(KMCAnalysisPlugin):
         # Only master writes.
         if MPICommons.isMaster():
 
-            all_results = zip(self.__time_steps, self.__histogram, self.__normalized_histogram)
+            all_results = list(zip(self.__time_steps, self.__histogram, self.__normalized_histogram))
             for t, v, n in all_results:
                 stream.write("%10.5f %10i %20.15f\n"%(t, v, n))

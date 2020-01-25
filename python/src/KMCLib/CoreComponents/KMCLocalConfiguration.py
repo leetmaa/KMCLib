@@ -56,6 +56,10 @@ class KMCLocalConfiguration(object):
         if center is None:
             center = 0
 
+        # Check that center is of propper type
+        if not isinstance(center, int):
+            raise Error("Improper center specification.")
+
         # Check the bounds of the center coordinate.
         center = checkIndexWithinBounds(center,
                                         coordinates,
@@ -172,4 +176,3 @@ class KMCLocalConfiguration(object):
 """
         # Return the script.
         return comment_string + coords_string + "\n" + types_string + "\n" + config_string
-

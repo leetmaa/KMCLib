@@ -15,25 +15,25 @@ try:
 except:
     __atkpython__ = False
 
-from CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
-from CoreComponents.KMCInteractions import KMCInteractions
-from CoreComponents.KMCProcess import KMCProcess
-from CoreComponents.KMCBucketProcess import KMCBucketProcess
-from CoreComponents.KMCConfiguration import KMCConfiguration
-from CoreComponents.KMCLattice import KMCLattice
-from CoreComponents.KMCLatticeModel import KMCLatticeModel
-from CoreComponents.KMCUnitCell import KMCUnitCell
-from CoreComponents.KMCControlParameters import KMCControlParameters
-from Analysis.OnTheFlyMSD import OnTheFlyMSD
-from Analysis.TimeStepDistribution import TimeStepDistribution
-from Analysis.ProcessStatistics import ProcessStatistics
-from Analysis.Composition import Composition
-from Utilities.SaveAndReadUtilities import KMCInteractionsFromScript
-from Utilities.SaveAndReadUtilities import KMCConfigurationFromScript
-from PluginInterfaces.KMCRateCalculatorPlugin import KMCRateCalculatorPlugin
-from PluginInterfaces.KMCAnalysisPlugin import KMCAnalysisPlugin
-from PluginInterfaces.KMCBreakerPlugin import KMCBreakerPlugin
-from Backend.Backend import MPICommons
+from .CoreComponents.KMCLocalConfiguration import KMCLocalConfiguration
+from .CoreComponents.KMCInteractions import KMCInteractions
+from .CoreComponents.KMCProcess import KMCProcess
+from .CoreComponents.KMCBucketProcess import KMCBucketProcess
+from .CoreComponents.KMCConfiguration import KMCConfiguration
+from .CoreComponents.KMCLattice import KMCLattice
+from .CoreComponents.KMCLatticeModel import KMCLatticeModel
+from .CoreComponents.KMCUnitCell import KMCUnitCell
+from .CoreComponents.KMCControlParameters import KMCControlParameters
+from .Analysis.OnTheFlyMSD import OnTheFlyMSD
+from .Analysis.TimeStepDistribution import TimeStepDistribution
+from .Analysis.ProcessStatistics import ProcessStatistics
+from .Analysis.Composition import Composition
+from .Utilities.SaveAndReadUtilities import KMCInteractionsFromScript
+from .Utilities.SaveAndReadUtilities import KMCConfigurationFromScript
+from .PluginInterfaces.KMCRateCalculatorPlugin import KMCRateCalculatorPlugin
+from .PluginInterfaces.KMCAnalysisPlugin import KMCAnalysisPlugin
+from .PluginInterfaces.KMCBreakerPlugin import KMCBreakerPlugin
+from .Backend.Backend import MPICommons
 
 __all__ = ['KMCLocalConfiguration', 'KMCInteractions', 'KMCConfiguration',
            'KMCLattice', 'KMCLatticeModel', 'KMCUnitCell',

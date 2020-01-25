@@ -67,12 +67,13 @@ def getScriptComponent(script_file_path, component_type):
     global_dict = {}
     local_dict  = {}
     try:
-        execfile(script_file_path, global_dict, local_dict)
+        with open(script_file_path, "rb") as script_file:
+            exec(compile(script_file.read(), script_file_path, 'exec'), global_dict, local_dict)
     except IOError as e:
         raise Error("The script file '%s' failed to load or does not exist."%(script_file_path))
 
     # Search through the local dict and return when found.
-    for key in local_dict.keys():
+    for key in local_dict:
         test_obj = local_dict[key]
         if isinstance(test_obj, component_type):
             return test_obj

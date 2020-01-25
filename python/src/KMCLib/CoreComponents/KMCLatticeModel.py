@@ -328,5 +328,5 @@ must be given as string."""
         prettyPrint("")
         prettyPrint(" Matching Information: ")
         for i,p in enumerate(cpp_processes):
-            print i,p.sites()
+            print(i,p.sites())
 

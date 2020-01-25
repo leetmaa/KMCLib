@@ -258,7 +258,7 @@ coordinates defining where the moved index goes."""
         and update the element order and move_vector indexing accordingly.
         """
         # Set up the original indexing.
-        original_indexing = range(len(self._coordinates))
+        original_indexing = list(range(len(self._coordinates)))
 
         # Sort, and co-sort coordinates and indices.
         (sorted_coords, dummy_distances, sorted_types_before, sorted_types_after, new_to_old_index) = \
@@ -280,8 +280,7 @@ coordinates defining where the moved index goes."""
                 move_vector_index.append( old_to_new_index[v[0]] )
 
             # Setup and sort the backmapping.
-            help_index = range(len(move_vector_index))
-            to_sort = numpy.array(zip(help_index, move_vector_index))
+            to_sort = numpy.array(list(enumerate(move_vector_index)))
             sorted_indices = to_sort[numpy.argsort(to_sort[:,1])]
 
             # Construct the new move vectors.

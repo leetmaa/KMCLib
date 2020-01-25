@@ -143,7 +143,8 @@ def checkSequenceOfPositiveIntegers(sequence, msg="The tested object is not a se
     :returns: The valid sequence.
     """
     # Check that it is a sequence.
-    sequence = checkSequenceOf(sequence, int, msg)
+    # Per unit tests, numpy arrays are also valid
+    sequence = checkSequenceOf(sequence, (int, numpy.integer), msg)
 
     # Check that each element is a positive integer.
     for s in sequence:
@@ -342,4 +343,3 @@ def checkAndNormaliseBucketEntry(t):
     else:
         # Raise an error if the format was incorrnect.
         raise Error("Each bucket format type entry must be (a list of) a tupe(s) of format (int,str) or string(s).")
-

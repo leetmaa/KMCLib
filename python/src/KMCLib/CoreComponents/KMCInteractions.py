@@ -212,7 +212,7 @@ the KMCRateCalculatorPlugin class itself. """
 
                 rate_constant   = process.rateConstant()
 
-                basis_list = range(n_basis)
+                basis_list = list(range(n_basis))
                 if process.basisSites() is not None:
                     # Make sure this basis list does not contain positions
                     # that are not in the configuration.
