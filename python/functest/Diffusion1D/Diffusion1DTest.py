@@ -116,7 +116,7 @@ class Diffusion1DTest(unittest.TestCase):
         b = msd / std
 
         # Make the fit.
-        fit = numpy.linalg.lstsq(A, b)
+        fit = numpy.linalg.lstsq(A, b, rcond=None)
 
         # Get the diffusion coefficient and offset.
         D,offset  = fit[0]
@@ -176,7 +176,7 @@ class Diffusion1DTest(unittest.TestCase):
 
         # Finally, check that the estimated standard deviation is close enough to the
         # standard deviation from the series of tests.
-        print "sigma D: ", std_dev_D, "mean sigma: ", stdev_mean_slope, "sigma mean sigma: ", stdev_mean_stdev
+        print("sigma D: ", std_dev_D, "mean sigma: ", stdev_mean_slope, "sigma mean sigma: ", stdev_mean_stdev)
         self.assertTrue( numpy.abs(stdev_mean_slope - std_dev_D) < stdev_mean_stdev*4.0 )
 
 

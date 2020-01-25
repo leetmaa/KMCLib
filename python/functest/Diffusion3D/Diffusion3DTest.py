@@ -103,7 +103,7 @@ def fit(time, msd, std):
     b = msd / std
 
     # Make the fit.
-    fit = numpy.linalg.lstsq(A, b)
+    fit = numpy.linalg.lstsq(A, b, rcond=None)
 
     # Get the diffusion coefficient and offset.
     D,offset  = fit[0]
