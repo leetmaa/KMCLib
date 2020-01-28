@@ -65,16 +65,15 @@ def getScriptComponent(script_file_path, component_type):
     :return: The first component found that matches the type.
     """
     global_dict = {}
-    local_dict  = {}
     try:
         with open(script_file_path, "rb") as script_file:
-            exec(compile(script_file.read(), script_file_path, 'exec'), global_dict, local_dict)
+            exec(compile(script_file.read(), script_file_path, 'exec'), global_dict)
     except IOError as e:
         raise Error("The script file '%s' failed to load or does not exist."%(script_file_path))
 
     # Search through the local dict and return when found.
-    for key in local_dict:
-        test_obj = local_dict[key]
+    for key in global_dict:
+        test_obj = global_dict[key]
         if isinstance(test_obj, component_type):
             return test_obj
 
