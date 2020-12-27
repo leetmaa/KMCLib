@@ -142,8 +142,9 @@ void Test_Interactions::testQuery()
     CPPUNIT_ASSERT_EQUAL( interactions.totalAvailableSites(), 9 );
 
     // Query for the rate calculator.
-    const RateCalculator & rc = interactions.rateCalculator();
-    CPPUNIT_ASSERT( &rc != NULL );
+    // const RateCalculator & rc = interactions.rateCalculator();
+    // CPPUNIT_ASSERT( &rc != NULL );
+    // error: the compiler can assume that the address of ‘rc’ will never be NULL [-Werror=address]
 
 }
 
