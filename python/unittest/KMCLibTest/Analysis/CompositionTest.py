@@ -1,7 +1,7 @@
 """ Module for testing the composition analysis. """
 
 
-# Copyright (c)  2015  Mikael Leetmaa
+# Copyright (c)  2015 - 2020  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -10,6 +10,7 @@
 import unittest
 import StringIO
 import numpy
+import copy
 
 from KMCLib.Backend.Backend import MPICommons
 
@@ -166,6 +167,22 @@ class CompositionTest(unittest.TestCase):
         ref_count = numpy.array([5,4,3,2,1])
         diff = numpy.linalg.norm(cc._Composition__current_count - ref_count)
         self.assertAlmostEqual(diff, 0.0, 10)
+
+        # Test that a call to finalized does not alter the Composition object.
+        new = copy.deepcopy(cc)
+        cc.finalize()
+
+        # Check the value of all members after calling finalize.
+        self.assertEqual(new._Composition__current_count.all(), cc._Composition__current_count.all())
+        self.assertEqual(new._Composition__current_steps, cc._Composition__current_steps)
+
+        for i in range(len(new._Composition__data)):
+            self.assertEqual(new._Composition__data[i].all(), cc._Composition__data[i].all())
+
+        self.assertEqual(new._Composition__empty_count.all(), cc._Composition__empty_count.all())
+        self.assertEqual(new._Composition__last_time, cc._Composition__last_time)
+        self.assertEqual(new._Composition__time_interval, cc._Composition__time_interval)
+        self.assertEqual(new._Composition__type_names, cc._Composition__type_names)
 
     def testPrintResults(self):
         """ Test that we can print the results """
