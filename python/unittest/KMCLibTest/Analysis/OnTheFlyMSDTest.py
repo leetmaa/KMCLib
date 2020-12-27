@@ -1,7 +1,7 @@
 """ Module for testing the on-the-fly MSD analysis. """
 
 
-# Copyright (c)  2013-2014  Mikael Leetmaa
+# Copyright (c)  2013 - 2020  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -22,6 +22,7 @@ from KMCLib.CoreComponents.KMCLatticeModel import KMCLatticeModel
 from KMCLib.CoreComponents.KMCControlParameters import KMCControlParameters
 from KMCLib.Backend.Backend import MPICommons
 from KMCLib.Backend import Backend
+from KMCLib.Exceptions.Error import Error
 
 # Implement the test.
 class OnTheFlyMSDTest(unittest.TestCase):
@@ -33,6 +34,66 @@ class OnTheFlyMSDTest(unittest.TestCase):
                           n_bins=512,
                           t_max = 1024.0,
                           track_type="A")
+
+    def testConstructionFail1(self):
+      """ "Test that construction fails on wrong track_type input """
+      self.assertRaises( Error, lambda : OnTheFlyMSD(history_steps=13,
+                                                     n_bins=512,
+                                                     t_max = 1024.0,
+                                                     track_type=1) )
+
+
+
+    def testCalculationFail1(self):
+        """ Test that setup fails when an invalid track_type is given. """
+        # Setup a system, a periodic 10 atoms long 1D chain.
+        unit_cell = KMCUnitCell(cell_vectors=numpy.array([[1.0,0.0,0.0],
+                                                          [0.0,1.0,0.0],
+                                                          [0.0,0.0,1.0]]),
+                                basis_points=[[0.0,0.0,0.0]])
+
+        # And a lattice.
+        lattice = KMCLattice(unit_cell=unit_cell,
+                             repetitions=(10,10,10),
+                             periodic=(True,True,True))
+
+        # Setup an initial configuration with one B in a sea of A:s.
+        types = ["A"]*10*10*10
+        types[5] = "B"
+
+        config = KMCConfiguration(lattice=lattice,
+                                  types=types,
+                                  possible_types=["A","B"])
+
+        # Setup a diffusion process to the left.
+        coordinates_p0 = [[0.0, 0.0, 0.0],[-1.0, 0.0, 0.0]]
+        p0 = KMCProcess(coordinates=coordinates_p0,
+                        elements_before=["B","A"],
+                        elements_after=["A","B"],
+                        move_vectors=None,
+                        basis_sites=[0],
+                        rate_constant=1.0)
+
+        interactions = KMCInteractions(processes=[p0],
+                                       implicit_wildcards=True)
+
+        model = KMCLatticeModel(configuration=config,
+                                interactions=interactions)
+
+        # Setup the analysis with an invalid track_type.
+        msd = OnTheFlyMSD(history_steps=400,
+                          n_bins=10,
+                          t_max=25.0,
+                          track_type="C")
+
+        # Setup the control parameters.
+        control_parameters = KMCControlParameters(number_of_steps=4000,
+                                                  dump_interval=100,
+                                                  analysis_interval=1,
+                                                  seed=2013)
+        # Run the model.
+        self.assertRaises( Error, lambda : model.run(control_parameters=control_parameters,
+                                                     analysis=[msd]) )
 
     def testCalculation(self):
         """ Test a calculation with the on-the-fly MSD analysis. """
