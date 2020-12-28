@@ -167,7 +167,7 @@ must be given as string."""
         if self.__verbosity_level > 9:
             self.__printMatchInfo(cpp_model)
 
-        # Check that we have at least one available process to  run the KMC simulation.
+        # Check that we have at least one available process to run the KMC simulation.
         if cpp_model.interactions().totalAvailableSites() == 0:
             raise Error("No available processes. None of the processes defined as input match any position in the configuration. Change the initial configuration or processes to run KMC.")
 
