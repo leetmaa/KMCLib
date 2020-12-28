@@ -1,7 +1,7 @@
 """ Module for testing the KMCLatticeModel class. """
 
 
-# Copyright (c)  2012-2015  Mikael Leetmaa
+# Copyright (c)  2012 - 2020  Mikael Leetmaa
 #
 # This file is part of the KMCLib project distributed under the terms of the
 # GNU General Public License version 3, see <http://www.gnu.org/licenses/>.
@@ -11,6 +11,7 @@ import unittest
 import numpy
 import sys
 import os
+import StringIO
 
 from KMCLib.CoreComponents.KMCInteractions import KMCInteractions
 from KMCLib.CoreComponents.KMCProcess import KMCProcess
@@ -50,6 +51,63 @@ class KMCLatticeModelTest(unittest.TestCase):
             if MPICommons.isMaster():
                 os.remove(f)
         MPICommons.barrier()
+
+    def testConstructionFail1(self):
+        """ Test that the construction fails when given the wrong config type """
+        config = "CONFIGURATION"
+
+        # A first process.
+        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
+        types0 = ["A","B"]
+        types1 = ["B","A"]
+        sites  = [0,1,2]
+        rate_0_1 = 3.5
+        process_0 = KMCProcess(coords,
+                             types0,
+                             types1,
+                             basis_sites=sites,
+                             rate_constant=rate_0_1)
+
+        # Construct the interactions object.
+        interactions = KMCInteractions(processes=[process_0])
+
+        # Construct the model with the wrong type for the configuration argument.
+        self.assertRaises( Error, lambda : KMCLatticeModel(config, interactions) )
+
+    def testConstructionFail2(self):
+        """ Test that the construction fails when given the wrong interactions type """
+        # Setup a unitcell.
+        unit_cell = KMCUnitCell(cell_vectors=numpy.array([[2.8,0.0,0.0],
+                                                          [0.0,3.2,0.0],
+                                                          [0.0,0.5,3.0]]),
+                                basis_points=[[0.0,0.0,0.0],
+                                              [0.5,0.5,0.5],
+                                              [0.25,0.25,0.75]])
+
+        # Setup the lattice.
+        lattice = KMCLattice(unit_cell=unit_cell,
+                             repetitions=(4,4,1),
+                             periodic=(True,True,False))
+
+        types = ['A','A','A','A','B','B',
+                 'A','A','A','B','B','B',
+                 'B','B','A','A','B','A',
+                 'B','B','B','A','B','A',
+                 'B','A','A','A','B','B',
+                 'B','B','B','B','B','B',
+                 'A','A','A','A','B','B',
+                 'B','B','A','B','B','A']
+
+        # Setup the configuration.
+        config = KMCConfiguration(lattice=lattice,
+                                  types=types,
+                                  possible_types=['A','C','B'])
+
+        # Construct the interactions object.
+        interactions = "INTERACTIONS"
+
+        # Construct the model with the wrong type for the configuration argument.
+        self.assertRaises( Error, lambda : KMCLatticeModel(config, interactions) )
 
     def testConstruction(self):
         """ Test the construction of the lattice model """
@@ -121,6 +179,63 @@ class KMCLatticeModelTest(unittest.TestCase):
         # Check that it has the correct configuration stored.
         self.assertTrue(model._KMCLatticeModel__configuration == config)
 
+    def testRunWrongArgumentsFail1(self):
+        """ Test that run fails when given the wrong types or wrong values of arguments """
+        # Cell.
+        cell_vectors = [[   1.000000e+00,   0.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   1.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   0.000000e+00,   1.000000e+00]]
+
+        basis_points = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+
+        unit_cell = KMCUnitCell(
+            cell_vectors=cell_vectors,
+            basis_points=basis_points)
+
+        # Lattice.
+        lattice = KMCLattice(
+            unit_cell=unit_cell,
+            repetitions=(10,10,1),
+            periodic=(True, True, False))
+
+        # Configuration.
+        types = ['B']*100
+        possible_types = ['A','B']
+        configuration = KMCConfiguration(
+            lattice=lattice,
+            types=types,
+            possible_types=possible_types)
+
+        # Interactions.
+        coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+        process_0 = KMCProcess(coordinates,
+                               ['A'],
+                               ['B'],
+                               basis_sites=[0],
+                               rate_constant=4.0)
+        process_1 = KMCProcess(coordinates,
+                               ['B'],
+                               ['A'],
+                               basis_sites=[0],
+                               rate_constant=1.0)
+
+        processes = [process_0, process_1]
+        interactions = KMCInteractions(processes)
+
+        # Setup the model.
+        model = KMCLatticeModel(configuration, interactions)
+
+        # The control parameters.
+        control_parameters = KMCControlParameters(number_of_steps=1000,
+                                                  dump_interval=500,
+                                                  seed=2013)
+
+        # Fail because no control_parameters must be an instance of KMCControlParameters.
+        self.assertRaises( Error, lambda: model.run() )
+
+        # Fail because the tracectory filename must be a string.
+        self.assertRaises( Error, lambda: model.run(control_parameters=control_parameters,
+                                                    trajectory_filename=interactions) )
 
     def testRunImplicitWildcards(self):
         """ Test that a valid model can run for a few steps. """
@@ -218,6 +333,7 @@ class KMCLatticeModelTest(unittest.TestCase):
         # Setup the run paramters.
         control_parameters = KMCControlParameters(number_of_steps=10,
                                                   dump_interval=1)
+        # Run the model.
         model.run(control_parameters)
 
     def testRun2(self):
@@ -305,6 +421,258 @@ class KMCLatticeModelTest(unittest.TestCase):
             fraction =  nA * 100.0 / (nA + nB)
             target = 18.0
             self.assertAlmostEqual(fraction, target, 3)
+
+    def testRunInitialMatch(self):
+        """ Test the output of initial matchinformation from a run of the A-B flip model. """
+        # Cell.
+        cell_vectors = [[   1.000000e+00,   0.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   1.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   0.000000e+00,   1.000000e+00]]
+
+        basis_points = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+
+        unit_cell = KMCUnitCell(
+            cell_vectors=cell_vectors,
+            basis_points=basis_points)
+
+        # Lattice.
+        lattice = KMCLattice(
+            unit_cell=unit_cell,
+            repetitions=(10,10,1),
+            periodic=(True, True, False))
+
+        # Configuration.
+        types = ['B']*100
+        possible_types = ['A','B']
+        configuration = KMCConfiguration(
+            lattice=lattice,
+            types=types,
+            possible_types=possible_types)
+
+        # Interactions.
+        coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+        process_0 = KMCProcess(coordinates,
+                               ['A'],
+                               ['B'],
+                               basis_sites=[0],
+                               rate_constant=4.0)
+        process_1 = KMCProcess(coordinates,
+                               ['B'],
+                               ['A'],
+                               basis_sites=[0],
+                               rate_constant=1.0)
+
+        processes = [process_0, process_1]
+        interactions = KMCInteractions(processes)
+
+        # Setup the model.
+        ab_flip_model = KMCLatticeModel(configuration, interactions)
+
+        # The control parameters.
+        control_parameters = KMCControlParameters(number_of_steps=0,
+                                                  seed=149)
+
+        stream_1   = StringIO.StringIO()
+
+        try:
+            sys.stdout = stream_1
+
+            # Run the model for 0 steps.
+            ab_flip_model._KMCLatticeModel__verbosity_level = 10
+            ab_flip_model.run(control_parameters=control_parameters)
+
+        finally:
+            sys.stdout = sys.__stdout__
+
+        # Check the content of the output.
+        ref = """0 ()
+1 (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99)
+"""
+        self.assertTrue(ref in stream_1.getvalue())
+
+    def testRunNoInitialMatch(self):
+        """ Test that the model does not run if the initial number of available matches is zero. """
+        # Cell.
+        cell_vectors = [[   1.000000e+00,   0.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   1.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   0.000000e+00,   1.000000e+00]]
+
+        basis_points = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+
+        unit_cell = KMCUnitCell(
+            cell_vectors=cell_vectors,
+            basis_points=basis_points)
+
+        # Lattice.
+        lattice = KMCLattice(
+            unit_cell=unit_cell,
+            repetitions=(10,10,1),
+            periodic=(True, True, False))
+
+        # Configuration.
+        types = ['B']*100
+        possible_types = ['A','B','C','D']
+        configuration = KMCConfiguration(
+            lattice=lattice,
+            types=types,
+            possible_types=possible_types)
+
+        # Interactions.
+        coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+        process_0 = KMCProcess(coordinates,
+                               ['C'],
+                               ['D'],
+                               basis_sites=[0],
+                               rate_constant=4.0)
+        process_1 = KMCProcess(coordinates,
+                               ['D'],
+                               ['C'],
+                               basis_sites=[0],
+                               rate_constant=1.0)
+
+        processes = [process_0, process_1]
+        interactions = KMCInteractions(processes)
+
+        # Setup the model.
+        ab_flip_model = KMCLatticeModel(configuration, interactions)
+
+        # The control parameters.
+        control_parameters = KMCControlParameters(number_of_steps=0,
+                                                  seed=149)
+
+        self.assertRaises( Error, lambda: ab_flip_model.run(control_parameters=control_parameters) )
+
+    def testRunNoMatch(self):
+        """ Test that execution stops if the number of available matches is zero. """
+        # Cell.
+        cell_vectors = [[   1.000000e+00,   0.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   1.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   0.000000e+00,   1.000000e+00]]
+
+        basis_points = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+
+        unit_cell = KMCUnitCell(
+            cell_vectors=cell_vectors,
+            basis_points=basis_points)
+
+        # Lattice.
+        lattice = KMCLattice(
+            unit_cell=unit_cell,
+            repetitions=(10,10,1),
+            periodic=(True, True, False))
+
+        # Configuration.
+        types = ['B']*100
+        types[0] = 'C'
+        types[1] = 'C'
+
+        possible_types = ['A','B','C','D']
+        configuration = KMCConfiguration(
+            lattice=lattice,
+            types=types,
+            possible_types=possible_types)
+
+        # Interactions.
+        coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+        process_0 = KMCProcess(coordinates,
+                               ['C'],
+                               ['D'],
+                               basis_sites=[0],
+                               rate_constant=4.0)
+
+        processes = [process_0]
+        interactions = KMCInteractions(processes)
+        ab_flip_model = KMCLatticeModel(configuration, interactions)
+
+        name = os.path.abspath(os.path.dirname(__file__))
+        name = os.path.join(name, "..", "TestUtilities", "Scratch")
+        trajectory_filename = os.path.join(name, "ab_flip_traj_three_steps.py")
+        self.__files_to_remove.append(trajectory_filename)
+
+        # This fails at the attempt of the third step.
+        control_parameters = KMCControlParameters(number_of_steps=3,
+                                                  dump_interval=1,
+                                                  seed=149)
+
+        self.assertRaises( Error, lambda: ab_flip_model.run(control_parameters=control_parameters,
+                                                            trajectory_filename=trajectory_filename) )
+
+        # Inspect the tracjectory to makes sure we failed after two completed steps.
+        if MPICommons.isMaster():
+            global_dict = {}
+            local_dict  = {}
+            execfile(trajectory_filename, global_dict, local_dict)
+
+            # Check the number of frames.
+            self.assertEqual(len(local_dict["types"]), 3)
+
+    def testEquidistantTrajectoryRun(self):
+        """ Test that the equidistant time trajectory works for the A-B flip mode. """
+        # Cell.
+        cell_vectors = [[   1.000000e+00,   0.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   1.000000e+00,   0.000000e+00],
+                        [   0.000000e+00,   0.000000e+00,   1.000000e+00]]
+
+        basis_points = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+
+        unit_cell = KMCUnitCell(
+            cell_vectors=cell_vectors,
+            basis_points=basis_points)
+
+        # Lattice.
+        lattice = KMCLattice(
+            unit_cell=unit_cell,
+            repetitions=(10,10,1),
+            periodic=(True, True, False))
+
+        # Configuration.
+        types = ['B']*100
+        possible_types = ['A','B']
+        configuration = KMCConfiguration(
+            lattice=lattice,
+            types=types,
+            possible_types=possible_types)
+
+        # Interactions.
+        coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+        process_0 = KMCProcess(coordinates,
+                               ['A'],
+                               ['B'],
+                               basis_sites=[0],
+                               rate_constant=4.0)
+        process_1 = KMCProcess(coordinates,
+                               ['B'],
+                               ['A'],
+                               basis_sites=[0],
+                               rate_constant=1.0)
+
+        processes = [process_0, process_1]
+        interactions = KMCInteractions(processes)
+
+        # Setup the model.
+        ab_flip_model = KMCLatticeModel(configuration, interactions)
+
+        # The control parameters.
+        control_parameters = KMCControlParameters(number_of_steps=100,
+                                                  dump_time_interval=1.0e-1,
+                                                  seed=149)
+
+        name = os.path.abspath(os.path.dirname(__file__))
+        name = os.path.join(name, "..", "TestUtilities", "Scratch")
+        trajectory_filename = os.path.join(name, "ab_flip_traj_equidistant.py")
+        self.__files_to_remove.append(trajectory_filename)
+
+        ab_flip_model.run(control_parameters=control_parameters,
+                          trajectory_filename=trajectory_filename)
+
+        # Inspect the tracjectory.
+        if MPICommons.isMaster():
+            global_dict = {}
+            local_dict  = {}
+            execfile(trajectory_filename, global_dict, local_dict)
+
+            # Check the lenght of the trajecxtory.
+            self.assertEqual(len(local_dict["types"]), 8)
 
     def testCustomRatesRun(self):
         """ Test the run of an A-B flip model with custom rates. """
@@ -1892,9 +2260,6 @@ my_model = KMCLatticeModel(
 
         # Construct the model.
         model = KMCLatticeModel(config, interactions)
-
-
-
 
 def getValidModel():
     """ Helper function to construct a valid model. """
