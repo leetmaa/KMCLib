@@ -138,26 +138,6 @@ def stdVectorCoordinateToNumpy2DArray(cpp_vector):
 
     return py_data
 
-
-def stdVectorPairCoordinateToNumpy2DArray(cpp_vector):
-    """
-    Convert a std::vector< std::pair<Coordinate, Coordinate> >
-    to a nx6 numpy array.
-    """
-    size = len(cpp_vector)
-    py_data = numpy.zeros((size, 6))
-
-    for i in range(size):
-        py_data[i][0] = cpp_vector[i][0].x()
-        py_data[i][1] = cpp_vector[i][0].y()
-        py_data[i][2] = cpp_vector[i][0].z()
-        py_data[i][3] = cpp_vector[i][1].x()
-        py_data[i][4] = cpp_vector[i][1].y()
-        py_data[i][5] = cpp_vector[i][1].z()
-
-    return py_data
-
-
 def numpy2DArrayToStdVectorCoordinate(array):
     """
     Convert a Nx3 2D numpy array to a std::vector<Coordinate> representation.
