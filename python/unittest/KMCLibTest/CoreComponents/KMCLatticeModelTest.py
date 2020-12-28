@@ -11,7 +11,7 @@ import unittest
 import numpy
 import sys
 import os
-import StringIO
+import io
 
 from KMCLib.CoreComponents.KMCInteractions import KMCInteractions
 from KMCLib.CoreComponents.KMCProcess import KMCProcess
@@ -472,7 +472,7 @@ class KMCLatticeModelTest(unittest.TestCase):
         control_parameters = KMCControlParameters(number_of_steps=0,
                                                   seed=149)
 
-        stream_1   = StringIO.StringIO()
+        stream_1   = io.StringIO()
 
         try:
             sys.stdout = stream_1
@@ -601,7 +601,7 @@ class KMCLatticeModelTest(unittest.TestCase):
         if MPICommons.isMaster():
             global_dict = {}
             local_dict  = {}
-            execfile(trajectory_filename, global_dict, local_dict)
+            exec(compile(open(trajectory_filename, "rb").read(), trajectory_filename, 'exec'), global_dict, local_dict)
 
             # Check the number of frames.
             self.assertEqual(len(local_dict["types"]), 3)
@@ -669,7 +669,7 @@ class KMCLatticeModelTest(unittest.TestCase):
         if MPICommons.isMaster():
             global_dict = {}
             local_dict  = {}
-            execfile(trajectory_filename, global_dict, local_dict)
+            exec(compile(open(trajectory_filename, "rb").read(), trajectory_filename, 'exec'), global_dict, local_dict)
 
             # Check the lenght of the trajecxtory.
             self.assertEqual(len(local_dict["types"]), 8)
