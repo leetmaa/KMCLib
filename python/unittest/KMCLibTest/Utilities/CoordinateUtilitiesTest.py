@@ -75,6 +75,35 @@ class CoordinateUtilitiesTest(unittest.TestCase):
         self.assertListEqual(sorted_types1, ref_types1)
         self.assertListEqual(sorted_types2, ref_types2)
 
+    def testSortCoordinatesDistanceSameType2(self):
+        """ Test the coordinate sorting wrt distances function. """
+        # Lets, use these coordinates.
+        coords = numpy.array([[2.0, 3.0, 0.0], [1.0, 2.0, 0.0],
+                              [0.0, 0.0, 0.0], [-8.9, 12.0, 4.0]])
+        types1 = ["B", "A", "C", "A"]
+
+        # Let the 3rd coordinates be the center.
+        center = 2
+
+        # Sort wrt distance, type, x, y, z
+        sorted_coords, sorted_distances, sorted_types1, sorted_types2 = \
+            sortCoordinatesDistance(coords, center, types1)
+
+        # Setup reference.
+        ref_coords = numpy.array([[0.0, 0.0, 0.0],
+                                  [1.0, 2.0, 0.0],
+                                  [2.0, 3.0, 0.0],
+                                  [-8.9, 12.0, 4.0]])
+        ref_types1 = ["C", "A", "B", "A"]
+        ref_types2 = ["C", "A", "B", "A"]
+        ref_distances = [0.0, 2.2360679774997898, 3.6055512754639891, 15.46641522784126]
+
+        # Check.
+        self.assertTrue(numpy.allclose(sorted_coords, ref_coords))
+        self.assertTrue(numpy.allclose(sorted_distances, ref_distances))
+        self.assertListEqual(sorted_types1, ref_types1)
+        self.assertListEqual(sorted_types2, ref_types2)
+
     def testSortCoordinates(self):
         """ Test the coordinate sorting function. """
         # Lets, use these coordinates.
@@ -92,6 +121,54 @@ class CoordinateUtilitiesTest(unittest.TestCase):
                                   [  2.,    1.,    0. ]])
         ref_types1 = ["A","C","A","B"]
         ref_types2 = ['V', 'C', 'G', 'D']
+
+        # Check.
+        self.assertAlmostEqual(numpy.linalg.norm(sorted_coords-ref_coords), 0.0, 10)
+        self.assertEqual(sorted_types1, ref_types1)
+        self.assertEqual(sorted_types2, ref_types2)
+
+    def testSortCoordinatesCosort(self):
+        """ Test the coordinate sorting function. """
+        # Lets, use these coordinates.
+        coords = numpy.array([[2.0,1.0,0.0],[1.0,2.0,0.0],[0.0,0.0,0.0],[-8.9,12.0,4.0]])
+        types1  = ["B","A","C","A"]
+        types2  = ["D","G","C","V"]
+        co_sort = [8, 5, "A", None]
+
+        # Sort - wrt x,y,z,type
+        (sorted_coords, sorted_types1, sorted_types2, co_sorted) = sortCoordinates(coords, types1, types2, co_sort)
+
+        # Setup references.
+        ref_coords = numpy.array([[ -8.9,  12.,    4. ],
+                                  [  0.,    0.,    0. ],
+                                  [  1.,    2.,    0. ],
+                                  [  2.,    1.,    0. ]])
+        ref_types1 = ["A","C","A","B"]
+        ref_types2 = ["V", "C", "G", "D"]
+        ref_co_sort = [None, "A", 5, 8]
+
+        # Check.
+        self.assertAlmostEqual(numpy.linalg.norm(sorted_coords-ref_coords), 0.0, 10)
+        self.assertEqual(sorted_types1, ref_types1)
+        self.assertEqual(sorted_types2, ref_types2)
+        self.assertEqual(co_sorted, ref_co_sort)
+
+    def testSortCoordinatesSameType2(self):
+        """ Test the coordinate sorting function. """
+        # Lets, use these coordinates.
+        coords = numpy.array([[2.0,1.0,0.0],[1.0,2.0,0.0],[0.0,0.0,0.0],[-8.9,12.0,4.0]])
+        types1  = ["B","A","C","A"]
+
+        # Sort - wrt x,y,z,type
+        (sorted_coords, sorted_types1, sorted_types2) = sortCoordinates(coords, types1)
+
+        # Setup references.
+        ref_coords = numpy.array([[ -8.9,  12.,    4. ],
+                                  [  0.,    0.,    0. ],
+                                  [  1.,    2.,    0. ],
+                                  [  2.,    1.,    0. ]])
+        ref_types1 = ['A','C','A','B']
+        ref_types2 = ['A','C','A','B']
 
         # Check.
         self.assertAlmostEqual(numpy.linalg.norm(sorted_coords-ref_coords), 0.0, 10)

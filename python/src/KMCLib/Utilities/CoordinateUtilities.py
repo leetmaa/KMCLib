@@ -46,6 +46,8 @@ def sortCoordinatesDistance(coordinates, center, types1, types2=None, co_sort=No
     :param types2: The second, optional, list of site types to co-sort with the coordinates.
     :type types2:  a list of strings
 
+    :param co_sort: The list of something to co-sort.
+
     :returns: The sorted coordinates, distances and sorted types.
     """
     if types2 is None:
@@ -102,7 +104,7 @@ def sortCoordinates(coordinates, types1, types2=None, co_sort=None):
     :param types2: The second, optional, list of site types to co-sort with the coordinates.
     :type types2:  a list of strings
 
-    :param co_sort: The list of some thing to co-sort.
+    :param co_sort: The list of something to co-sort.
 
     :returns: The sorted coordinates and sorted types. A sorted co_sort list
               is also returned if a co_sort argument was given.
