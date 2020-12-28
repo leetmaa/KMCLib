@@ -308,6 +308,9 @@ def checkAndNormaliseBucketEntry(t):
                 if not len(tt) == 2 and isinstance(tt[0], int) and isinstance(tt[1], str):
                     raise Error("Bucket type given as a tuple must be of format (int, str).")
                 normalised_type.append(tt)
+            else:
+                raise Error("Bucket entry given as a list must only contain particles, str, or numbered particles (int, str) or a combination of the two.")
+
         # Loop through the normalised type list and
         # add entries with the same string.
         final_type = []
@@ -335,7 +338,7 @@ def checkAndNormaliseBucketEntry(t):
         return final_type
 
     elif isinstance(t, tuple):
-        if not len(t) == 2 and isinstance(t[0], int) and isinstance(t[1], str):
+        if not len(t) == 2 or not isinstance(t[0], int) or not isinstance(t[1], str):
             raise Error("Bucket type given as a tuple must be of format (int, str).")
         return [t]
     elif isinstance(t, str):
