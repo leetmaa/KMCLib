@@ -91,10 +91,7 @@ class KMCProcess(KMCBaseProcess):
         basis_sites = checkSequenceOfPositiveIntegers(basis_sites,
                                                       msg="The basis_sites must be given as a list of positive integers.")
 
-        if len(basis_sites) == 0:
-            msg = "The list of available basis sites for a process may not be empty."
-
-        # Passed the  tests.
+        # Passed the tests.
         self.__basis_sites = basis_sites
 
         # Check the rate constant.
