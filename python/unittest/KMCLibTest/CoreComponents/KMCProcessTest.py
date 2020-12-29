@@ -625,6 +625,26 @@ class KMCProcessTest(unittest.TestCase):
                                                basis_sites=basis_sites,
                                                rate_constant=1.0) )
 
+
+    def testConstructionFailMoveVectors2(self):
+        """ Test that the wrong move vector input gives and error. """
+        coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0], [2.0, 3.0, 4.0]]
+        basis_sites = [0]
+        move_vectors = [(0, [1.0,2.0,3.0]),
+                        (1, [-1.0,-2.0,-3.0])]
+
+        # The elements_after does not result from applying the move vectors to the elements_before
+        elements_before = ["A", "B", "C"]
+        elements_after = ["B", "C", "A"]
+
+        self.assertRaises( Error,
+                           lambda : KMCProcess(coordinates=coordinates,
+                                               elements_before=elements_before,
+                                               elements_after=elements_after,
+                                               move_vectors=move_vectors,
+                                               basis_sites=basis_sites,
+                                               rate_constant=1.0) )
+
     def testReconstructMoveVectors(self):
         """ Test that the helper function to reconstruct move vectors works as intended. """
         # Get an empty process.
@@ -756,6 +776,146 @@ process = KMCProcess(
 
 """
         self.assertEqual(script, ref_script)
+
+    def testScriptOneCoordinate(self):
+        """ Test that the process can generate its own valid script with only one coordinate. """
+        # Set the input. only one coordinate
+        coordinates = [[0.0, 0.0, 0.0]]
+        elements_before = ["A"]
+        elements_after = ["B"]
+        basis_sites = [0]
+
+        # Construct with given move vectors.
+        p = KMCProcess(coordinates=coordinates,
+                       elements_before=elements_before,
+                       elements_after=elements_after,
+                       basis_sites=basis_sites,
+                       rate_constant=1.12)
+
+        # Get the script.
+        script = p._script()
+
+        ref_script = """coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00]]
+
+elements_before = ['A']
+elements_after  = ['B']
+move_vectors    = None
+basis_sites     = [0]
+rate_constant   =    1.120000e+00
+
+process = KMCProcess(
+    coordinates=coordinates,
+    elements_before=elements_before,
+    elements_after=elements_after,
+    move_vectors=move_vectors,
+    basis_sites=basis_sites,
+    rate_constant=rate_constant)
+
+"""
+        # Check.
+        self.assertEqual(ref_script, script)
+
+    def testScriptManyCoordinates(self):
+        """ Test that the process can generate its own valid script with only one coordinate. """
+        # Set the input. only one coordinate
+        coordinates = [[0.0, 0.0, 0.0],
+                       [1.0, 0.0, 0.0],
+                       [2.0, 0.0, 0.0],
+                       [3.0, 0.0, 0.0],
+                       [4.0, 0.0, 0.0],
+                       [5.0, 0.0, 0.0],
+                       [6.0, 0.0, 0.0],
+                       [7.0, 0.0, 0.0],
+                       [8.0, 0.0, 0.0],
+                       [9.0, 0.0, 0.0],
+                       [10.0, 0.0, 0.0],
+                       [11.0, 0.0, 0.0],
+                       [12.0, 0.0, 0.0],
+                       [13.0, 0.0, 0.0],
+                       [14.0, 0.0, 0.0],
+                       [15.0, 0.0, 0.0],
+                       [16.0, 0.0, 0.0],
+                       [17.0, 0.0, 0.0],
+                       [18.0, 0.0, 0.0],
+                       [19.0, 0.0, 0.0],
+                       [20.0, 0.0, 0.0],
+                       [21.0, 0.0, 0.0],
+                       [22.0, 0.0, 0.0],
+                       [23.0, 0.0, 0.0],
+                       [24.0, 0.0, 0.0],
+                       [25.0, 0.0, 0.0],
+                       [26.0, 0.0, 0.0],
+                       [27.0, 0.0, 0.0],
+                       [28.0, 0.0, 0.0],
+                       [29.0, 0.0, 0.0],
+                       [30.0, 0.0, 0.0]]
+        elements_before = ["A"]*31
+        elements_after = ["B"]*31
+        basis_sites = [0]
+
+        # Construct with given move vectors.
+        p = KMCProcess(coordinates=coordinates,
+                       elements_before=elements_before,
+                       elements_after=elements_after,
+                       basis_sites=basis_sites,
+                       rate_constant=1.12)
+
+        # Get the script.
+        script = p._script()
+
+        ref_script = """coordinates = [[   0.000000e+00,   0.000000e+00,   0.000000e+00],
+               [   1.000000e+00,   0.000000e+00,   0.000000e+00],
+               [   2.000000e+00,   0.000000e+00,   0.000000e+00],
+               [   3.000000e+00,   0.000000e+00,   0.000000e+00],
+               [   4.000000e+00,   0.000000e+00,   0.000000e+00],
+               [   5.000000e+00,   0.000000e+00,   0.000000e+00],
+               [   6.000000e+00,   0.000000e+00,   0.000000e+00],
+               [   7.000000e+00,   0.000000e+00,   0.000000e+00],
+               [   8.000000e+00,   0.000000e+00,   0.000000e+00],
+               [   9.000000e+00,   0.000000e+00,   0.000000e+00],
+               [   1.000000e+01,   0.000000e+00,   0.000000e+00],
+               [   1.100000e+01,   0.000000e+00,   0.000000e+00],
+               [   1.200000e+01,   0.000000e+00,   0.000000e+00],
+               [   1.300000e+01,   0.000000e+00,   0.000000e+00],
+               [   1.400000e+01,   0.000000e+00,   0.000000e+00],
+               [   1.500000e+01,   0.000000e+00,   0.000000e+00],
+               [   1.600000e+01,   0.000000e+00,   0.000000e+00],
+               [   1.700000e+01,   0.000000e+00,   0.000000e+00],
+               [   1.800000e+01,   0.000000e+00,   0.000000e+00],
+               [   1.900000e+01,   0.000000e+00,   0.000000e+00],
+               [   2.000000e+01,   0.000000e+00,   0.000000e+00],
+               [   2.100000e+01,   0.000000e+00,   0.000000e+00],
+               [   2.200000e+01,   0.000000e+00,   0.000000e+00],
+               [   2.300000e+01,   0.000000e+00,   0.000000e+00],
+               [   2.400000e+01,   0.000000e+00,   0.000000e+00],
+               [   2.500000e+01,   0.000000e+00,   0.000000e+00],
+               [   2.600000e+01,   0.000000e+00,   0.000000e+00],
+               [   2.700000e+01,   0.000000e+00,   0.000000e+00],
+               [   2.800000e+01,   0.000000e+00,   0.000000e+00],
+               [   2.900000e+01,   0.000000e+00,   0.000000e+00],
+               [   3.000000e+01,   0.000000e+00,   0.000000e+00]]
+
+elements_before = ['A','A','A','A','A','A','A','A','A','A','A','A','A',
+                   'A','A','A','A','A','A','A','A','A','A','A','A','A',
+                   'A','A','A','A','A']
+elements_after  = ['B','B','B','B','B','B','B','B','B','B','B','B','B',
+                   'B','B','B','B','B','B','B','B','B','B','B','B','B',
+                   'B','B','B','B','B']
+move_vectors    = None
+basis_sites     = [0]
+rate_constant   =    1.120000e+00
+
+process = KMCProcess(
+    coordinates=coordinates,
+    elements_before=elements_before,
+    elements_after=elements_after,
+    move_vectors=move_vectors,
+    basis_sites=basis_sites,
+    rate_constant=rate_constant)
+
+"""
+        # Check.
+        self.assertEqual(ref_script, script)
 
     def testLocalConfigurations(self):
         """ Test that the local configurations are correctly set up """
