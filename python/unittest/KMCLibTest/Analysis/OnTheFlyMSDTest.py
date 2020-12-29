@@ -569,7 +569,7 @@ class OnTheFlyMSDTest(unittest.TestCase):
 
         # Check against reference.
 
-        ref_value = """      TIME       MSD_x       DSD_y       MSD_z      MSD_xy      MSD_xz      MSD_yz     MSD_xyz       STD_x       STD_y       STD_z      STD_xy      STD_xz      STD_yz     STD_xyz        N_eff
+        ref_value = """      TIME       MSD_x       MSD_y       MSD_z      MSD_xy      MSD_xz      MSD_yz     MSD_xyz       STD_x       STD_y       STD_z      STD_xy      STD_xz      STD_yz     STD_xyz        N_eff
 1.25000e+00 2.83901e+00 2.88483e+00 2.28848e+01 3.12508e+00 1.38390e+01 3.58848e+01 5.61251e+01 2.00856e-02 1.91193e-02 2.19847e-02 3.02198e+00 1.02009e+00 4.01912e+00 6.02198e+00 1.00000e-01
 3.75000e+00 8.52281e+00 8.20674e+00 4.82067e+01 8.84431e+00 6.65228e+01 5.20674e+00 1.84431e+00 5.43205e-02 4.76181e-02 5.16766e-02 4.05168e+00 3.05432e+00 5.04762e+00 7.05168e+00 1.20000e+00
 6.25000e+00 1.40911e+01 1.33996e+01 5.33996e+01 1.38341e+01 1.40911e+01 1.33996e+01 1.38341e+01 8.83307e-02 7.83059e-02 8.13095e-02 5.08131e+00 8.83307e-02 4.07831e+00 3.08131e+00 3.40000e+00
