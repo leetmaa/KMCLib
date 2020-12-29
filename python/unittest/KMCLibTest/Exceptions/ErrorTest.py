@@ -10,8 +10,6 @@
 
 import unittest
 
-from exceptions import Exception
-
 # Import from the module we test.
 from KMCLib.Exceptions.Error import Error
 

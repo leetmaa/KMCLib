@@ -101,7 +101,8 @@ class OnTheFlyRateCalculatorTest(unittest.TestCase):
         trajfile="traj.py"
         global_dict = {}
         local_dict  = {}
-        execfile(trajfile, global_dict, local_dict)
+        with open(trajfile, "rb") as f:
+            exec(compile(f.read(), trajfile, 'exec'), global_dict, local_dict)
         sites = local_dict["sites"]
         elem = local_dict["types"]
 

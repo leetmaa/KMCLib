@@ -9,9 +9,9 @@
 
 import unittest
 
-from KMCBreakerPluginTest import KMCBreakerPluginTest
-from KMCAnalysisPluginTest import KMCAnalysisPluginTest
-from KMCRateCalculatorPluginTest import KMCRateCalculatorPluginTest
+from .KMCBreakerPluginTest import KMCBreakerPluginTest
+from .KMCAnalysisPluginTest import KMCAnalysisPluginTest
+from .KMCRateCalculatorPluginTest import KMCRateCalculatorPluginTest
 
 def suite():
     suite = unittest.TestSuite(

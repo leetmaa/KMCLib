@@ -56,6 +56,8 @@ class CheckUtilitiesTest(unittest.TestCase):
         # Wrong size.
         invalid_coordinates = [[1.0,2.0,3.4],[3.0,3.0],[3.0,3.0,3.5]]
         self.assertRaises(Error, lambda: checkCoordinateList(invalid_coordinates))
+        invalid_coordinates = []
+        self.assertRaises(Error, lambda: checkCoordinateList(invalid_coordinates))
 
         invalid_coordinates = [[1.0,2.0,3.4],[3.0,3.0,1.2],[3.0,3.0,3.5,32.3]]
         self.assertRaises(Error, lambda: checkCoordinateList(invalid_coordinates))
@@ -88,6 +90,8 @@ class CheckUtilitiesTest(unittest.TestCase):
 
         # This should fail because of wrong type.
         trial_vectors = "ABC"
+        self.assertRaises(Error, lambda: checkCellVectors(trial_vectors))
+        trial_vectors = numpy.array([[1,0,0],[0,1,0],[0,0,1]])
         self.assertRaises(Error, lambda: checkCellVectors(trial_vectors))
 
         # These should fail because of linear dependencies.
@@ -344,6 +348,13 @@ class CheckUtilitiesTest(unittest.TestCase):
         # Three A, four B, five C.
         t = checkAndNormaliseBucketEntry(["B", "B", (2, "C"), "A", "A", "A", "B", "B", (2, "C"), "C"])
         self.assertEqual(t, [(4, "B"), (5, "C"), (3, "A")])
+
+        # Wrong format.
+        self.assertRaises( Error, lambda: checkAndNormaliseBucketEntry(["B", "B", (2, "C", "C")]) )
+        self.assertRaises( Error, lambda: checkAndNormaliseBucketEntry(["B", 3, (7, "C")]) )
+        self.assertRaises( Error, lambda: checkAndNormaliseBucketEntry((7, "C", "C")) )
+        self.assertRaises( Error, lambda: checkAndNormaliseBucketEntry(("C", "C")) )
+        self.assertRaises( Error, lambda: checkAndNormaliseBucketEntry((7, 7)) )
 
 
 if __name__ == '__main__':

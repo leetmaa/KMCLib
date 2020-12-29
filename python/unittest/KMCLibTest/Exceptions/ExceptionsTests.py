@@ -9,7 +9,7 @@
 
 import unittest
 
-from ErrorTest import ErrorTest
+from .ErrorTest import ErrorTest
 
 
 def suite():

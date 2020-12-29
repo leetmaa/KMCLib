@@ -8,9 +8,6 @@
 #
 
 
-from exceptions import Exception
-
-
 class Error(Exception):
     """ Class for describing an error. """
 

@@ -9,12 +9,12 @@
 
 import unittest
 
-from Analysis import AnalysisTests
-from Backend import BackendTests
-from CoreComponents import CoreComponentsTests
-from Exceptions import ExceptionsTests
-from PluginInterfaces import PluginInterfacesTests
-from Utilities import UtilitiesTests
+from .Analysis import AnalysisTests
+from .Backend import BackendTests
+from .CoreComponents import CoreComponentsTests
+from .Exceptions import ExceptionsTests
+from .PluginInterfaces import PluginInterfacesTests
+from .Utilities import UtilitiesTests
 
 def suite():
     suite = unittest.TestSuite(

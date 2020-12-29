@@ -51,7 +51,7 @@ class TrajectoryTest(unittest.TestCase):
         t = Trajectory(trajectory_filename="filename")
 
         # Call append.
-        self.assertRaises(AttributeError,
+        self.assertRaises(NotImplementedError,
                           lambda: t.append(simulation_time, step, configuration))
 
         # Add the missing function.
@@ -59,15 +59,15 @@ class TrajectoryTest(unittest.TestCase):
             pass
         t._storeData = storeData
 
-        self.assertRaises(AttributeError,
+        self.assertRaises(NotImplementedError,
                           lambda: t.append(simulation_time, step, configuration))
 
         # Add the missing function.
         def bufferSize(*args, **kwargs):
-            pass
+            return 1e9
         t._bufferSize = bufferSize
 
-        self.assertRaises(AttributeError,
+        self.assertRaises(NotImplementedError,
                           lambda: t.append(simulation_time, step, configuration))
 
         # Add the missing function.

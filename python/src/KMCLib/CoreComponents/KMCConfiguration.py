@@ -82,10 +82,10 @@ class KMCConfiguration(object):
 
         if types_format == "short":
             types_to_set = self.__checkAndSetShortTypes(types, default_type, possible_types)
-            all_types_present = list(set(types_to_set))
+            all_types_present = sorted(set(types_to_set))
         elif types_format == "long":
             types_to_set = self.__checkAndSetLongTypes(types, default_type, possible_types)
-            all_types_present = list(set(types_to_set))
+            all_types_present = sorted(set(types_to_set))
         else:
             types_to_set = self.__checkAndSetBucketsTypes(types, default_type, possible_types)
             self.__use_buckets = True
@@ -94,7 +94,7 @@ class KMCConfiguration(object):
             for tt in types_to_set:
                 for t in tt:
                     all_types_present.append(t[1])
-            all_types_present = list(set(all_types_present))
+            all_types_present = sorted(set(all_types_present))
 
         # Setup the list of possible types.
         if possible_types is None:
@@ -373,7 +373,7 @@ class KMCConfiguration(object):
         possible_types_string = "possible_types = "
         indent = " "*18
         line = "["
-        possible_types = [t for t in list(set(self.__possible_types.keys())) if t != "*"]
+        possible_types = [t for t in self.__possible_types if t != "*"]
 
         nT = len(possible_types)
         for i,t in enumerate(possible_types):
@@ -450,7 +450,7 @@ class KMCConfiguration(object):
         one_over_rep = numpy.array([1.0/self.__lattice.repetitions()[0],
                                     1.0/self.__lattice.repetitions()[1],
                                     1.0/self.__lattice.repetitions()[2]], dtype=float)
-        atoms = [ (types_map[t],c*one_over_rep) for t,c in zip(self.atomIDTypes(), self.atomIDCoordinates()) if t in types_map.keys() ]
+        atoms = [ (types_map[t],c*one_over_rep) for t,c in zip(self.atomIDTypes(), self.atomIDCoordinates()) if t in types_map ]
 
         # Generate the ATK elements and coordinates script.
         elements_script    = "# Define the elements.\nelements = ["
@@ -484,4 +484,3 @@ bulk_configuration = BulkConfiguration(
 
         # Setup and return the whole script.
         return header + cell_script + elements_script + coordinates_script + config_script
-

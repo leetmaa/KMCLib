@@ -8,7 +8,7 @@
 #
 
 import unittest
-import StringIO
+import io
 import numpy
 
 from KMCLib.Exceptions.Error import Error
@@ -184,7 +184,7 @@ class ProcessStatisticsTest(unittest.TestCase):
         # Add data on the class.
         ps._ProcessStatistics__data = [0, 12, 245, 1435]
 
-        stream = StringIO.StringIO()
+        stream = io.StringIO()
         ps.printResults(stream)
 
         # Reference checked by hand.

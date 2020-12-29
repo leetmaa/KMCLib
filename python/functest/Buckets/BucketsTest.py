@@ -281,10 +281,10 @@ class BucketsTest(unittest.TestCase):
                                                   dump_time_interval=10.0)
 
         # Run the model.
-        t1 = time.clock()
+        t1 = time.perf_counter()
         model.run(control_parameters=control_parameters,
                   trajectory_filename="traj1.py")
-        t2 = time.clock()
+        t2 = time.perf_counter()
 
         #breakers=[Breaker()])
 
@@ -293,7 +293,7 @@ class BucketsTest(unittest.TestCase):
 
         types = config.types()
         row = numpy.array([0, 3, 6, 9, 12, 15, 18, 21, 24, 27])
-        for i in range(len(config.types())/(len(row)*3)):
+        for i in range(len(config.types()) // (len(row)*3)):
             this_row = row + numpy.ones(len(row), dtype=int)*i*30
 
             # One-liner to calculate the number of M1 on this row.
@@ -340,16 +340,16 @@ class BucketsTest(unittest.TestCase):
                                                   dump_time_interval=10.0)
 
         # Run the model.
-        t3 = time.clock()
+        t3 = time.perf_counter()
         model.run(control_parameters=control_parameters,
                   trajectory_filename="traj2.py")
-        t4 = time.clock()
+        t4 = time.perf_counter()
 
         # Check the results.
         distribution = []
         types = config.types()
         row = numpy.array([0, 3, 6, 9, 12, 15, 18, 21, 24, 27])
-        for i in range(len(config.types())/(len(row)*3)):
+        for i in range(len(config.types()) // (len(row)*3)):
             this_row = row + numpy.ones(len(row), dtype=int)*i*30
 
             # One-liner to calculate the number of M1 on this row.
@@ -359,8 +359,8 @@ class BucketsTest(unittest.TestCase):
         self.assertEqual( ref_distribution, distribution )
 
         # Print the times.
-        print "Time for custom C++ run:    ", t2-t1
-        print "Time for custom Python run: ", t4-t3
+        print("Time for custom C++ run:    ", t2-t1)
+        print("Time for custom Python run: ", t4-t3)
 
         # Check that the trajectories are identical.
 
@@ -385,7 +385,7 @@ class Breaker(KMCBreakerPlugin):
         types = configuration.types()
 
         if any([('M1' in types[i]) for i in check_at]):
-            print "Breaking from saturation condition at step: ", step
+            print("Breaking from saturation condition at step: ", step)
             return True
 
         # No break yet.

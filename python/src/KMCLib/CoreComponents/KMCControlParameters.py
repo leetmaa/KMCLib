@@ -125,7 +125,7 @@ class KMCControlParameters(object):
                      "DEVICE"   : Backend.DEVICE,
                      }
 
-        if not rng_type in rng_dict.keys():
+        if not rng_type in rng_dict:
             raise Error("'rng_type' input must be one of the supported types. Check the documentation for the list of supported types. Default is 'MT' (Mersenne-Twister) [std::mt19937].")
 
         return rng_dict[rng_type]

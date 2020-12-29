@@ -9,10 +9,10 @@
 
 import unittest
 
-from OnTheFlyMSDTest import OnTheFlyMSDTest
-from TimeStepDistributionTest import TimeStepDistributionTest
-from ProcessStatisticsTest import ProcessStatisticsTest
-from CompositionTest import CompositionTest
+from .OnTheFlyMSDTest import OnTheFlyMSDTest
+from .TimeStepDistributionTest import TimeStepDistributionTest
+from .ProcessStatisticsTest import ProcessStatisticsTest
+from .CompositionTest import CompositionTest
 
 def suite():
     suite = unittest.TestSuite(

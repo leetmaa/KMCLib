@@ -51,6 +51,15 @@ class Trajectory(object):
         # Set the time counter to zero.
         self.__time_last_dump = 0.0
 
+    def _storeData(self, simulation_time, step, configuration):
+        raise NotImplementedError
+
+    def _bufferSize(self):
+        raise NotImplementedError
+
+    def flush(self):
+        raise NotImplementedError
+
     def append(self, simulation_time, step, configuration):
         """
         Append to the trajectory. The trajectory if flushed to file if the
@@ -75,4 +84,3 @@ class Trajectory(object):
 
             # Update the time.
             self.__time_last_dump = time.time()
-

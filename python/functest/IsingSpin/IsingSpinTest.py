@@ -62,7 +62,7 @@ class IsingSpinTest(unittest.TestCase):
         # --------------------------------------------------------------------
         # Setup a calculation with custom rates and no caching.
         CustomRateCalculator.cacheRates = falseFunction
-        t1 = time.clock()
+        t1 = time.perf_counter()
 
         # Load the configuration and interactions.
         configuration = KMCConfigurationFromScript("config.py")
@@ -82,7 +82,7 @@ class IsingSpinTest(unittest.TestCase):
         # Run the simulation - save trajectory to 'custom_traj.py'
         model.run(control_parameters, trajectory_filename="custom_traj.py")
 
-        t2 = time.clock()
+        t2 = time.perf_counter()
 
         # --------------------------------------------------------------------
         # Setup a calculation with custom rates and caching.
@@ -106,7 +106,7 @@ class IsingSpinTest(unittest.TestCase):
         # Run the simulation - save trajectory to 'custom_traj_cache.py'
         model.run(control_parameters, trajectory_filename="custom_traj_py_cache.py")
 
-        t3 = time.clock()
+        t3 = time.perf_counter()
 
         # --------------------------------------------------------------------
         # Setup a calculation with custom rates and caching.
@@ -129,7 +129,7 @@ class IsingSpinTest(unittest.TestCase):
         # Run the simulation - save trajectory to 'custom_traj_cache.py'
         model.run(control_parameters, trajectory_filename="custom_traj_cpp_cache.py")
 
-        t4 = time.clock()
+        t4 = time.perf_counter()
 
         # --------------------------------------------------------------------
         # Setup the same calculation with fixed rates.
@@ -148,27 +148,31 @@ class IsingSpinTest(unittest.TestCase):
         # Run the simulation - save trajectory to 'fixed_traj.py'
         model.run(control_parameters, trajectory_filename="fixed_traj.py")
 
-        t5 = time.clock()
+        t5 = time.perf_counter()
         # --------------------------------------------------------------------
         # Check that the results are the same.
         global_dict = {}
         local_dict  = {}
-        execfile("custom_traj.py", global_dict, local_dict)
+        with open("custom_traj.py", "rb") as f:
+            exec(compile(f.read(), "custom_traj.py", 'exec'), global_dict, local_dict)
         elem_custom = local_dict["types"][-1]
 
         global_dict = {}
         local_dict  = {}
-        execfile("custom_traj_py_cache.py", global_dict, local_dict)
+        with open("custom_traj_py_cache.py", "rb") as f:
+            exec(compile(f.read(), "custom_traj_py_cache.py", 'exec'), global_dict, local_dict)
         elem_cache_py  = local_dict["types"][-1]
 
         global_dict = {}
         local_dict  = {}
-        execfile("custom_traj_cpp_cache.py", global_dict, local_dict)
+        with open("custom_traj_cpp_cache.py", "rb") as f:
+            exec(compile(f.read(), "custom_traj_cpp_cache.py", 'exec'), global_dict, local_dict)
         elem_cache_cpp  = local_dict["types"][-1]
 
         global_dict = {}
         local_dict  = {}
-        execfile("fixed_traj.py", global_dict, local_dict)
+        with open("fixed_traj.py", "rb") as f:
+            exec(compile(f.read(), "fixed_traj.py", 'exec'), global_dict, local_dict)
         elem_fixed  = local_dict["types"][-1]
 
         d0 = len([e for e in elem_custom if e == "D"] )
@@ -185,10 +189,10 @@ class IsingSpinTest(unittest.TestCase):
 
         # Excact values will depend on the seed. Check against hardcoded
         # values.
-        print "Time for custom run (s):", t2-t1
-        print "Time for cache run  (s):", t3-t2
-        print "Time for cache C++ run (s):", t4-t3
-        print "Time for fixed run  (s):", t5-t4
+        print("Time for custom run (s):", t2-t1)
+        print("Time for cache run  (s):", t3-t2)
+        print("Time for cache C++ run (s):", t4-t3)
+        print("Time for fixed run  (s):", t5-t4)
 
         self.assertEqual(d0,  3358)
         self.assertEqual(d1,  3358)

@@ -9,9 +9,9 @@
 
 import unittest
 
-from TrajectoryTest import TrajectoryTest
-from LatticeTrajectoryTest import LatticeTrajectoryTest
-from XYZTrajectoryTest import XYZTrajectoryTest
+from .TrajectoryTest import TrajectoryTest
+from .LatticeTrajectoryTest import LatticeTrajectoryTest
+from .XYZTrajectoryTest import XYZTrajectoryTest
 
 def suite():
     suite = unittest.TestSuite(
