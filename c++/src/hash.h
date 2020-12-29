@@ -79,8 +79,8 @@ void md5Core(void *message,
  *  \returns: 64-bit hash value.
  */
 uint64_t hashCustomRateInput(const int index,
-                                      const Process & process,
-                                      const Configuration & configurartion);
+                             const Process & process,
+                             const Configuration & configurartion);
 
 
 #endif // __HASH__
