@@ -47,7 +47,7 @@ class KMCRateCalculatorPlugin(Backend.RateCalculator):
                                    global_y,
                                    global_z):
         """
-        Function called from C++ to get the rate. It function recieves
+        Function called from C++ to get the rate. The function recieves
         the data from C++ and parse it to a Python friendly format to send it
         forward to the custom rate function.
         """
@@ -79,7 +79,7 @@ class KMCRateCalculatorPlugin(Backend.RateCalculator):
                             global_y,
                             global_z):
         """
-        Function called from C++ to get the rate. It function recieves
+        Function called from C++ to get the rate. The function recieves
         the data from C++ and parse it to a Python friendly format to send it
         forward to the custom rate function.
         """
@@ -129,7 +129,7 @@ class KMCRateCalculatorPlugin(Backend.RateCalculator):
         :returns: The custom rate of the process. Note that the returned rate must
                   not be negative or zero.
         """
-        raise Error("The rate(self,...) API function in the 'KMCRateCalculator' base class must be overloaded when using a custom rate calculator.")
+        raise NotImplementedError("The rate(self,...) API function in the 'KMCRateCalculator' base class must be overloaded when using a custom rate calculator.")
 
     def cutoff(self):
         """

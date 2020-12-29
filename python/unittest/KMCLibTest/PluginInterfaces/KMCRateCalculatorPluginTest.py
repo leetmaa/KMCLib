@@ -26,6 +26,18 @@ class KMCRateCalculatorPluginTest(unittest.TestCase):
         self.assertTrue( isinstance(calculator, KMCRateCalculatorPlugin) )
         self.assertTrue( isinstance(calculator, Backend.RateCalculator) )
 
+    def testCallBaseClassRateCall(self):
+        """ Test that we can't call the base class rate function """
+        calculator = KMCRateCalculatorPlugin("DummyConfig")
+
+        dummy_arg1 = "arg"
+        dummy_arg2 = "arg"
+        dummy_arg3 = "arg"
+        dummy_arg4 = "arg"
+        dummy_arg5 = "arg"
+        dummy_arg6 = "arg"
+        self.assertRaises( NotImplementedError, lambda: calculator.rate(dummy_arg1, dummy_arg2, dummy_arg3, dummy_arg4, dummy_arg5, dummy_arg6) )
+
     def testConstructionDerrivedClass(self):
         """ Test that we can construct a derrived class. """
         # Define a derrived class.
