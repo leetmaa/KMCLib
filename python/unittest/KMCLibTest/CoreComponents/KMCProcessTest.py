@@ -119,7 +119,6 @@ class KMCProcessTest(unittest.TestCase):
             norm = numpy.linalg.norm(numpy.array(ref[1]) - numpy.array(ret[1]))
             self.assertAlmostEqual( norm, 0.0, 10 )
 
-
     def testEqualOperator(self):
         """ Test the equal operator. """
         # Set the input.
@@ -809,10 +808,10 @@ process = KMCProcess(
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
         types0 = ["*","B"]
         types1 = ["B","*"]
-        sites  = [0]
+        sites  = [1]
         rate_0_1 = 3.5
         self.assertRaises( Error,
-                           lambda : KMCProcess(coords, types0, types1, sites, rate_0_1) )
+                           lambda : KMCProcess(coords, types0, types1, basis_sites=sites, rate_constant=rate_0_1) )
 
         # This should fail.
         coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
@@ -821,18 +820,37 @@ process = KMCProcess(
         sites  = [0]
         rate_0_1 = 3.5
         self.assertRaises( Error,
-                           lambda : KMCProcess(coords, types0, types1, sites, rate_0_1) )
+                           lambda : KMCProcess(coords, types0, types1, basis_sites=sites, rate_constant=rate_0_1) )
 
     def testConstructionFailNoMove(self):
         """ Test for failure if no move takes place. """
         # This should fail.
-        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3]]
+        coords = [[1.0,2.0,3.4],[1.1,1.2,1.3],[3.1,3.2,1.3]]
         types0 = ["A","B", "*"]
         types1 = ["A","B", "*"]
         sites  = [0]
         rate_0_1 = 3.5
         self.assertRaises( Error,
-                           lambda : KMCProcess(coords, types0, types1, sites, rate_0_1) )
+                           lambda : KMCProcess(coords, types0, types1, basis_sites=sites, rate_constant=rate_0_1) )
+
+    def testConstructionFailBasisSites(self):
+        """ Test that the KMCProcess class fails to construct with invalid basis_sites. """
+        # Set the input.
+        coordinates = [[0.0, 0.0, 0.0],[1.0,2.0,3.0]]
+        elements_before = ["A", "B"]
+        elements_after = ["B", "A"]
+        basis_sites = []
+        move_vectors = [(0, [1.0,2.0,3.0]),
+                        (1, [-1.0,-2.0,-3.0])]
+
+        # Construct.
+        self.assertRaises( Error, lambda : KMCProcess(coordinates=coordinates,
+                                                      elements_before=elements_before,
+                                                      elements_after=elements_after,
+                                                      move_vectors=move_vectors,
+                                                      basis_sites=basis_sites,
+                                                      rate_constant=1.0) )
+
 
 
 if __name__ == '__main__':
