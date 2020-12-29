@@ -20,14 +20,15 @@
 
 #include <cstdio>
 #include <cstring>
+#include <cinttypes>
 
 
 // -------------------------------------------------------------------------- //
 //
-unsigned long int hash64MD5xor(std::vector<int> & message)
+uint64_t hash64MD5xor(std::vector<int> & message)
 {
     // Get the full hash.
-    unsigned long int res[2];
+    uint64_t res[2];
     void *ptr1 = (&message[0]);
 
     // Call the md5 core.
@@ -41,9 +42,9 @@ unsigned long int hash64MD5xor(std::vector<int> & message)
 // -------------------------------------------------------------------------- //
 //
 void md5Core(void *message,
-             const unsigned long int size,
-             unsigned long int & result1,
-             unsigned long int & result2)
+             const uint64_t size,
+             uint64_t & result1,
+             uint64_t & result2)
 {
     // Call the external MD5 routine.
     MD5_CTX ctx;
@@ -53,7 +54,7 @@ void md5Core(void *message,
     MD5_Final(result, &ctx);
 
     // Get the digest in the right format and return.
-    unsigned long int res[2];
+    uint64_t res[2];
     memcpy(res, result, 16);
     result1 = res[0];
     result2 = res[1];
@@ -67,12 +68,12 @@ void md5Core(void *message,
 std::string hashMD5(const std::string & message)
 {
     // Get the full hash.
-    unsigned long int res[2];
+    uint64_t res[2];
     hashMD5(message, res[0], res[1]);
 
     // Get the digest in the right format and return.
     char final[33];
-    sprintf(final, "%lx%lx", res[0], res[1]);
+    sprintf(final, "%" PRIx64 "%" PRIx64, res[0], res[1]);
     return std::string(final);
 }
 
@@ -80,8 +81,8 @@ std::string hashMD5(const std::string & message)
 // -------------------------------------------------------------------------- //
 //
 void hashMD5(const std::string & message,
-             unsigned long int & result1,
-             unsigned long int & result2)
+             uint64_t & result1,
+             uint64_t & result2)
 {
     // Copy the incomming message to avoid an evil const cast.
     std::string msg(message);
@@ -98,10 +99,10 @@ void hashMD5(const std::string & message,
 
 // -------------------------------------------------------------------------- //
 //
-unsigned long int hash64MD5xor(const std::string & message)
+uint64_t hash64MD5xor(const std::string & message)
 {
     // Get the full hash.
-    unsigned long int res[2];
+    uint64_t res[2];
     hashMD5(message, res[0], res[1]);
 
     // XOR down to 64-bit result.
@@ -111,7 +112,7 @@ unsigned long int hash64MD5xor(const std::string & message)
 
 // -------------------------------------------------------------------------- //
 //
-unsigned long int hashCustomRateInput(const int index,
+uint64_t hashCustomRateInput(const int index,
                                       const Process & process,
                                       const Configuration & configuration)
 {

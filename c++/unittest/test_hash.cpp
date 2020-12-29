@@ -17,6 +17,9 @@
 #include "latticemap.h"
 #include "random.h"
 
+#include <cstdint>
+#include <cinttypes>
+
 
 // For profiling on Linux.
 #include <sys/time.h>
@@ -53,10 +56,10 @@ void Test_Hash::test64MD5String()
 {
     {
         // Get the 64-bit xor-ed hash.
-        size_t hash = hash64MD5xor("");
+        uint64_t hash = hash64MD5xor("");
 
         // Get the full hash.
-        size_t hash1, hash2;
+        uint64_t hash1, hash2;
         hashMD5("", hash1, hash2);
 
         // Check that this is the xor-ed parts of the full md5 hash.
@@ -66,10 +69,10 @@ void Test_Hash::test64MD5String()
 
     {
         // Get the 64-bit xor-ed hash.
-        size_t hash = hash64MD5xor("This is another string.");
+        uint64_t hash = hash64MD5xor("This is another string.");
 
         // Get the full hash.
-        size_t hash1, hash2;
+        uint64_t hash1, hash2;
         hashMD5("This is another string.", hash1, hash2);
 
         // Check that this is the xor-ed parts of the full md5 hash.
@@ -154,27 +157,27 @@ void Test_Hash::testHashCustomRateInput()
     {
         // Get the hash.
         index = 1;
-        const unsigned long int hash1 = hashCustomRateInput(index, process1, config);
-        const unsigned long int ref1 = 18009609292013583759u;
+        const uint64_t hash1 = hashCustomRateInput(index, process1, config);
+        const uint64_t ref1 = 18009609292013583759u;
         CPPUNIT_ASSERT_EQUAL(hash1, ref1);
 
         // Get the hash.
         index = 0;
-        const unsigned long int hash0 = hashCustomRateInput(index, process1, config);
-        const unsigned long int ref0 = 4224368175550234772u;
+        const uint64_t hash0 = hashCustomRateInput(index, process1, config);
+        const uint64_t ref0 = 4224368175550234772u;
         CPPUNIT_ASSERT_EQUAL(hash0, ref0);
     }
 
     {
         // Check against another process that differs in the process number.
         index = 1;
-        const unsigned long int hash1 = hashCustomRateInput(index, process2, config);
-        const unsigned long int ref1 = 4824710481459367137u;
+        const uint64_t hash1 = hashCustomRateInput(index, process2, config);
+        const uint64_t ref1 = 4824710481459367137u;
         CPPUNIT_ASSERT_EQUAL(hash1, ref1);
 
         index = 0;
-        const unsigned long int hash0 = hashCustomRateInput(index, process2, config);
-        const unsigned long int ref0 = 17780468236463825071u;
+        const uint64_t hash0 = hashCustomRateInput(index, process2, config);
+        const uint64_t ref0 = 17780468236463825071u;
         CPPUNIT_ASSERT_EQUAL(hash0, ref0);
     }
 
@@ -182,7 +185,7 @@ void Test_Hash::testHashCustomRateInput()
     if (false)
     {
         double t1 = cpu_time();
-        unsigned long int hash_loop;
+        uint64_t hash_loop;
         for (int i = 0; i < 10000000; ++i)
         {
             hash_loop = hashCustomRateInput(index, process2, config);
@@ -190,6 +193,6 @@ void Test_Hash::testHashCustomRateInput()
         double t2 = cpu_time();
 
         // Printout to avoid optimization.
-        printf("hash0 %lx\n %e", hash_loop, (t2-t1)/10000000);
+        printf("hash0 %" PRIx64 "\n %e", hash_loop, (t2-t1)/10000000);
     }
 }
